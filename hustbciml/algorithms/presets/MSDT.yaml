@@ -1,0 +1,15 @@
+# MSDT: Multi-Source Decentralized Transfer (Zhang, Wang & Wu 2022). Each source
+# subject trains its own MLP on Riemannian tangent-space features (decentralized);
+# the target adapts the source extractors by multi-source information maximization
+# + source-inconsistency, with entropy-based domain weighting, and predicts the
+# weighted ensemble. Source-free. No network backbone / no gradient loop on raw
+# EEG (strategy mode='fit'); backbone/head unused. Tangent map is the alignment,
+# so the aligner stage is Identity.
+aligner: Identity
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: MSDT
+epochs: 1
+batch_size: 32
+lr: 0.001

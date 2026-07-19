@@ -1,0 +1,11 @@
+# CDAN: EA-aligned EEGNet with conditional domain-adversarial training — the
+# discriminator sees feature x softmax (multilinear conditioning), with entropy
+# weighting and gradient reversal (Long et al., NeurIPS 2018).
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: CDAN
+epochs: 100
+batch_size: 32
+lr: 0.001

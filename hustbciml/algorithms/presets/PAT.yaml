@@ -1,0 +1,13 @@
+# PAT — Privacy-preserving Adversarial Transfer (Chen et al. 2026, Fundamental Research).
+# The paper's core training pipeline as a strategy, on par with ABAT: EA alignment
+# + scaling augmentation (Eq. 4) + adversarial training (global L-inf PGD, Eqs. 5-7).
+# Reported on benign accuracy under the shared cross-subject LOSO protocol; the
+# privacy / source-prior scenarios are out of scope for this protocol (see the card).
+aligner: EA
+augmenter: Scaling
+backbone: EEGNet
+head: Linear
+strategy: PAT
+epochs: 100
+batch_size: 32
+lr: 0.001

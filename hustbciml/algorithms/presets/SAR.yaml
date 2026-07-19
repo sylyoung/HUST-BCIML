@@ -1,0 +1,16 @@
+# SAR: sharpness-aware reliable test-time adaptation (Niu et al., ICLR 2023).
+# Online TTA like Tent, but entropy minimization is taken with a SAM
+# (sharpness-aware) optimizer — a two-pass ascend/descend update toward a flat,
+# more robust entropy minimum. EA-aligned online stream + EEGNet + Linear.
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: SAR
+epochs: 100
+batch_size: 32
+lr: 0.001
+test_batch: 8
+steps: 1
+stride: 1
+temperature: 2.0

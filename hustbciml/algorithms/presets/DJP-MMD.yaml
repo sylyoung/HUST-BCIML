@@ -1,0 +1,7 @@
+# DJP-MMD — Discriminative Joint Probability MMD (Zhang & Wu, IJCNN 2020), a lab
+# domain-adaptation strategy on the canonical EA + EEGNet setup (strategy axis).
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: DJPMMD

@@ -1,0 +1,13 @@
+# LSFT: Lightweight Source-Free Transfer (Zhang & Wu 2022). Source classifiers
+# vote to pseudo-label the target -> virtual intermediate source -> iterative
+# DJP-MMD subspace adaptation, all on Riemannian tangent-space features. No
+# network / no gradient loop (strategy mode='fit'); backbone/head are unused.
+# LSFT does its own Riemannian alignment, so the aligner stage is Identity.
+aligner: Identity
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: LSFT
+epochs: 1
+batch_size: 32
+lr: 0.001

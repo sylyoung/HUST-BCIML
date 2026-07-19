@@ -1,0 +1,13 @@
+# EA + KDFNet (Jiang et al., Information Sciences 2026) + Linear, trained with ERM.
+# Network-axis comparison: an FBCSP-mirroring CNN whose temporal (windowed-sinc
+# FIR filter bank) and spatial (per-band CSP) layers are knowledge-initialized on
+# the EA-aligned source and then fine-tuned end-to-end, on the same EA + ERM setup
+# as the other backbones.
+aligner: EA
+augmenter: Identity
+backbone: KDFNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

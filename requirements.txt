@@ -1,0 +1,21 @@
+# HUST-BCIML — benchmark dependencies (Python 3.10+).
+# Install with:  pip install -r requirements.txt
+
+# --- core (needed to run any algorithm) ---
+numpy>=1.23
+scipy>=1.9
+scikit-learn>=1.2
+torch>=1.12
+pyriemann>=0.5          # Riemannian covariance / tangent-space features (EA, RA, MEKT, LSFT, MSDT, MDM)
+PyYAML>=6.0             # preset + card + web-app data files
+
+# --- real datasets (optional: only needed for the MOABB motor-imagery data;
+#     the bundled Toy dataset and the unit tests need none of this) ---
+moabb>=1.0              # downloads BNCI2014001 / BNCI2014002 / BNCI2015001
+mne>=1.5               # pulled in by moabb; EEG I/O
+
+# --- specific algorithms (optional) ---
+PyWavelets>=1.4         # CSDA augmenter (discrete wavelet transform)
+
+# The web app (docs/) has NO Python runtime dependency — it opens as a static
+# file. Regenerating its data files needs only PyYAML (see gallery/build_site.py).

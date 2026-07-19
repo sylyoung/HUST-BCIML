@@ -1,0 +1,11 @@
+# Riemannian Alignment (Zanini et al. 2018) + EEGNet + Linear, trained with ERM.
+# Alignment-axis comparison against EA and no-alignment: same recentring as EA
+# but the reference covariance is the Riemannian (Fréchet) mean, not the mean.
+aligner: RA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

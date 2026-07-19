@@ -1,0 +1,17 @@
+# FedBS — federated learning + local batch-specific BN + SAM (Jia et al., IEEE
+# TNSRE 2024). Privacy-preserving cross-subject transfer: each source subject is a
+# client that trains only on its own EEG; the server aggregates parameters, never
+# raw data. EA-aligned EEGNet, one shared backbone with the centralized reference.
+# The federated schedule (200 rounds, P=0.5, E=2, rho=0.1, SGD mom 0.9) is fixed in
+# the FedBS strategy; the optimizer knobs below match the shared 4-class scenario
+# (lr 0.001, weight_decay 0.0, batch 32) — identical to Centralized Training and
+# FedAvg so only the privacy mechanism differs, NOT the FedBS paper's lr 0.005.
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: FedBS
+batch_size: 32
+lr: 0.001
+weight_decay: 0.0
+test_batch: 8

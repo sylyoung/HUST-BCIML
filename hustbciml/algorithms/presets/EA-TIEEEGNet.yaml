@@ -1,0 +1,14 @@
+# EA + TIE-EEGNet (Peng et al., IEEE TNSRE 2022) + Linear, trained with ERM.
+# Network-axis comparison: EEGNet with the first temporal conv replaced by a TIE
+# convolution (an additive sinusoidal time-positional embedding), on the same
+# EA + ERM setup as the other backbones. Shares the benchmark EEGNet capacity
+# (F1=4, D=2, F2=8, dropout 0.25); the paper uses F1=8/F2=16/dropout 0.5, kept as
+# the reference range.
+aligner: EA
+augmenter: Identity
+backbone: TIEEEGNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

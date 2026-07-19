@@ -1,0 +1,502 @@
+<div align="center">
+
+# HUST-BCIML
+
+**English** | [简体中文](README.zh-CN.md)
+
+**The open-source code home of the Brain-Computer Interface and Machine Learning Laboratory**
+
+Prof. Dongrui Wu &nbsp;·&nbsp; Huazhong University of Science and Technology
+
+<br>
+
+A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **paper-to-code gallery**.
+
+<br>
+
+### &nbsp;[🌐&nbsp; Open the live web app &nbsp;↗](https://sylyoung.github.io/HUST-BCIML/)&nbsp;
+
+[![Open the live web app](https://img.shields.io/badge/sylyoung.github.io%2FHUST--BCIML-Open_the_live_web_app-2563EB?style=for-the-badge&labelColor=1e293b)](https://sylyoung.github.io/HUST-BCIML/)
+
+<sub>searchable paper-to-code gallery&nbsp; ·&nbsp; interactive benchmark leaderboard&nbsp; ·&nbsp; runs in the browser, no install</sub>
+
+<br>
+
+![Python](https://img.shields.io/badge/python-3.10%2B-3776ab)
+![PyTorch](https://img.shields.io/badge/PyTorch-1.12%2B-ee4c2c)
+![Approaches](https://img.shields.io/badge/approaches-39-4338ca)
+![Datasets](https://img.shields.io/badge/datasets-3%20MOABB%20MI-059669)
+![License](https://img.shields.io/badge/license-MIT-blue)
+
+[**Official lab website**](https://lab.bciml.cn/) &nbsp;·&nbsp; [**Prof. Dongrui Wu**](https://sites.google.com/site/drwuhust/) &nbsp;·&nbsp; [**Google Scholar**](https://scholar.google.com/citations?user=UYGzCPEAAAAJ)
+
+</div>
+
+---
+
+> **Scope.**
+> The lab website and Prof. Wu's homepage linked above are the authoritative source for the
+> laboratory profile, its members, news, and the complete publication list.
+>
+> **This repository is the laboratory's open-source _code_ home** — a unified benchmark of its
+> EEG-decoding methods together with a map from its papers to their public code. It complements,
+> rather than replaces, the laboratory pages.
+
+<br>
+
+## Contents
+
+- [Overview](#overview)
+- [Motivation](#motivation)
+- [Design principles](#design-principles)
+- [Benchmark methodology](#benchmark-methodology)
+- [Method inventory](#method-inventory)
+- [Quickstart](#quickstart)
+- [The paper-to-code gallery](#the-paper-to-code-gallery)
+- [Repository layout](#repository-layout)
+- [Reproduction and measurement integrity](#reproduction-and-measurement-integrity)
+- [Extending the benchmark](#extending-the-benchmark)
+- [Featured repositories](#featured-repositories)
+- [Roadmap](#roadmap)
+- [Citation](#citation)
+- [Contact](#contact)
+- [Acknowledgements](#acknowledgements)
+- [License](#license)
+
+<br>
+
+<details>
+<summary><b>What's new</b></summary>
+
+<br>
+
+- **2026-07** — A faithful, full **MEKT** implementation (the Section III-C domain-adaptation
+  projection, ported from the authors' code) now tops the classical-transfer results on two of
+  the three datasets.
+
+- **2026-07** — The benchmark package was consolidated as **`hustbciml`**; the
+  privacy-preserving comparison was extended to **three** MOABB datasets; and a
+  held-out-source hyperparameter-selection pass refreshed the network, transfer, augmentation,
+  and composite tables — replacing numbers **only** where a fairly selected configuration beat
+  the previous one.
+
+- **2026-07** — Four additional lab methods were ported (**CSP-Net, DJP-MMD, LSFT, MSDT**), and
+  the transfer table was regrouped into source-only / unsupervised-DA / source-free / test-time
+  families.
+
+- **2026-07** — The web app gained a three-dataset leaderboard, lab-approach highlighting, and a
+  searchable paper-to-code gallery over **275** publications.
+
+</details>
+
+---
+
+## Overview
+
+This repository bundles two deliverables, **code first**.
+
+**1. The EEG-decoding benchmark** — directory [`hustbciml/`](hustbciml/).
+
+A self-contained framework built around a single command-line entry point and an
+auto-scanning plug-in registry. On this one composable pipeline it re-implements **39
+EEG-decoding approaches** — spanning data alignment, data augmentation, network backbones,
+transfer learning, and ensemble aggregation — and compares them head-to-head under a **single
+controlled evaluation protocol**, with a per-method reproduction record for every reported
+number.
+
+**2. The paper-to-code web app** — directory [`docs/`](docs/).
+
+A static web application that presents the benchmark leaderboard alongside a searchable
+**paper-to-code gallery** over the laboratory's **275 publications** (80 of which have public
+code). It opens directly as a local file and hosts on GitHub Pages with **no build step**.
+
+<br>
+
+## Motivation
+
+The laboratory has published extensively on EEG decoding, but the accompanying code is
+distributed across many independent repositories with heterogeneous data handling, evaluation
+splits, and hyperparameter conventions.
+
+Reproducing a single result — or comparing two methods on equal terms — therefore requires
+re-deriving each method's preprocessing, cross-subject split, and training schedule by hand.
+This is error-prone, and the published accuracy numbers alone do not remove the difficulty.
+
+This repository addresses the problem in two complementary ways:
+
+- it **re-implements** the methods on one shared pipeline and evaluates them under a single
+  controlled protocol, so that any two leaderboard rows differ in **exactly one** component; and
+
+- it **maps** the laboratory's publications to their public code, so that a reader can move
+  from a paper to a runnable implementation in one step.
+
+<br>
+
+## Design principles
+
+The benchmark is organized around six principles, each of which is enforced by the code and the
+reporting rather than left to convention.
+
+1. **Composability.**
+   An *algorithm* is a named composition of stage plug-ins. Adding a method is, in the common
+   case, adding a single file that conforms to a stage interface; the registry discovers it by
+   filename.
+
+2. **Controlled comparison.**
+   Every comparison varies **one** pipeline stage while holding the rest at a fixed canonical
+   configuration. Two rows that differ in one component isolate the effect of that component.
+
+3. **Measurement integrity.**
+   Every reported number is a **measured** mean over three random seeds. No number is ever
+   hand-set to match a paper. Each is recorded — against the paper's own value where the
+   protocol matches, or an expected-behaviour band where it differs — in a machine-readable
+   reproduction file.
+
+4. **Honest reporting.**
+   Negative and below-baseline results are kept and explained, not hidden. Rankings are
+   **dataset-dependent** and are reported as measured; a single flat ranking across all methods
+   is deliberately **not** presented.
+
+5. **Reproducibility.**
+   Runs fix their seeds and persist their resolved configuration, per-subject predictions, and
+   checkpoints. Hyperparameter selection, where used, is performed on **held-out source
+   subjects only** and never touches the target/test labels.
+
+6. **Self-containment and zero build.**
+   The web app renders from a single file with no build step, and the benchmark runs end-to-end
+   on a bundled synthetic dataset with no download, so that both are inspectable before any real
+   data is fetched.
+
+<br>
+
+## Benchmark methodology
+
+### The pipeline
+
+An algorithm is a composition of stage plug-ins, evaluated under a training/adaptation
+procedure (the *strategy*, i.e. the learning objective):
+
+```
+Aligner  →  Augmenter  →  Backbone  →  Head        (trained under a Strategy)
+```
+
+- **Aligner** — a per-domain signal normalization applied before learning (e.g. Euclidean or
+  Riemannian alignment of the trial covariances).
+- **Augmenter** — a train-time transform that expands the training set.
+- **Backbone** — the neural feature extractor (or `Identity` for the classical, network-free
+  track).
+- **Head** — the classifier on top of the backbone features.
+- **Strategy** — the learning objective and its train/adapt loop (empirical risk minimization,
+  a domain-adaptation objective, a source-free or test-time adaptation procedure, and so on).
+
+### Controlled comparison
+
+Each stage table **varies exactly one axis** and holds the remaining stages at the canonical
+configuration:
+
+```
+EA  ·  no augmentation  ·  EEGNet  ·  Linear head  ·  ERM
+```
+
+Consequently, every row differs from its table's baseline in one way only, and a row's reported
+delta (Δ) is its accuracy minus that table's same-dataset baseline. A separate **ensemble** axis
+aggregates several models and is reported apart from the single-axis tables.
+
+### Evaluation protocol
+
+All results are **cross-subject, leave-one-subject-out (LOSO)**: the model is trained on all but
+one subject and evaluated on the held-out subject, repeated over every subject.
+
+Each configuration is run over **three random seeds** (1, 2, 3). Reported accuracy is the **mean
+over seeds**; the reported `±` is the standard deviation **across seeds** (a reproducibility
+measure), not the cross-subject spread. Deterministic, network-free methods therefore carry a
+standard deviation of `0.00` by construction.
+
+### Datasets
+
+The full benchmark runs on three MOABB motor-imagery EEG datasets. A bundled synthetic **Toy**
+dataset reproduces the entire pipeline with no download and serves as the smoke test.
+
+| Dataset | Subjects | Channels | Classes used in the benchmark | Chance |
+|---|--:|--:|---|--:|
+| **BNCI2014001** | 9 | 22 | two-class (left vs. right hand) throughout, including the privacy-preserving and ensemble sections; the native four-class variant (both hands, feet, tongue) stays available in code | 50% |
+| **BNCI2014002** | 14 | 15 | two-class (right hand vs. feet) | 50% |
+| **BNCI2015001** | 12 | 13 | two-class (right hand vs. feet) | 50% |
+
+Every table is two-class (chance 50%) on all three datasets, so the columns are directly comparable
+throughout. Each family is measured against its own same-dataset baseline — the transfer families
+against ERM, the privacy-preserving family against Centralized Training, and the ensemble table
+against majority voting.
+
+### Metrics
+
+Accuracy is the primary metric for the motor-imagery task and is reported throughout. The
+benchmark code additionally computes Cohen's κ, macro-F1, and ROC-AUC where the paradigm calls
+for it; per-subject predictions are saved so that any additional metric can be recomputed
+without re-running a model.
+
+<br>
+
+## Method inventory
+
+Approaches proposed by the laboratory are marked **(lab)**. The list below groups the plug-ins
+by pipeline stage; the composite, privacy-preserving, and ensemble methods span more than one
+stage and are grouped by role.
+
+**Signal alignment (aligners).**
+Euclidean Alignment (**EA**), Riemannian Alignment (**RA**), and `Identity` (no alignment).
+
+**Data augmentation (augmenters).**
+**Channel Reflection (lab)** — a sagittal-midline mirror with left/right label swap; **CSDA
+(lab)** — a wavelet cross-subject detail-swap; and `Identity` (no augmentation).
+
+**Network backbones.**
+**EEGNet** (the canonical baseline), **ShallowConvNet**, **DeepConvNet**, **EEG Conformer**,
+**DBConformer (lab)**, **IFNet**, **CSP-Net (lab)**, **TIE-EEGNet (lab)**, and **KDFNet (lab)**.
+
+**Transfer and adaptation strategies** (vary the learning objective on a fixed EEGNet).
+Organized by the information each paradigm uses:
+
+- *Source-only* (no target data): **ERM** (the no-transfer baseline), **MDMAML (lab)**,
+  **ABAT (lab)**.
+- *Unsupervised domain adaptation* (labeled source + unlabeled target): **MCC**, **CDAN**,
+  **JAN**, **DAN**, **DANN**, **MDD**, **DJP-MMD (lab)**.
+- *Source-free and test-time adaptation*: **ASFA (lab)**, **SHOT**, **T-TIME (lab)**,
+  **DELTA**, **ISFDA**, **SAR**, **PL** (pseudo-labelling), **BN-adapt**, **Tent**,
+  **BFT (lab)**.
+
+**Classical (network-free) track.**
+**CSP-LDA** and **Riemann-MDM** as no-transfer baselines; **MEKT (lab)** and **LSFT (lab)** as
+classical transfer methods on Riemannian tangent-space features.
+
+**Composite.**
+**MVCNet (lab)** — an IFNet backbone with a multi-view contrastive objective (changes two stages
+at once).
+
+**Privacy-preserving / federated / decentralized.**
+Centralized Training (the reference), **FedAvg**, **FedBS (lab)**, **SAFE (lab)**,
+**MSDT (lab)**, and a decentralized-ensemble family that shares only hard predicted labels —
+the lab's **SML-OVR (lab)** and **StackingNet (lab)** alongside established crowd-aggregation
+baselines.
+
+**Multi-seed ensemble.**
+Hard-vote combiners over K seeds of a base algorithm — majority **voting**, the same
+crowd-aggregation baselines, and the lab's **SML / SML-OVR (lab) / StackingNet (lab)**.
+
+<br>
+
+## Quickstart
+
+### Browse the web app — no install, no server
+
+**Live site:** **[sylyoung.github.io/HUST-BCIML](https://sylyoung.github.io/HUST-BCIML/)** &nbsp;—&nbsp; or run it locally:
+
+```bash
+open docs/index.html          # macOS — or simply double-click the file
+```
+
+The data is inlined into the page, so it renders directly from the file system and identically
+when served by GitHub Pages. The application has three tabs:
+
+- **Overview** — what the repository is, the official-lab links, and the featured code
+  repositories.
+- **Benchmark** — the three-dataset leaderboard with per-family explanations.
+- **Papers & Code** — search and filter the paper-to-code gallery.
+
+### Run the benchmark
+
+```bash
+pip install -r requirements.txt
+
+# from the repository root, so that `hustbciml` is importable
+python -m hustbciml.run --list                                                # every plug-in
+python -m hustbciml.run --algorithm EA-EEGNet --dataset Toy --device cpu       # synthetic, no download
+python -m hustbciml.run --algorithm EA-EEGNet --dataset BNCI2014001 --itr 3    # real data, via MOABB
+```
+
+Compose an algorithm on the fly instead of naming a preset:
+
+```bash
+python -m hustbciml.run --aligner EA --augmenter CSDA --backbone DBConformer \
+                        --strategy ERM --head Linear --dataset BNCI2014001 --itr 3
+```
+
+Each run writes `results/<setting>/metrics.json` (per-subject accuracies plus mean/std),
+`predictions.npz`, and the resolved `config.yaml`. See
+[`hustbciml/README.md`](hustbciml/README.md) for the full command reference and
+[`hustbciml/RESULTS.md`](hustbciml/RESULTS.md) for the current numbers.
+
+<br>
+
+## The paper-to-code gallery
+
+The web app is generated from human-curated YAML by a single script with no framework
+dependency.
+
+- **Source of truth** — the files under [`gallery/data/`](gallery/data/):
+  `publications.yml` (the 275 papers), `lab.yml` (bio, anchor project, featured repos), and
+  `benchmark.yml` (the controlled-comparison leaderboard).
+
+- **Generator** — [`gallery/build_site.py`](gallery/build_site.py) compiles those YAML files
+  into `docs/data/*.js`. It requires only PyYAML.
+
+To regenerate the web-app data after editing any YAML under `gallery/data/`:
+
+```bash
+python3 gallery/build_site.py     # requires only PyYAML
+```
+
+<br>
+
+## Repository layout
+
+```
+HUST-BCIML/
+├── docs/                       # THE WEB APP (GitHub Pages source)
+│   ├── index.html
+│   ├── assets/                 # style.css, app.js  (vanilla JS, no framework)
+│   └── data/                   # generated: lab.js, publications.js, benchmark.js
+├── gallery/                    # source of truth for the web app's data
+│   ├── data/
+│   │   ├── publications.yml     # 275 papers (hand-curated)
+│   │   ├── lab.yml              # lab bio, anchor project, featured repos
+│   │   └── benchmark.yml        # controlled-comparison leaderboard
+│   └── build_site.py           # YAML → docs/data/*.js   (requires only PyYAML)
+├── hustbciml/                  # THE BENCHMARK  (see hustbciml/README.md)
+│   ├── run.py                  # python -m hustbciml.run --algorithm EA-EEGNet --dataset BNCI2014001
+│   ├── core/                   # batch, stages (ABCs), registry, pipeline, config, context
+│   ├── exp/                    # exp_basic + one Exp class per protocol
+│   ├── algorithms/             # aligners / augmenters / models / heads / strategies / presets
+│   ├── data_provider/          # datasets, data_factory, splitters, collate
+│   ├── utils/                  # metrics, seed, tools
+│   ├── scripts/                # ensemble, leaderboard, compare, tuning
+│   ├── tests/repro/            # repro_targets.yaml — measured vs. published, per method
+│   ├── docs/                   # glossary, porting guide, per-algorithm cards
+│   └── RESULTS.md              # the full leaderboard, in Markdown
+├── references.bib              # IEEE-style BibTeX for every benchmarked method
+└── requirements.txt
+```
+
+<br>
+
+## Reproduction and measurement integrity
+
+Every number in the benchmark is a **measured** three-seed mean. None is ever hand-set to match
+a paper.
+
+Each number is recorded in
+[`hustbciml/tests/repro/repro_targets.yaml`](hustbciml/tests/repro/repro_targets.yaml) —
+against the paper's own value where the protocol matches, or an expected-behaviour band where it
+differs — together with a per-method note. The algorithm
+[cards](hustbciml/docs/cards/README.md) carry the reported-vs-reproduced table and a
+vendored-code license/provenance audit for each method.
+
+Where hyperparameters were selected, selection was performed on **held-out source subjects
+only**. A small grid over learning rate, training length, and each method's own loss trade-offs
+was scored on source-validation data that never includes the target/test labels; the winning
+configuration's three-seed test number replaced the previous one **only where it improved on
+it**. Selection never touches the reported cohort, so the guarantee that no number is tuned to
+hit a target still holds.
+
+> **Disclaimer.**
+> This benchmark **re-implements** both external baselines and the laboratory's own methods
+> independently.
+>
+> The reported results — baseline reproductions and lab-method numbers alike — **may differ from
+> the original papers and can contain errors**: a protocol mismatch, a faithful-but-imperfect
+> port, or a hyperparameter choice.
+>
+> If you spot a discrepancy, please open an issue or contact the maintainer. Corrections are
+> welcome.
+
+<br>
+
+## Extending the benchmark
+
+Add `hustbciml/algorithms/<group>/<Name>.py` defining a class that conforms to the stage
+abstract base class; it **auto-registers by filename**.
+
+Then compose it with a preset YAML, add a reproduction target once real numbers exist, and write
+an algorithm card. Each new file carries a standard header — author, date, the exact IEEE
+citation, and a link to the original authors' code where one exists.
+
+The full workflow is in the
+[porting guide](hustbciml/docs/porting_guide.md).
+
+<br>
+
+## Featured repositories
+
+The laboratory's flagship repositories are pinned on the [Overview tab](docs/index.html),
+beginning with:
+
+- [**DeepTransferEEG**](https://github.com/sylyoung/DeepTransferEEG) — the transfer-learning
+  workhorse this benchmark grew out of
+- [**TestEnsemble**](https://github.com/sylyoung/TestEnsemble)
+- [**DBConformer**](https://github.com/wzwvv/DBConformer)
+- [**EEGAdversarialBenchmark**](https://github.com/xqchen914/EEGAdversarialBenchmark)
+- [**NT-Benchmark**](https://github.com/chamwen/NT-Benchmark)
+- [**TLBCI**](https://github.com/drwuHUST/TLBCI)
+
+The remaining repositories follow, ordered by GitHub stars.
+
+<br>
+
+## Roadmap
+
+The following directions are planned for future releases.
+
+- **Evaluation protocols** — within-subject and cross-session splits, and an online
+  (streaming) protocol, alongside the current cross-subject LOSO.
+- **Paradigm breadth** — ERP/P300 (with ROC-AUC as the primary metric) and SSVEP, beyond
+  motor imagery.
+- **Citable release** — a versioned, DOI-archived release once the results are frozen.
+
+<br>
+
+## Citation
+
+If the benchmark or gallery is useful in your work, please cite the relevant laboratory papers —
+IEEE-style BibTeX for every benchmarked method is provided in
+[`references.bib`](references.bib) — and link back to this repository.
+
+A versioned, citable release with a DOI is planned.
+
+<br>
+
+## Contact
+
+The benchmark and web app are built and maintained by **Siyang Li** —
+[homepage](https://sylyoung.github.io/) &nbsp;·&nbsp; **lsyyoungll@gmail.com**.
+
+Prof. Dongrui Wu's email address is available in any of the laboratory's publications.
+
+<br>
+
+## Acknowledgements
+
+Datasets are served through [MOABB](https://moabb.neurotechx.com/) (the Mother of All BCI
+Benchmarks).
+
+Ported methods credit their original authors in each file header and in the corresponding
+algorithm card; the crowd-aggregation baselines used in the ensemble and privacy-preserving
+sections are credited, with their references, in
+[`hustbciml/RESULTS.md`](hustbciml/RESULTS.md).
+
+<br>
+
+## License
+
+This project is released under the **MIT License** — see [`LICENSE`](LICENSE) for the
+full text.
+
+The benchmark reimplements or adapts a number of previously published methods. Each
+[algorithm card](hustbciml/docs/cards/README.md) documents that method's code provenance:
+from-scratch reimplementations are covered by this repository's MIT license, while
+implementations adapted from a specific upstream repository retain that project's original
+license terms. Datasets are obtained through their respective providers under their own
+terms of use.
+
+---
+
+<div align="center"><sub>HUST-BCIML · MIT License · Brain-Computer Interface and Machine Learning Laboratory, HUST</sub></div>

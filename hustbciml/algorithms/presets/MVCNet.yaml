@@ -1,0 +1,12 @@
+# MVCNet — Multi-View Contrastive Network (Wang et al. 2025).
+# A full method (not a single-axis change): IFNet CNN backbone trained with
+# multi-view augmentation + cross-view (CVC) and cross-modal (CMC) supervised
+# contrastive losses. At inference it is just IFNet + the linear head.
+aligner: EA
+augmenter: Identity          # the 3 views are generated inside the strategy
+backbone: IFNet
+head: Linear
+strategy: MVCNet
+epochs: 100
+batch_size: 64
+lr: 0.001

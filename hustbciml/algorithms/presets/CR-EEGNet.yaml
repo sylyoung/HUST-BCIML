@@ -1,0 +1,14 @@
+# Channel Reflection (Wang et al. 2024) + EEGNet + Linear, trained with ERM.
+# Augmentation-axis comparison against no augmentation. Channel Reflection is an
+# electrode-space transform, so it must precede any spatial whitening; it is
+# therefore composed with aligner: Identity (raw signals), and the augmentation
+# table holds the aligner at Identity with baseline = no augmentation
+# (NoAlign-EEGNet).
+aligner: Identity
+augmenter: ChannelReflection
+backbone: EEGNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

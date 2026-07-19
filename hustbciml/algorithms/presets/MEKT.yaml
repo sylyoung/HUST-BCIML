@@ -1,0 +1,16 @@
+# MEKT — Manifold Embedded Knowledge Transfer (Zhang & Wu, IEEE TNSRE 2020).
+# Classical, network-free vanilla transfer: per-subject covariance centroid alignment
+# -> Riemannian tangent-space features -> jointly-learned source/target projections
+# (joint-probability MMD + LDA discriminability + target-locality graph + B~=A reg,
+# solved by a generalized eigendecomposition with EM pseudo-label refinement) ->
+# shrinkage-LDA. mode='fit'; the neural backbone/head are unused. The aligner is
+# Identity because MEKT performs its OWN covariance centroid alignment (CA) — EA on
+# the raw signal would double-align.
+aligner: Identity
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: MEKT
+epochs: 1
+batch_size: 32
+lr: 0.001

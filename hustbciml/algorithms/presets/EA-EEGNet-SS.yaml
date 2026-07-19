@@ -1,0 +1,18 @@
+# Single-source EA-EEGNet — the base model of the decentralized privacy-preserving
+# ensemble. Each model trains on ONE subject's EEG only (~288 trials, never shared).
+# It uses the IDENTICAL recipe as Centralized Training (see EA-EEGNet.yaml): the same
+# full-size EEGNet (default F1 4 / D 2 / F2 8, dropout 0.25), EA aligner, Linear head,
+# ERM, Adam, lr 0.001, batch 32, 100 epochs with early stopping. The ONLY difference
+# from Centralized Training is the training set — one subject instead of all pooled
+# sources — so the accuracy gap measures the pure cost of keeping data local, with no
+# confound from a different architecture or optimizer. No augmentation: CSDA is a
+# CROSS-subject wavelet detail-swap, which would need other subjects' trials and thus
+# violate the privacy premise, so it has no place here.
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

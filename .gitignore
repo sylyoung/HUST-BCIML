@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.DS_Store
+.pytest_cache/
+
+# local-only run artifacts and private launch scripts (not for the public repo)
+results/
+relaunch_strat_priv.sh

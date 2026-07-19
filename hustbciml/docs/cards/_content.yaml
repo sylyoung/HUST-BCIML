@@ -1,0 +1,702 @@
+# Per-algorithm card content (documentation prose).
+#
+# Sidecar to hustbciml/tests/repro/repro_targets.yaml. That file is the numeric /
+# provenance registry (measured accuracy, reference range, paper citation, note)
+# and is also consumed by the web app; THIS file holds only the documentation
+# prose that the card generator (scripts/build_cards.py) merges in by key. Keeping
+# them separate means measured numbers live in exactly one place and never drift.
+#
+# Every key here MUST match a key in repro_targets.yaml. Fields:
+#   axis        one of: canonical | backbone | alignment | strategy |
+#               augmentation | composite | classical  (drives card grouping)
+#   role        base | control | method | reference (drives delta wording)
+#   baseline    key whose measured acc is the delta reference (single-axis rows)
+#   reference   key shown as a context number (composite / classical methods)
+#   delta       OPTIONAL authoritative Δacc from compare.py (computed on the
+#               full-precision means). Overrides the generator's
+#               difference-of-displayed-2dp-accuracies only where the two diverge
+#               by 0.01, keeping each card identical to RESULTS.md.
+#   paradigm    task paradigm (all BNCI2014001 rows are MI = motor imagery)
+#   config      the five-stage composition that produced the number
+#   mechanism   2-4 sentences: what the method does (the math / operation)
+#   implementation  code provenance + license posture (the vendored-code audit)
+#
+# Mechanism/implementation prose is sourced from the ported files' docstrings and
+# the cited papers (read during porting); no numbers are restated here.
+
+# ---------------------------------------------------------------- canonical base
+EA-EEGNet:
+  axis: canonical
+  role: base
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · ERM"
+  mechanism: >
+    Euclidean Alignment recenters each subject's trials by the inverse square
+    root of their mean spatial covariance, so every subject shares a common
+    whitened reference frame; EEGNet — a compact depthwise-separable temporal
+    then spatial CNN — classifies the aligned trials with a linear head under
+    ordinary empirical risk minimization. This is the canonical composition, the
+    reference every controlled single-axis delta in the benchmark is measured
+    against.
+  implementation: >
+    Euclidean Alignment and EEGNet refactored from DeepTransferEEG (the lab's own
+    repository, same author) onto the Aligner and Backbone ABCs; no third-party
+    code vendored.
+
+NoAlign-EEGNet:
+  axis: alignment
+  role: control
+  paradigm: MI
+  config: "Identity (no alignment) · no-aug · EEGNet · Linear · ERM"
+  mechanism: >
+    The no-alignment control: identical to the canonical composition but with the
+    aligner replaced by Identity, so EEGNet sees raw per-subject trials. It
+    isolates the contribution of Euclidean Alignment, and is the baseline for the
+    Channel-Reflection augmentation table because that transform is an
+    electrode-space operation and must run before any spatial whitening.
+  implementation: >
+    Identity aligner plus EEGNet; no third-party code.
+
+# ------------------------------------------------------------------- backbones
+EA-DBConformer:
+  axis: backbone
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · DBConformer · Linear · ERM"
+  mechanism: >
+    A dual-branch convolutional transformer. A temporal branch and a spatial
+    branch each tokenize the EA-aligned trial with convolutions, add positional
+    embeddings, and pass the tokens through a multi-head self-attention encoder;
+    channel-attention pooling then fuses the two branches before the linear head.
+    It combines convolutional locality with transformer global context, and leads
+    the backbone axis.
+  implementation: >
+    Adapted from github.com/wzwvv/DBConformer (Ziwei Wang et al. 2025) onto the
+    Backbone ABC, using the paper's default all-branch configuration (channel
+    attention and positional embeddings on); the single-branch and gated-fusion
+    variants are omitted. See the upstream repository for its original license terms.
+
+EA-DeepConvNet:
+  axis: backbone
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · DeepConvNet · Linear · ERM"
+  mechanism: >
+    DeepConvNet stacks four temporal/spatial convolution-plus-pooling blocks —
+    deeper and higher-capacity than EEGNet — trained end-to-end on the EA-aligned
+    trials with a linear head. It stays fully convolutional; the extra depth edges
+    it past EEGNet on this dataset.
+  implementation: >
+    Refactored from the Schirrmeister et al. 2017 architecture onto the Backbone
+    ABC; self-contained, no third-party code vendored.
+
+EA-ShallowConvNet:
+  axis: backbone
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · ShallowConvNet · Linear · ERM"
+  mechanism: >
+    ShallowConvNet is a single temporal convolution followed by a spatial
+    convolution, a square activation, mean pooling and a log — the FBCSP-style
+    band-power pipeline made differentiable — on EA-aligned trials. Deliberately
+    shallow and tuned for the oscillatory band-power that carries motor imagery.
+  implementation: >
+    Refactored from Schirrmeister et al. 2017 onto the Backbone ABC;
+    self-contained.
+
+EA-EEGConformer:
+  axis: backbone
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGConformer · Linear · ERM"
+  mechanism: >
+    EEG Conformer is a convolutional tokenizer (temporal then spatial convolution
+    producing patch tokens) feeding a transformer self-attention encoder and an
+    MLP head, on EA-aligned trials. A largely attention-based backbone; it is
+    data-hungry and carries the largest across-seed variance in the sweep on this
+    small dataset — a faithful below-baseline result, not a bug.
+  implementation: >
+    From-scratch implementation (no lab source in the repository) on the Backbone
+    ABC; self-contained, carries the repository's MIT license.
+
+# ------------------------------------------------------------------- alignment
+RA-EEGNet:
+  axis: alignment
+  role: method
+  baseline: NoAlign-EEGNet
+  paradigm: MI
+  config: "RA · no-aug · EEGNet · Linear · ERM"
+  mechanism: >
+    Riemannian Alignment recenters each subject by the affine-invariant (Fréchet)
+    geometric mean of their trial covariances instead of Euclidean Alignment's
+    arithmetic mean, whitening on the SPD manifold before EEGNet. It is the best
+    aligner here — a marginally better reference than the arithmetic mean.
+  implementation: >
+    From-scratch (no lab source and no pyriemann dependency); the Fréchet mean is
+    computed self-contained on the Aligner ABC.
+
+# -------------------------------------------------------------------- strategies
+MCC:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · MCC"
+  mechanism: >
+    Minimum Class Confusion adds a loss that minimizes the off-diagonal
+    class-confusion of the temperature-rescaled prediction correlation on the
+    unlabeled target, discouraging ambiguous cross-class predictions. It is not
+    adversarial — a single confusion penalty on the target — and it leads the
+    entire benchmark here.
+  implementation: >
+    Ported from the authors' reference implementation onto the Strategy ABC;
+    the upstream reference implementation is MIT-licensed.
+
+CDAN:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · CDAN"
+  mechanism: >
+    Conditional Domain-Adversarial Network is DANN with the domain discriminator
+    conditioned on the multilinear (outer-product) combination of feature and
+    classifier prediction, so it aligns the joint feature-label distribution
+    across domains rather than only the marginal feature distribution.
+  implementation: >
+    Ported from the authors' reference implementation; the upstream reference
+    implementation is MIT-licensed.
+
+T-TIME:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  delta: 3.99            # authoritative (compare.py, full precision); 2dp-subtraction = 3.98
+  paradigm: MI
+  config: "online-EA · no-aug · EEGNet · Linear · TTIME"
+  mechanism: >
+    Test-Time Information Maximization for online motor imagery: the
+    source-trained model adapts on the streaming target by minimizing prediction
+    entropy while maximizing marginal-class diversity (an information-maximization
+    loss), with online incremental Euclidean Alignment updating the reference as
+    each trial arrives. It has the tightest across-seed variance of the strong
+    strategies; a 5-seed prediction ensemble lifts it further (see the Multi-seed
+    ensemble section of RESULTS.md).
+  implementation: >
+    Refactored from DeepTransferEEG (the T-TIME paper's own code, same author)
+    onto the tta-mode Strategy ABC; no third-party code.
+
+DELTA:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · DELTA"
+  mechanism: >
+    DELTA performs entropy minimization with a class-imbalance-corrected diversity
+    term (dynamic online reweighting of classes), which prevents the collapse to
+    majority-class predictions that degrades naive test-time adaptation.
+  implementation: >
+    Ported from DeepTransferEEG tl/delta.py (lab repository, same author); no
+    third-party code.
+
+ISFDA:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · ISFDA"
+  mechanism: >
+    Imbalanced Source-Free Domain Adaptation combines temperature-scaled
+    information maximization with intra-class feature tightening and inter-class
+    separation on pseudo-labeled target features, designed to stay robust under
+    class imbalance. It shows no per-subject collapse here.
+  implementation: >
+    Ported from DeepTransferEEG tl/isfda.py (lab repository), online test-time
+    variant; no third-party code.
+
+JAN:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · JAN"
+  mechanism: >
+    Joint Adaptation Network extends the MMD idea by aligning the joint
+    distribution across multiple layers (feature and softmax) with a joint
+    Maximum Mean Discrepancy, rather than matching each layer's marginal
+    separately. One of the tightest-variance strategies here.
+  implementation: >
+    Ported from the authors' reference implementation; the upstream reference
+    implementation is MIT-licensed.
+
+DAN:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · DAN"
+  mechanism: >
+    Deep Adaptation Network matches source and target feature distributions by
+    minimizing a multi-kernel Maximum Mean Discrepancy (MK-MMD) on the backbone's
+    higher layers, added to the source classification loss.
+  implementation: >
+    Ported from the authors' reference implementation; the upstream reference
+    implementation is MIT-licensed.
+
+SAR:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · SAR"
+  mechanism: >
+    Sharpness-Aware and Reliable test-time adaptation minimizes temperature-scaled
+    prediction entropy over all parameters using a Sharpness-Aware Minimization
+    (SAM) two-step update, so adaptation seeks a flat, stable minimum robust to
+    noisy target batches.
+  implementation: >
+    Ported from DeepTransferEEG tl/sar.py (lab repository). The reliable-sample
+    filter and model-recovery of the full SAR are omitted (disclosed); no
+    third-party code.
+
+EA-DANN:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · DANN"
+  mechanism: >
+    Domain-Adversarial Neural Network trains a domain classifier to separate
+    source from unlabeled-target features while a gradient-reversal layer forces
+    the backbone to produce domain-invariant features. It is transductive: the
+    unlabeled target is used during source training.
+  implementation: >
+    Refactored from DeepTransferEEG (lab repository, same author) onto the Strategy
+    ABC; no third-party code.
+
+PL:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · PL"
+  mechanism: >
+    Pseudo-Label self-training at test time turns the model's own confident
+    predictions on target trials into training targets for a few online gradient
+    steps — simple confirmation-based adaptation.
+  implementation: >
+    Ported from DeepTransferEEG tl/pl.py (lab repository); no third-party code.
+
+SHOT:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · SHOT"
+  mechanism: >
+    Source Hypothesis Transfer is source-free: the source classifier head is
+    frozen and only the feature extractor is adapted on the target, by information
+    maximization plus self-supervised pseudo-labeling, with no access to source
+    data at adapt time. It ties ABAT here.
+  implementation: >
+    Ported from DeepTransferEEG tl/shot.py (lab repository), the
+    information-maximization variant; no third-party code.
+
+ABAT:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · ABAT"
+  mechanism: >
+    Alignment-Based Adversarial Training, after a clean warmup, perturbs each
+    batch with channel-standard-deviation-scaled projected gradient descent (PGD)
+    and trains on the adversarial examples, hardening the decision boundary over
+    the EA-aligned inputs. The only change from ERM is the adversarial inner loop,
+    which keeps the strategy-axis comparison controlled.
+  implementation: >
+    Adapted from github.com/xqchen914/ABAT (Chen et al. 2024); EEGNet's MaxNorm
+    weight constraint is omitted so that the adversarial training is the sole
+    difference from ERM. See the upstream repository for its original license terms.
+
+PAT:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · Scaling · EEGNet · Linear · PAT"
+  mechanism: >
+    Privacy-preserving Adversarial Transfer extends ABAT: after a clean warmup,
+    each Euclidean-aligned batch is first amplitude-scaled (multiplied by 1±0.05)
+    and then perturbed by a global-epsilon L∞ projected gradient descent (PGD)
+    attack with a noisy uniform initialization (eps 0.03, alpha 0.005, 10 steps),
+    training on the adversarial examples. The target is never used, so training
+    stays source-only — the sense in which it is privacy-preserving — and the only
+    change from ERM is the augmentation-plus-adversarial inner loop.
+  implementation: >
+    Adapted from github.com/xqchen914/PAT (Chen et al., Fundamental Research 2026,
+    CC BY). Only the benign-accuracy training strategy is ported, on par with ABAT;
+    the paper's full federated / robustness protocol and its five-dataset,
+    three-scenario evaluation are out of scope for this single-axis row. EEGNet's
+    MaxNorm constraint is omitted so the augmentation and adversarial training are
+    the sole difference from ERM. See the upstream repository for its license terms.
+
+MDD:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · MDD"
+  mechanism: >
+    Margin Disparity Discrepancy bounds the target error by a margin-based
+    disparity between the main classifier and an adversarial auxiliary
+    classifier, minimized through a gradient-reversal step. It has the tightest
+    across-seed variance in the whole sweep.
+  implementation: >
+    Ported from the authors' reference implementation with the gradient-reversal
+    step restored; the upstream reference implementation is MIT-licensed.
+
+BN-adapt:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · BNAdapt"
+  mechanism: >
+    BatchNorm adaptation recomputes the BatchNorm running mean and variance from
+    the target batch — no gradient step and no parameter update — correcting
+    covariate shift by re-normalizing the features with target statistics.
+  implementation: >
+    Refactored from the Nado et al. 2020 / Schneider et al. 2020 BN-adapt recipe
+    onto the Strategy ABC; self-contained.
+
+BFT:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · BFT (test-time, no gradient)"
+  mechanism: >
+    Backpropagation-Free Transformations (the BFT-A variant) pass each trial
+    through K label-preserving transforms at test time and aggregate the
+    predictions with a temperature-sharpened weighted softmax, with no gradient
+    step. It adapts by test-time-augmentation aggregation rather than by updating
+    parameters.
+  implementation: >
+    Adapted from Li et al. 2026 (arXiv:2601.07556). DISCLOSED APPROXIMATION: the
+    paper's learned learning-to-rank weighting module is replaced by a
+    confidence-based reliability weight, because the ranker's synthetic-data
+    training is unspecified in the public text. The backprop-free multi-transform
+    structure and the aggregation are faithful; the specific learned ranker is not
+    — revisit against the authors' code when released. See the upstream repository
+    for its original license terms.
+
+Tent:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · Tent"
+  mechanism: >
+    Test-time entropy minimization updates only the BatchNorm affine parameters on
+    the target stream to minimize prediction entropy, leaving all other weights
+    frozen — the lightest test-time-adaptation baseline. It sits at the ERM
+    baseline here, as expected for an entropy-only, BN-parameter method.
+  implementation: >
+    Ported from DeepTransferEEG's test-time-adaptation baselines (lab repository);
+    no third-party code.
+
+# ------------------------------------------------------------------ augmentation
+CR-EEGNet:
+  axis: augmentation
+  role: method
+  baseline: NoAlign-EEGNet
+  delta: 3.88           # authoritative (compare.py, full precision); 2dp-subtraction = 3.89
+  paradigm: MI
+  config: "Identity (no alignment) · ChannelReflection · EEGNet · Linear · ERM"
+  mechanism: >
+    Channel Reflection augmentation mirrors each trial across the sagittal midline
+    (a left/right electrode swap) and swaps the left/right motor-imagery label,
+    doubling the training set with anatomically valid copies. Because it is an
+    electrode-space transform it must precede any spatial whitening, so it is
+    composed with the Identity aligner (its baseline is therefore the
+    no-alignment control).
+  implementation: >
+    From-scratch (no lab source in the repository) with a montage left/right
+    symmetry map; self-contained, carries the repository's MIT license. Two-class motor imagery only.
+
+CSDA-EEGNet:
+  axis: augmentation
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · CSDA · EEGNet · Linear · ERM"
+  mechanism: >
+    Cross-Subject Detail-swap Augmentation applies a db4 discrete wavelet
+    transform to split each EA-aligned trial into approximation and detail bands,
+    then swaps the detail (high-frequency) coefficients between same-class trials
+    from different subjects and reconstructs — synthesizing cross-subject variants
+    that preserve class identity. Because a source batch spans many subjects, the
+    same-class in-batch swap preserves the cross-subject mechanism under the LOSO
+    contract.
+  implementation: >
+    Adapted from github.com/wzwvv/CSDA (Ziwei Wang et al. 2025, Knowledge-Based
+    Systems), the DWTaug variant only (HHTaug omitted); requires PyWavelets.
+    See the upstream repository for its original license terms.
+
+# --------------------------------------------------------------------- composite
+MVCNet:
+  axis: backbone
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · multi-view aug · IFNet · Linear · MVCNet (CVC + CMC contrastive)"
+  mechanism: >
+    Multi-View Contrastive Network is a composite algorithm: it pairs an IFNet
+    backbone (an interactive frequency-domain CNN) with multi-view training —
+    several augmented views per trial supervised by cross-view (CVC) and
+    cross-modal (CMC) supervised-contrastive losses alongside classification. At
+    inference only IFNet and the linear head run. Because it changes more than one
+    stage it is not a single-axis controlled row; it is shown against the
+    reference as a context number.
+  implementation: >
+    Adapted from github.com/wzwvv/MVCNet (Wang et al. 2025, Knowledge-Based
+    Systems) with the IFNet backbone (Wang et al. 2023, IEEE TNSRE); the
+    contrastive loss weights lamda1 and lamda2 are set to 1.0 (no hardcoded
+    default upstream). See the upstream repository for its original license terms.
+
+# --------------------------------------------------------------------- classical
+CSP-LDA:
+  axis: classical
+  role: reference
+  reference: EA-EEGNet
+  paradigm: MI
+  config: "EA · CSP spatial filters · (no backbone) · LDA · fit"
+  mechanism: >
+    Common Spatial Patterns plus Linear Discriminant Analysis. CSP learns spatial
+    filters that maximize the band-power variance ratio between the two
+    motor-imagery classes on the EA-aligned trials; the log-variance features feed
+    an LDA classifier. The classic MI pipeline — network-free and deterministic —
+    and it beats the deep EA-EEGNet reference on this dataset.
+  implementation: >
+    CSP from MNE and LDA from scikit-learn on the fit-mode Strategy and Head ABCs;
+    both are standard BSD-3 libraries.
+
+Riemann-MDM:
+  axis: classical
+  role: reference
+  reference: EA-EEGNet
+  paradigm: MI
+  config: "EA · covariance · (no backbone) · MDM · fit"
+  mechanism: >
+    Minimum Distance to Riemannian Mean represents each trial by its spatial
+    covariance matrix and classifies by the smallest affine-invariant Riemannian
+    distance to each class's geometric-mean covariance. Network-free and
+    deterministic.
+  implementation: >
+    Uses pyriemann on the fit-mode ABCs; a standard BSD-3 library.
+
+# --------------------------------------------------- lab-method ports (2026-07-13)
+CSP-Net:
+  axis: backbone
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · CSPNet · Linear · ERM"
+  mechanism: >
+    A standard EEGNet whose depthwise spatial convolution is initialized with
+    Common Spatial Pattern filters estimated from the EA-aligned source data and
+    then frozen — the CSP-Net-2 configuration — so the spatial layer is the CSP
+    solution while the temporal and separable convolutions train normally. It
+    injects classical, well-understood CSP spatial filtering into the network as a
+    structural prior, and leads the backbone axis.
+  implementation: >
+    Adapted from github.com/jxgogo/CSP-Net (Jiang et al. 2024, Knowledge-Based
+    Systems) onto the Backbone ABC as CSP-Net-2-fix: the depthwise spatial-conv
+    weights are overwritten with mne CSP filters (average-power, epoch covariance)
+    computed by a data-dependent init hook on the training split, then frozen; the
+    eight CSP filters are tiled to fill the spatial-conv output channels, matching
+    the source. CSP-Net-1 (a prepended CSP layer) is the non-default variant.
+    See the upstream repository for its original license terms.
+
+DJP-MMD:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · DJPMMD"
+  mechanism: >
+    Discriminative Joint Probability Maximum Mean Discrepancy adds a discrepancy
+    over the joint P(X, Y) — using source labels and target pseudo-labels — that
+    increases between-class transfer distance while decreasing within-class
+    distance, added to the source cross-entropy and trained transductively (the
+    unlabeled target is used during source training). It is the same gradient
+    domain-adaptation family as DAN, JAN and MDD.
+  implementation: >
+    Adapted from github.com/chamwen/DaNN_DJP (Zhang & Wu, IJCNN 2020) onto the
+    transductive Strategy ABC; the paper's DJP-MMD loss (mu = 0.1) is applied to
+    EEGNet features. The paper benchmarks only image domains, so this is a faithful
+    adaptation of the loss to EEG (see the note) — no third-party code beyond the
+    ported loss.
+
+LSFT:
+  axis: classical
+  role: method
+  reference: EA-EEGNet
+  paradigm: MI
+  config: "own RA · tangent-space features · (no backbone) · LDA+LR voting + DJP-MMD adaptation · fit"
+  mechanism: >
+    Lightweight Source-Free Transfer keeps no raw source data at transfer time:
+    pretrained source classifiers vote to pseudo-label the target, the confident
+    (low-disagreement) target trials form a virtual intermediate source, and an
+    iterative DJP-MMD subspace adaptation with pseudo-label refinement produces the
+    final target predictions. Everything runs on classical Riemannian tangent-space
+    features; it is transductive (it adapts to the unlabeled target), which
+    distinguishes it from the no-transfer classical baselines.
+  implementation: >
+    Adapted from github.com/chamwen/LSFT (Zhang & Wu, IEEE TCDS 2022), the CA+LSFT
+    (shrinkage-LDA + logistic-regression voting) configuration, onto the fit-mode
+    Strategy ABC: fit trains the source voters and discards source raw data
+    (source-free); predict does the voting, virtual-source selection, and iterative
+    feature adaptation on the target. LSFT does its own Riemannian centroid
+    alignment, so the preset aligner is Identity. Minimal disclosed guards cover
+    degenerate virtual-source selection. Requires pyriemann + scikit-learn.
+
+MSDT:
+  axis: classical
+  role: method
+  reference: EA-EEGNet
+  paradigm: MI
+  config: "own tangent map · tangent-space features · (no backbone) · per-source MLP + IM adaptation · fit"
+  mechanism: >
+    Multi-Source Decentralized Transfer trains one small MLP per source subject on
+    Riemannian tangent-space features (decentralized — no source data is pooled).
+    At transfer time only the source models are shared: the target adapts each
+    source feature extractor (classifiers frozen) by information maximization —
+    minimize per-instance entropy, maximize batch diversity — plus a
+    source-inconsistency term that pulls the sources into agreement, with
+    entropy-based per-source domain weighting; the prediction is the
+    domain-weighted ensemble. It is multi-source and source-free.
+  implementation: >
+    Adapted from github.com/chamwen/MSDT (Zhang, Wang & Wu, IEEE TNSRE 2022), the
+    gray-box MSDT-G variant, onto the fit-mode Strategy ABC. Per the LOSO protocol
+    each other subject is one source domain. The upstream mixup is a no-op in the
+    authors' code (its gradients are wiped before the optimizer step) and is
+    omitted here — reproducing the effective optimization, not "fixing" it
+    (disclosed). Made device-agnostic; the tangent map is the only alignment, so
+    the preset aligner is Identity. Requires pyriemann + scikit-learn.
+
+# ------------------------------------------------- new methods (2026-07-18)
+EA-TIEEEGNet:
+  axis: backbone
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · TIEEEGNet · Linear · ERM"
+  mechanism: >
+    TIE-EEGNet is EEGNet with its first temporal convolution replaced by a
+    time-information-enhanced (TIE) convolution: a fixed sinusoidal time-positional
+    embedding is added to the trial before temporal filtering, injecting explicit
+    within-trial timing information that plain EEGNet lacks. Everything downstream —
+    the depthwise spatial convolution, separable convolution and linear head — is
+    unchanged, so it is a controlled one-block change to the backbone. Caveat (domain
+    fit): TIE-EEGNet was developed for seizure subtype classification, not motor
+    imagery — its time-positional design targets seizure EEG and may not be
+    well-suited to MI, consistent with it only matching the EEGNet baseline here.
+  implementation: >
+    Refactored from Peng et al. 2022 (IEEE TNSRE) onto the Backbone ABC. The paper
+    targets seizure subtype classification; here the architecture is evaluated on the
+    same EA + ERM motor-imagery setup as the other backbones, at the benchmark EEGNet
+    capacity (F1 4 / F2 8; the paper's F1 8 / F2 16 is the reference config). See the upstream repository for its
+    original license terms.
+
+EA-KDFNet:
+  axis: backbone
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · KDFNet · Linear · ERM"
+  mechanism: >
+    KDFNet (knowledge-data fusion network) mirrors the FBCSP pipeline inside a CNN: a
+    windowed-sinc FIR filter bank supplies fixed, data-free band-pass temporal filters,
+    per-band Common Spatial Pattern filters estimated on the EA-aligned source
+    initialize the spatial layer, and log-variance features feed the head — then the
+    whole network is fine-tuned end-to-end. It fuses classical FBCSP prior knowledge
+    with data-driven training.
+  implementation: >
+    Adapted from Jiang et al. 2026 (Information Sciences) onto the Backbone ABC:
+    windowed-sinc filter-bank init (data-free) and per-band CSP spatial init
+    (data-dependent, on the training split), fine-tuned end-to-end. The paper's head
+    learning-rate init is omitted (the linear head trains from scratch, documented).
+    See the upstream repository for its original license terms.
+
+MEKT:
+  axis: classical
+  role: method
+  reference: EA-EEGNet
+  paradigm: MI
+  config: "own CA · tangent-space features · (no backbone) · shrinkage-LDA · fit"
+  mechanism: >
+    Manifold Embedded Knowledge Transfer is a network-free classical transfer method.
+    Each subject's trial covariances are centroid-aligned (CA) and mapped to Riemannian
+    tangent-space feature vectors (source subjects pooled). A low-dimensional
+    domain-adaptation projection is then learned jointly for source and target —
+    minimizing the joint-probability distribution shift while preserving source
+    discriminability and target locality, coupled so the two projections stay close —
+    solved as a generalized eigenproblem with EM pseudo-label refinement. A
+    shrinkage-LDA on the projected features classifies the target. Deterministic
+    across seeds.
+  implementation: >
+    Adapted from Zhang & Wu 2020 (IEEE TNSRE) onto the fit-mode Strategy ABC: pyriemann
+    for the covariance and tangent map, scikit-learn shrinkage-LDA, and the Sec-III-C
+    projection ported from the authors' code (chamwen/MEKT) via TBC-TJU/MetaBCI's
+    mekt_kernel (MIT), with per-subject source CA. MEKT does its own centroid alignment,
+    so the preset aligner is Identity; target features are only ever unlabeled
+    (pseudo-labels come from the classifier, never target labels). Projection
+    hyperparameters (subspace dim, alpha/beta/rho, iterations) default to the MetaBCI
+    reference and are overridable via ctx.cfg.hp. Requires pyriemann + scikit-learn + scipy.
+
+MDMAML:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · MDMAML"
+  mechanism: >
+    MDMAML meta-learns an EEGNet initialization across the source subjects with
+    domain-paired first-order model-agnostic meta-learning (MAML): each episode pairs
+    source domains (M/2 pairs), takes one inner adaptation step on one domain and a
+    meta-update from the other, so the learned weights transfer quickly across
+    subjects. At test time the meta-trained network is applied to the target directly,
+    with no target fine-tuning (forward-only) — a privacy-preserving transfer that
+    never touches target data during training.
+  implementation: >
+    Adapted from Li et al. 2022 (IEEE Computational Intelligence Magazine) onto the
+    Strategy ABC. First-order MAML with an Adam meta-optimizer for the outer loop (a
+    plain-SGD outer loop under-trained EEGNet to near chance; the Adam meta-optimizer
+    is the fix). Many meta-updates per epoch (steps = mean-domain-length // batch). No
+    third-party code beyond the ported meta-loop.
+
+ASFA:
+  axis: strategy
+  role: method
+  baseline: EA-EEGNet
+  paradigm: MI
+  config: "EA · no-aug · EEGNet · Linear · ASFA"
+  mechanism: >
+    ASFA is source-free adaptation: after ERM source training the classifier head is
+    frozen and only the feature extractor is adapted on the unlabeled target, by
+    reducing a Tsallis-entropy prediction-uncertainty objective (temperature rescale,
+    per-instance entropy reweighting, per-class normalization) together with a
+    consistency regularizer from a DropMin auxiliary head. No source data is kept at
+    adapt time.
+  implementation: >
+    Adapted from Xia et al. 2022 (IEEE TBME) onto the Strategy ABC. The paper's
+    backbone is a Riemannian tangent-space MLP; here the adaptation OBJECTIVE is ported
+    onto EA-EEGNet so the comparison stays on the shared backbone (disclosed). SGD, lr
+    0.01, 10 epochs; no third-party code beyond the ported objective.

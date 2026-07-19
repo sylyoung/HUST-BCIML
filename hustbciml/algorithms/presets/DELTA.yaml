@@ -1,0 +1,18 @@
+# DELTA: degradation-free fully test-time adaptation (Zhao et al., ICLR 2023).
+# Online entropy minimization plus a class-imbalance-corrected marginal-diversity
+# term: Dynamic Online re-weighting (DOT) inverse-frequency weights each trial by
+# a running EMA estimate of the target class distribution, so the diversity term
+# is not dominated by the over-represented class. EA-aligned target stream +
+# EEGNet + Linear.
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: DELTA
+epochs: 100
+batch_size: 32
+lr: 0.001
+test_batch: 8
+steps: 1
+stride: 1
+temperature: 2.0

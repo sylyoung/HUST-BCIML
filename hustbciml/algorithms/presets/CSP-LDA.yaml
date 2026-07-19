@@ -1,0 +1,11 @@
+# CSP + LDA: the classical MI baseline. EA-aligned trials -> Common Spatial
+# Patterns (10 components) -> Linear Discriminant Analysis. No network / no
+# gradient loop (strategy mode='fit'); backbone/head are placeholders, unused.
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: CSP_LDA
+epochs: 1
+batch_size: 32
+lr: 0.001

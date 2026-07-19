@@ -1,0 +1,17 @@
+# ISFDA: Imbalanced Source-Free Domain Adaptation (online TTA variant).
+# Online entropy/information-maximization adaptation (temperature-scaled) plus an
+# intra-class tightening / inter-class separation term over pseudo-labeled target
+# features, with a secondary-label rule for ambiguous samples to handle target
+# class imbalance. Binary only. EA-aligned target stream + EEGNet + Linear.
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: ISFDA
+epochs: 100
+batch_size: 32
+lr: 0.001
+test_batch: 8
+steps: 1
+stride: 1
+temperature: 2.0

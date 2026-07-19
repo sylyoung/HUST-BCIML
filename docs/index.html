@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HUST BCIML — EEG-Decoding Benchmark &amp; Paper-to-Code Gallery</title>
+  <meta name="description" content="Brain-Computer Interface & Machine Learning Laboratory (Prof. Dongrui Wu, HUST): the lab's open-source code home — a unified EEG-decoding benchmark and a paper-to-code gallery.">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#overview" id="brand">HUST BCIML</a>
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-view="overview">Overview</button>
+      <button class="tab" data-view="benchmark">Benchmark</button>
+      <button class="tab" data-view="papers">Papers &amp; Code</button>
+    </nav>
+    <div class="header-links" id="header-links"></div>
+  </header>
+
+  <main>
+    <section id="overview" class="view active"></section>
+    <section id="benchmark" class="view"></section>
+    <section id="papers" class="view"></section>
+  </main>
+
+  <footer class="site-footer" id="footer"></footer>
+
+  <!-- data is inlined (window.LAB / PUBLICATIONS / BENCHMARK) so this page opens
+       directly as a local file with no server, and unchanged on GitHub Pages. -->
+  <script src="data/lab.js"></script>
+  <script src="data/publications.js"></script>
+  <script src="data/benchmark.js"></script>
+  <script src="assets/i18n.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

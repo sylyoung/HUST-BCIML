@@ -1,0 +1,10 @@
+# MCC: EA-aligned EEGNet trained with source cross-entropy plus a minimum
+# class-confusion loss on unlabeled target predictions (Jin et al., ECCV 2020).
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: MCC
+epochs: 100
+batch_size: 32
+lr: 0.001

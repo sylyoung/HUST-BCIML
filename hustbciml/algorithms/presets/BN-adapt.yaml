@@ -1,0 +1,13 @@
+# BN-adapt: EA-aligned EEGNet source model; at test time only the BatchNorm
+# running statistics are re-estimated on the target stream (no gradient step).
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: BNAdapt
+epochs: 100
+batch_size: 32
+lr: 0.001
+test_batch: 8
+steps: 1
+stride: 1

@@ -1,0 +1,10 @@
+# JAN: EA-aligned EEGNet trained with source cross-entropy plus a joint
+# multi-kernel MMD over (features, softmax predictions) (Long et al., ICML 2017).
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: JAN
+epochs: 100
+batch_size: 32
+lr: 0.001

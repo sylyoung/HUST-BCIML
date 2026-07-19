@@ -1,0 +1,9 @@
+# EA-aligned EEGNet trained domain-adversarially (DANN) for cross-subject transfer.
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: DANN
+epochs: 100
+batch_size: 32
+lr: 0.001

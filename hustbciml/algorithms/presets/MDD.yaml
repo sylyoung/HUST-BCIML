@@ -1,0 +1,11 @@
+# MDD: EA-aligned EEGNet with margin disparity discrepancy — an auxiliary
+# main/adversarial head pair on the features, minimized through a warm-start
+# gradient-reversal layer stepped each iteration (Zhang et al., ICML 2019).
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: MDD
+epochs: 100
+batch_size: 32
+lr: 0.001

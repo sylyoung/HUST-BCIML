@@ -1,0 +1,14 @@
+# SHOT: source hypothesis transfer / source-free domain adaptation
+# (Liang et al., ICML 2020). Train an ERM source model, then adapt only the
+# feature extractor to the unlabeled target by information maximization, with the
+# classifier head frozen. Offline (non-streaming), source-free; EA-aligned target
+# + EEGNet + Linear. (epochs = source-training epochs; the SHOT-IM adaptation
+# runs a fixed few epochs at a reduced lr, set inside the strategy.)
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: SHOT
+epochs: 100
+batch_size: 32
+lr: 0.001

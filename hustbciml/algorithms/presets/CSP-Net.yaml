@@ -1,0 +1,12 @@
+# EA + CSP-Net (Jiang et al., Knowledge-Based Systems 2024) + Linear, trained with ERM.
+# Backbone-axis comparison: EEGNet whose depthwise spatial conv is initialized
+# with CSP filters from the EA-aligned source and frozen (CSP-Net-2 default),
+# on the same EA + ERM setup as the other backbones.
+aligner: EA
+augmenter: Identity
+backbone: CSPNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

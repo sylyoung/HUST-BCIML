@@ -1,0 +1,12 @@
+# EA + CSDA (DWTaug, Wang et al. 2025) augmentation + EEGNet, trained with ERM.
+# Augmentation-axis comparison: db4 wavelet cross-subject detail-swap augmentation
+# on the canonical EA-aligned EEGNet+ERM setup. Baseline for the gain = EA-EEGNet
+# (same aligner/backbone/strategy, no augmentation).
+aligner: EA
+augmenter: CSDA
+backbone: EEGNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

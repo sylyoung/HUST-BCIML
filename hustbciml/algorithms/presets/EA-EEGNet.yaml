@@ -1,0 +1,10 @@
+# EA + EEGNet + Linear head, trained with ERM (supervised source-only).
+# The cross-subject transfer baseline of DeepTransferEEG (He & Wu 2020 EA).
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

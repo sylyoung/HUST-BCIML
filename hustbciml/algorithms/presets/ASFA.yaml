@@ -1,0 +1,15 @@
+# ASFA — Augmentation-based Source-Free Adaptation (Xia et al., IEEE TBME 2022).
+# Source-free UDA: an EA-EEGNet source model (ERM), then freeze the classifier and
+# adapt only the feature extractor to the unlabeled target with a Tsallis-entropy
+# uncertainty loss (T=2 rescaling, entropy sample-reweighting, class normalization)
+# plus consistency regularization over a DropMin-perturbed auxiliary head. Runs on
+# the benchmark's EA-EEGNet so it is comparable to SHOT / ISFDA / DELTA (the paper's
+# own backbone is a Riemannian tangent-space MLP; the source-free objective is ported).
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: ASFA
+epochs: 100
+batch_size: 32
+lr: 0.001

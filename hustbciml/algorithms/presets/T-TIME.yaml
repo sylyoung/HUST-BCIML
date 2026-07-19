@@ -1,0 +1,14 @@
+# T-TIME: EA-aligned EEGNet source model, adapted online at test time by
+# test-time information maximization (Li et al., IEEE TBME).
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: TTIME
+epochs: 100
+batch_size: 32
+lr: 0.001
+test_batch: 8
+steps: 1
+stride: 1
+temperature: 2.0

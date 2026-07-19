@@ -1,0 +1,16 @@
+# SAFE — Secure and Accurate Federated Learning (Jia et al., arXiv 2026).
+# Federated learning + LBSN (local batch-specific BN) + FAT (single-step FGSM) + AWP
+# (adversarial weight perturbation) for privacy + adversarial robustness. Built on
+# FedBS; differs only by dropping SAM, adding FAT+AWP, and running 100 rounds (fixed
+# in the SAFE strategy). EA-aligned EEGNet, one shared backbone with the centralized
+# reference; lr 0.001 / batch 32 / test_batch 8 match the shared scenario (the paper's
+# own is SGD lr 0.005, kept as the reference range).
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: SAFE
+batch_size: 32
+lr: 0.001
+weight_decay: 0.0
+test_batch: 8

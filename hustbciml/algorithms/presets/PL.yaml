@@ -1,0 +1,13 @@
+# PL: EA-aligned EEGNet source model, adapted online at test time by
+# pseudo-label self-training on a sliding batch.
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: PL
+epochs: 100
+batch_size: 32
+lr: 0.001
+test_batch: 8
+steps: 1
+stride: 1

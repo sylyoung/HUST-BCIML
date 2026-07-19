@@ -1,0 +1,12 @@
+# ABAT — Alignment-Based Adversarial Training (Chen et al. 2024).
+# Strategy-axis comparison vs ERM on the canonical EA + EEGNet setup: same
+# aligner/backbone/head, differing only in the adversarial (PGD, channel-std-
+# scaled) training procedure.
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: ABAT
+epochs: 100
+batch_size: 32
+lr: 0.001

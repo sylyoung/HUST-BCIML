@@ -1,0 +1,11 @@
+# Riemannian MDM: EA-aligned trials -> spatial covariance matrices -> Minimum
+# Distance to (Riemannian) Mean classifier (Barachant et al., 2012), via
+# pyriemann. Classical, network-free (strategy mode='fit'); backbone/head unused.
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: RiemannMDM
+epochs: 1
+batch_size: 32
+lr: 0.001

@@ -1,0 +1,23 @@
+# BFT — Backpropagation-Free Transformations (Li et al. 2026), BFT-A variant.
+# Test-time strategy that trains its OWN (t-1)-second EA-EEGNet source WITH
+# Channel-Reflection augmentation plus a reliability predictor, then does the
+# backprop-free K=12 real-transformation test phase (reliability-weighted,
+# temperature-sharpened, no gradient step). Strategy-axis TTA entry.
+#
+# augmenter: Identity -> BFT does its OWN training augmentation internally (see
+#   BFT.py ``_bft_train``): the paper's on-the-fly random mix of 14 transforms, one
+#   drawn per trial per epoch (Identity, Scale x3, Noise, Freq x2, Slide x5, plus the
+#   label-aware Channel Reflection and DWT/CSDA). Channel Reflection is applied only
+#   on left/right-hand datasets (it is a two-class L/R transform); on right-hand-vs-
+#   feet data (BNCI2014002/2015001) it is dropped so the label swap cannot poison a
+#   non-left/right task. So the preset augmenter stage is a no-op for BFT.
+# epochs 200: the paper's source-training budget (early-stopped on held-out source).
+# bft_temp (0.25) and bft_lp_epochs (20) default in code; override via --hp.
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: BFT
+epochs: 200
+batch_size: 32
+lr: 0.001
