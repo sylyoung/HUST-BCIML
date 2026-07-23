@@ -6,7 +6,7 @@
 # Reference (IEEE BibTeX):
 #   @InProceedings{Zhang2019,
 #     author    = {Zhang, Yuchen and Liu, Tianle and Long, Mingsheng and Jordan, Michael I.},
-#     booktitle = {Proc. Int'l Conf. Machine Learning},
+#     booktitle = {Proceedings of the International Conference on Machine Learning},
 #     title     = {Bridging Theory and Algorithm for Domain Adaptation},
 #     year      = {2019},
 #     pages     = {7404-7413},

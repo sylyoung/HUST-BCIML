@@ -6,7 +6,7 @@
 # Reference (IEEE BibTeX):
 #   @InProceedings{Li2021,
 #     author    = {Li, Xinhao and Li, Jingjing and Zhu, Lei and Wang, Guoqing and Huang, Zi},
-#     booktitle = {Proc. ACM Int'l Conf. Multimedia},
+#     booktitle = {Proceedings of the ACM International Conference on Multimedia},
 #     title     = {Imbalanced Source-Free Domain Adaptation},
 #     year      = {2021},
 #     pages     = {3330-3339},

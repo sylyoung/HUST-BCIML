@@ -5,7 +5,7 @@
 # Reference (IEEE BibTeX):
 #   @Article{Zhang2023,
 #     author  = {Zhang, Wen and Wu, Dongrui},
-#     journal = {IEEE Trans. Cognitive and Developmental Systems},
+#     journal = {IEEE Transactions on Cognitive and Developmental Systems},
 #     title   = {Lightweight Source-Free Transfer for Privacy-Preserving Motor Imagery Classification},
 #     year    = {2023},
 #     number  = {2},

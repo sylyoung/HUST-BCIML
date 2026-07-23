@@ -1,0 +1,13 @@
+# Channel-symmetry augmentation + EEGNet + Linear, trained with ERM (no aligner).
+# Symm reflects left/right electrodes WITHOUT swapping the label. Like Channel
+# Reflection it is an electrode-space transform, so it runs on raw signals
+# (aligner: Identity). It is the prior-art contrast to Channel Reflection: the
+# gap between Symm-EEGNet and CR-EEGNet measures the value of the label swap.
+aligner: Identity
+augmenter: Symm
+backbone: EEGNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

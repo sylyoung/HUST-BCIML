@@ -1,0 +1,11 @@
+# EA + Fourier-surrogate augmentation + EEGNet, trained with ERM.
+# Augmentation-axis baseline: phase-randomized Fourier surrogate (Schwabedal et
+# al. 2018) on the EA-aligned EEGNet+ERM setup. Compare against EA-EEGNet.
+aligner: EA
+augmenter: FSurr
+backbone: EEGNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

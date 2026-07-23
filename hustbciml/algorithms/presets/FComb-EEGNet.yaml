@@ -1,0 +1,11 @@
+# EA + frequency-recombination augmentation + EEGNet, trained with ERM.
+# Augmentation-axis baseline: DCT-band recombination across same-class trials
+# (Zhao et al. 2022) on the EA-aligned EEGNet+ERM setup. Compare against EA-EEGNet.
+aligner: EA
+augmenter: FComb
+backbone: EEGNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

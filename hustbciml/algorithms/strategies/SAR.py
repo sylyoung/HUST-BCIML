@@ -7,7 +7,7 @@
 # Reference (IEEE BibTeX):
 #   @InProceedings{Niu2023,
 #     author    = {Niu, Shuaicheng and Wu, Jiaxiang and Zhang, Yifan and Wen, Zhiquan and Chen, Yaofo and Zhao, Peilin and Tan, Mingkui},
-#     booktitle = {Int'l Conf. Learning Representations},
+#     booktitle = {International Conference on Learning Representations},
 #     title     = {Towards Stable Test-Time Adaptation in Dynamic Wild World},
 #     year      = {2023},
 #   }

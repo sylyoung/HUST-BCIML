@@ -14,7 +14,7 @@ window.BENCHMARK = {
         "classes": "2-class",
         "chance": "50%",
         "trials": "288 / session",
-        "role": "Left vs right hand (two-class, chance 50%) for every table, including the privacy-preserving and ensemble families. The native dataset is four-class (both hands, feet, tongue); the benchmark uses its two-class left/right subset throughout, and the four-class variant stays available in code."
+        "role": "Left vs right hand (two-class, chance 50%) for every table, including the privacy-preserving and ensemble families. The native dataset is four-class (both hands, feet, tongue). The benchmark uses its two-class left/right subset throughout, and the four-class variant stays available in code."
       },
       {
         "name": "BNCI2014002",
@@ -40,7 +40,7 @@ window.BENCHMARK = {
   },
   "library": {
     "title": "A unified, reproducible EEG-decoding benchmark",
-    "tagline": "An algorithm is a named composition of plug-in stages — an aligner, an augmenter and a backbone, trained under a chosen learning objective, with an optional ensemble that aggregates several models. Every controlled comparison varies one stage while the rest stay fixed.",
+    "tagline": "An algorithm is a named composition of plug-in stages, namely an aligner, an augmenter and a backbone, trained under a chosen learning objective, with an optional ensemble that aggregates several models. Every controlled comparison varies one stage while the rest stay fixed.",
     "pipeline": [
       "Aligner",
       "Augmenter",
@@ -57,7 +57,7 @@ window.BENCHMARK = {
     {
       "id": "alignment",
       "title": "Data Alignment",
-      "blurb": "The aligner stage. Each aligner normalizes a subject's trials into a common statistical frame before the backbone sees them, shrinking the between-subject covariance shift that otherwise dominates cross-subject decoding. It is label-free and applied per subject; the backbone and its training stay fixed, and the baseline applies no alignment.",
+      "blurb": "The aligner stage. Each aligner normalizes a subject's trials into a common statistical frame before the backbone sees them, shrinking the between-subject covariance shift that otherwise dominates cross-subject decoding. It is label-free and applied per subject. The backbone and its training stay fixed, and the baseline applies no alignment.",
       "references": null,
       "context": null,
       "groups": [
@@ -124,7 +124,7 @@ window.BENCHMARK = {
               "key": "RA-EEGNet",
               "lab": false,
               "code": "hustbciml/algorithms/aligners/RA.py",
-              "desc": "Normalizes each subject's trials against the affine-invariant Riemannian (Fréchet) mean of their spatial covariances — recentring in the curved covariance geometry rather than the Euclidean one.",
+              "desc": "Normalizes each subject's trials against the affine-invariant Riemannian (Fréchet) mean of their spatial covariances. It recentres in the curved covariance geometry rather than the Euclidean one.",
               "ref": "P. Zanini et al., IEEE Trans. Biomed. Eng., 2018",
               "doi": "10.1109/TBME.2017.2742541",
               "pinAfter": null
@@ -155,7 +155,7 @@ window.BENCHMARK = {
               "key": "NoAlign-EEGNet",
               "lab": false,
               "code": "hustbciml/algorithms/aligners/Identity.py",
-              "desc": "No alignment; trials are fed to the backbone as recorded.",
+              "desc": "No alignment. Trials are fed to the backbone as recorded.",
               "ref": null,
               "doi": null,
               "pinAfter": null
@@ -167,7 +167,7 @@ window.BENCHMARK = {
     {
       "id": "augmentation",
       "title": "Data Augmentation",
-      "blurb": "The augmenter stage. Each augmenter synthesizes extra training trials to regularize the same backbone, which is otherwise trained identically; each augmenter is compared against that backbone trained without it. Channel Reflection is an electrode-space transform and must precede any spatial whitening, so it runs on unaligned trials; CSDA operates on the Euclidean-aligned trials.",
+      "blurb": "The augmenter stage. Each augmenter synthesizes extra training trials to regularize the same backbone, which is otherwise trained identically. Each augmenter is compared against that backbone trained without it. The electrode-space transforms (Channel Reflection, HS, Symm) rearrange channels and must precede any spatial whitening, so they run on unaligned trials and are measured against the unaligned baseline; the remaining signal- and frequency-domain augmenters operate on the Euclidean-aligned trials and are measured against the aligned baseline.",
       "references": null,
       "context": null,
       "groups": [
@@ -203,7 +203,7 @@ window.BENCHMARK = {
               "key": "CSDA-EEGNet",
               "lab": true,
               "code": "hustbciml/algorithms/augmenters/CSDA.py",
-              "desc": "Cross-subject wavelet detail-swap — mixes the high-frequency wavelet detail of same-class trials from different subjects to synthesize new trials.",
+              "desc": "Cross-subject wavelet detail-swap. It mixes the high-frequency wavelet detail of same-class trials from different subjects to synthesize new trials.",
               "ref": "Z. Wang, ..., D. Wu*, Knowl.-Based Syst., 2025",
               "doi": "10.1016/j.knosys.2025.113074",
               "pinAfter": null
@@ -234,6 +234,254 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
+              "name": "FShift",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 73.28,
+                  "std": 0.51
+                },
+                "BNCI2014002": {
+                  "mean": 75.0,
+                  "std": 0.38
+                },
+                "BNCI2015001": {
+                  "mean": 74.14,
+                  "std": 0.31
+                }
+              },
+              "delta": {
+                "BNCI2014001": 1.21,
+                "BNCI2014002": 0.6,
+                "BNCI2015001": 0.95
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "FShift-EEGNet",
+              "lab": false,
+              "code": "hustbciml/algorithms/augmenters/FShift.py",
+              "desc": "Translates a trial's whole spectrum by a small frequency offset using the analytic (Hilbert) signal.",
+              "ref": "D. Freer, G.-Z. Yang, J. Neural Eng., 2020",
+              "doi": "10.1088/1741-2552/ab57c0",
+              "pinAfter": null
+            },
+            {
+              "name": "FComb",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 72.3,
+                  "std": 2.11
+                },
+                "BNCI2014002": {
+                  "mean": 73.81,
+                  "std": 0.07
+                },
+                "BNCI2015001": {
+                  "mean": 73.58,
+                  "std": 0.88
+                }
+              },
+              "delta": {
+                "BNCI2014001": 0.23,
+                "BNCI2014002": -0.59,
+                "BNCI2015001": 0.39
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "FComb-EEGNet",
+              "lab": false,
+              "code": "hustbciml/algorithms/augmenters/FComb.py",
+              "desc": "Splits each trial's cosine spectrum into contiguous bands and rebuilds a new trial by taking each band from a different same-class trial.",
+              "ref": "X. Zhao et al., J. Neural Eng., 2022",
+              "doi": "10.1088/1741-2552/aca04f",
+              "pinAfter": null
+            },
+            {
+              "name": "FSurr",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 73.51,
+                  "std": 0.83
+                },
+                "BNCI2014002": {
+                  "mean": 74.14,
+                  "std": 0.72
+                },
+                "BNCI2015001": {
+                  "mean": 71.67,
+                  "std": 1.06
+                }
+              },
+              "delta": {
+                "BNCI2014001": 1.44,
+                "BNCI2014002": -0.26,
+                "BNCI2015001": -1.52
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "FSurr-EEGNet",
+              "lab": false,
+              "code": "hustbciml/algorithms/augmenters/FSurr.py",
+              "desc": "Draws a surrogate trial with the same power spectrum as the original but randomized Fourier phase.",
+              "ref": "J. T. C. Schwabedal et al., arXiv:1806.08675, 2018",
+              "doi": null,
+              "pinAfter": null
+            },
+            {
+              "name": "Noise",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 71.94,
+                  "std": 0.66
+                },
+                "BNCI2014002": {
+                  "mean": 74.14,
+                  "std": 0.81
+                },
+                "BNCI2015001": {
+                  "mean": 73.18,
+                  "std": 1.02
+                }
+              },
+              "delta": {
+                "BNCI2014001": -0.13,
+                "BNCI2014002": -0.26,
+                "BNCI2015001": -0.01
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "Noise-EEGNet",
+              "lab": false,
+              "code": "hustbciml/algorithms/augmenters/Noise.py",
+              "desc": "Copies each trial once with zero-mean Gaussian noise added, scaled to the trial's own amplitude; the simplest label-preserving augmentation.",
+              "ref": "D. Freer, G.-Z. Yang, J. Neural Eng., 2020",
+              "doi": "10.1088/1741-2552/ab57c0",
+              "pinAfter": null
+            },
+            {
+              "name": "Scale",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 72.97,
+                  "std": 0.83
+                },
+                "BNCI2014002": {
+                  "mean": 72.83,
+                  "std": 0.38
+                },
+                "BNCI2015001": {
+                  "mean": 72.72,
+                  "std": 1.53
+                }
+              },
+              "delta": {
+                "BNCI2014001": 0.9,
+                "BNCI2014002": -1.57,
+                "BNCI2015001": -0.47
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "Scale-EEGNet",
+              "lab": false,
+              "code": "hustbciml/algorithms/augmenters/Scaling.py",
+              "desc": "Copies each trial with its amplitude multiplied by a coefficient close to one; the augmentation half of the PAT pipeline.",
+              "ref": "X. Chen, ..., D. Wu*, Fundamental Research, 2026",
+              "doi": "10.1016/j.fmre.2026.04.034",
+              "pinAfter": null
+            },
+            {
+              "name": "Flip",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 70.6,
+                  "std": 0.77
+                },
+                "BNCI2014002": {
+                  "mean": 74.24,
+                  "std": 0.03
+                },
+                "BNCI2015001": {
+                  "mean": 73.28,
+                  "std": 0.93
+                }
+              },
+              "delta": {
+                "BNCI2014001": -1.47,
+                "BNCI2014002": -0.16,
+                "BNCI2015001": 0.09
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "Flip-EEGNet",
+              "lab": false,
+              "code": "hustbciml/algorithms/augmenters/Flip.py",
+              "desc": "Mirrors each channel vertically about its own maximum, adding one label-preserving copy per trial.",
+              "ref": "D. Freer, G.-Z. Yang, J. Neural Eng., 2020",
+              "doi": "10.1088/1741-2552/ab57c0",
+              "pinAfter": null
+            },
+            {
+              "name": "HS",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 64.99,
+                  "std": 0.61
+                },
+                "BNCI2014002": {
+                  "mean": 61.07,
+                  "std": 2.33
+                },
+                "BNCI2015001": {
+                  "mean": 64.53,
+                  "std": 1.14
+                }
+              },
+              "delta": {
+                "BNCI2014001": -4.35,
+                "BNCI2014002": -0.83,
+                "BNCI2015001": 1.07
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "HS-EEGNet",
+              "lab": false,
+              "code": "hustbciml/algorithms/augmenters/HS.py",
+              "desc": "Splices the left- and right-hemisphere channels from two same-class trials into a new trial, exploiting motor-imagery lateralization. An electrode-space transform, run on unaligned trials.",
+              "ref": "Y. Pei et al., Front. Hum. Neurosci., 2021",
+              "doi": "10.3389/fnhum.2021.645952",
+              "pinAfter": null
+            },
+            {
+              "name": "Symm",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 53.11,
+                  "std": 1.7
+                },
+                "BNCI2014002": {
+                  "mean": 59.9,
+                  "std": 1.81
+                },
+                "BNCI2015001": {
+                  "mean": 59.65,
+                  "std": 0.81
+                }
+              },
+              "delta": {
+                "BNCI2014001": -16.23,
+                "BNCI2014002": -2.0,
+                "BNCI2015001": -3.81
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "Symm-EEGNet",
+              "lab": false,
+              "code": "hustbciml/algorithms/augmenters/Symm.py",
+              "desc": "Reflects the montage across the sagittal midline so the hemispheres swap while keeping the label unchanged; the prior-art contrast to Channel Reflection, which argues the label must then be swapped. An electrode-space transform, run on unaligned trials.",
+              "ref": "O. Deiss et al., arXiv:1803.09702, 2018",
+              "doi": null,
+              "pinAfter": null
+            },
+            {
               "name": "none",
               "acc": {
                 "BNCI2014001": {
@@ -259,7 +507,7 @@ window.BENCHMARK = {
               "key": "EA-EEGNet",
               "lab": false,
               "code": null,
-              "desc": "EA-aligned EEGNet trained without augmentation — the baseline CSDA is measured against (aligned regime; Channel Reflection is measured against the unaligned baseline, since it must run before whitening).",
+              "desc": "EA-aligned EEGNet trained without augmentation, the baseline CSDA is measured against in the aligned regime. Channel Reflection is instead measured against the unaligned baseline, since it must run before whitening.",
               "ref": null,
               "doi": null,
               "pinAfter": null
@@ -271,7 +519,7 @@ window.BENCHMARK = {
     {
       "id": "network",
       "title": "Networks",
-      "blurb": "The backbone stage. Vary the deep network on the same Euclidean-aligned trials, holding alignment and the learning objective fixed; each backbone is trained with its own learning rate and schedule, selected on held-out source-subject validation data. Baseline: EEGNet. MVCNet is a composite — an IFNet backbone trained with a multi-view contrastive objective — shown here among the backbones.",
+      "blurb": "The backbone stage. Vary the deep network on the same Euclidean-aligned trials, holding alignment and the learning objective fixed. Each backbone is trained with its own learning rate and schedule, selected on held-out source-subject validation data. Baseline: EEGNet. MVCNet is a composite (an IFNet backbone trained with a multi-view contrastive objective), shown here among the backbones.",
       "references": null,
       "context": null,
       "groups": [
@@ -338,7 +586,7 @@ window.BENCHMARK = {
               "key": "MVCNet",
               "lab": true,
               "code": "hustbciml/algorithms/strategies/MVCNet.py",
-              "desc": "Composite of an IFNet backbone and a multi-view contrastive training objective; at inference only the backbone and linear head are used.",
+              "desc": "Composite of an IFNet backbone and a multi-view contrastive training objective. At inference only the backbone and linear head are used.",
               "ref": "Z. Wang, ..., D. Wu*, Knowl.-Based Syst., 2025",
               "doi": "10.1016/j.knosys.2025.114205",
               "pinAfter": null
@@ -400,7 +648,7 @@ window.BENCHMARK = {
               "key": "EA-TIEEEGNet",
               "lab": true,
               "code": "hustbciml/algorithms/models/TIEEEGNet.py",
-              "desc": "EEGNet whose first temporal convolution is replaced by a time-information-enhanced convolution that injects a fixed sinusoidal positional embedding into the signal. ⚠ Note: originally developed for seizure detection (Peng et al. 2022); this time-positional design targets seizure EEG and may not be well-suited to motor imagery.",
+              "desc": "EEGNet whose first temporal convolution is replaced by a time-information-enhanced convolution that injects a fixed sinusoidal positional embedding into the signal. ⚠ Note: originally developed for seizure detection (Peng et al. 2022). This time-positional design targets seizure EEG and may not be well-suited to motor imagery.",
               "ref": "R. Peng, ..., D. Wu*, IEEE Trans. Neural Syst. Rehabil. Eng., 2022",
               "doi": "10.1109/TNSRE.2022.3204540",
               "pinAfter": null
@@ -431,9 +679,71 @@ window.BENCHMARK = {
               "key": "EA-KDFNet",
               "lab": true,
               "code": "hustbciml/algorithms/models/KDFNet.py",
-              "desc": "Knowledge-data fusion CNN mirroring FBCSP — a windowed-sinc FIR filter bank and per-band CSP spatial filters are knowledge-initialized on the aligned source, then fine-tuned end-to-end.",
+              "desc": "Knowledge-data fusion CNN mirroring FBCSP. A windowed-sinc FIR filter bank and per-band CSP spatial filters are knowledge-initialized on the aligned source, then fine-tuned end-to-end.",
               "ref": "X. Jiang, ..., D. Wu*, Inf. Sci., 2026",
               "doi": "10.1016/j.ins.2025.123001",
+              "pinAfter": null
+            },
+            {
+              "name": "MSVTNet",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 75.95,
+                  "std": 0.07
+                },
+                "BNCI2014002": {
+                  "mean": 75.76,
+                  "std": 0.67
+                },
+                "BNCI2015001": {
+                  "mean": 73.21,
+                  "std": 0.45
+                }
+              },
+              "delta": {
+                "BNCI2014001": 3.42,
+                "BNCI2014002": 1.36,
+                "BNCI2015001": -0.18
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-MSVTNet",
+              "lab": false,
+              "code": "hustbciml/algorithms/models/MSVTNet.py",
+              "desc": "Several parallel multi-scale EEGNet-style convolution branches followed by a transformer that mixes their tokens.",
+              "ref": "K. Liu et al., IEEE J. Biomed. Health Inform., 2024",
+              "doi": "10.1109/JBHI.2024.3450753",
+              "pinAfter": null
+            },
+            {
+              "name": "MSCFormer",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 76.29,
+                  "std": 0.32
+                },
+                "BNCI2014002": {
+                  "mean": 75.31,
+                  "std": 1.35
+                },
+                "BNCI2015001": {
+                  "mean": 72.35,
+                  "std": 1.19
+                }
+              },
+              "delta": {
+                "BNCI2014001": 3.76,
+                "BNCI2014002": 0.91,
+                "BNCI2015001": -1.04
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-MSCFormer",
+              "lab": false,
+              "code": "hustbciml/algorithms/models/MSCFormer.py",
+              "desc": "Three parallel multi-scale temporal-convolution branches whose features are fused and passed to a transformer encoder.",
+              "ref": "W. Zhao et al., Sci. Rep., 2025",
+              "doi": "10.1038/s41598-025-96611-5",
               "pinAfter": null
             },
             {
@@ -468,6 +778,130 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
+              "name": "EEG-Deformer",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 73.43,
+                  "std": 0.96
+                },
+                "BNCI2014002": {
+                  "mean": 74.93,
+                  "std": 0.27
+                },
+                "BNCI2015001": {
+                  "mean": 73.32,
+                  "std": 1.09
+                }
+              },
+              "delta": {
+                "BNCI2014001": 0.9,
+                "BNCI2014002": 0.53,
+                "BNCI2015001": -0.07
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-EEGDeformer",
+              "lab": false,
+              "code": "hustbciml/algorithms/models/EEGDeformer.py",
+              "desc": "A dense convolutional transformer that interleaves shallow CNN encoders with coarse-to-fine transformer stages.",
+              "ref": "Y. Ding et al., IEEE J. Biomed. Health Inform., 2025",
+              "doi": "10.1109/JBHI.2024.3504604",
+              "pinAfter": null
+            },
+            {
+              "name": "TMSA-Net",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 73.53,
+                  "std": 0.41
+                },
+                "BNCI2014002": {
+                  "mean": 74.38,
+                  "std": 1.04
+                },
+                "BNCI2015001": {
+                  "mean": 73.32,
+                  "std": 0.91
+                }
+              },
+              "delta": {
+                "BNCI2014001": 1.0,
+                "BNCI2014002": -0.02,
+                "BNCI2015001": -0.07
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-TMSANet",
+              "lab": false,
+              "code": "hustbciml/algorithms/models/TMSANet.py",
+              "desc": "Sums two parallel multi-scale temporal convolutions, then applies a temporal multi-scale self-attention module.",
+              "ref": "Q. Zhao, W. Zhu, Biomed. Signal Process. Control, 2025",
+              "doi": "10.1016/j.bspc.2024.107189",
+              "pinAfter": null
+            },
+            {
+              "name": "EEGNeX",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 73.61,
+                  "std": 1.09
+                },
+                "BNCI2014002": {
+                  "mean": 72.98,
+                  "std": 1.25
+                },
+                "BNCI2015001": {
+                  "mean": 72.86,
+                  "std": 0.66
+                }
+              },
+              "delta": {
+                "BNCI2014001": 1.08,
+                "BNCI2014002": -1.42,
+                "BNCI2015001": -0.53
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-EEGNeX",
+              "lab": false,
+              "code": "hustbciml/algorithms/models/EEGNeX.py",
+              "desc": "A purely convolutional EEGNet variant that replaces the separable temporal convolutions with a stack of dilated convolutions for a wider receptive field.",
+              "ref": "X. Chen et al., Biomed. Signal Process. Control, 2024",
+              "doi": "10.1016/j.bspc.2023.105475",
+              "pinAfter": null
+            },
+            {
+              "name": "SlimSeiz",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 69.65,
+                  "std": 0.42
+                },
+                "BNCI2014002": {
+                  "mean": 74.79,
+                  "std": 1.61
+                },
+                "BNCI2015001": {
+                  "mean": 72.94,
+                  "std": 1.04
+                }
+              },
+              "delta": {
+                "BNCI2014001": -2.88,
+                "BNCI2014002": 0.39,
+                "BNCI2015001": -0.45
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-SlimSeiz",
+              "lab": false,
+              "code": "hustbciml/algorithms/models/SlimSeiz.py",
+              "desc": "A lightweight multi-branch 1D-convolution feature extractor paired with a single Mamba selective-state-space mixer; originally a seizure-prediction network.",
+              "ref": "G. Lu et al., IEEE Int. Symp. Circuits Syst., 2025",
+              "doi": "10.1109/ISCAS56072.2025.11043364",
+              "pinAfter": null
+            },
+            {
               "name": "ShallowConvNet",
               "acc": {
                 "BNCI2014001": {
@@ -499,6 +933,99 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
+              "name": "ADFCNN",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 72.09,
+                  "std": 1.13
+                },
+                "BNCI2014002": {
+                  "mean": 71.79,
+                  "std": 0.66
+                },
+                "BNCI2015001": {
+                  "mean": 72.25,
+                  "std": 0.72
+                }
+              },
+              "delta": {
+                "BNCI2014001": -0.44,
+                "BNCI2014002": -2.61,
+                "BNCI2015001": -1.14
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-ADFCNN",
+              "lab": false,
+              "code": "hustbciml/algorithms/models/ADFCNN.py",
+              "desc": "Two parallel spectral-spatial pathways at different temporal scales, fused by a self-attention module.",
+              "ref": "W. Tao et al., IEEE Trans. Neural Syst. Rehabil. Eng., 2024",
+              "doi": "10.1109/TNSRE.2023.3342331",
+              "pinAfter": null
+            },
+            {
+              "name": "CTNet",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 70.47,
+                  "std": 1.72
+                },
+                "BNCI2014002": {
+                  "mean": 72.57,
+                  "std": 0.78
+                },
+                "BNCI2015001": {
+                  "mean": 71.28,
+                  "std": 0.67
+                }
+              },
+              "delta": {
+                "BNCI2014001": -2.06,
+                "BNCI2014002": -1.83,
+                "BNCI2015001": -2.11
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-CTNet",
+              "lab": false,
+              "code": "hustbciml/algorithms/models/CTNet.py",
+              "desc": "An EEGNet-style convolutional patch embedding feeding a transformer encoder.",
+              "ref": "W. Zhao et al., Sci. Rep., 2024",
+              "doi": "10.1038/s41598-024-71118-7",
+              "pinAfter": null
+            },
+            {
+              "name": "FBMSNet",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 70.45,
+                  "std": 0.17
+                },
+                "BNCI2014002": {
+                  "mean": 70.95,
+                  "std": 0.97
+                },
+                "BNCI2015001": {
+                  "mean": 71.49,
+                  "std": 0.4
+                }
+              },
+              "delta": {
+                "BNCI2014001": -2.08,
+                "BNCI2014002": -3.45,
+                "BNCI2015001": -1.9
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-FBMSNet",
+              "lab": false,
+              "code": "hustbciml/algorithms/models/FBMSNet.py",
+              "desc": "Decomposes the signal into a filter bank of narrow sub-bands, then applies mixed-scale depthwise temporal convolutions.",
+              "ref": "K. Liu et al., IEEE Trans. Biomed. Eng., 2023",
+              "doi": "10.1109/TBME.2022.3193277",
+              "pinAfter": null
+            },
+            {
               "name": "DeepConvNet",
               "acc": {
                 "BNCI2014001": {
@@ -527,6 +1054,37 @@ window.BENCHMARK = {
               "desc": "Deeper four-block convolutional network for EEG decoding.",
               "ref": "R. T. Schirrmeister et al., Hum. Brain Mapp., 2017",
               "doi": "10.1002/hbm.23730",
+              "pinAfter": null
+            },
+            {
+              "name": "EEGWaveNet",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 66.64,
+                  "std": 1.44
+                },
+                "BNCI2014002": {
+                  "mean": 69.02,
+                  "std": 1.4
+                },
+                "BNCI2015001": {
+                  "mean": 68.94,
+                  "std": 1.3
+                }
+              },
+              "delta": {
+                "BNCI2014001": -5.89,
+                "BNCI2014002": -5.38,
+                "BNCI2015001": -4.45
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-EEGWaveNet",
+              "lab": false,
+              "code": "hustbciml/algorithms/models/EEGWaveNet.py",
+              "desc": "A cascade of depthwise Conv1d layers repeatedly halves the sampling rate to extract multiscale temporal features; originally a seizure detector.",
+              "ref": "P. Thuwajit et al., IEEE Trans. Ind. Inform., 2022",
+              "doi": "10.1109/TII.2021.3133307",
               "pinAfter": null
             },
             {
@@ -567,13 +1125,13 @@ window.BENCHMARK = {
     {
       "id": "transfer",
       "title": "Transfer Learning",
-      "blurb": "The learning-objective stage. Every row is the identical Euclidean-aligned EEGNet; only the training or adaptation objective changes. Approaches are grouped by how much of the target they use and when — source-only, unsupervised domain adaptation, source-free, and test-time — all two-class on the three datasets and measured against the same no-transfer baseline (ERM). The privacy-preserving family keeps each subject's raw EEG local and is measured against Centralized Training rather than ERM (see its note).",
+      "blurb": "The learning-objective stage. Every row is the identical Euclidean-aligned EEGNet, and only the training or adaptation objective changes. Approaches are grouped by how much of the target they use and when. The families are source-only, unsupervised domain adaptation, source-free, and test-time. All are two-class on the three datasets and measured against the same no-transfer baseline (ERM). The privacy-preserving family keeps each subject's raw EEG local and is measured against Centralized Training rather than ERM (see its note).",
       "references": null,
       "context": null,
       "groups": [
         {
           "subcat": "Source-only",
-          "blurb": "Trained on the labelled source subjects only; the target is never used for adaptation, and inference is a plain forward pass. Baseline: ERM.",
+          "blurb": "Trained on the labelled source subjects only. The target is never used for adaptation, and inference is a plain forward pass. Baseline: ERM.",
           "baseline": "ERM",
           "reference": null,
           "rows": [
@@ -603,7 +1161,7 @@ window.BENCHMARK = {
               "key": "ABAT",
               "lab": true,
               "code": "hustbciml/algorithms/strategies/ABAT.py",
-              "desc": "Replaces each training batch with a channel-scaled adversarial batch after a short clean warm-up, hardening the source-trained EEGNet against distribution shift; the target is not used during training.",
+              "desc": "Replaces each training batch with a channel-scaled adversarial batch after a short clean warm-up, hardening the source-trained EEGNet against distribution shift. The target is not used during training.",
               "ref": "X. Chen, ..., D. Wu*, IEEE Trans. Neural Syst. Rehabil. Eng., 2024",
               "doi": "10.1109/TNSRE.2024.3391936",
               "pinAfter": null
@@ -634,7 +1192,7 @@ window.BENCHMARK = {
               "key": "PAT",
               "lab": true,
               "code": "hustbciml/algorithms/strategies/PAT.py",
-              "desc": "Extends adversarial training for privacy-preserving (source-only) transfer: after a clean warm-up each Euclidean-aligned batch is amplitude-scaled (×(1±0.05)) then perturbed by a global-ε L∞ PGD attack (noisy-initialized, eps 0.03, 10 steps), hardening the source-trained EEGNet against distribution shift; the target is never used in training.",
+              "desc": "Extends adversarial training for privacy-preserving (source-only) transfer: after a clean warm-up each Euclidean-aligned batch is amplitude-scaled (×(1±0.05)) then perturbed by a global-ε L∞ PGD attack (noisy-initialized, eps 0.03, 10 steps), hardening the source-trained EEGNet against distribution shift. The target is never used in training.",
               "ref": "X. Chen, ..., D. Wu*, Fundamental Research, 2026",
               "doi": "10.1016/j.fmre.2026.04.034",
               "pinAfter": null
@@ -665,7 +1223,7 @@ window.BENCHMARK = {
               "key": "MDMAML",
               "lab": true,
               "code": "hustbciml/algorithms/strategies/MDMAML.py",
-              "desc": "Domain-paired first-order MAML across the source subjects — meta-learns an initialization so that one adaptation step on any source subject lowers the loss on the others, then applies the meta-learned EEGNet to the target with no target fine-tuning.",
+              "desc": "Domain-paired first-order MAML across the source subjects. It meta-learns an initialization so that one adaptation step on any source subject lowers the loss on the others, then applies the meta-learned EEGNet to the target with no target fine-tuning.",
               "ref": "S. Li, ..., D. Wu*, IEEE Comput. Intell. Mag., 2022",
               "doi": "10.1109/MCI.2022.3199622",
               "pinAfter": null
@@ -696,7 +1254,7 @@ window.BENCHMARK = {
               "key": "EA-EEGNet",
               "lab": false,
               "code": "hustbciml/algorithms/strategies/ERM.py",
-              "desc": "Standard supervised training on the source subjects with no adaptation — the no-transfer baseline every transfer family is measured against.",
+              "desc": "Standard supervised training on the source subjects with no adaptation. This is the no-transfer baseline every transfer family is measured against.",
               "ref": null,
               "doi": null,
               "pinAfter": null
@@ -705,7 +1263,7 @@ window.BENCHMARK = {
         },
         {
           "subcat": "Unsupervised domain adaptation",
-          "blurb": "Trained jointly on the labelled source and the unlabelled target, aligning the two distributions during source training; no target labels are used. Measured against the no-transfer baseline.",
+          "blurb": "Trained jointly on the labelled source and the unlabelled target, aligning the two distributions during source training. No target labels are used. Measured against the no-transfer baseline.",
           "baseline": null,
           "reference": {
             "name": "EEGNet baseline (ERM, no transfer)",
@@ -1054,7 +1612,7 @@ window.BENCHMARK = {
               "key": "ASFA",
               "lab": true,
               "code": "hustbciml/algorithms/strategies/ASFA.py",
-              "desc": "Freezes the source classifier head and adapts the feature extractor by minimizing a Tsallis-entropy prediction-uncertainty objective with a consistency-regularized auxiliary head; no source data at transfer time.",
+              "desc": "Freezes the source classifier head and adapts the feature extractor by minimizing a Tsallis-entropy prediction-uncertainty objective with a consistency-regularized auxiliary head. No source data at transfer time.",
               "ref": "K. Xia, ..., D. Wu*, IEEE Trans. Biomed. Eng., 2022",
               "doi": "10.1109/TBME.2022.3168570",
               "pinAfter": null
@@ -1140,7 +1698,7 @@ window.BENCHMARK = {
               "key": "T-TIME",
               "lab": true,
               "code": "hustbciml/algorithms/strategies/TTIME.py",
-              "desc": "Online test-time adaptation — for each incoming target batch it updates an incremental Euclidean-Alignment reference and minimizes an information-maximization loss (conditional-entropy minimization with a marginal-diversity regularizer), then predicts. Plug-and-play, no target labels.",
+              "desc": "Online test-time adaptation. For each incoming target batch it updates an incremental Euclidean-Alignment reference and minimizes an information-maximization loss (conditional-entropy minimization with a marginal-diversity regularizer), then predicts. Plug-and-play, no target labels.",
               "ref": "S. Li, ..., D. Wu*, IEEE Trans. Biomed. Eng., 2024",
               "doi": "10.1109/TBME.2023.3303289",
               "pinAfter": null
@@ -1171,7 +1729,7 @@ window.BENCHMARK = {
               "key": "BFT",
               "lab": true,
               "code": "hustbciml/algorithms/strategies/BFT.py",
-              "desc": "Backpropagation-free test-time adaptation: averages the model's predictions over label-preserving augmentations of each target trial, gaining robustness with no gradient updates — aimed at lightweight, low-power BCI hardware.",
+              "desc": "Backpropagation-free test-time adaptation: averages the model's predictions over label-preserving augmentations of each target trial, gaining robustness with no gradient updates. It is aimed at lightweight, low-power BCI hardware.",
               "ref": "S. Li†, J. Ouyang†, Z. Cui†, ..., D. Wu*, arXiv:2601.07556, 2026",
               "doi": "10.48550/arXiv.2601.07556",
               "pinAfter": null
@@ -1233,7 +1791,7 @@ window.BENCHMARK = {
               "key": "ISFDA",
               "lab": false,
               "code": "hustbciml/algorithms/strategies/ISFDA.py",
-              "desc": "Online test-time adaptation by information maximization, with intra-class tightening and inter-class separation on pseudo-labelled target features; adapts the whole network over the target stream.",
+              "desc": "Online test-time adaptation by information maximization, with intra-class tightening and inter-class separation on pseudo-labelled target features. It adapts the whole network over the target stream.",
               "ref": "X. Li et al., ACM MM, 2021",
               "doi": "10.1145/3474085.3475487",
               "pinAfter": null
@@ -1366,7 +1924,7 @@ window.BENCHMARK = {
         },
         {
           "subcat": "Privacy-preserving",
-          "blurb": "These approaches never pool raw EEG across subjects — each subject's data stays local — the privacy-preserving counterpart to Centralized Training (the reference). FedBS, SAFE and FedAvg share model updates through a server (federated); MSDT shares only per-source models fused at test time (decentralized). All three datasets are two-class (chance 50%), so the columns are directly comparable. Δ is versus Centralized Training on the same dataset.",
+          "blurb": "These approaches never pool raw EEG across subjects, since each subject's data stays local. They are the privacy-preserving counterpart to Centralized Training (the reference). FedBS, SAFE and FedAvg share model updates through a server (federated). MSDT shares only per-source models fused at test time (decentralized). All three datasets are two-class (chance 50%), so the columns are directly comparable. Δ is versus Centralized Training on the same dataset.",
           "baseline": "Centralized Training",
           "reference": null,
           "rows": [
@@ -1427,7 +1985,7 @@ window.BENCHMARK = {
               "key": "FedBS",
               "lab": true,
               "code": "hustbciml/algorithms/strategies/FedBS.py",
-              "desc": "Federated learning with batch-specific BatchNorm and sharpness-aware minimization, aggregating per-subject model updates through a server without sharing raw EEG. Under the same optimizer and learning rate as Centralized Training it recovers essentially all of the centralized accuracy — privacy is nearly free here.",
+              "desc": "Federated learning with batch-specific BatchNorm and sharpness-aware minimization, aggregating per-subject model updates through a server without sharing raw EEG. Under the same optimizer and learning rate as Centralized Training it recovers essentially all of the centralized accuracy, so privacy is nearly free here.",
               "ref": "T. Jia, ..., D. Wu*, IEEE Trans. Neural Syst. Rehabil. Eng., 2024",
               "doi": "10.1109/TNSRE.2024.3457504",
               "pinAfter": null
@@ -1458,7 +2016,7 @@ window.BENCHMARK = {
               "key": "MSDT",
               "lab": true,
               "code": "hustbciml/algorithms/strategies/MSDT.py",
-              "desc": "Decentralized multi-source transfer on Riemannian tangent-space features (not an EEGNet model): each source subject trains its own classifier and the target adapts and fuses them at test time, with no source data pooled. It lands close to Centralized Training across the three datasets — a little above on BNCI2014001, a little below on the other two — reflecting that Riemannian representation and test-time adaptation rather than the privacy mechanism.",
+              "desc": "Decentralized multi-source transfer on Riemannian tangent-space features (not an EEGNet model): each source subject trains its own classifier and the target adapts and fuses them at test time, with no source data pooled. It lands close to Centralized Training across the three datasets, a little above on BNCI2014001 and a little below on the other two, reflecting that Riemannian representation and test-time adaptation rather than the privacy mechanism.",
               "ref": "W. Zhang, ..., D. Wu*, IEEE Trans. Neural Syst. Rehabil. Eng., 2022",
               "doi": "10.1109/TNSRE.2022.3207494",
               "pinAfter": null
@@ -1489,7 +2047,7 @@ window.BENCHMARK = {
               "key": "FedAvg",
               "lab": false,
               "code": "hustbciml/algorithms/strategies/FedAvg.py",
-              "desc": "Federated averaging: each subject trains locally and the server averages the model weights — the vanilla federated baseline that isolates FedBS's two additions.",
+              "desc": "Federated averaging: each subject trains locally and the server averages the model weights. It is the vanilla federated baseline that isolates FedBS's two additions.",
               "ref": "B. McMahan et al., AISTATS, 2017",
               "doi": null,
               "pinAfter": null
@@ -1520,7 +2078,7 @@ window.BENCHMARK = {
               "key": null,
               "lab": false,
               "code": null,
-              "desc": "EA-EEGNet trained on all source subjects pooled together — the non-private reference every privacy-preserving approach is measured against.",
+              "desc": "EA-EEGNet trained on all source subjects pooled together. This is the non-private reference every privacy-preserving approach is measured against.",
               "ref": null,
               "doi": null,
               "pinAfter": null
@@ -1532,7 +2090,7 @@ window.BENCHMARK = {
     {
       "id": "ensemble",
       "title": "Ensemble Learning",
-      "blurb": "The aggregation stage, in a fully decentralized privacy setting. Five heterogeneous learners — tangent-space LDA, tangent-space SVM, EEGNet, ShallowConvNet, and CSPNet — are trained on each source subject's data alone, and the subjects share only their hard predicted labels on the target, never model weights or raw EEG. A post-hoc combiner fuses the (N-1)×5 label votes into a consensus prediction. Every combiner sees the same hard votes, so none has an information advantage; they differ only in how they weight and combine the votes. StackingNet is lab-proposed; SML-OVR is the lab's multi-class combiner, a one-vs-rest generalization of the binary SML that on these two-class tasks reduces exactly to it, so the two report the same accuracy and are placed together. The others (the binary SML and the crowd-labelling and truth-discovery aggregators) are established baselines. All three datasets are two-class (chance 50%), so the columns are directly comparable, and each combiner is measured against plain majority voting on the same dataset. Rows are ordered lab-proposed first, then the remaining combiners by accuracy, with plain majority voting (the baseline) last.",
+      "blurb": "The aggregation stage, in a fully decentralized privacy setting. Five heterogeneous learners (tangent-space LDA, tangent-space SVM, EEGNet, ShallowConvNet, and CSPNet) are trained on each source subject's data alone, and the subjects share only their hard predicted labels on the target, never model weights or raw EEG. A post-hoc combiner fuses the (N-1)×5 label votes into a consensus prediction. Every combiner sees the same hard votes, so none has an information advantage, and they differ only in how they weight and combine the votes. StackingNet is lab-proposed. SML-OVR is the lab's multi-class combiner, a one-vs-rest generalization of the binary SML that on these two-class tasks reduces exactly to it, so the two report the same accuracy and are placed together. The others (the binary SML and the crowd-labelling and truth-discovery aggregators) are established baselines. All three datasets are two-class (chance 50%), so the columns are directly comparable, and each combiner is measured against plain majority voting on the same dataset. Rows are ordered lab-proposed first, then the remaining combiners by accuracy, with plain majority voting (the baseline) last.",
       "references": null,
       "context": {
         "BNCI2014001": {
@@ -1589,8 +2147,8 @@ window.BENCHMARK = {
               "isReference": false,
               "key": "SML-OVR",
               "lab": true,
-              "code": "hustbciml/scripts/_ensembles.py",
-              "desc": "The lab's one-vs-rest spectral meta-learner, the multi-class generalization of the binary SML: for each class it runs the binary SML weight estimation on the one-hot votes and sums the per-class weightings, so it also handles more than two classes (for example the native four-class BNCI2014001, which the code still supports). On these two-class tasks it reduces exactly to the binary SML directly below, so the two report the identical accuracy here; the multi-class advantage shows only on native multi-class data.",
+              "code": "hustbciml/algorithms/ensembles/SMLOVR.py",
+              "desc": "The lab's one-vs-rest spectral meta-learner, the multi-class generalization of the binary SML: for each class it runs the binary SML weight estimation on the one-hot votes and sums the per-class weightings, so it also handles more than two classes (for example the native four-class BNCI2014001, which the code still supports). On these two-class tasks it reduces exactly to the binary SML directly below, so the two report the identical accuracy here. The multi-class advantage shows only on native multi-class data.",
               "ref": "S. Li, ..., D. Wu*, IEEE Comput. Intell. Mag., 2026",
               "doi": "10.1109/MCI.2025.3624194",
               "pinAfter": null
@@ -1620,8 +2178,8 @@ window.BENCHMARK = {
               "isReference": false,
               "key": null,
               "lab": false,
-              "code": "hustbciml/scripts/_ensembles.py",
-              "desc": "Binary spectral meta-learner: weights each source model by the principal eigenvector of the models' ±1 vote-covariance, an unsupervised accuracy estimate valid for two classes. It is the binary base that the lab's SML-OVR above generalizes to more classes; on these two-class tasks the two coincide, which is why they report the same accuracy and sit together.",
+              "code": "hustbciml/algorithms/ensembles/SML.py",
+              "desc": "Binary spectral meta-learner: weights each source model by the principal eigenvector of the models' ±1 vote-covariance, an unsupervised accuracy estimate valid for two classes. It is the binary base that the lab's SML-OVR above generalizes to more classes. On these two-class tasks the two coincide, which is why they report the same accuracy and sit together.",
               "ref": "F. Parisi et al., Proc. Natl. Acad. Sci. USA, 2014",
               "doi": "10.1073/pnas.1219097111",
               "pinAfter": "SML-OVR"
@@ -1651,7 +2209,7 @@ window.BENCHMARK = {
               "isReference": false,
               "key": "StackingNet",
               "lab": true,
-              "code": "hustbciml/scripts/_ensembles.py",
+              "code": "hustbciml/algorithms/ensembles/StackingNet.py",
               "desc": "Unsupervised transductive meta-combiner over the source models' hard labels: learns per-model weights on the unlabelled target by consensus agreement (no target labels), initialized from each model's balanced accuracy against the majority vote.",
               "ref": "S. Li†, C. Liu†, D. Wu*, Advanced Science, 2026",
               "doi": "10.1002/advs.76488",
@@ -1682,7 +2240,7 @@ window.BENCHMARK = {
               "isReference": false,
               "key": null,
               "lab": false,
-              "code": "hustbciml/scripts/_ensemble_baselines.py",
+              "code": "hustbciml/algorithms/ensembles/DawidSkene.py",
               "desc": "Classic EM crowd-labelling aggregator: jointly estimates each source model's full confusion matrix and the consensus label from the models' hard votes alone (no target labels).",
               "ref": "A. P. Dawid and A. M. Skene, J. R. Stat. Soc. C, 1979",
               "doi": "10.2307/2346806",
@@ -1713,7 +2271,7 @@ window.BENCHMARK = {
               "isReference": false,
               "key": null,
               "lab": false,
-              "code": "hustbciml/scripts/_ensemble_baselines.py",
+              "code": "hustbciml/algorithms/ensembles/LAA.py",
               "desc": "Label-aware autoencoder: an unsupervised neural aggregator that encodes the per-trial votes into a consensus label and reconstructs each source model's vote from it.",
               "ref": "L. Yin, ..., IJCAI, 2017",
               "doi": "10.24963/ijcai.2017/184",
@@ -1744,8 +2302,8 @@ window.BENCHMARK = {
               "isReference": false,
               "key": null,
               "lab": false,
-              "code": "hustbciml/scripts/_ensemble_baselines.py",
-              "desc": "Enhanced Bayesian classifier combination: variational inference over low-rank worker-correlation groups — the most expressive of the crowd-aggregation baselines.",
+              "code": "hustbciml/algorithms/ensembles/EBCC.py",
+              "desc": "Enhanced Bayesian classifier combination: variational inference over low-rank worker-correlation groups. It is the most expressive of the crowd-aggregation baselines.",
               "ref": "Y. Li, B. Rubinstein, and T. Cohn, ICML, 2019",
               "doi": null,
               "pinAfter": null
@@ -1775,9 +2333,9 @@ window.BENCHMARK = {
               "isReference": false,
               "key": null,
               "lab": false,
-              "code": "hustbciml/scripts/_ensemble_baselines.py",
+              "code": "hustbciml/algorithms/ensembles/Wawa.py",
               "desc": "Worker-agreement-with-aggregate heuristic: weight each source model by its agreement with the plain majority vote, then re-vote. A crowd-kit heuristic with no separate paper.",
-              "ref": "Worker Agreement With Aggregate — crowd-kit heuristic",
+              "ref": "Worker Agreement With Aggregate, a crowd-kit heuristic",
               "doi": null,
               "pinAfter": null
             },
@@ -1806,7 +2364,7 @@ window.BENCHMARK = {
               "isReference": false,
               "key": null,
               "lab": false,
-              "code": "hustbciml/scripts/_ensemble_baselines.py",
+              "code": "hustbciml/algorithms/ensembles/PM.py",
               "desc": "Truth-discovery aggregator: iteratively weights each source model by how much its votes agree with the current consensus (weight = -log of normalized disagreement), then re-estimates the consensus.",
               "ref": "Q. Li, ..., ACM SIGMOD, 2014",
               "doi": "10.1145/2588555.2610509",
@@ -1837,7 +2395,7 @@ window.BENCHMARK = {
               "isReference": false,
               "key": null,
               "lab": false,
-              "code": "hustbciml/scripts/_ensemble_baselines.py",
+              "code": "hustbciml/algorithms/ensembles/MACE.py",
               "desc": "Variational aggregator that separates competent labelling from per-model spamming, to down-weight unreliable source models.",
               "ref": "D. Hovy, ..., NAACL-HLT, 2013",
               "doi": null,
@@ -1868,7 +2426,7 @@ window.BENCHMARK = {
               "isReference": false,
               "key": null,
               "lab": false,
-              "code": "hustbciml/scripts/_ensemble_baselines.py",
+              "code": "hustbciml/algorithms/ensembles/LA.py",
               "desc": "Lightweight two-pass aggregator: one online pass estimates each source model's ability under a Beta prior, a second pass re-votes weighted by that ability.",
               "ref": "Y. Yang, ..., ACM Trans. Knowl. Discov. Data, 2024",
               "doi": "10.1145/3630102",
@@ -1899,7 +2457,7 @@ window.BENCHMARK = {
               "isReference": false,
               "key": null,
               "lab": false,
-              "code": "hustbciml/scripts/_ensemble_baselines.py",
+              "code": "hustbciml/algorithms/ensembles/GLAD.py",
               "desc": "EM aggregator that jointly infers the consensus label, each source model's ability, and each trial's difficulty.",
               "ref": "J. Whitehill, ..., NeurIPS, 2009",
               "doi": null,
@@ -1930,7 +2488,7 @@ window.BENCHMARK = {
               "isReference": false,
               "key": null,
               "lab": false,
-              "code": "hustbciml/scripts/_ensemble_baselines.py",
+              "code": "hustbciml/algorithms/ensembles/ZenCrowd.py",
               "desc": "EM aggregator with a single reliability scalar per source model, inferred from vote agreement alone (no target labels).",
               "ref": "G. Demartini, ..., WWW, 2012",
               "doi": "10.1145/2187836.2187900",
@@ -1961,7 +2519,7 @@ window.BENCHMARK = {
               "isReference": false,
               "key": null,
               "lab": false,
-              "code": "hustbciml/scripts/_ensemble_baselines.py",
+              "code": "hustbciml/algorithms/ensembles/MMSR.py",
               "desc": "Recovers each source model's skill from the pairwise inter-model agreement matrix by robust rank-one matrix completion, then weights the vote by it.",
               "ref": "Q. Ma and A. Olshevsky, NeurIPS, 2020",
               "doi": null,
@@ -1992,8 +2550,8 @@ window.BENCHMARK = {
               "isReference": false,
               "key": null,
               "lab": false,
-              "code": "hustbciml/scripts/_ensembles.py",
-              "desc": "Plain majority vote over the hard predicted labels of the five per-subject learners across all source subjects — the label-only baseline every combiner is measured against.",
+              "code": "hustbciml/algorithms/ensembles/Voting.py",
+              "desc": "Plain majority vote over the hard predicted labels of the five per-subject learners across all source subjects. This is the label-only baseline every combiner is measured against.",
               "ref": "S. Li, ..., D. Wu*, IEEE Comput. Intell. Mag., 2026",
               "doi": "10.1109/MCI.2025.3624194",
               "pinAfter": null

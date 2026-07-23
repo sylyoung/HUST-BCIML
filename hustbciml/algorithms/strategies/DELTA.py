@@ -6,7 +6,7 @@
 # Reference (IEEE BibTeX):
 #   @InProceedings{Zhao2023,
 #     author    = {Zhao, Bowen and Chen, Chen and Xia, Shu-Tao},
-#     booktitle = {Int'l Conf. Learning Representations},
+#     booktitle = {International Conference on Learning Representations},
 #     title     = {{DELTA}: Degradation-Free Fully Test-Time Adaptation},
 #     year      = {2023},
 #   }

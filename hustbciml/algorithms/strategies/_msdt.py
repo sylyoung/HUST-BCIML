@@ -5,7 +5,7 @@
 # Reference (IEEE BibTeX):
 #   @Article{Zhang2022,
 #     author  = {Zhang, Wen and Wang, Ziwei and Wu, Dongrui},
-#     journal = {IEEE Trans. Neural Systems and Rehabilitation Engineering},
+#     journal = {IEEE Transactions on Neural Systems and Rehabilitation Engineering},
 #     title   = {Multi-Source Decentralized Transfer for Privacy-Preserving {BCI}s},
 #     year    = {2022},
 #     pages   = {2710-2720},

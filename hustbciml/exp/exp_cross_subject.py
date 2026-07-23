@@ -7,6 +7,15 @@ source domains, align source; a *gradient* strategy also aligns the target
 offline (by the target's own reference — label-free), while a *tta* strategy
 receives the raw target stream and aligns it online itself. Train, predict,
 score; aggregate across subjects.
+
+Strategy modes decide how the target is treated during a fold. A ``gradient`` or
+``fit`` strategy trains on source only and sees the target already aligned at
+prediction time. A ``tta`` (test-time adaptation) strategy is handed the raw,
+unaligned target so it can align and adapt to it online as trials arrive. A
+strategy that additionally sets ``uses_target`` is transductive: it wants the
+aligned target trials during training with their labels hidden, which the loop
+supplies as ``target_unlabeled``. None of these paths ever exposes a target
+label to training, so the held-out score stays honest.
 """
 from __future__ import annotations
 
@@ -25,6 +34,17 @@ from .exp_basic import Exp_Basic
 
 class Exp_CrossSubject(Exp_Basic):
     def run(self):
+        """Run one leave-one-subject-out sweep and save the aggregated result.
+
+        Each subject is held out in turn as the target. Every fold rebuilds a
+        fresh pipeline and model from the config, so no weights leak between
+        folds. The aligner is fit on the source subjects and used to whiten the
+        source, and the target is aligned or left raw depending on the strategy
+        mode. The strategy trains on the source (splitting off its own
+        validation set from the source internally), predicts on the target, and
+        the fold is scored. After all folds the per-subject metrics are averaged
+        and written to disk.
+        """
         cfg = self.cfg
         fix_random_seed(cfg.seed)
         epochs = self._get_data()
@@ -45,9 +65,15 @@ class Exp_CrossSubject(Exp_Basic):
         predictions = []
         val_scores = []
         for tid in targets:
+            # Rebuild the pipeline (and its randomly initialised model) for every
+            # fold so subject ``tid``'s result never carries over weights trained
+            # while another subject was held out.
             pipe = build_pipeline(cfg)
             model = pipe.model.to(self.device)
 
+            # Split by subject, then fit the aligner on the source subjects only
+            # and whiten them. Fitting on source alone keeps the target out of
+            # the reference the source is aligned to.
             source, target = cross_subject(epochs, tid)
             pipe.aligner.fit(source)
             source_a = pipe.aligner.transform(source)
@@ -67,9 +93,16 @@ class Exp_CrossSubject(Exp_Basic):
                              aligner=pipe.aligner, log=lambda m: None,
                              target_unlabeled=target_unlabeled)
 
+            # Train on the aligned source. The strategy carves its own validation
+            # split out of the source and early-stops on it, leaving the best
+            # score on ``model._val_score`` (None if the strategy does not train,
+            # e.g. a closed-form ``fit`` method).
             pipe.strategy.fit(model, source_a, ctx)
             val_scores.append(getattr(model, "_val_score", None))
 
+            # Predict on the target. A tta strategy gets the raw target and does
+            # its own online alignment; every other strategy gets the
+            # pre-aligned target.
             if is_tta:
                 y_pred, y_score = pipe.strategy.predict(model, target, ctx)   # raw; online align
             else:

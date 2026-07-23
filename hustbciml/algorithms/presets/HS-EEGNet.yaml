@@ -1,0 +1,12 @@
+# Half-sample recombination augmentation + EEGNet + Linear, trained with ERM.
+# HS splices left- and right-hemisphere channels from same-class trials, so it is
+# an electrode-space transform and runs on raw signals (aligner: Identity).
+# Compare against NoAlign-EEGNet (Identity aligner, no augmentation).
+aligner: Identity
+augmenter: HS
+backbone: EEGNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

@@ -1,0 +1,12 @@
+# EA + FBMSNet (Liu et al.) + Linear, trained with ERM.
+# Network-axis comparison: a filter-bank multi-scale convolutional network
+# (per-band Chebyshev decomposition + multi-scale temporal conv + log-variance)
+# on the same EA-aligned ERM setup as the other backbones.
+aligner: EA
+augmenter: Identity
+backbone: FBMSNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

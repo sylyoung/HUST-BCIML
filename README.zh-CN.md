@@ -24,7 +24,7 @@
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-3776ab)
 ![PyTorch](https://img.shields.io/badge/PyTorch-1.12%2B-ee4c2c)
-![Approaches](https://img.shields.io/badge/approaches-39-4338ca)
+![Approaches](https://img.shields.io/badge/approaches-57-4338ca)
 ![Datasets](https://img.shields.io/badge/datasets-3%20MOABB%20MI-059669)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
@@ -67,6 +67,12 @@
 
 <br>
 
+- **2026-07** 网络骨干轴新增十种骨干网络：ADFCNN、CTNet、MSCFormer、MSVTNet、TMSA-Net、EEGWaveNet、SlimSeiz、FBMSNet、EEGNeX 与 EEG-Deformer。数据增强轴新增第八种基线，即幅度缩放（amplitude scaling）。以上方法均在三个数据集、三个随机种子上完成基准测试，测得的准确率已列入排行榜，各自附带可直接运行的预设（preset）。
+
+- **2026-07** 来自实验室数据增强研究的七种数据增强基线加入了增强轴：加性噪声、幅度翻转、频率平移、傅里叶替代（Fourier surrogate）、频率重组、通道对称与半样本重组。每一种都附带可运行的预设。
+
+- **2026-07** 代码中的每一条参考文献现在都给出了完整的期刊或会议名称。共空间模式（CSP）、欧氏对齐（EA）与 MVCNet 的引用得到订正与补全。
+
 - **2026-07** 一个忠实、完整的 **MEKT** 实现（第 III-C 节的域自适应投影，移植自原作者代码）现已在三个数据集中的两个上，位列经典迁移（classical transfer）结果之首。
 
 - **2026-07** 基准测试软件包整合为 **`hustbciml`**。隐私保护比较扩展到 **三个** MOABB 数据集。一次基于留出源域（held-out source）的超参数选择流程刷新了网络、迁移、增强与复合方法各表，只有当公平选出的配置优于此前配置时才替换数值。
@@ -85,7 +91,7 @@
 
 **1. 脑电解码基准**，位于目录 [`hustbciml/`](hustbciml/)。
 
-这是一个自包含的框架，围绕单一命令行入口和一个自动扫描的插件注册表（plug-in registry）构建。在这条可组合的流水线上，它重新实现了 **39 种脑电解码方法**，涵盖数据对齐、数据增强、网络骨干、迁移学习与集成聚合，并在**单一受控评估协议**下对它们正面比较，同时为每一个报告数值配上逐方法的复现记录。
+这是一个自包含的框架，围绕单一命令行入口和一个自动扫描的插件注册表（plug-in registry）构建。在这条可组合的流水线上，它重新实现了 **57 种脑电解码方法**，涵盖数据对齐、数据增强、网络骨干、迁移学习与集成聚合，并在**单一受控评估协议**下对它们正面比较，同时为每一个报告数值配上逐方法的复现记录。
 
 **2. 论文到代码网页应用**，位于目录 [`docs/`](docs/)。
 
@@ -222,7 +228,7 @@ EA  ·  no augmentation  ·  EEGNet  ·  Linear head  ·  ERM
 **在线站点：** **[sylyoung.github.io/HUST-BCIML](https://sylyoung.github.io/HUST-BCIML/)**，也可以在本地运行：
 
 ```bash
-open docs/index.html          # macOS — or simply double-click the file
+open docs/index.html          # macOS, or simply double-click the file
 ```
 
 数据已经内联进页面，因此它可以直接从文件系统渲染，在由 GitHub Pages 提供服务时表现一致。该应用有三个标签页：
@@ -291,7 +297,7 @@ HUST-BCIML/
 │   ├── data_provider/          # datasets, data_factory, splitters, collate
 │   ├── utils/                  # metrics, seed, tools
 │   ├── scripts/                # ensemble, leaderboard, compare, tuning
-│   ├── tests/repro/            # repro_targets.yaml — measured vs. published, per method
+│   ├── tests/repro/            # repro_targets.yaml, measured vs. published, per method
 │   ├── docs/                   # glossary, porting guide, per-algorithm cards
 │   └── RESULTS.md              # the full leaderboard, in Markdown
 ├── references.bib              # IEEE-style BibTeX for every benchmarked method

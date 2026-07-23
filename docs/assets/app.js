@@ -103,7 +103,7 @@
     f.appendChild(l2);
 
     f.appendChild(el("div", { class: "foot-disclaimer" },
-      tr("Disclaimer: this benchmark reimplements both external baselines and the lab's own methods independently. The reported numbers — baseline reproductions and lab-method results alike — may differ from the original papers and can contain errors. Corrections are welcome; please contact the maintainer.")));
+      tr("Disclaimer: this benchmark reimplements both external baselines and the lab's own methods independently. The reported numbers, both baseline reproductions and lab-method results, may differ from the original papers and can contain errors. Corrections are welcome, so please contact the maintainer.")));
   }
 
   // ---------------- overview ----------------
@@ -229,7 +229,7 @@
     if (lm) {
       o.appendChild(el("div", { class: "section-title" }, tr("Approaches in the benchmark")));
       o.appendChild(el("p", { class: "area-note" },
-        tr("Every approach evaluated in the benchmark, grouped by pipeline stage. The lab's own methods (Prof. Wu's group) are highlighted; the external baselines they are compared against are shown alongside.")));
+        tr("Every approach evaluated in the benchmark, grouped by pipeline stage. The lab's own methods (Prof. Wu's group) are highlighted, and the external baselines they are compared against are shown alongside.")));
       var legend = el("div", { class: "approach-legend" });
       legend.appendChild(el("span", { class: "lgd lgd-lab" }, tr("lab-proposed")));
       legend.appendChild(el("span", { class: "lgd lgd-ext" }, tr("external baseline")));
@@ -271,7 +271,7 @@
     o.appendChild(el("div", { class: "section-title" }, tr("Browse the lab's work by area")));
     o.appendChild(el("p", { class: "area-note" },
       tr("Publications grouped by research area, with how many have released code. " +
-      "Open Papers & Code to search and filter; the official sites above hold the full publication list.")));
+      "Open Papers & Code to search and filter. The official sites above hold the full publication list.")));
     o.appendChild(pillarTable());
   }
 
@@ -387,7 +387,7 @@
     var note = el("p", { class: "gallery-note" });
     note.appendChild(txt(tr("The lab's publications, each linked to its released code where available. Showing the ")));
     note.appendChild(el("strong", {}, String(SITE.n_code || 0) + tr(" with public code")));
-    note.appendChild(txt(tr("; untick “has code” for all ") + (SITE.n_papers || PUBS.length) +
+    note.appendChild(txt(tr(". Untick the code filter to see all ") + (SITE.n_papers || PUBS.length) +
       tr(". The complete, authoritative publication list is on the ")));
     if (L.lab_site) note.appendChild(el("a", { href: L.lab_site, target: "_blank", rel: "noopener" }, tr("lab website")));
     note.appendChild(txt(tr(" and ")));
@@ -491,7 +491,7 @@
     var rowTr = el("tr", { class: "ref-tr" });
     // label ("baseline"/"reference") translates; ref.name embeds method names, kept English.
     rowTr.appendChild(el("td", { colspan: String(ncol) },
-      tr(label || "reference") + ": " + ref.name + " — " + parts.join("  ·  ")));
+      tr(label || "reference") + " (" + ref.name + "): " + parts.join("  ·  ")));
     return rowTr;
   }
   // one leaderboard table rendered as a SINGLE <table> with a Method column plus
@@ -612,12 +612,12 @@
     var guide = el("details", { class: "bench-guide" });
     guide.appendChild(el("summary", {}, tr("How to read this leaderboard")));
     guide.appendChild(el("p", {},
-      tr("Each table varies one stage of the pipeline and holds the rest at the default — Euclidean-aligned " +
-      "trials, an EEGNet backbone, standard supervised training — so every row differs from its baseline in " +
-      "exactly one way. The three columns are the three datasets; beneath each accuracy, Δ is the change " +
-      "versus that dataset's baseline. Every table is two-class (chance 50%) on all three datasets — the " +
+      tr("Each table varies one stage of the pipeline and holds the rest at the default. The default is Euclidean-aligned " +
+      "trials, an EEGNet backbone, standard supervised training, so every row differs from its baseline in " +
+      "exactly one way. The three columns are the three datasets, and beneath each accuracy, Δ is the change " +
+      "versus that dataset's baseline. Every table is two-class (chance 50%) on all three datasets. This covers the " +
       "pipeline-stage tables, the source-only, unsupervised-adaptation, source-free and test-time transfer " +
-      "families, the privacy-preserving family, and the ensemble-learning table — so the columns are directly " +
+      "families, the privacy-preserving family, and the ensemble-learning table, so the columns are directly " +
       "comparable throughout. Each family is measured against its own baseline: the transfer families against " +
       "ERM, the privacy-preserving family against Centralized Training, and the ensemble table against " +
       "majority voting. Every row links to its implementation and its paper.")));

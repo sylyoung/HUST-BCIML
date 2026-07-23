@@ -3,10 +3,20 @@
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 # Reference implementation: https://scikit-learn.org
 #
-# Reference (IEEE BibTeX):
+# References (IEEE BibTeX):
+#   @Article{Blankertz2008,
+#     author  = {Blankertz, Benjamin and Tomioka, Ryota and Lemm, Steven and Kawanabe, Motoaki and M\"uller, Klaus-Robert},
+#     journal = {IEEE Signal Processing Magazine},
+#     title   = {Optimizing Spatial Filters for Robust {EEG} Single-Trial Analysis},
+#     year    = {2008},
+#     number  = {1},
+#     pages   = {41-56},
+#     volume  = {25},
+#     doi     = {10.1109/MSP.2008.4408441},
+#   }
 #   @Article{Ramoser2000,
 #     author  = {Ramoser, Herbert and M\"uller-Gerking, Johannes and Pfurtscheller, Gert},
-#     journal = {IEEE Trans. Rehabilitation Engineering},
+#     journal = {IEEE Transactions on Rehabilitation Engineering},
 #     title   = {Optimal Spatial Filtering of Single Trial {EEG} During Imagined Hand Movement},
 #     year    = {2000},
 #     number  = {4},

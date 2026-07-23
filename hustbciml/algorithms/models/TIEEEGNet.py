@@ -5,7 +5,7 @@
 # Reference (IEEE BibTeX):
 #   @Article{Peng2022,
 #     author  = {Peng, Ruimin and Zhao, Changming and Jiang, Jun and Kuang, Guangtao and Cui, Yuqi and Xu, Yifan and Du, Hao and Shao, Jianbo and Wu, Dongrui},
-#     journal = {IEEE Trans. Neural Systems and Rehabilitation Engineering},
+#     journal = {IEEE Transactions on Neural Systems and Rehabilitation Engineering},
 #     title   = {{TIE}-{EEGN}et: Temporal Information Enhanced {EEGN}et for Seizure Subtype Classification},
 #     year    = {2022},
 #     pages   = {2567-2576},

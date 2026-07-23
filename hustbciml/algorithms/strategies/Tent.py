@@ -7,7 +7,7 @@
 # Reference (IEEE BibTeX):
 #   @InProceedings{Wang2021,
 #     author    = {Wang, Dequan and Shelhamer, Evan and Liu, Shaoteng and Olshausen, Bruno and Darrell, Trevor},
-#     booktitle = {Int'l Conf. Learning Representations},
+#     booktitle = {International Conference on Learning Representations},
 #     title     = {{T}ent: Fully Test-Time Adaptation by Entropy Minimization},
 #     year      = {2021},
 #   }

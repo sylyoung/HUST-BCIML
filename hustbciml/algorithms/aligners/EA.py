@@ -3,10 +3,10 @@
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 # Original authors' code: https://github.com/hehe03/EA
 #
-# Reference (IEEE BibTeX):
+# References (IEEE BibTeX):
 #   @Article{He2020,
 #     author  = {He, He and Wu, Dongrui},
-#     journal = {IEEE Trans. Biomedical Engineering},
+#     journal = {IEEE Transactions on Biomedical Engineering},
 #     title   = {Transfer Learning for Brain-Computer Interfaces: A {E}uclidean Space Data Alignment Approach},
 #     year    = {2020},
 #     number  = {2},
@@ -14,14 +14,42 @@
 #     volume  = {67},
 #     doi     = {10.1109/TBME.2019.2913914},
 #   }
+#   @Article{Wu2025,
+#     author  = {Wu, Dongrui},
+#     journal = {Journal of Neural Engineering},
+#     title   = {Revisiting {E}uclidean Alignment for Transfer Learning in {EEG}-Based Brain-Computer Interfaces},
+#     year    = {2025},
+#     number  = {3},
+#     pages   = {031005},
+#     volume  = {22},
+#     doi     = {10.1088/1741-2552/addd49},
+#   }
+#   @Article{Li2024,
+#     author  = {Li, Siyang and Wang, Ziwei and Luo, Hanbin and Ding, Lieyun and Wu, Dongrui},
+#     journal = {IEEE Transactions on Biomedical Engineering},
+#     title   = {{T}-{TIME}: Test-Time Information Maximization Ensemble for Plug-and-Play {BCI}s},
+#     year    = {2024},
+#     number  = {2},
+#     pages   = {423-432},
+#     volume  = {71},
+#     doi     = {10.1109/TBME.2023.3303289},
+#   }
 # ===========================================================================
 """Euclidean Alignment (EA) — label-free cross-subject covariance whitening.
 
-Reference
----------
-H. He and D. Wu, "Transfer learning for Brain-Computer Interfaces: A Euclidean
-space data alignment approach," IEEE Trans. Biomedical Engineering, 67(2):
-399-410, 2020.
+References
+----------
+Original method: H. He and D. Wu, "Transfer learning for Brain-Computer
+Interfaces: A Euclidean space data alignment approach," IEEE Transactions on
+Biomedical Engineering, 67(2): 399-410, 2020.
+
+Walkthrough and re-derivation: D. Wu, "Revisiting Euclidean alignment for
+transfer learning in EEG-based brain-computer interfaces," Journal of Neural
+Engineering, 22(3): 031005, 2025.
+
+Online extension: S. Li, Z. Wang, H. Luo, L. Ding and D. Wu, "T-TIME: Test-Time
+Information Maximization Ensemble for Plug-and-Play BCIs," IEEE Transactions on
+Biomedical Engineering, 71(2): 423-432, 2024.
 
 What problem it solves
 ----------------------

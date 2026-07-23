@@ -16,8 +16,8 @@
 # ===========================================================================
 """FedBS — Federated learning with local Batch-specific BN + SAM
 (Jia, Meng, Li, Liu & Wu, "Federated Motor Imagery Classification for
-Privacy-Preserving Brain-Computer Interfaces," IEEE Trans. Neural Syst. Rehabil.
-Eng., 2024). A lab method.
+Privacy-Preserving Brain-Computer Interfaces," IEEE Transactions on Neural
+Systems and Rehabilitation Engineering, 2024). A lab method.
 
 Privacy-preserving cross-subject transfer: every source subject is a federated
 client that trains only on its own EEG; the server aggregates model parameters

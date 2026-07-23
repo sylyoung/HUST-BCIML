@@ -5,11 +5,12 @@
 # Reference (IEEE BibTeX):
 #   @InProceedings{Zhang2020,
 #     author    = {Zhang, Wen and Wu, Dongrui},
-#     booktitle = {Proc. Int'l Joint Conf. Neural Networks},
+#     booktitle = {Proceedings of the International Joint Conference on Neural Networks},
 #     title     = {Discriminative Joint Probability Maximum Mean Discrepancy ({DJP}-{MMD}) for Domain Adaptation},
 #     year      = {2020},
 #     address   = {Glasgow, UK},
 #     month     = {Jul.},
+#     pages     = {1-8},
 #     doi       = {10.1109/IJCNN48605.2020.9207365},
 #   }
 # ===========================================================================

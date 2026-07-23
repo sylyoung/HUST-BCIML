@@ -6,7 +6,7 @@
 # Reference (IEEE BibTeX):
 #   @Article{Chen2024,
 #     author  = {Chen, Xiaoqing and Wang, Ziwei and Wu, Dongrui},
-#     journal = {IEEE Trans. Neural Systems and Rehabilitation Engineering},
+#     journal = {IEEE Transactions on Neural Systems and Rehabilitation Engineering},
 #     title   = {Alignment-Based Adversarial Training ({ABAT}) for Improving the Robustness and Accuracy of {EEG}-Based {BCI}s},
 #     year    = {2024},
 #     pages   = {1703-1714},

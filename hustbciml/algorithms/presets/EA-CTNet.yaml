@@ -1,0 +1,11 @@
+# EA + CTNet (Zhao et al.) + Linear, trained with ERM.
+# Network-axis comparison: an EEGNet-style convolutional patch embedding feeding
+# a transformer encoder, on the same EA-aligned ERM setup as the other backbones.
+aligner: EA
+augmenter: Identity
+backbone: CTNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

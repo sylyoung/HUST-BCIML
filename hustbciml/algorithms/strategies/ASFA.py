@@ -5,7 +5,7 @@
 # Reference (IEEE BibTeX):
 #   @Article{Xia2022,
 #     author  = {Xia, Kun and Deng, Lingfei and Duch, Wlodzislaw and Wu, Dongrui},
-#     journal = {IEEE Trans. Biomedical Engineering},
+#     journal = {IEEE Transactions on Biomedical Engineering},
 #     title   = {Privacy-Preserving Domain Adaptation for Motor Imagery-Based Brain-Computer Interfaces},
 #     year    = {2022},
 #     number  = {11},

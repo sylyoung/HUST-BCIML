@@ -9,7 +9,7 @@ for target subject t the models of the other subjects each predict t, and their
 per-trial HARD votes are fused by the same post-hoc black-box combiners as the
 multi-seed ensemble — hard majority voting (the baseline), the crowdsourcing
 aggregators Dawid-Skene / Wawa / M-MSR / MACE / GLAD / ZenCrowd / PM / LA / LAA /
-EBCC, and the lab's SML / SML-OVR / StackingNet (see ``_ensembles.py``). There is
+EBCC, and the lab's SML / SML-OVR / StackingNet (see ``algorithms/ensembles/``). There is
 no soft-score averaging combiner: every method sees only hard votes, so none has an
 information advantage. The diversity that the combiners exploit now comes from the
 subjects themselves, and no source data ever leaves its owner.
@@ -38,8 +38,11 @@ from hustbciml.core.context import RunContext
 from hustbciml.core.pipeline import build_pipeline
 from hustbciml.data_provider.data_factory import get_epochs
 from hustbciml.algorithms.strategies._common import forward_logits, supervised_train
-from hustbciml.scripts._ensembles import COMBINERS
+from hustbciml.algorithms.ensembles import build_combiners
 from hustbciml.utils.seed import fix_random_seed, resolve_device
+
+# name -> combiner instance, auto-discovered from algorithms/ensembles/ (one file per method).
+COMBINERS = build_combiners()
 
 
 def _load_aligned(cfg):

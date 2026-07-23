@@ -16,7 +16,7 @@
 #   }
 #   @InProceedings{McMahan2017,
 #     author    = {McMahan, Brendan and Moore, Eider and Ramage, Daniel and Hampson, Seth and Ag{\"u}era y Arcas, Blaise},
-#     booktitle = {Proc. Int. Conf. Artif. Intell. Statist. ({AISTATS})},
+#     booktitle = {Proceedings of the International Conference on Artificial Intelligence and Statistics},
 #     title     = {Communication-Efficient Learning of Deep Networks from Decentralized Data},
 #     year      = {2017},
 #     pages     = {1273-1282},

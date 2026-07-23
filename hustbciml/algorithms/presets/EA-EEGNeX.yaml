@@ -1,0 +1,11 @@
+# EA + EEGNeX (Chen et al.) + Linear, trained with ERM.
+# Network-axis comparison: a purely convolutional EEGNet-style backbone that uses
+# dilated temporal convolutions, on the same EA-aligned ERM setup as the others.
+aligner: EA
+augmenter: Identity
+backbone: EEGNeX
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

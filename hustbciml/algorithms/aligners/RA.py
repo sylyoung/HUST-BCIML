@@ -6,7 +6,7 @@
 # Reference (IEEE BibTeX):
 #   @Article{Zanini2018,
 #     author  = {Zanini, Paolo and Congedo, Marco and Jutten, Christian and Said, Salem and Berthoumieu, Yannick},
-#     journal = {IEEE Trans. Biomedical Engineering},
+#     journal = {IEEE Transactions on Biomedical Engineering},
 #     title   = {Transfer Learning: A {R}iemannian Geometry Framework with Applications to Brain-Computer Interfaces},
 #     year    = {2018},
 #     number  = {5},

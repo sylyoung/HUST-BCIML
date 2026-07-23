@@ -1,7 +1,14 @@
 # exp_basic.py  —  HUST-BCIML EEG-decoding benchmark.
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.
 """Base experiment: owns the data axis (loading + dim injection + results IO).
-Subclasses (one per ``--protocol``) implement ``run``."""
+Subclasses (one per ``--protocol``) implement ``run``.
+
+This class holds everything a protocol does not need to reimplement: load the
+dataset once and tell the config how big the data is, average per-subject
+metrics into a summary, and write the results to disk. A protocol subclass such
+as ``Exp_CrossSubject`` supplies only the loop that decides how subjects are
+split and scored.
+"""
 from __future__ import annotations
 
 import json
@@ -34,6 +41,14 @@ class Exp_Basic:
 
     @staticmethod
     def aggregate(per_subject: List[Dict]) -> Dict:
+        """Reduce the list of per-subject metric dicts to mean and std per
+        metric, which is the leave-one-subject-out headline (average over the
+        held-out subjects).
+
+        ``primary`` is moved to the end only for tidy ordering. ``nanmean`` and
+        ``nanstd`` are used so a fold whose AUC came back NaN (a class missing in
+        that fold) is skipped for that metric instead of poisoning the average.
+        """
         keys = [k for k in per_subject[0] if k != "primary"] + ["primary"]
         out = {}
         for k in keys:
@@ -42,6 +57,17 @@ class Exp_Basic:
         return out
 
     def save_results(self, per_subject: List[Dict], summary: Dict, predictions=None) -> str:
+        """Write the run's results under ``results_dir/<setting>/`` and return
+        that directory.
+
+        Two files are produced. ``metrics.json`` records the full run identity
+        (which dataset, protocol, and pipeline stages were used) alongside the
+        per-subject numbers and the summary, so a result is self-describing.
+        ``predictions.npz`` is optional and holds the raw per-subject scores that
+        the offline ensemble tool combines. The folder name comes from
+        ``cfg.setting()``, so re-running the same configuration overwrites in
+        place instead of piling up copies.
+        """
         out_dir = os.path.join(self.cfg.results_dir, self.cfg.setting())
         os.makedirs(out_dir, exist_ok=True)
         payload = {
@@ -72,4 +98,5 @@ class Exp_Basic:
         return out_dir
 
     def run(self):
+        """Run the protocol. Implemented by each protocol subclass."""
         raise NotImplementedError

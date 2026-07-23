@@ -1,0 +1,12 @@
+# EA + TMSANet (Zhao and Zhu) + Linear, trained with ERM.
+# Network-axis comparison: a temporal multi-scale attention transformer, whose
+# attention fuses local (multi-scale conv) and global keys, on the same
+# EA-aligned ERM setup as the other backbones.
+aligner: EA
+augmenter: Identity
+backbone: TMSANet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

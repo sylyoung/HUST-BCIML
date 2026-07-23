@@ -2,7 +2,7 @@
 # CSPNet.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 #
-# Reference (IEEE BibTeX):
+# References (IEEE BibTeX):
 #   @Article{Jiang2024,
 #     author  = {Jiang, Xue and Meng, Lubin and Chen, Xinru and Xu, Yifan and Wu, Dongrui},
 #     journal = {Knowledge-Based Systems},
@@ -11,6 +11,16 @@
 #     pages   = {112668},
 #     volume  = {305},
 #     doi     = {10.1016/j.knosys.2024.112668},
+#   }
+#   @Article{Blankertz2008,
+#     author  = {Blankertz, Benjamin and Tomioka, Ryota and Lemm, Steven and Kawanabe, Motoaki and M\"uller, Klaus-Robert},
+#     journal = {IEEE Signal Processing Magazine},
+#     title   = {Optimizing Spatial Filters for Robust {EEG} Single-Trial Analysis},
+#     year    = {2008},
+#     number  = {1},
+#     pages   = {41-56},
+#     volume  = {25},
+#     doi     = {10.1109/MSP.2008.4408441},
 #   }
 # ===========================================================================
 """CSP-Net — CSP-initialized EEGNet backbone (Jiang, Meng, Chen, Xu & Wu, Knowledge-Based Systems 2024).

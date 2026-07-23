@@ -3,7 +3,7 @@
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 # Original authors' code: https://github.com/wzwvv/MVCNet
 #
-# References (IEEE BibTeX):
+# Reference (IEEE BibTeX):
 #   @Article{Wang2025b,
 #     author  = {Wang, Ziwei and Li, Siyang and Chen, Xiaoqing and Wu, Dongrui},
 #     journal = {Knowledge-Based Systems},
@@ -13,15 +13,7 @@
 #     volume  = {328},
 #     doi     = {10.1016/j.knosys.2025.114205},
 #   }
-#   @Article{Wang2023,
-#     author  = {Wang, Jiaheng and Yao, Lin and Wang, Yueming},
-#     journal = {IEEE Trans. Neural Systems and Rehabilitation Engineering},
-#     title   = {{IFN}et: An Interactive Frequency Convolutional Neural Network for Enhancing Motor Imagery Decoding from {EEG}},
-#     year    = {2023},
-#     pages   = {1900-1911},
-#     volume  = {31},
-#     doi     = {10.1109/TNSRE.2023.3257319},
-#   }
+# (The IFNet backbone is documented and cited in models/IFNet.py.)
 # ===========================================================================
 """Vendored building blocks for the MVCNet strategy — SimCLR NT-Xent loss, the
 three augmented views (flip / frequency-shift / channel-reflection), and the

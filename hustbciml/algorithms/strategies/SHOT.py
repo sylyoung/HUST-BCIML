@@ -7,7 +7,7 @@
 # Reference (IEEE BibTeX):
 #   @InProceedings{Liang2020,
 #     author    = {Liang, Jian and Hu, Dapeng and Feng, Jiashi},
-#     booktitle = {Proc. Int'l Conf. Machine Learning},
+#     booktitle = {Proceedings of the International Conference on Machine Learning},
 #     title     = {Do We Really Need to Access the Source Data? {S}ource Hypothesis Transfer for Unsupervised Domain Adaptation},
 #     year      = {2020},
 #     pages     = {6028-6039},

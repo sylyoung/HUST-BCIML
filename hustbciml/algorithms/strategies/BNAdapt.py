@@ -6,7 +6,7 @@
 # Reference (IEEE BibTeX):
 #   @InProceedings{Schneider2020,
 #     author    = {Schneider, Steffen and Rusak, Evgenia and Eck, Luisa and Bringmann, Oliver and Brendel, Wieland and Bethge, Matthias},
-#     booktitle = {Proc. Advances in Neural Information Processing Systems},
+#     booktitle = {Advances in Neural Information Processing Systems},
 #     title     = {Improving Robustness against Common Corruptions by Covariate Shift Adaptation},
 #     year      = {2020},
 #     pages     = {11539-11551},

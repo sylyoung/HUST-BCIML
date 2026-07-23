@@ -8,6 +8,14 @@ sagittal-midline mirror of an electrode is obtained by flipping that digit's
 parity (``C3`` <-> ``C4``, ``FC1`` <-> ``FC2``, ``CP5`` <-> ``CP6``), and
 midline electrodes (``Cz``, ``Fz``, ``POz`` ...) map to themselves. This rule
 covers any standard 10-20 montage without a hand-maintained pair list.
+
+Channel Reflection is a data augmentation for motor imagery. Left- and
+right-hand imagery produce mirror-image scalp patterns, so reflecting the
+electrodes across the midline turns a left-hand trial into a plausible
+right-hand one. The augmenter uses the permutation built here to reorder the
+channel axis, and for the two-class left/right task it also swaps the label.
+Because the mirror of the mirror is the original, the permutation is an
+involution, which the reversal fallback below deliberately preserves.
 """
 from __future__ import annotations
 
@@ -20,7 +28,14 @@ _NAME_RE = re.compile(r"^([A-Za-z]+?)(\d+)$")
 
 
 def mirror_name(name: str) -> str:
-    """Return the left/right-mirrored channel name (self for midline names)."""
+    """Return the left/right-mirrored channel name (self for midline names).
+
+    ``_NAME_RE`` splits a name into a letter prefix and a trailing number. A
+    name with no trailing number (``Cz``, ``Fz``, ``POz``) sits on the midline
+    and mirrors to itself. Otherwise the odd/even parity of the number encodes
+    the hemisphere, so adding one to an odd number and subtracting one from an
+    even number gives the electrode symmetric across the midline.
+    """
     m = _NAME_RE.match(name.strip())
     if not m:                      # 'Cz', 'Fz', 'POz', or non-numbered -> midline
         return name
@@ -39,6 +54,9 @@ def reflection_permutation(ch_names: List[str]) -> np.ndarray:
     """
     if not ch_names:
         return np.array([], dtype=int)
+    # Look names up case-insensitively so a montage that writes, say, "cz" still
+    # matches. ``perm`` starts as the identity, so any channel whose mirror is
+    # not present in this montage keeps its own position.
     lut = {n.lower(): i for i, n in enumerate(ch_names)}
     perm = np.arange(len(ch_names), dtype=int)
     for i, n in enumerate(ch_names):

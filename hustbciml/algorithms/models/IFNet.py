@@ -6,7 +6,7 @@
 # Reference (IEEE BibTeX):
 #   @Article{Wang2023,
 #     author  = {Wang, Jiaheng and Yao, Lin and Wang, Yueming},
-#     journal = {IEEE Trans. Neural Systems and Rehabilitation Engineering},
+#     journal = {IEEE Transactions on Neural Systems and Rehabilitation Engineering},
 #     title   = {{IFN}et: An Interactive Frequency Convolutional Neural Network for Enhancing Motor Imagery Decoding from {EEG}},
 #     year    = {2023},
 #     pages   = {1900-1911},
@@ -40,6 +40,8 @@ from hustbciml.core.stages import Backbone
 
 
 class _Conv(nn.Module):
+    # conv (+ optional BN). Drops the conv bias when BN follows, since BN's shift
+    # makes the bias redundant.
     def __init__(self, conv, bn=None):
         super().__init__()
         if bn is not None:
@@ -60,8 +62,13 @@ class _Stem(nn.Module):
         self.out_planes = out_planes
         self.drop_last_t = drop_last_t
         mid = out_planes * radix
+        # Pointwise mixer that projects the channels and produces `radix` bands
+        # stacked along the feature axis. The `radix` bands are the filter-bank
+        # split, so IFNet processes several frequency views in parallel.
         self.sconv = _Conv(nn.Conv1d(in_planes, mid, 1, bias=False, groups=radix),
                            bn=nn.BatchNorm1d(mid))
+        # One depthwise temporal conv stem per band. The kernel width halves from
+        # band to band so different bands see different temporal scales.
         self.tconv = nn.ModuleList()
         k = kernel_size
         for _ in range(radix):
@@ -70,15 +77,17 @@ class _Stem(nn.Module):
                           padding=k // 2, bias=False),
                 bn=nn.BatchNorm1d(out_planes)))
             k //= 2
-        self.pool = nn.AvgPool1d(patch_size, patch_size)
+        self.pool = nn.AvgPool1d(patch_size, patch_size)   # patch-average pool over time
         self.dp = nn.Dropout(drop)
 
     def forward(self, x):                                   # (B, in_planes, T)
-        out = self.sconv(x)
-        out = torch.split(out, self.out_planes, dim=1)
+        out = self.sconv(x)                                 # channel mix -> stacked bands
+        out = torch.split(out, self.out_planes, dim=1)      # split back into the `radix` bands
+        # InterFre cross-frequency fusion: run each band through its own temporal
+        # conv, sum the bands to let frequencies interact, then GELU.
         out = F.gelu(sum(m(o) for o, m in zip(out, self.tconv)))   # interactive-frequency sum
         if self.drop_last_t:
-            out = out[:, :, :-1]
+            out = out[:, :, :-1]                            # drop trailing sample before pooling
         return self.dp(self.pool(out))                      # (B, out_planes, P)
 
 
@@ -89,10 +98,18 @@ class IFNet(Backbone):
                  embed_dims: int = 64, kernel_size: int = 63, radix: int = 1,
                  patch_size: int = None, drop: float = 0.5, drop_last_t: bool = True, **_):
         super().__init__()
+        # Default the patch size to about one eighth of the window, matching the
+        # paper's value on BNCI2014001, so roughly 8 temporal patches survive.
         if patch_size is None:
             patch_size = max(1, (n_times - (1 if drop_last_t else 0)) // 8)
+        # The interactive-frequency stem: filter-bank split, per-band temporal
+        # conv, InterFre fusion, and patch-average pooling (see _Stem).
         self.stem = _Stem(n_chans * radix, embed_dims, kernel_size, patch_size,
                           radix, drop, drop_last_t)
+        # Patch count depends on T, so size the flat feature width with a dummy
+        # forward. The paper applies a LogPower step and a linear classifier on
+        # top of these features. Here the shared hustbciml Linear head plays that
+        # final classifier role.
         with torch.no_grad():
             feat = self.stem(torch.zeros(1, n_chans, n_times)).flatten(1)
         self.out_features = feat.shape[1]
@@ -115,4 +132,6 @@ class IFNet(Backbone):
                 nn.init.constant_(m.bias, 0)
 
     def forward_features(self, x: torch.Tensor) -> torch.Tensor:   # (B, 1, C, T)
+        # Drop the singleton channel dim to (B, C, T), run the interactive-
+        # frequency stem, then flatten the patch maps to the feature vector.
         return self.stem(x.squeeze(1)).flatten(1)

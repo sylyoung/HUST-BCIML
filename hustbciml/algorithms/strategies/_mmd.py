@@ -6,7 +6,7 @@
 # References (IEEE BibTeX):
 #   @InProceedings{Long2015,
 #     author    = {Long, Mingsheng and Cao, Yue and Wang, Jianmin and Jordan, Michael I.},
-#     booktitle = {Proc. Int'l Conf. Machine Learning},
+#     booktitle = {Proceedings of the International Conference on Machine Learning},
 #     title     = {Learning Transferable Features with Deep Adaptation Networks},
 #     year      = {2015},
 #     pages     = {97-105},
@@ -15,7 +15,7 @@
 #   }
 #   @InProceedings{Long2017,
 #     author    = {Long, Mingsheng and Zhu, Han and Wang, Jianmin and Jordan, Michael I.},
-#     booktitle = {Proc. Int'l Conf. Machine Learning},
+#     booktitle = {Proceedings of the International Conference on Machine Learning},
 #     title     = {Deep Transfer Learning with Joint Adaptation Networks},
 #     year      = {2017},
 #     pages     = {2208-2217},

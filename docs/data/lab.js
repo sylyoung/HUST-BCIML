@@ -17,10 +17,10 @@ window.LAB = {
   },
   "repo_intro": "This repository is the lab's open-source code home: a unified, reproducible EEG-decoding benchmark, plus a paper-to-code gallery mapping the lab's publications to their released code.",
   "anchor": {
-    "name": "HUST-BCIML — unified EEG-decoding benchmark",
+    "name": "HUST-BCIML: unified EEG-decoding benchmark",
     "owner": "sylyoung",
     "url": "https://github.com/sylyoung/HUST-BCIML",
-    "blurb": "This repository. A unified, self-contained framework that reimplements 39 EEG-decoding approaches — data alignment, data augmentation, network backbones, transfer learning, and ensemble aggregation — on one composable pipeline, and compares them head-to-head under a single controlled protocol on three MOABB motor-imagery EEG datasets, with per-method reproduction records."
+    "blurb": "This repository. A unified, self-contained framework that reimplements 57 EEG-decoding approaches, spanning data alignment, data augmentation, network backbones, transfer learning, and ensemble aggregation, on one composable pipeline. It compares them head-to-head under a single controlled protocol on three MOABB motor-imagery EEG datasets, with per-method reproduction records."
   },
   "flagships": [
     {
@@ -29,7 +29,7 @@ window.LAB = {
       "owner": "sylyoung",
       "url": "https://github.com/sylyoung/DeepTransferEEG",
       "stars": 51,
-      "blurb": "T-TIME test-time adaptation, Euclidean Alignment, and ~15 domain-adaptation methods for cross-subject EEG — the transfer-learning workhorse this benchmark grew out of."
+      "blurb": "T-TIME test-time adaptation, Euclidean Alignment, and ~15 domain-adaptation methods for cross-subject EEG. This is the transfer-learning library the benchmark grew out of."
     },
     {
       "pillar": "Ensemble & Aggregation",
@@ -45,7 +45,7 @@ window.LAB = {
       "owner": "wzwvv",
       "url": "https://github.com/wzwvv/DBConformer",
       "stars": 70,
-      "blurb": "Dual-branch convolutional transformer for EEG decoding — motor imagery, seizure, and SSVEP."
+      "blurb": "Dual-branch convolutional transformer for EEG decoding, covering motor imagery, seizure, and SSVEP."
     },
     {
       "pillar": "Robustness & Security",
@@ -69,7 +69,7 @@ window.LAB = {
       "owner": "drwuHUST",
       "url": "https://github.com/drwuHUST/TLBCI",
       "stars": 72,
-      "blurb": "Transfer learning for BCIs with non-deep (classical) machine learning — alignment and domain-adaptation baselines."
+      "blurb": "Transfer learning for BCIs with non-deep (classical) machine learning, providing alignment and domain-adaptation baselines."
     },
     {
       "pillar": "Foundation Models",
@@ -101,7 +101,7 @@ window.LAB = {
       "owner": "chamwen",
       "url": "https://github.com/chamwen/MEKT",
       "stars": 47,
-      "blurb": "Manifold Embedded Knowledge Transfer — the reference implementation of the classical MEKT method."
+      "blurb": "Manifold Embedded Knowledge Transfer. The reference implementation of the classical MEKT method."
     },
     {
       "pillar": "Transfer Learning",
@@ -109,7 +109,7 @@ window.LAB = {
       "owner": "hehe03",
       "url": "https://github.com/hehe03/EA",
       "stars": 27,
-      "blurb": "Euclidean Alignment — the field-standard cross-subject alignment."
+      "blurb": "Euclidean Alignment. The field-standard cross-subject alignment."
     },
     {
       "pillar": "Data Augmentation",
@@ -177,4 +177,4 @@ window.LAB = {
     }
   ]
 };
-window.SITE = {"generated": "2026-07-20", "n_papers": 275, "n_code": 80, "n_methods": 39};
+window.SITE = {"generated": "2026-07-24", "n_papers": 275, "n_code": 80, "n_methods": 57};

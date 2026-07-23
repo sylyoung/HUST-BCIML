@@ -6,7 +6,7 @@
 # Reference (IEEE BibTeX):
 #   @Article{Barachant2012,
 #     author  = {Barachant, Alexandre and Bonnet, St\'ephane and Congedo, Marco and Jutten, Christian},
-#     journal = {IEEE Trans. Biomedical Engineering},
+#     journal = {IEEE Transactions on Biomedical Engineering},
 #     title   = {Multiclass Brain-Computer Interface Classification by {R}iemannian Geometry},
 #     year    = {2012},
 #     number  = {4},

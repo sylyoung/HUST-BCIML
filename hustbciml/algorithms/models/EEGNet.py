@@ -42,28 +42,49 @@ class EEGNet(Backbone):
         kern_length = int(sfreq // 2) if kern_length is None else kern_length
         self.kern_length = kern_length
 
+        # Block 1 of the paper: a temporal convolution followed by a depthwise
+        # spatial convolution. Input is (B, 1, C, T).
         self.block1 = nn.Sequential(
+            # Zero-pad along time so the temporal conv is "same" length. The
+            # asymmetric split keeps the output length equal to the input length
+            # for an even `kern_length`.
             nn.ZeroPad2d((kern_length // 2 - 1, kern_length - kern_length // 2, 0, 0)),
+            # Temporal conv: F1 kernels of width `kern_length` over the time axis.
+            # These learn frequency-selective (band-pass-like) filters, so a long
+            # kernel (about half the sampling rate) covers the main EEG rhythms.
             nn.Conv2d(1, F1, (1, kern_length), stride=1, bias=False),
             nn.BatchNorm2d(F1),
+            # Depthwise spatial conv: one (n_chans, 1) kernel per temporal filter
+            # (`groups=F1`, D kernels each). This spans all electrodes at a single
+            # time point, so it learns spatial filters tied to each band, the
+            # network's analogue of CSP-style spatial patterns.
             nn.Conv2d(F1, F1 * D, (n_chans, 1), groups=F1, bias=False),  # depthwise
             nn.BatchNorm2d(F1 * D),
             nn.ELU(),
-            nn.AvgPool2d((1, 4)),
+            nn.AvgPool2d((1, 4)),      # decimate time by 4 to summarise activity
             nn.Dropout(p=dropout),
         )
+        # Block 2 of the paper: a separable convolution (depthwise temporal conv
+        # then pointwise 1x1 mixing conv) that summarises each feature map over a
+        # short window and recombines the maps into F2 features.
         self.block2 = nn.Sequential(
-            nn.ZeroPad2d((7, 8, 0, 0)),
+            nn.ZeroPad2d((7, 8, 0, 0)),   # "same"-length pad for the width-16 conv
+            # Separable conv part 1: depthwise temporal conv, one width-16 kernel
+            # per input map (`groups=F1*D`), learning a per-map temporal summary.
             nn.Conv2d(F1 * D, F1 * D, (1, 16), groups=F1 * D, bias=False),  # separable pt1
+            # Separable conv part 2: pointwise 1x1 conv mixing the maps into F2
+            # output feature maps.
             nn.Conv2d(F1 * D, F2, (1, 1), bias=False),                      # separable pt2
             nn.BatchNorm2d(F2),
             nn.ELU(),
-            nn.AvgPool2d((1, 8)),
+            nn.AvgPool2d((1, 8)),      # decimate time by another factor of 8
             nn.Dropout(p=dropout),
         )
+        # Time was pooled by 4 then by 8, so the surviving length is n_times // 32
+        # and the flattened feature width is F2 times that.
         self.out_features = F2 * (n_times // (4 * 8))
 
     def forward_features(self, x: torch.Tensor) -> torch.Tensor:
-        out = self.block1(x)
-        out = self.block2(out)
-        return out.reshape(out.size(0), -1)
+        out = self.block1(x)                      # temporal + depthwise spatial filtering
+        out = self.block2(out)                    # separable conv feature maps
+        return out.reshape(out.size(0), -1)       # flatten to the pre-logit feature vector

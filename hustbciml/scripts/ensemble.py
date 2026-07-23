@@ -7,7 +7,7 @@ combines exactly the predictions the benchmark produces), then for every target
 subject stacks the K seeds' per-trial predictions and fuses them with each post-hoc
 black-box combiner — hard majority ``voting`` (the baseline), the crowd-label
 aggregators (Dawid-Skene / Wawa / M-MSR / MACE / GLAD / ZenCrowd / PM / LA / LAA /
-EBCC), and the lab's SML / SML-OVR / StackingNet (see ``_ensembles.py``). Every
+EBCC), and the lab's SML / SML-OVR / StackingNet (see ``algorithms/ensembles/``). Every
 combiner sees only hard votes — there is deliberately no soft-score averaging
 combiner, so none has an information advantage over the label-only aggregators.
 Reports per-combiner accuracy mean ± std across subjects, against the single-seed
@@ -28,7 +28,11 @@ import numpy as np
 from sklearn.metrics import accuracy_score
 
 from hustbciml import run as run_module
-from hustbciml.scripts._ensembles import COMBINERS
+from hustbciml.algorithms.ensembles import build_combiners
+
+# name -> combiner instance, auto-discovered from algorithms/ensembles/ (one file
+# per method). Built once at import; the run selects combiners by name below.
+COMBINERS = build_combiners()
 
 
 def _setting_dir(results_dir, dataset, algorithm, seed, protocol="cross_subject"):

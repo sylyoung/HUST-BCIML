@@ -1,0 +1,12 @@
+# EA + EEGWaveNet (Thuwajit et al.) + Linear, trained with ERM.
+# Network-axis comparison: a multiscale CNN that decomposes the signal into
+# coarser time scales and pools each, on the same EA-aligned ERM setup as the
+# other backbones.
+aligner: EA
+augmenter: Identity
+backbone: EEGWaveNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

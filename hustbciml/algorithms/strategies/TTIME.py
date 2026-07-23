@@ -6,7 +6,7 @@
 # Reference (IEEE BibTeX):
 #   @Article{Li2024,
 #     author  = {Li, Siyang and Wang, Ziwei and Luo, Hanbin and Ding, Lieyun and Wu, Dongrui},
-#     journal = {IEEE Trans. Biomedical Engineering},
+#     journal = {IEEE Transactions on Biomedical Engineering},
 #     title   = {{T}-{TIME}: Test-Time Information Maximization Ensemble for Plug-and-Play {BCI}s},
 #     year    = {2024},
 #     number  = {2},

@@ -327,10 +327,10 @@
   code_source: none
   tldr: 'This is a review of human-robot collaboration (HRC) in the construction industry, which lacks
     comprehensive coverage of the technology and methodology behind HRC system design and deployment.
-    It organizes recent progress into three areas—collaborative robot design, perception and interaction,
-    and task allocation and execution—and identifies future priorities: exoskeleton and rigid-flexible-soft
-    collaborative robots for construction trades, multimodal perception and interaction methods, and digital-twin-based
-    HRC systems.'
+    It organizes recent progress into three areas (collaborative robot design, perception and interaction,
+    and task allocation and execution) and identifies future priorities. These include exoskeleton and
+    rigid-flexible-soft collaborative robots for construction trades, multimodal perception and interaction
+    methods, and digital-twin-based HRC systems.'
   source: summarized
 - id: An2025_TSPTTwoStepPromptTuningClass
   title: 'TSPT: Two-Step Prompt Tuning for class-incremental novel class discovery'
@@ -345,9 +345,9 @@
   code_source: paper
   tldr: 'Class-incremental novel class discovery (class-iNCD) must discover unknown classes across a sequence
     of unlabeled tasks while avoiding catastrophic forgetting and protecting privacy (no access to old
-    data). This paper proposes Two-Step Prompt Tuning (TSPT), a rehearsal-free, plug-and-play method:
-    step 1 discovers novel classes by initializing the classifier via uniform clustering and applying
-    intra-/inter-sample consistency learning; step 2 fuses knowledge by adapting the learned prompt as
+    data). This paper proposes Two-Step Prompt Tuning (TSPT), a rehearsal-free, plug-and-play method.
+    Step 1 discovers novel classes by initializing the classifier via uniform clustering and applying
+    intra-/inter-sample consistency learning. Step 2 fuses knowledge by adapting the learned prompt as
     a task-specific prompt and selecting additional prompts from a prompt pool to integrate old and new
     class knowledge. Experiments on three image datasets (including CIFAR-100 and Tiny-ImageNet) demonstrate
     its effectiveness with far fewer trainable parameters.'
@@ -365,8 +365,8 @@
   code_source: paper
   tldr: Existing EEG data augmentation operates in only one domain (temporal, frequency, or spatial) and
     generates within-subject trials, poorly capturing non-stationarity and inter-subject variability.
-    This paper proposes two time-frequency-transform augmentations—Discrete Wavelet Transform Augmentation
-    (DWTaug) and Hilbert-Huang Transform Augmentation (HHTaug)—that decompose signals in the time-frequency
+    This paper proposes two time-frequency-transform augmentations, Discrete Wavelet Transform Augmentation
+    (DWTaug) and Hilbert-Huang Transform Augmentation (HHTaug), that decompose signals in the time-frequency
     domain, reassemble sub-signals across subjects, and reconstruct in the time domain, jointly addressing
     data scarcity, non-stationarity, and individual differences. Across 17 datasets from three BCI paradigms
     they outperform nine existing augmentation methods, improving about 4% over baseline on average.
@@ -463,9 +463,9 @@
   tldr: 'Open set domain adaptation (OSDA) must classify known classes while rejecting unknown-class target
     samples, but existing methods rely on the final image-feature space, need manually tuned thresholds,
     and often misclassify unknowns as known. The paper proposes Dual-Space Detection (DSD) built on a
-    Mixture-of-Experts (MoE): because experts route known classes with characteristic patterns, unknown
+    Mixture-of-Experts (MoE). Because experts route known classes with characteristic patterns, unknown
     samples show inconsistencies between the image-feature space and the expert routing-feature space,
-    enabling threshold-free unknown detection; a graph router further exploits spatial information among
+    enabling threshold-free unknown detection. A graph router further exploits spatial information among
     image patches. On three benchmark datasets DSD outperforms state-of-the-art OSDA methods without any
     manual thresholding.'
   source: summarized
@@ -504,7 +504,7 @@
     (causing false positives) and to precisely localize root causes. VLD-LP preprocesses C/C++ source
     code, extracts graph structures, and combines them with the script into prompts, then fine-tunes an
     LLM via a novel Hierarchical Regulation for Parameter-Efficient Language-model Tuning (HR-PELT) that
-    keeps shallow-layer parameters largely fixed while boosting deep-layer adaptability; a second LLM
+    keeps shallow-layer parameters largely fixed while boosting deep-layer adaptability. A second LLM
     is fine-tuned for root-cause localization. On three datasets it improves detection by 4.82% average
     accuracy and 5.29% Macro-F1 over the state of the art, and localization by 4.80% (ACC@10%) and 3.93%
     (ACC@20%).
@@ -532,8 +532,8 @@
   title: Revisiting Euclidean Alignment for Transfer Learning in EEG-Based Brain-Computer Interfaces
   authors: Dongrui Wu
   year: 2025
-  venue: CoRR
-  doi: 10.48550/ARXIV.2502.09203
+  venue: Journal of Neural Engineering
+  doi: 10.1088/1741-2552/ADDD49
   kind: preprint
   topic: Transfer Learning & Alignment
   paradigm: []
@@ -550,8 +550,8 @@
   title: Multi-View Contrastive Network (MVCNet) for Motor Imagery Classification
   authors: Ziwei Wang et al.
   year: 2025
-  venue: CoRR
-  doi: 10.48550/ARXIV.2502.17482
+  venue: Knowledge-Based Systems
+  doi: 10.1016/J.KNOSYS.2025.114205
   kind: preprint
   topic: Foundation & Self-Supervised Models
   paradigm:
@@ -571,8 +571,8 @@
   title: Spatial Distillation based Distribution Alignment (SDDA) for Cross-Headset EEG Classification
   authors: Dingkun Liu et al.
   year: 2025
-  venue: CoRR
-  doi: 10.48550/ARXIV.2503.05349
+  venue: IEEE Transactions on Biomedical Engineering
+  doi: 10.1109/TBME.2025.3631604
   kind: preprint
   topic: Transfer Learning & Alignment
   paradigm: []
@@ -581,7 +581,7 @@
   tldr: Cross-headset EEG decoding is difficult because headsets differ in the number and locations of
     electrodes. SDDA (Spatial Distillation based Distribution Alignment) first uses spatial distillation
     so the target model can exploit the full source electrode set, then applies input-, feature-, and
-    output-space distribution alignment to bridge the large source-target gap; the authors state this
+    output-space distribution alignment to bridge the large source-target gap. The authors state this
     is the first use of knowledge distillation for cross-headset transfer. On six EEG datasets across
     two BCI paradigms it outperforms 10 classical and state-of-the-art transfer-learning algorithms in
     both offline unsupervised and online supervised domain adaptation.
@@ -590,8 +590,8 @@
   title: 'SACM: SEEG-Audio Contrastive Matching for Chinese Speech Decoding'
   authors: Hongbin Wang et al.
   year: 2025
-  venue: CoRR
-  doi: 10.48550/ARXIV.2505.19652
+  venue: IEEE Transactions on Biomedical Engineering
+  doi: 10.1109/TBME.2026.3678858
   kind: preprint
   topic: Foundation & Self-Supervised Models
   paradigm:
@@ -630,8 +630,8 @@
   title: Magnetoencephalography (MEG) Based Non-Invasive Chinese Speech Decoding
   authors: Zhihong Jia et al.
   year: 2025
-  venue: CoRR
-  doi: 10.48550/ARXIV.2506.12817
+  venue: Journal of Neural Engineering
+  doi: 10.1088/1741-2552/AE1EA2
   kind: preprint
   topic: General ML & Optimization
   paradigm:
@@ -649,8 +649,8 @@
   title: 'AFPM: Alignment-based Frame Patch Modeling for Cross-Dataset EEG Decoding'
   authors: Xiaoqing Chen et al.
   year: 2025
-  venue: CoRR
-  doi: 10.48550/ARXIV.2507.11911
+  venue: Science China Information Sciences
+  doi: 10.1007/S11432-025-4736-2
   kind: preprint
   topic: Transfer Learning & Alignment
   paradigm:
@@ -659,9 +659,9 @@
   code_source: none
   tldr: 'Cross-dataset EEG decoding is hampered by inconsistent channel layouts, non-stationary signal
     distributions, and limited use of neurophysiological priors. AFPM is a plug-and-play, calibration-free
-    framework with two parts: Spatial Alignment, which selects task-relevant channels using brain-region
-    priors, aligns EEG distributions across domains, and remaps channels to a unified layout; and Frame-Patch
-    Encoding, which models multi-dataset signals as unified spatiotemporal patches. Compared with 17 state-of-the-art
+    framework with two parts. The first, Spatial Alignment, selects task-relevant channels using brain-region
+    priors, aligns EEG distributions across domains, and remaps channels to a unified layout. The second,
+    Frame-Patch Encoding, models multi-dataset signals as unified spatiotemporal patches. Compared with 17 state-of-the-art
     methods that require dataset-specific tuning, calibration-free AFPM achieves gains up to 4.40% on
     motor imagery and 3.58% on ERP tasks, and is presented as the first calibration-free cross-dataset
     EEG decoding framework.'
@@ -670,8 +670,8 @@
   title: 'MIRepNet: A Pipeline and Foundation Model for EEG-Based Motor Imagery Classification'
   authors: Dingkun Liu et al.
   year: 2025
-  venue: CoRR
-  doi: 10.48550/ARXIV.2507.20254
+  venue: Knowledge-Based Systems
+  doi: 10.1016/J.KNOSYS.2026.115966
   kind: preprint
   topic: Foundation & Self-Supervised Models
   paradigm:
@@ -740,7 +740,7 @@
   tldr: Most EEG-based BCI research targets decoding accuracy while ignoring security, yet BCI machine-learning
     models are vulnerable to adversarial attacks. This paper proposes easy-to-implement evasion and backdoor
     (poisoning) attacks based on adversarial filtering, i.e. crafting a malicious linear filter applied
-    to EEG signals; it is the first study of adversarial filtering for EEG-based BCIs. Experiments on
+    to EEG signals. It is the first study of adversarial filtering for EEG-based BCIs. Experiments on
     three datasets from different BCI paradigms demonstrated the attacks' effectiveness, raising a new
     BCI security concern.
   source: summarized
@@ -758,8 +758,8 @@
   code_source: github-search
   tldr: 'EEG motor-imagery (MI) classification benefits from both knowledge-driven common spatial pattern
     (CSP) filters and data-driven CNNs, but they are typically used separately. This paper proposes two
-    CSP-empowered networks: CSP-Net-1 inserts a CSP layer before a CNN to improve input discriminability,
-    and CSP-Net-2 replaces a CNN convolutional layer with a CSP layer; the CSP layers are initialized
+    CSP-empowered networks. CSP-Net-1 inserts a CSP layer before a CNN to improve input discriminability,
+    and CSP-Net-2 replaces a CNN convolutional layer with a CSP layer. The CSP layers are initialized
     from CSP filters designed on training data and can be kept fixed or fine-tuned by gradient descent.
     On four public MI datasets, both CSP-Nets consistently improved over their CNN backbones in within-
     and cross-subject settings, especially with very few training samples.'
@@ -778,11 +778,12 @@
   code_source: none
   tldr: This work studies the implicit-regularization effect of unbiased random label noise in stochastic
     gradient descent (SGD), rather than its effect on accuracy. It models SGD dynamics on a quadratic
-    loss as a stochastic differential equation with two diffusion terms (a 'doubly stochastic model')
-    — one from mini-batch sampling of loss gradients and a second from mini-batch sampling of the label
-    noise acting as an implicit regularizer — and proves, without assuming an Ornstein-Uhlenbeck process,
-    that this regularizer favors convergence points that stabilize model outputs against parameter perturbations
-    (inference stability). Two sets of experiments validate the analysis and the resulting inference stabilizer.
+    loss as a stochastic differential equation with two diffusion terms, forming a doubly stochastic
+    model. One term comes from mini-batch sampling of loss gradients and a second from mini-batch sampling
+    of the label noise acting as an implicit regularizer. Without assuming an Ornstein-Uhlenbeck process,
+    it proves that this regularizer favors convergence points that stabilize model outputs against parameter
+    perturbations (inference stability). Two sets of experiments validate the analysis and the resulting
+    inference stabilizer.
   source: summarized
 - id: Wang2024_ChannelReflectionKnowledgeDrivenDataAugmentation
   title: 'Channel reflection: Knowledge-driven data augmentation for EEG-based brain-computer interfaces'
@@ -820,7 +821,7 @@
     (CTIAL), which uses affective norms as prior knowledge to bridge the label spaces of categorical emotion
     classification and dimensional emotion estimation, then selects the unlabeled samples whose predictions
     are most inconsistent across the two tasks for labeling in the target task. Experiments on within-corpus
-    and cross-corpus transfers show cross-task inconsistency is a valuable active-learning metric; it
+    and cross-corpus transfers show cross-task inconsistency is a valuable active-learning metric. It
     is the first work to exploit prior knowledge and data from a different task to aid active learning
     for a new task.
   source: summarized
@@ -837,9 +838,9 @@
   code_source: github-search
   tldr: 'Semi-supervised domain adaptation (SSDA) struggles to find a feature space where source and target
     share the same conditional distribution, and there is no flexible strategy to extend unsupervised
-    domain adaptation (UDA) methods to SSDA. This paper proposes semi-supervised transfer boosting (SS-TrBoosting):
-    starting from a well-trained UDA/SSDA model as the initial learner, it generates additional base learners
-    by boosting — half via supervised domain adaptation and half via semi-supervised learning — and ensembles
+    domain adaptation (UDA) methods to SSDA. This paper proposes semi-supervised transfer boosting (SS-TrBoosting).
+    Starting from a well-trained UDA/SSDA model as the initial learner, it generates additional base learners
+    by boosting (half via supervised domain adaptation and half via semi-supervised learning) and ensembles
     them, plus a source-data generation approach that extends it to source-free SSDA (SS-SFDA). Extensive
     experiments on three real-world datasets show it improves many existing UDA, SSDA, and SFDA methods.'
   source: summarized
@@ -876,10 +877,10 @@
   tldr: EEG-based BCIs typically require many labeled trials, which are costly and user-unfriendly to
     collect. This paper proposes deep source semi-supervised transfer learning (DS3TL) for the setting
     where the source subject has a few labeled plus many unlabeled trials and all target-subject trials
-    are unlabeled; it combines a hybrid SSL module (pseudo-labeling + consistency regularization), a weakly-supervised
+    are unlabeled. It combines a hybrid SSL module (pseudo-labeling + consistency regularization), a weakly-supervised
     contrastive module using true and pseudo labels, and an uncertainty-reduction domain adaptation module.
     On three EEG datasets it outperformed a supervised baseline trained with many more labels and several
-    state-of-the-art SSL methods; it is the first BCI approach to exploit unlabeled source data for more
+    state-of-the-art SSL methods. It is the first BCI approach to exploit unlabeled source data for more
     accurate target-classifier training.
   source: summarized
 - id: Li2024_TTIMETestTimeInformationMaximization
@@ -895,11 +896,11 @@
   code_source: github-search
   tldr: 'Existing transfer learning for EEG BCIs mostly assumes an offline setting with access to all
     unlabeled target trials, whereas real online use needs immediate classification of streaming trials.
-    This paper proposes Test-Time Information Maximization Ensemble (T-TIME): it initializes multiple
+    This paper proposes Test-Time Information Maximization Ensemble (T-TIME). It initializes multiple
     classifiers from Euclidean-aligned source data, predicts each incoming unlabeled trial by ensembling,
     then updates each classifier online via conditional entropy minimization and adaptive marginal-distribution
     regularization. On three public motor-imagery datasets T-TIME outperformed about 20 classical and
-    state-of-the-art TL approaches; it is the first test-time adaptation for calibration-free, plug-and-play
+    state-of-the-art TL approaches. It is the first test-time adaptation for calibration-free, plug-and-play
     EEG BCIs.'
   source: summarized
 - id: Chen2024_DistributedNashEquilibriumSeekingGamesNonlinear
@@ -951,7 +952,7 @@
   code_url: https://github.com/lbinmeng/Multi-privacy-protection
   code_source: github-search
   tldr: EEG signals inherently carry rich personal information beyond the intended BCI task. This paper
-    demonstrates that multiple private attributes — user identity, gender, and BCI-experience — can be
+    demonstrates that multiple private attributes (user identity, gender, and BCI-experience) can be
     easily inferred from EEG, then designs perturbations that convert raw EEG into privacy-protected EEG
     concealing these attributes while preserving primary BCI task performance. Experiments show the protected
     data sharply reduce identity/gender/experience classification accuracy while barely affecting the
@@ -984,8 +985,8 @@
     BCIs
   authors: Xiaoqing Chen et al.
   year: 2024
-  venue: CoRR
-  doi: 10.48550/ARXIV.2411.02094
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2024.3391936
   kind: published
   topic: Foundation & Self-Supervised Models
   paradigm:
@@ -1005,16 +1006,16 @@
   title: User-wise Perturbations for User Identity Protection in EEG-Based BCIs
   authors: Xiaoqing Chen et al.
   year: 2024
-  venue: CoRR
-  doi: 10.48550/ARXIV.2411.10469
+  venue: Journal of Neural Engineering
+  doi: 10.1088/1741-2552/AD88A5
   kind: preprint
   topic: Privacy-Preserving BCI
   paradigm:
   - Biometric
   code_url: https://github.com/xqchen914/Unlearnable-examples-for-EEG
   code_source: paper
-  tldr: Beyond task information, EEG contains private user-identity information that should be protectable;
-    this work shows for the first time that adding user-wise perturbations can make identity information
+  tldr: Beyond task information, EEG contains private user-identity information that should be protectable.
+    This work shows for the first time that adding user-wise perturbations can make identity information
     in EEG unlearnable while preserving BCI task information. Proposes four types of user-wise privacy-preserving
     perturbations (random noise, synthetic noise, error-minimization noise, and error-maximization noise)
     added to EEG training data so a user-identification model cannot learn identity, unlike a prior sample/user-wise
@@ -1025,8 +1026,8 @@
   title: Federated Motor Imagery Classification for Privacy-Preserving Brain-Computer Interfaces
   authors: Tianwang Jia et al.
   year: 2024
-  venue: CoRR
-  doi: 10.48550/ARXIV.2412.01079
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2024.3457504
   kind: preprint
   topic: Privacy-Preserving BCI
   paradigm:
@@ -1045,8 +1046,8 @@
   title: Semi-Supervised Transfer Boosting (SS-TrBoosting)
   authors: Lingfei Deng et al.
   year: 2024
-  venue: CoRR
-  doi: 10.48550/ARXIV.2412.03212
+  venue: IEEE Transactions on Artificial Intelligence
+  doi: 10.1109/TAI.2024.3350543
   kind: preprint
   topic: Foundation & Self-Supervised Models
   paradigm: []
@@ -1056,16 +1057,16 @@
     target data plus labeled source data, but a shared conditional distribution is hard to find and there
     is no flexible way to extend UDA methods to SSDA. Proposes SS-TrBoosting, a fine-tuning framework
     that takes a pre-trained UDA/SSDA model as the initial learner and uses LogitBoost to add base learners
-    (half generated by supervised domain adaptation, half by semi-supervised learning) forming an ensemble;
-    a source-data-generation approach further extends it to semi-supervised source-free domain adaptation
+    (half generated by supervised domain adaptation, half by semi-supervised learning) forming an ensemble.
+    A source-data-generation approach further extends it to semi-supervised source-free domain adaptation
     (SS-SFDA). Extensive experiments show it improves a variety of existing UDA, SSDA, and SFDA approaches.
   source: summarized
 - id: Wu2024_MotorImageryClassificationAsynchronousEEGBrain
   title: Motor Imagery Classification for Asynchronous EEG-Based Brain-Computer Interfaces
   authors: Huanyu Wu et al.
   year: 2024
-  venue: CoRR
-  doi: 10.48550/ARXIV.2412.09006
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2024.3356916
   kind: published
   topic: Foundation & Self-Supervised Models
   paradigm:
@@ -1084,8 +1085,8 @@
   title: Front-end Replication Dynamic Window (FRDW) for Online Motor Imagery Classification
   authors: Xinru Chen et al.
   year: 2024
-  venue: CoRR
-  doi: 10.48550/ARXIV.2412.09015
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2023.3321640
   kind: published
   topic: Data Augmentation & Generation
   paradigm:
@@ -1104,8 +1105,8 @@
   title: Accurate, Robust and Privacy-Preserving Brain-Computer Interface Decoding
   authors: Xiaoqing Chen et al.
   year: 2024
-  venue: CoRR
-  doi: 10.48550/ARXIV.2412.11390
+  venue: Fundamental Research
+  doi: 10.1016/J.FMRE.2026.04.034
   kind: preprint
   topic: Privacy-Preserving BCI
   paradigm: []
@@ -1124,8 +1125,8 @@
   title: Multi-Branch Mutual-Distillation Transformer for EEG-Based Seizure Subtype Classification
   authors: Ruimin Peng et al.
   year: 2024
-  venue: CoRR
-  doi: 10.48550/ARXIV.2412.15224
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2024.3365713
   kind: published
   topic: Transfer Learning & Alignment
   paradigm:
@@ -1145,8 +1146,8 @@
   title: Cross-Species and Cross-Modality Epileptic Seizure Detection via Multi-Space Alignment
   authors: Z. Wang et al.
   year: 2024
-  venue: CoRR
-  doi: 10.48550/ARXIV.2412.17842
+  venue: National Science Review
+  doi: 10.1093/NSR/NWAF086
   kind: preprint
   topic: Transfer Learning & Alignment
   paradigm:
@@ -1166,8 +1167,8 @@
   title: Effective and Efficient Intracortical Brain Signal Decoding with Spiking Neural Networks
   authors: Haotian Fu et al.
   year: 2024
-  venue: CoRR
-  doi: 10.48550/ARXIV.2412.20714
+  venue: Neurocomputing
+  doi: 10.1016/J.NEUCOM.2026.134374
   kind: preprint
   topic: Data Augmentation & Generation
   paradigm:
@@ -1211,13 +1212,13 @@
   paradigm: []
   code_url: https://github.com/jxgogo/Active_Poisoning
   code_source: github-search
-  tldr: 'Transfer learning reduces EEG-BCI calibration effort but opens a backdoor-attack vector: poisoning
+  tldr: 'Transfer learning reduces EEG-BCI calibration effort but opens a backdoor-attack vector, by poisoning
     source-domain data with a trigger so the transferred model misclassifies triggered test samples into
     an attacker-specified class while behaving normally on benign samples. Proposes several active poisoning
     (AP) strategies (maximum diversity sampling, representativeness-and-diversity sampling, minimum uncertainty
     sampling, minimum model change sampling, and combinations) to select the source samples most beneficial
     to poison, improving attack success rate and stealthiness. Experiments on four EEG datasets and three
-    CNN models show TL-based BCIs are vulnerable even under fine-tuning and data augmentation; described
+    CNN models show TL-based BCIs are vulnerable even under fine-tuning and data augmentation. It is described
     as the first study of backdoor attacks on TL models in EEG-based BCIs.'
   source: summarized
 - id: Meng2023_AdversarialRobustnessBenchmarkEEGBrainComputer
@@ -1413,8 +1414,8 @@
   title: 'Doubly Stochastic Models: Learning with Unbiased Label Noises and Inference Stability'
   authors: Haoyi Xiong et al.
   year: 2023
-  venue: CoRR
-  doi: 10.48550/ARXIV.2304.00320
+  venue: "Machine Learning: Science and Technology"
+  doi: 10.1088/2632-2153/AD13BA
   kind: preprint
   topic: Privacy-Preserving BCI
   paradigm: []
@@ -1462,8 +1463,8 @@
   code_source: github-search
   tldr: Addresses the security of steady-state visual evoked potential (SSVEP)-based BCIs, noting that
     existing EEG adversarial attacks are hard to implement in real-world systems. Exploiting SSVEP's dependence
-    on frequency information, it proposes using easily generated square-wave signals as adversarial perturbations;
-    adding such a perturbation can push EEG trials into any attacker-specified target class against canonical-correlation-analysis
+    on frequency information, it proposes using easily generated square-wave signals as adversarial perturbations.
+    Adding such a perturbation can push EEG trials into any attacker-specified target class against canonical-correlation-analysis
     (CCA)-based SSVEP classifiers. Experiments on two SSVEP datasets demonstrate the attack's efficiency
     and robustness against two CCA-based classifiers, exposing a practical security flaw.
   source: summarized
@@ -1639,9 +1640,9 @@
   code_source: none
   tldr: Proposes an adaptive image steganography scheme that embeds into edge and complex-texture regions
     following three design rules. Edges (both weak and strong) are detected by an improved fuzzy enhancement
-    function optimized with the grey wolf optimizer (complexity-first rule); complex-texture regions are
-    selected by minimizing the average classification error rate; the embedding cost function is designed
-    with two average filters and a KerBohme filter (spreading rule); and secret data is embedded via syndrome-trellis
+    function optimized with the grey wolf optimizer (complexity-first rule). Complex-texture regions are
+    selected by minimizing the average classification error rate. The embedding cost function is designed
+    with two average filters and a KerBohme filter (spreading rule). Finally, secret data is embedded via syndrome-trellis
     codes. It outperforms seven classical adaptive steganography algorithms on two steganalytic feature
     sets, with the largest gains at high payloads.
   source: summarized
@@ -1696,7 +1697,7 @@
   code_source: paper
   tldr: Presents the HUST-ANT team's solutions to the two tracks of the 4th Affective Behavior Analysis
     in-the-Wild (ABAW) competition. For the Multi-Task-Learning (MTL) challenge it adopts SMM-EmotionNet
-    with an improved ensemble strategy over feature vectors; for the Learning-from-Synthetic-Data (LSD)
+    with an improved ensemble strategy over feature vectors. For the Learning-from-Synthetic-Data (LSD)
     challenge it introduces methods addressing single labels, imbalanced distributions, fine-tuning limitations,
     and model-architecture choice. On the competition's official validation sets, both proposed approaches
     outperform the baselines by a large margin.
@@ -1705,8 +1706,8 @@
   title: Adversarial Artifact Detection in EEG-Based Brain-Computer Interfaces
   authors: Xiaoqing Chen et al.
   year: 2022
-  venue: CoRR
-  doi: 10.48550/ARXIV.2212.00727
+  venue: Journal of Neural Engineering
+  doi: 10.1088/1741-2552/AD8964
   kind: preprint
   topic: Privacy-Preserving BCI
   paradigm: []
@@ -1734,7 +1735,7 @@
   tldr: Addresses optimization of Takagi-Sugeno-Kang (TSK) fuzzy systems for regression, improving the
     prior MBGD-RDA algorithm. FCM-RDpA replaces grid-partition rule initialization with fuzzy c-means
     clustering and swaps the AdaBound optimizer for Powerball AdaBelief (combining the Powerball gradient
-    and AdaBelief) to expedite and stabilize training; a variant FCM-RDpAx additionally augments features
+    and AdaBelief) to expedite and stabilize training. A variant FCM-RDpAx additionally augments features
     in both rule antecedents and consequents. Across 22 regression datasets it outperforms MBGD-RDA, with
     the largest gains at higher feature dimensionality.
   source: summarized
@@ -2006,8 +2007,8 @@
   title: 'Adversarial Attacks and Defenses in Physiological Computing: A Systematic Review'
   authors: Dongrui Wu et al.
   year: 2021
-  venue: CoRR
-  doi: null
+  venue: National Science Open
+  doi: 10.1360/NSO/20220023
   kind: preprint
   topic: Robustness & Security
   paradigm:
@@ -2188,8 +2189,8 @@
   code_source: paper
   tldr: The paper introduces patch learning (PL), a new strategy for improving an under-performing machine
     learning model. PL (i) trains an initial global model on all data, (ii) identifies the input-space
-    'patches' contributing most to the learning error and trains a dedicated local patch model for each,
-    and (iii) retrains the global model on data falling outside all patches; at inference, the corresponding
+    patches contributing most to the learning error and trains a dedicated local patch model for each,
+    and (iii) retrains the global model on data falling outside all patches. At inference, the corresponding
     patch model is used if the input lies in a patch, otherwise the global model. Demonstrated with fuzzy
     systems on five regression tasks (1-D/2-D/3-D curve fitting, nonlinear system identification, chaotic
     time-series prediction), PL improved accuracy and, per the authors, opens a new line of research.
@@ -2228,7 +2229,7 @@
   tldr: TSK fuzzy systems lacked an efficient, effective training algorithm that ensures good generalization
     and scales to big data. The paper extends three neural-network optimization techniques (mini-batch
     gradient descent, regularization, and AdaBound) to TSK fuzzy systems and adds three fuzzy-specific
-    techniques (DropRule, DropMF, DropMembership); the combined MBGD-RDA algorithm achieves fast convergence
+    techniques (DropRule, DropMF, DropMembership). The combined MBGD-RDA algorithm achieves fast convergence
     and superior test generalization, and works on datasets of any size, being especially useful for big
     data where no efficient trainers previously existed.
   source: summarized
@@ -2340,15 +2341,15 @@
     uses stacking ensemble regression to aggregate multiple base estimators and applies active learning
     to optimally select a few trials from each new subject to label, proposing four active-stacking approaches.
     They significantly outperform three unsupervised ensemble approaches and random-selection supervised
-    stacking, needing only three or four labeled trials per subject to reach RMSE below 3 beats/min; it
+    stacking, needing only three or four labeled trials per subject to reach RMSE below 3 beats/min. It
     is presented as the first work on active stacking.
   source: summarized
 - id: Liu2020_UnsupervisedPoolActiveLearningLinearRegression
   title: Unsupervised Pool-Based Active Learning for Linear Regression
   authors: Ziang Liu et al.
   year: 2020
-  venue: CoRR
-  doi: null
+  venue: Pattern Recognition Letters
+  doi: 10.1016/J.PATREC.2020.11.019
   kind: preprint
   topic: Active Learning
   paradigm: []
@@ -2419,8 +2420,8 @@
   title: 'Transfer Learning for EEG-Based Brain-Computer Interfaces: A Review of Progresses Since 2016'
   authors: Dongrui Wu et al.
   year: 2020
-  venue: CoRR
-  doi: null
+  venue: IEEE Transactions on Cognitive and Developmental Systems
+  doi: 10.1109/TCDS.2020.3007453
   kind: preprint
   topic: Robustness & Security
   paradigm:
@@ -2428,10 +2429,10 @@
   code_url: null
   code_source: none
   tldr: EEG-based BCIs are hampered by noise/artifacts and between- and within-subject non-stationarity,
-    so a per-subject calibration session is usually required, which is time-consuming and user-unfriendly;
-    transfer learning (TL) can reduce this burden. This paper reviews journal publications on TL in EEG-based
-    BCIs since 2016 across six paradigms/applications - motor imagery, event-related potentials, SSVEP,
-    affective BCIs, regression, and adversarial attacks - grouping approaches into cross-subject/session,
+    so a per-subject calibration session is usually required, which is time-consuming and user-unfriendly.
+    Transfer learning (TL) can reduce this burden. This paper reviews journal publications on TL in EEG-based
+    BCIs since 2016 across six paradigms/applications (motor imagery, event-related potentials, SSVEP,
+    affective BCIs, regression, and adversarial attacks), grouping approaches into cross-subject/session,
     cross-device, and cross-task settings. It summarizes the state of the art per paradigm and draws observations
     and future research directions.
   source: summarized
@@ -2458,15 +2459,15 @@
   title: 'Overcoming Negative Transfer: A Survey'
   authors: Wen Zhang et al.
   year: 2020
-  venue: CoRR
-  doi: null
-  kind: preprint
+  venue: IEEE/CAA Journal of Automatica Sinica
+  doi: 10.1109/JAS.2022.106004
+  kind: published
   topic: Robustness & Security
   paradigm:
   - Affect
   code_url: https://github.com/chamwen/NT-Benchmark
   code_source: github-search
-  tldr: 'Provides a systematic survey of negative transfer (NT), i.e., when leveraging source-domain data/knowledge
+  tldr: 'Provides a systematic survey of negative transfer (NT), i.e., when using source-domain data/knowledge
     undesirably reduces target-domain learning performance, which had lacked a unified treatment. It formalizes
     the definition and contributing factors of NT and reviews about fifty representative mitigation approaches
     organized into four categories: secure/safe transfer, domain similarity estimation, distant transfer,
@@ -2478,16 +2479,16 @@
   title: EEG-Based Brain-Computer Interfaces Are Vulnerable to Backdoor Attacks
   authors: Lubin Meng et al.
   year: 2020
-  venue: CoRR
-  doi: null
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2023.3273214
   kind: published
   topic: Robustness & Security
   paradigm: []
   code_url: null
   code_source: none
   tldr: Exposes a security vulnerability of EEG-based BCIs to backdoor (poisoning) attacks. It proposes
-    using a narrow period pulse (NPP) as the backdoor key injected into a small number of training samples;
-    crucially, unlike prior EEG attacks, the key does not need to be synchronized with the EEG trials,
+    using a narrow period pulse (NPP) as the backdoor key injected into a small number of training samples.
+    Crucially, unlike prior EEG attacks, the key does not need to be synchronized with the EEG trials,
     making the attack very easy to implement in practice. Experiments demonstrate that any test trial
     carrying the backdoor key is reliably classified into the attacker-specified target class, showing
     the attack is effective and robust and raising a critical security concern for EEG-based BCIs.
@@ -2505,9 +2506,9 @@
   code_url: null
   code_source: none
   tldr: 'Addresses classification of embryo early development stages from IVF time-lapse videos, which
-    informs embryo-quality assessment. Proposes MTDL-DP: multi-task deep learning (CNN) first pre-classifies
+    informs embryo-quality assessment. Proposes MTDL-DP, where multi-task deep learning (CNN) first pre-classifies
     each video frame into a development stage, then dynamic programming optimizes the whole stage sequence
-    under the practical constraint that the stage number is monotonically non-decreasing; one-to-many,
+    under the practical constraint that the stage number is monotonically non-decreasing. One-to-many,
     many-to-one, and many-to-many MTDL frameworks are compared. The one-to-many MTDL framework gives the
     best accuracy/computation trade-off, and this is reported as the first application of MTDL to embryo
     stage classification.'
@@ -2697,7 +2698,7 @@
     target attack approaches that, assuming full knowledge of the regression model, craft small input
     perturbations to shift the regression output by a pre-determined amount. Experiments on two BCI regression
     problems show both approaches are effective, and the crafted adversarial examples transfer across
-    models (enabling black-box attacks); this is presented as the first study of adversarial attacks on
+    models (enabling black-box attacks). This is presented as the first study of adversarial attacks on
     EEG-based BCI regression.
   source: summarized
 - id: He2019_ChannelTrialsSelectionReducingCovariateShift
@@ -2735,7 +2736,7 @@
     a query-synthesis active-learning strategy that uses binary search over opposite-class instance pairs
     to synthesize informative queries near the target's decision boundary in the input space, rather than
     stepping along gradients. Experiments on three CNNs (EEGNet, DeepCNN, ShallowCNN) and three EEG datasets
-    show higher attack success rate for the same query budget; claimed as the first work integrating active
+    show higher attack success rate for the same query budget. It is claimed as the first work integrating active
     learning with adversarial attacks for EEG BCIs.
   source: summarized
 - id: Xu2019_EEGDriverDrowsinessEstimationSelfPaced
@@ -2761,8 +2762,8 @@
   title: Wasserstein Distance based Deep Adversarial Transfer Learning for Intelligent Fault Diagnosis
   authors: Cheng Cheng et al.
   year: 2019
-  venue: CoRR
-  doi: null
+  venue: Neurocomputing
+  doi: 10.1016/J.NEUCOM.2020.05.040
   kind: preprint
   topic: Robustness & Security
   paradigm: []
@@ -2781,8 +2782,8 @@
     Regularization, DropRule and AdaBound (MBGD-RDA)'
   authors: Dongrui Wu et al.
   year: 2019
-  venue: CoRR
-  doi: null
+  venue: IEEE Transactions on Fuzzy Systems
+  doi: 10.1109/TFUZZ.2019.2958559
   kind: preprint
   topic: Fuzzy Systems & Computing-with-Words
   paradigm:
@@ -2792,8 +2793,8 @@
   tldr: Provides an efficient and effective training algorithm for Takagi-Sugeno-Kang (TSK) fuzzy systems
     on regression problems that also scales to big data, which prior evolutionary/GD/ANFIS strategies
     lacked. Extends three neural-network optimization techniques (mini-batch gradient descent, regularization,
-    and AdaBound) to TSK fuzzy systems and adds three TSK-specific techniques (DropRule, DropMF, DropMembership);
-    the combined algorithm is MBGD-RDA. It achieves fast convergence and superior generalization on datasets
+    and AdaBound) to TSK fuzzy systems and adds three TSK-specific techniques (DropRule, DropMF, DropMembership).
+    The combined algorithm is MBGD-RDA. It achieves fast convergence and superior generalization on datasets
     of any size, and is particularly useful for big datasets where no other efficient TSK training algorithm
     existed.
   source: summarized
@@ -2801,8 +2802,8 @@
   title: On the Vulnerability of CNN Classifiers in EEG-Based BCIs
   authors: Xiao Zhang et al.
   year: 2019
-  venue: CoRR
-  doi: null
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2019.2908955
   kind: preprint
   topic: Privacy-Preserving BCI
   paradigm: []
@@ -2839,8 +2840,8 @@
   title: Protecting Privacy of Users in Brain-Computer Interface Applications
   authors: Anisha Agarwal et al.
   year: 2019
-  venue: CoRR
-  doi: null
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2019.2926965
   kind: preprint
   topic: Privacy-Preserving BCI
   paradigm:
@@ -2896,8 +2897,8 @@
   title: Multi-View Broad Learning System for Primate Oculomotor Decision Decoding
   authors: Zhenhua Shi et al.
   year: 2019
-  venue: CoRR
-  doi: null
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2020.3003342
   kind: preprint
   topic: Deep Architectures
   paradigm:
@@ -2916,8 +2917,8 @@
   title: EEG-Based Driver Drowsiness Estimation Using Feature Weighted Episodic Training
   authors: Yuqi Cui et al.
   year: 2019
-  venue: CoRR
-  doi: null
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2019.2945794
   kind: preprint
   topic: Transfer Learning & Alignment
   paradigm:
@@ -2935,8 +2936,8 @@
   title: Manifold Embedded Knowledge Transfer for Brain-Computer Interfaces
   authors: Wen Zhang et al.
   year: 2019
-  venue: CoRR
-  doi: null
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2020.2985996
   kind: preprint
   topic: Transfer Learning & Alignment
   paradigm:
@@ -2945,9 +2946,9 @@
   code_source: github-search
   tldr: 'Addresses offline unsupervised cross-subject EEG classification, where labeled trials exist for
     source subjects but only unlabeled trials for the target. Proposes Manifold Embedded Knowledge Transfer
-    (MEKT): it aligns the EEG trial covariance matrices on the Riemannian manifold, extracts features
+    (MEKT), which aligns the EEG trial covariance matrices on the Riemannian manifold, extracts features
     in the tangent space, then performs domain adaptation by minimizing the joint (marginal and conditional)
-    distribution shift between source and target while preserving their geometric structures; a domain
+    distribution shift between source and target while preserving their geometric structures. A domain
     transferability estimation (DTE) selects the most beneficial source subjects. On four EEG datasets
     across two paradigms (MI and ERP), MEKT outperformed several state-of-the-art transfer-learning methods,
     and DTE cut more than half the computational cost with little accuracy loss.'
@@ -2956,8 +2957,8 @@
   title: 'Transferability versus Discriminability: Joint Probability Distribution Adaptation (JPDA)'
   authors: Wen Zhang et al.
   year: 2019
-  venue: CoRR
-  doi: null
+  venue: 2020 International Joint Conference on Neural Networks (IJCNN)
+  doi: 10.1109/IJCNN48605.2020.9207365
   kind: preprint
   topic: Transfer Learning & Alignment
   paradigm: []
@@ -2965,7 +2966,7 @@
   code_source: github-search
   tldr: 'Existing domain-adaptation methods rely on a joint MMD (weighted sum of marginal and conditional
     distribution discrepancies) that only maximizes transferability and ignores class discriminability.
-    The paper proposes discriminative joint probability MMD (DJP-MMD) to replace the joint MMD: it measures
+    The paper proposes discriminative joint probability MMD (DJP-MMD) to replace the joint MMD. It measures
     the joint probability distribution discrepancy directly, giving a simpler and more accurate theoretical
     basis while simultaneously increasing cross-domain transferability and between-class discriminability,
     and embeds it in a joint probability domain adaptation (JPDA) framework. On six image-classification
@@ -2975,8 +2976,8 @@
   title: 'Different Set Domain Adaptation for Brain-Computer Interfaces: A Label Alignment Approach'
   authors: He He et al.
   year: 2019
-  venue: CoRR
-  doi: null
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2020.2980299
   kind: preprint
   topic: Transfer Learning & Alignment
   paradigm: []
@@ -2985,7 +2986,7 @@
   tldr: Most domain adaptation for BCIs requires the source and target domains to share the same label
     space, so auxiliary data with a different set of classes cannot be used. This paper addresses different-set
     domain adaptation and proposes a label alignment (LA) approach, using Riemannian-geometry alignment
-    to map the source label space onto the target label space; LA needs as few as one labeled target sample
+    to map the source label space onto the target label space. LA needs as few as one labeled target sample
     per class, acts as a preprocessing step before arbitrary feature extractors/classifiers, and can be
     combined with other domain-adaptation methods. Experiments on two motor-imagery datasets demonstrate
     its effectiveness.
@@ -2994,8 +2995,8 @@
   title: Universal Adversarial Perturbations for CNN Classifiers in EEG-Based BCIs
   authors: Zihan Liu et al.
   year: 2019
-  venue: CoRR
-  doi: null
+  venue: Journal of Neural Engineering
+  doi: 10.1088/1741-2552/AC0F4C
   kind: preprint
   topic: Privacy-Preserving BCI
   paradigm: []
@@ -3159,8 +3160,8 @@
   title: Multi-View Fuzzy Logic System with the Cooperation between Visible and Hidden Views
   authors: Te Zhang et al.
   year: 2018
-  venue: CoRR
-  doi: null
+  venue: IEEE Transactions on Fuzzy Systems
+  doi: 10.1109/TFUZZ.2018.2871005
   kind: preprint
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
@@ -3176,8 +3177,8 @@
   title: 'Feature Dimensionality Reduction for Video Affect Classification: A Comparative Study'
   authors: Chenfeng Guo et al.
   year: 2018
-  venue: CoRR
-  doi: null
+  venue: 2018 First Asian Conference on Affective Computing and Intelligent Interaction (ACII Asia)
+  doi: 10.1109/ACIIASIA.2018.8470329
   kind: preprint
   topic: General ML & Optimization
   paradigm:
@@ -3195,8 +3196,8 @@
   title: 'Transfer Learning for Brain-Computer Interfaces: An Euclidean Space Data Alignment Approach'
   authors: He He et al.
   year: 2018
-  venue: CoRR
-  doi: null
+  venue: IEEE Transactions on Biomedical Engineering
+  doi: 10.1109/TBME.2019.2913914
   kind: preprint
   topic: Transfer Learning & Alignment
   paradigm:
@@ -3283,7 +3284,7 @@
   tldr: Addresses that Common Spatial Pattern (CSP), the standard supervised spatial filter for EEG, needs
     subject-specific calibration data, which is time-consuming. The paper reviews three existing ways
     to incorporate transfer learning into CSP and proposes a new transfer-learning-enhanced CSP approach
-    that leverages data from other subjects. On motor imagery classification the proposed method performs
+    that uses data from other subjects. On motor imagery classification the proposed method performs
     best, especially when the number of target-subject calibration samples is small.
   source: summarized
 - id: Cui2017_EEGDriverDrowsinessEstimationConvolutionalNeural
@@ -3315,7 +3316,7 @@
   paradigm: []
   code_url: null
   code_source: none
-  tldr: A management/scientometrics paper (not a BCI or machine-learning study; Dongrui Wu is a co-author)
+  tldr: A management/scientometrics paper (not a BCI or machine-learning study, though Dongrui Wu is a co-author)
     on talent planning for key science-and-technology disciplines. It proposes a three-level tree-structured
     talent planning model with 2 level-I, 8 level-II, and 23 level-III indices, and uses the Analytic
     Hierarchy Process (AHP) to determine the index weights. The empirical result is a systematic, strategic
@@ -3399,8 +3400,8 @@
     Adaptation Regularization'
   authors: Dongrui Wu et al.
   year: 2017
-  venue: CoRR
-  doi: null
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2016.2544108
   kind: preprint
   topic: Active Learning
   paradigm:
@@ -3419,8 +3420,8 @@
   title: EEG-Based User Reaction Time Estimation Using Riemannian Geometry Features
   authors: Dongrui Wu et al.
   year: 2017
-  venue: CoRR
-  doi: null
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2017.2699784
   kind: published
   topic: Transfer Learning & Alignment
   paradigm:
@@ -3506,7 +3507,7 @@
   code_source: none
   tldr: Tackles online EEG-based driver drowsiness estimation, where large individual differences make
     a single subject-independent model infeasible and per-subject calibration data are costly. Proposes
-    Domain Adaptation with Model Fusion (DAMF), which leverages EEG data from other subjects in a transfer-learning
+    Domain Adaptation with Model Fusion (DAMF), which uses EEG data from other subjects in a transfer-learning
     framework so that very little subject-specific calibration data is needed. In a simulated-driving
     experiment with 15 subjects, DAMF achieved better performance than several other approaches.
   source: summarized
@@ -3635,7 +3636,7 @@
     when the codebook is small. Proposes a Reconstruction decoder that represents the CWW output as a
     combination of two successive codebook words with minimum information loss by solving a constrained
     optimization problem, preserving the output's shape information. It generalizes the Word decoder,
-    is implicitly a Rank decoder, and equals the 2-tuple representation under certain conditions; effectiveness
+    is implicitly a Rank decoder, and equals the 2-tuple representation under certain conditions. Its effectiveness
     is verified in three experiments.
   source: summarized
 - id: Mendel2014_DeterminingIntervalType2FuzzySet
@@ -3734,7 +3735,7 @@
   tldr: This Springer book chapter addresses why interval type-2 (IT2) fuzzy logic controllers handle
     uncertainty better than their type-1 (T1) counterparts by identifying two fundamental differences.
     Adaptiveness means the embedded T1 fuzzy sets used to compute the bounds of the type-reduced interval
-    change as the input changes; novelty means the upper and lower membership functions of the same IT2
+    change as the input changes. Novelty means the upper and lower membership functions of the same IT2
     fuzzy set can be used simultaneously in computing each bound. Because T1 FLCs have neither property,
     a T1 FLC cannot reproduce the more complex control surface of an IT2 FLC given the same rule base.
   source: summarized
@@ -3865,7 +3866,7 @@
     word in a codebook, but it incurs significant information loss, especially when the codebook is small.
     This paper proposes a Reconstruction decoder that represents the CWW-engine output as a combination
     of two successive codebook words with minimum information loss by solving a constrained optimization
-    problem; it generalizes the Word decoder, is implicitly also a Rank decoder, and compactly preserves
+    problem. It generalizes the Word decoder, is implicitly also a Rank decoder, and compactly preserves
     the shape information of the engine output. Experiments verify its effectiveness, and a full MATLAB
     implementation is provided in the paper's Appendix.
   source: summarized
@@ -3981,7 +3982,7 @@
   code_source: none
   tldr: Studies the continuity of the input-output mappings of type-1 (T1) and interval type-2 (IT2) fuzzy
     logic systems. For T1 FLSs it shows that being a universal approximator is equivalent to having a
-    continuous input-output mapping and derives the condition for discontinuity; for IT2 FLSs it considers
+    continuous input-output mapping and derives the condition for discontinuity. For IT2 FLSs it considers
     six type-reduction/defuzzification methods (Karnik-Mendel, uncertainty bound, Wu-Tan, Nie-Tan, Du-Ying,
     Begian-Melek-Mendel) and derives the conditions under which continuous or discontinuous mappings result.
     It provides design guidelines for achieving desired continuity (for traditional modeling/control)
@@ -4160,7 +4161,7 @@
   tldr: Studies when fuzzy logic systems (FLSs) produce continuous versus discontinuous input-output mappings,
     which matters because control applications usually want smooth surfaces while hybrid/switched-system
     modeling can exploit discontinuities. For type-1 FLSs it proves that being a universal approximator
-    is equivalent to having a continuous mapping and derives the condition for discontinuity; for interval
+    is equivalent to having a continuous mapping and derives the condition for discontinuity. For interval
     type-2 FLSs (Karnik-Mendel type-reduction with center-of-sets defuzzification) it derives conditions
     yielding continuous or discontinuous mappings. The result gives explicit guidance for choosing membership-function
     parameters to obtain a desired (dis)continuity.
@@ -4327,7 +4328,7 @@
   code_url: null
   code_source: none
   tldr: The Karnik-Mendel (KM) algorithms are the standard iterative procedure for the min/max bounds
-    arising in interval type-2 fuzzy type-reduction and uncertainty-measure computation; they converge
+    arising in interval type-2 fuzzy type-reduction and uncertainty-measure computation. They converge
     monotonically and super-exponentially but still need about two to six iterations. The paper proposes
     enhanced KM (EKM) algorithms that use better initialization and computation reductions. Extensive
     simulations show EKM saves about two iterations (more than a 39% reduction in computation time), with
@@ -4439,7 +4440,7 @@
   tldr: Beyond the centroid (defined earlier by Karnik and Mendel), uncertainty measures for interval
     type-2 fuzzy sets were largely undefined. Using a Representation Theorem for IT2 FSs, this paper defines
     cardinality, fuzziness (entropy), variance, and skewness for IT2 FSs and derives formulas to compute
-    each; each measure is an interval whose length indicates the amount of uncertainty. These measures
+    each. Each measure is an interval whose length indicates the amount of uncertainty. These measures
     are intended to support IT2 fuzzy-logic-system design via the principles of uncertainty and to enable
     similarity computation between two IT2 FSs.
   source: summarized
@@ -4725,10 +4726,10 @@
   code_source: null
   tldr: >
     Offline unsupervised cross-subject motor-imagery transfer that protects
-    source-subject privacy: it generates source models locally and encapsulates
+    source-subject privacy. It generates source models locally and encapsulates
     them as APIs, builds a virtual intermediate domain to transfer knowledge to the
     target, then performs feature adaptation. Source-free and lightweight (few
-    parameters, no access to source data or massive source models); on four MI
+    parameters, no access to source data or massive source models). On four MI
     datasets it outperformed 13 approaches, including transfer methods that use the
     source samples or model parameters directly.
   source: summarized
@@ -4901,11 +4902,11 @@
   code_source: null
   tldr: >
     Replaces the joint MMD used in domain adaptation with a discriminative
-    joint-probability MMD (DJP-MMD): it measures the joint probability distribution
-    discrepancy — simpler and more accurate than summing the marginal and
-    conditional MMDs — and simultaneously increases transferability (same class
+    joint-probability MMD (DJP-MMD). It measures the joint probability distribution
+    discrepancy, which is simpler and more accurate than summing the marginal and
+    conditional MMDs, and simultaneously increases transferability (same class
     across domains) and discriminability (different classes). Embedded in a
-    joint-probability DA framework; on six image-classification datasets it
+    joint-probability DA framework. On six image-classification datasets it
     outperformed traditional MMD-based domain adaptation.
   source: summarized
 - id: null

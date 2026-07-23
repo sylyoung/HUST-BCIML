@@ -1,0 +1,12 @@
+# EA + EEGDeformer (Ding et al.) + Linear, trained with ERM.
+# Network-axis comparison: a dense convolutional transformer with a hierarchical
+# coarse-to-fine attention path and a fine-grained temporal CNN branch, on the
+# same EA-aligned ERM setup as the other backbones.
+aligner: EA
+augmenter: Identity
+backbone: EEGDeformer
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

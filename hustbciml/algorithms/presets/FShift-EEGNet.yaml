@@ -1,0 +1,11 @@
+# EA + frequency-shift augmentation + EEGNet, trained with ERM.
+# Augmentation-axis baseline: Hilbert-based spectral shift (Freer & Yang 2020) on
+# the EA-aligned EEGNet+ERM setup. Compare against EA-EEGNet (no augmentation).
+aligner: EA
+augmenter: FShift
+backbone: EEGNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

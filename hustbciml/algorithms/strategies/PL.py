@@ -6,7 +6,7 @@
 # Reference (IEEE BibTeX):
 #   @InProceedings{Lee2013,
 #     author    = {Lee, Dong-Hyun},
-#     booktitle = {Proc. {ICML} Workshop on Challenges in Representation Learning},
+#     booktitle = {International Conference on Machine Learning Workshop on Challenges in Representation Learning},
 #     title     = {Pseudo-Label: The Simple and Efficient Semi-Supervised Learning Method for Deep Neural Networks},
 #     year      = {2013},
 #     address   = {Atlanta, GA},

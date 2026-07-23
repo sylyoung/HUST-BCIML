@@ -2,6 +2,16 @@
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.
 """Dataset adapters -> a single ``EEGEpochs`` spanning all subjects.
 
+Every loader returns one ``EEGEpochs`` that stacks the trials of all subjects
+together, with a per-trial ``domain`` array recording which subject each trial
+came from. The cross-subject splitter later slices that single container by
+domain, so all subject bookkeeping lives in one place rather than in separate
+per-subject files. The three per-trial arrays a loader must fill are ``X`` of
+shape (N, C, T), ``y`` the integer class index in [0, n_classes), and
+``domain`` the subject id. The rest of the fields (``sfreq``, ``n_classes``,
+``ch_names``, ``paradigm``, ``classes``) are dataset-wide metadata read from
+the dataset spec.
+
 Three loaders:
   * ToyDataset   — deterministic synthetic MI (learnable + cross-subject shift),
                    bundled, no download; used by the integration test.
@@ -90,12 +100,26 @@ _MI_SPEC = {
 
 
 class NumpyDataset:
+    """Read a pre-exported DeepTransferEEG ``.npy`` dump and reconstruct the
+    same trials, subject ids, and class subset that its ``data_process`` builds.
+
+    The on-disk arrays hold every subject's trials concatenated in subject
+    order, so subject identity is positional (the first ``per_subject_total``
+    rows are subject 0, and so on) rather than stored explicitly. ``load``
+    therefore recovers ``domain`` by slicing that fixed stride, and it selects
+    the training session by index because the dump keeps sessions concatenated
+    the same way.
+    """
+
     def __init__(self, name: str, data_dir: str = "./data", **_):
         self.name = name
         self.data_dir = data_dir
         self.paradigm = "MI"
 
     def load(self) -> EEGEpochs:
+        # "BNCI2014001-4" is the 4-class variant of the same recordings, so it
+        # reads the same files and only differs in whether the 2-class subset is
+        # applied further down.
         base = "BNCI2014001" if self.name == "BNCI2014001-4" else self.name
         X = np.load(os.path.join(self.data_dir, base, "X.npy"))
         y = np.load(os.path.join(self.data_dir, base, "labels.npy"))
@@ -103,19 +127,29 @@ class NumpyDataset:
         n_sub = spec["n_subjects"]
 
         if spec["session_slice"] is not None:
+            # Keep only the training session. Within each subject's block of
+            # ``per_subject_total`` rows the first ``[lo, hi)`` rows are the
+            # training session, so shifting that window by ``total * i`` selects
+            # subject i's training trials, and the concatenation gathers them for
+            # every subject in one index array.
             lo, hi = spec["session_slice"]
             total = spec["per_subject_total"]
             idx = np.concatenate([np.arange(lo, hi) + total * i for i in range(n_sub)])
             X, y = X[idx], y[idx]
 
-        # per-subject domain ids (equal split after session selection)
+        # After session selection every subject contributes the same number of
+        # rows, so an equal split recovers the subject id of each trial.
         per = len(X) // n_sub
         domain = np.repeat(np.arange(n_sub), per)
 
         if spec["two_class"] is not None and self.name != "BNCI2014001-4":
+            # Restrict to the two motor-imagery classes of interest; ``domain``
+            # is filtered by the same mask so trials stay aligned to subjects.
             keep = np.isin(y, list(spec["two_class"]))
             X, y, domain = X[keep], y[keep], domain[keep]
 
+        # Map the surviving string labels to contiguous integers 0..K-1 in
+        # sorted order, so the numeric class index is stable across runs.
         classes = sorted(np.unique(y).tolist())
         y_enc = preprocessing.LabelEncoder().fit_transform(y)
         return EEGEpochs(
@@ -182,9 +216,20 @@ class MOABBAdapter:
         raise ImportError(f"none of {self.spec['cls']} found in moabb.datasets")
 
     def load(self) -> EEGEpochs:
-        # npz cache — skip the ~90s moabb filtering on repeat runs/seeds
+        # Fast path: a previous run cached the fully processed epochs to
+        # ``{name}_epochs.npz``, so reload them and skip the ~90s of moabb
+        # download and band-pass filtering. This is what runs on the offline GPU
+        # server, where the cache is shipped in and moabb itself is never called.
         cache = os.path.join(self.data_dir, f"{self.name}_epochs.npz")
         if os.path.exists(cache):
+            # The .npz stores exactly the seven fields ``EEGEpochs`` needs, one
+            # per archive key. ``X``/``y``/``domain`` come back as arrays as
+            # saved. The scalars ``sfreq`` and ``n_classes`` were stored as 0-d
+            # arrays, so they are cast back to float/int. ``ch_names`` and
+            # ``classes`` were stored as fixed-width unicode string arrays (see
+            # the savez comment below) and are turned back into plain str lists.
+            # ``allow_pickle=True`` is kept for backward compatibility with any
+            # older object-array cache.
             d = np.load(cache, allow_pickle=True)
             return EEGEpochs(
                 X=d["X"], y=d["y"], domain=d["domain"], sfreq=float(d["sfreq"]),
@@ -197,6 +242,10 @@ class MOABBAdapter:
         from sklearn import preprocessing
         moabb.set_log_level("ERROR")
 
+        # ``get_data`` returns the epoched, filtered trials ``X`` (N, C, T), the
+        # string ``labels``, and a ``meta`` DataFrame with one row per trial
+        # whose ``subject``/``session``/``run`` columns say where each trial came
+        # from. Selection below is expressed as a boolean mask over those rows.
         ds = self._resolve_class(D)()
         X, labels, meta = MotorImagery(n_classes=self.spec["n_classes"]).get_data(
             dataset=ds, subjects=ds.subject_list)
@@ -206,15 +255,27 @@ class MOABBAdapter:
 
         mask = np.ones(len(X), dtype=bool)
         if self.spec.get("session_first"):
+            # Session labels are named differently across moabb versions, so the
+            # training session is picked by position, not by name: dict.fromkeys
+            # preserves first-seen order, and its first key is the session moabb
+            # emitted first, which is the training session in its output order.
             first_session = list(dict.fromkeys(sess.tolist()))[0]  # training session, in output order
             mask &= (sess == first_session)
         if self.spec.get("run_contains"):                # train/test split lives in the run label
+            # Some datasets keep only one session and put the train/test split in
+            # the run name instead, so keep the runs whose label contains the
+            # marker substring (e.g. "train").
             run = meta["run"].to_numpy().astype(str)
             mask &= np.array([self.spec["run_contains"] in r for r in run])
         if self.spec["two_class"] is not None:
+            # Optionally drop down to the two classes of interest.
             mask &= np.isin(labels, self.spec["two_class"])
         X, labels, subj = X[mask], labels[mask], subj[mask]
 
+        # Encode the surviving string labels and subject ids to contiguous
+        # integers. Sorted label order fixes the class-to-index mapping, and the
+        # subject encoding renumbers moabb's subject ids to a dense 0..N-1 domain
+        # axis that the splitter iterates over.
         y = preprocessing.LabelEncoder().fit_transform(labels)          # left_hand=0, right_hand=1
         domain = preprocessing.LabelEncoder().fit_transform(subj)       # subjects -> 0..N-1
         classes = sorted(set(labels.tolist()))

@@ -6,7 +6,7 @@
 # Reference (IEEE BibTeX):
 #   @InProceedings{Jin2020,
 #     author    = {Jin, Ying and Wang, Ximei and Long, Mingsheng and Wang, Jianmin},
-#     booktitle = {Proc. European Conf. Computer Vision},
+#     booktitle = {Proceedings of the European Conference on Computer Vision},
 #     title     = {Minimum Class Confusion for Versatile Domain Adaptation},
 #     year      = {2020},
 #     pages     = {464-480},

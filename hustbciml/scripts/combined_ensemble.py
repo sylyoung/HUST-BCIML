@@ -37,9 +37,12 @@ from hustbciml.core.config import resolve_config
 from hustbciml.core.context import RunContext
 from hustbciml.core.pipeline import build_pipeline
 from hustbciml.algorithms.strategies._common import forward_logits, supervised_train
-from hustbciml.scripts._ensembles import COMBINERS
+from hustbciml.algorithms.ensembles import build_combiners
 from hustbciml.scripts.decentralized import _load_aligned, _onehot
 from hustbciml.utils.seed import fix_random_seed, resolve_device
+
+# name -> combiner instance, auto-discovered from algorithms/ensembles/ (one file per method).
+COMBINERS = build_combiners()
 
 
 # Five heterogeneous backbones (distinct inductive biases): EEGNet (compact

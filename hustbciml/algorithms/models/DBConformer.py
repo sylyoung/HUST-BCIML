@@ -9,10 +9,13 @@
 #     journal = {IEEE Journal of Biomedical and Health Informatics},
 #     title   = {{DBC}onformer: Dual-Branch Convolutional Transformer for {EEG} Decoding},
 #     year    = {2026},
+#     number  = {5},
+#     pages   = {4134-4147},
+#     volume  = {30},
 #     doi     = {10.1109/JBHI.2025.3622725},
 #   }
 # ===========================================================================
-"""DBConformer (Ziwei Wang et al., 2025/2026) — a dual-branch convolutional
+"""DBConformer (Ziwei Wang et al., 2025/2026) is a dual-branch convolutional
 transformer for EEG decoding.
 
 Two parallel Conformer branches share a small embedding size:

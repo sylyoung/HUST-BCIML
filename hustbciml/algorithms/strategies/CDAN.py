@@ -6,7 +6,7 @@
 # Reference (IEEE BibTeX):
 #   @InProceedings{Long2018,
 #     author    = {Long, Mingsheng and Cao, Zhangjie and Wang, Jianmin and Jordan, Michael I.},
-#     booktitle = {Proc. Advances in Neural Information Processing Systems},
+#     booktitle = {Advances in Neural Information Processing Systems},
 #     title     = {Conditional Adversarial Domain Adaptation},
 #     year      = {2018},
 #     pages     = {1647-1657},

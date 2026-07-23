@@ -7,7 +7,7 @@
 # Reference (IEEE BibTeX):
 #   @Article{Zhang2020a,
 #     author  = {Zhang, Wen and Wu, Dongrui},
-#     journal = {IEEE Trans. Neural Systems and Rehabilitation Engineering},
+#     journal = {IEEE Transactions on Neural Systems and Rehabilitation Engineering},
 #     title   = {Manifold Embedded Knowledge Transfer for Brain-Computer Interfaces},
 #     year    = {2020},
 #     number  = {5},
