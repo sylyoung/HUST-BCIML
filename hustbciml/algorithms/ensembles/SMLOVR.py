@@ -48,6 +48,11 @@ For K = 2 the two one-vs-rest subtasks are mirror images, so SML-OVR collapses t
 the binary SML -- which is why SML and SML-OVR post identical numbers on the
 two-class motor-imagery datasets, and SML-OVR only pulls ahead on natively
 multi-class data.
+
+The leading eigenvector is taken with ``eigh`` (argmax over eigenvalues), as
+Algorithm 1 specifies. This was cross-checked against the TestEnsemble reference's
+first-returned ``np.linalg.eig`` eigenvector and the two agree on the benchmark
+predictions, so only this paper-faithful version is kept.
 """
 from __future__ import annotations
 

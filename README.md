@@ -60,57 +60,13 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
-- **2026-07-24 (v1.1.3).** Rewrote the in-source documentation of all 22 lab-proposed methods to
-  match their published papers — corrected citations, each paper's own terminology and equation
-  references, and honest scoping to the variant each file implements. Documentation only; no
-  benchmark numbers change.
+- **2026-07-24 (v1.1.3).** Rewrote all 22 lab methods' in-source docs to match their published papers (documentation only; benchmark numbers unchanged).
 
-- **2026-07-24 (v1.1.2).** The method inventory was rewritten and the transfer and ensemble
-  families reorganized: transfer methods are now grouped by when they use the unlabeled target
-  (source-only, unsupervised domain adaptation, source-free, test-time), the privacy-preserving
-  family was renamed **privacy-preserving transfer** and its explanation expanded, and the
-  ensemble section now spells out the decentralized black-box protocol. **Channel Symmetry** was
-  removed as a benchmarked augmenter (its rationale now lives in the Channel Reflection source),
-  bringing the count to **56** approaches, and MVCNet is presented as a plain network backbone.
-  A `CHANGELOG.md` was added and the Chinese pages were made more idiomatic.
+- **2026-07-24 (v1.1.2).** Regrouped the transfer and ensemble families, renamed **privacy-preserving transfer**, and dropped Channel Symmetry as a benchmarked augmenter (**56** approaches).
 
-- **2026-07-24 (v1.1.1).** The Ensemble Learning table was split into two sub-families,
-  non-ensemble references and ensemble learning, mirroring the Transfer Learning layout, and its
-  former summary strip was dropped. Augmenters now appear by full name (Additive Noise, Amplitude
-  Scaling, Frequency Shift, Fourier Surrogate, Frequency Recombination, Channel Symmetry, and
-  Half-Sample Recombination). The benchmark and overview prose was rewritten for clarity in both
-  English and Chinese, and the publication index was de-duplicated to the single official version
-  of each paper (275 → 263).
+- **2026-07-24 (v1.1.1).** Split the ensemble table, listed augmenters by full name, and de-duplicated the publication index (275 → 263).
 
-- **2026-07.** The Networks axis gained ten more backbones (ADFCNN, CTNet, MSCFormer, MSVTNet,
-  TMSA-Net, EEGWaveNet, SlimSeiz, FBMSNet, EEGNeX, and EEG-Deformer) and the augmentation axis an
-  eighth baseline, amplitude scaling. All were benchmarked across the three datasets over three
-  seeds, and their measured accuracies now appear on the leaderboard, each with a runnable preset.
-
-- **2026-07.** Seven data-augmentation baselines from the lab's augmentation studies joined the
-  augmentation axis: additive noise, amplitude flip, frequency shift, Fourier surrogate,
-  frequency recombination, channel symmetry, and half-sample recombination. Each ships with a
-  runnable preset.
-
-- **2026-07.** Every in-code reference now gives the full journal or conference name. The Common
-  Spatial Patterns, Euclidean Alignment, and MVCNet citations were corrected and expanded.
-
-- **2026-07.** A faithful, full **MEKT** implementation (the Section III-C domain-adaptation
-  projection, ported from the authors' code) now tops the classical-transfer results on two of
-  the three datasets.
-
-- **2026-07.** The benchmark package was consolidated as **`hustbciml`**. The
-  privacy-preserving comparison was extended to **three** MOABB datasets. A
-  held-out-source hyperparameter-selection pass refreshed the network, transfer, augmentation,
-  and composite tables, replacing numbers **only** where a fairly selected configuration beat
-  the previous one.
-
-- **2026-07.** Four additional lab methods were ported (**CSP-Net, DJP-MMD, LSFT, MSDT**), and
-  the transfer table was regrouped into source-only / unsupervised-DA / source-free / test-time
-  families.
-
-- **2026-07.** The web app gained a three-dataset leaderboard, lab-approach highlighting, and a
-  searchable paper-to-code gallery over **263** publications.
+- **2026-07-24 (v1.1.0).** Added ten network backbones, eight augmentation baselines, and five lab methods (CSP-Net, DJP-MMD, LSFT, MSDT, and a full MEKT), all benchmarked over three datasets × three seeds; launched the web app's leaderboard and paper-to-code gallery.
 
 </details>
 
