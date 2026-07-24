@@ -14,30 +14,51 @@
 #     doi     = {10.1109/TNSRE.2024.3391936},
 #   }
 # ===========================================================================
-"""ABAT — Alignment-Based Adversarial Training (Chen et al., 2024).
+"""ABAT (Chen et al., 2024, IEEE TNSRE) — Alignment-Based Adversarial Training:
+a training strategy that improves both the robustness and the benign-sample
+accuracy of EEG classifiers by aligning the EEG data BEFORE adversarial training.
 
-Two ingredients improve both robustness and clean accuracy of EEG classifiers:
+Adversarial training (AT) alone solves the min-max/saddle-point problem (Eq. 8):
+minimize over the model the worst-case loss over adversarial examples X^adv drawn
+from an l_inf ball of radius eps around each trial X. AT hardens the model against
+attacks but often lowers accuracy on benign samples (Sec. III). ABAT's proposal is
+to prepend Euclidean Alignment (EA) so alignment and AT act together. Per
+Algorithm 1 (Sec. III) and Fig. 3-4, ABAT is two sequential stages, IN THIS ORDER:
 
-  1. **Alignment** — Euclidean Alignment of the trials (supplied here by the
-     pipeline's aligner stage; compose with ``aligner: EA``).
-  2. **Adversarial training** — after a short warmup of clean training, each
-     training batch is replaced by a PGD adversarial batch and the model is
-     trained on those. ABAT's signature is the **channel-std-scaled** budget:
-     the per-sample perturbation on each channel is scaled by that channel's
-     temporal standard deviation, so the attack respects each channel's
-     amplitude instead of using one global epsilon.
+  1. Data alignment — Euclidean Alignment (EA; Eqs. 1-2, Sec. II-A). EA whitens
+     the per-domain average spatial covariance so trials from different
+     subjects/sessions share a more consistent distribution. EA is unsupervised
+     (uses no labels). Here it is supplied by the pipeline's aligner stage, so run
+     ABAT with ``aligner: EA``.
+  2. Adversarial training — on the aligned source data, generate strong
+     adversarial examples and minimize the (supervised) classification loss on
+     them (Eq. 8). The paper generates X^adv with FGSM (single step, Eq. 5),
+     PGD (iterative, Eqs. 6-7), or AutoAttack. This file uses PGD: start from a
+     uniformly perturbed benign trial X_0 = X + xi, xi in (-eps, eps) (Eq. 6),
+     then take ``steps`` gradient-sign ascent steps of size alpha <= eps,
+     projecting back into the eps-ball each step (Eq. 7). Defaults follow the
+     paper: 10 PGD steps, step size alpha = eps/5 (Sec. IV-E).
 
-Defaults follow the source (``train.py`` ``ATchastd`` + ``attack_lib.PGD_batch_cha``):
-eps ``AT_eps=0.01``, step size ``eps/5``, ``steps=10``, warmup at 20 of 100 epochs.
-The warmup is expressed as a fraction (0.2) so it scales to any epoch budget and
-is exact on the 100-epoch benchmark.
+Per-channel perturbation budget. The paper ties the attack magnitude to the
+signal scale: "the perturbation magnitude [is] eps times the EEG signal standard
+deviation" (Sec. IV-E). This file follows the authors' released implementation,
+which applies that scaling per channel — each channel is perturbed by up to
+``eps`` times that channel's temporal standard deviation (source
+``attack_lib.PGD_batch_cha``, "cha" = channel), so higher-amplitude channels get
+a proportionally larger budget rather than one absolute eps for all channels.
 
-Faithful-adaptation notes. (1) The source applies EEGNet's ``MaxNormConstraint``
-each step; the shared hustbciml EEGNet has no such constraint and every other
-strategy trains that same backbone, so it is omitted here — ABAT differs from ERM
-in exactly the adversarial training, keeping the strategy-axis comparison
-controlled. (2) Optimizer / early-stopping match the shared ERM trainer (Adam +
-val early stop) rather than the source's fixed LR schedule, for the same reason.
+Faithful-adaptation notes.
+  * Warmup: this file trains cleanly for the first ``warmup`` epochs, then swaps in
+    the adversarial batch. This warmup is an implementation detail of the authors'
+    ``train.py`` (``ATchastd``, 20 of 100 epochs), NOT part of Algorithm 1 in the
+    paper; it is kept as a fraction (0.2) so it scales to any epoch budget and is
+    exact on the 100-epoch benchmark.
+  * The source applies EEGNet's ``MaxNormConstraint`` after each step; the shared
+    hustbciml EEGNet has no such constraint and every other strategy trains that
+    same backbone, so it is omitted — ABAT then differs from ERM in exactly the
+    adversarial training, keeping the strategy-axis comparison controlled.
+  * Optimizer / early stopping match the shared ERM trainer (Adam + validation
+    early stop) rather than the source's fixed LR schedule, for the same reason.
 
 Source: github.com/xqchen914/ABAT (``train.py``, ``attack_lib.py``).
 """
@@ -58,12 +79,16 @@ from ._common import forward_logits, supervised_train
 
 def _pgd_batch_cha(model: nn.Module, x: torch.Tensor, y: torch.Tensor,
                    eps: float, alpha: float, steps: int) -> torch.Tensor:
-    """Channel-std-scaled PGD (L-inf). Perturbs each channel by up to
-    ``eps * channel_temporal_std``; returns the adversarial batch (detached)."""
+    """PGD attack (l_inf) with a per-channel budget (Eqs. 6-7; Sec. IV-E).
+    Init X_0 = X + xi with xi uniform in (-eps, eps) (Eq. 6), then ``steps``
+    gradient-sign ascent steps of size ``alpha``, each projected back into the
+    eps-ball (Eq. 7). The budget on every channel is ``eps`` times that channel's
+    temporal std (source ``PGD_batch_cha``). Returns the adversarial batch,
+    detached."""
     was_training = model.training
     model.eval()
     x = x.detach()
-    cha_std = x.std(dim=-1, keepdim=True).detach()             # (B, 1, C, 1)
+    cha_std = x.std(dim=-1, keepdim=True).detach()             # (B, 1, C, 1) per-channel temporal std
     adv = (x + torch.empty_like(x).uniform_(-eps, eps) * cha_std).detach()
     for _ in range(steps):
         adv.requires_grad_(True)
@@ -81,21 +106,24 @@ def _pgd_batch_cha(model: nn.Module, x: torch.Tensor, y: torch.Tensor,
 class ABAT(Strategy):
     mode = "gradient"
 
-    eps: float = 0.01          # AT_eps (channel-std-scaled)
-    steps: int = 10
-    warmup_frac: float = 0.2   # clean-training warmup as a fraction of epochs (20/100 in the paper)
+    eps: float = 0.01          # perturbation magnitude, in units of per-channel std (Sec. IV-E)
+    steps: int = 10            # PGD iterations (Sec. IV-E)
+    warmup_frac: float = 0.2   # clean-training warmup fraction (source train.py, 20/100; not in Algorithm 1)
 
     def fit(self, model: nn.Module, source: EEGEpochs, ctx: RunContext) -> nn.Module:
         hp = ctx.cfg.hp
-        eps = float(hp.get("abat_eps", self.eps))              # AT budget (channel-std-scaled)
-        steps = int(hp.get("abat_steps", self.steps))          # PGD iterations
+        eps = float(hp.get("abat_eps", self.eps))              # perturbation magnitude (per-channel std units)
+        steps = int(hp.get("abat_steps", self.steps))          # PGD iterations (Sec. IV-E)
         warmup_frac = float(hp.get("abat_warmup", self.warmup_frac))
         warmup = int(round(warmup_frac * ctx.cfg.epochs))
-        alpha = eps / 5
+        alpha = eps / 5                                        # PGD step size alpha = eps/5 (Sec. IV-E)
 
+        # EA (Eqs. 1-2) is applied upstream by the aligner stage; this hook is the
+        # AT stage of Algorithm 1: replace each aligned batch with its adversarial
+        # counterpart (Eq. 8) once past the source-code warmup.
         def at_batch(m, batch, epoch, _ctx):
             if epoch < warmup:
-                return batch                                   # clean warmup
+                return batch                                   # clean warmup (source train.py; not in Algorithm 1)
             adv = _pgd_batch_cha(m, batch.x, batch.y, eps, alpha, steps)
             m.train()
             return EEGBatch(adv, batch.y, batch.domain)

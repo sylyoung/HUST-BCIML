@@ -14,16 +14,27 @@
 #     doi       = {10.1109/IJCNN48605.2020.9207365},
 #   }
 # ===========================================================================
-"""DJP-MMD — Discriminative Joint Probability MMD (Zhang & Wu, IJCNN 2020).
+"""DJP-MMD — Discriminative Joint Probability MMD (Zhang & Wu, 2020).
 
-A lab domain-adaptation method, ported as a transductive strategy on EA + EEGNet.
-It adds the DJP-MMD discrepancy (``M_T - mu * M_D`` over the joint P(X, Y), using
-source labels and target pseudo-labels) to the source cross-entropy, over the
-shared ``transductive_train`` skeleton — the same family as DAN / JAN / MDD.
+Unsupervised domain adaptation for C-class problems. DJP-MMD replaces the joint
+MMD used by prior feature-based DA with a *discriminative* joint-probability
+discrepancy that acts directly on the joint distribution P(X, Y) rather than on a
+weighted sum of the marginal and conditional MMDs (Sec. III). The joint MMD splits
+into a same-class-across-domains term M_T and a different-class-across-domains term
+M_D (Eq. 7); DJP-MMD is defined as ``M_T - mu * M_D`` (Eq. 8), so it MINIMIZES the
+cross-domain joint discrepancy of the same class (transferability) while MAXIMIZING
+it between different classes (discriminability), with trade-off mu > 0. In the
+paper the discrepancy is minimized over a linear projection A by embedding it in
+the JPDA framework: a generalized eigen-decomposition (Eq. 27, Algorithm 1) that
+iteratively refines target pseudo-labels, evaluated on six image datasets with a
+1-NN classifier.
 
-mode='gradient', uses_target=True. mu = 0.1 (source default); alignment weight 1.0.
-The paper evaluates DJP-MMD on image datasets; this is a faithful adaptation of the
-loss to EEG features (see ``_djp.py`` for the disclosed corrections to the source).
+This benchmark reuses only the DJP-MMD discrepancy, not the JPDA eigen-solver: the
+discrepancy is added to the source cross-entropy and minimized by gradient descent
+over the EEGNet backbone features (source labels + target pseudo-labels), through
+the shared ``transductive_train`` skeleton. mode='gradient', uses_target=True.
+mu = 0.1 (the paper's default, Sec. IV-B); DA-term weight 1.0. See ``_djp.py`` for
+the discrepancy and its corrections relative to the authors' released code.
 """
 from __future__ import annotations
 
@@ -46,8 +57,8 @@ class DJPMMD(Strategy):
 
     def fit(self, model: nn.Module, source: EEGEpochs, ctx: RunContext) -> nn.Module:
         criterion = nn.CrossEntropyLoss()
-        mu = float(ctx.cfg.hp.get("djpmmd_mu", 0.1))           # M_T - mu * M_D discriminability weight
-        align_w = float(ctx.cfg.hp.get("djpmmd_align", 1.0))  # DA-term trade-off vs source CE
+        mu = float(ctx.cfg.hp.get("djpmmd_mu", 0.1))           # mu in M_T - mu * M_D (Eq. 8): discriminability trade-off
+        align_w = float(ctx.cfg.hp.get("djpmmd_align", 1.0))  # weight of the DJP-MMD discrepancy vs source cross-entropy
 
         def da_step(m, bs, bt, aux, it, max_iter, ctx):
             feat_s, out_s = m(bs.x)

@@ -14,32 +14,47 @@
 #     doi     = {10.1109/MCI.2022.3199622},
 #   }
 # ===========================================================================
-"""MDMAML — Multi-Domain Model-Agnostic Meta-Learning (Li, Wu, Ding & Wu, IEEE CIM 2022).
+"""MDMAML — Multi-Domain Model-Agnostic Meta-Learning (Li et al., 2022, IEEE CIM).
 
-A privacy-preserving (source-free) transfer method: meta-learn a model over the
-SOURCE subjects — each source subject is one domain — so that a one-step
-adaptation on one source domain reduces loss on a *different* source domain. The
-meta-learned weights are then applied to a new target subject FORWARD-ONLY, with
-no target fine-tuning (the paper's optional online calibration and SHOT post-step
-are excluded by design here — this is the paper's "0-shot" setting).
+An optimization-based meta-learning framework for source-free, cross-subject,
+few-shot EEG classification (paper §III). Each source subject is treated as a
+separate domain S_i (M domains, N labeled trials each, §III-A). MDMAML adapts
+MAML's episodic inner/outer loops to META-LEARN THE DOMAIN-ADAPTATION PROCESS
+ACROSS SOURCE DOMAINS: a good initialization theta is learned so that a one-step
+inner adaptation on one source domain reduces the loss on a *different* source
+domain, i.e. the meta-objective minimizes cross-domain shift. Once trained, the
+initialization theta_MDMAML is saved and the source data is discarded, so a new
+target subject is served without any access to the source EEG — the paper's
+privacy-protection / source-free contribution (§III-A, Alg. 1).
 
-Per episode (paper Algorithm 1, Eqs. 1-6): form ``M/2`` random source domain
-pairs ``(S_i, S_j)``; take one inner SGD step on the support domain ``S_i`` to get
-fast weights ``theta' = theta - alpha * grad L_{S_i}(theta)`` (Eq. 1); evaluate the
-cross-entropy query loss on the *different* domain ``S_j`` at ``theta'`` (Eq. 2);
-average over pairs (Eq. 3) and meta-update the original weights
-``theta <- theta - beta * grad L_MDMAML`` (Eq. 4). A **first-order** MAML
-approximation is used (the paper's FOMAML): the query-loss gradient at ``theta'``
-is accumulated as the meta-gradient, avoiding the second-order term.
+Per training episode (paper Alg. 1, Eqs. 1-6): form ``M/2`` random source domain
+pairs ``(S_i, S_j)`` (i != j); take one inner SGD step on the support domain
+``S_i`` to get temporary weights ``theta'_i = theta - alpha * grad L_{S_i}(theta)``
+(Eq. 1, alpha = inner-loop LR); evaluate the query loss of the *different* domain
+``S_j`` at ``theta'_i``, ``L_{(S_i,S_j)}(theta) = L_{S_j}(theta'_i)`` (Eq. 2);
+average over the M/2 pairs (Eq. 3) and meta-update the ORIGINAL weights
+``theta <- theta - beta * grad L_MDMAML`` (Eq. 4, beta = meta LR). The task loss
+L is standard cross-entropy (Eq. 6). Following §IV-E, a first-order approximation
+replaces the second-order gradient: the query-loss gradient evaluated at
+``theta'_i`` is accumulated directly as the meta-gradient.
 
-Inference is a plain forward pass with BatchNorm in eval mode (fixed running
-statistics) — the paper explicitly disables transductive/test-batch BN so
-predictions stay causal.
+At deployment the paper describes three regimes off the same theta_MDMAML: 0-shot
+(a plain forward pass, Eq. 8), online few-shot (fine-tune on L labeled
+calibration trials, ``theta <- theta - gamma * grad L_C``, Eq. 7), and offline
+source-free domain adaptation on the unlabeled test set (e.g. SHOT). This file
+implements the 0-SHOT setting: theta_MDMAML is applied to the target subject
+forward-only, with no calibration fine-tune (Eq. 7) and no offline step.
+Inference runs BatchNorm in eval mode with fixed running statistics — per §IV-F
+the paper deactivates transductive/test-batch normalization so predictions stay
+causal for real-time use.
 
-Faithful-adaptation notes (disclosed in the card): (1) the optional data-driven
-inner-loop layer freezing and the per-pair negative-transfer guard (paper §3.8,
-called "ad hoc" there) are omitted — core MDMAML is domain-paired FOMAML; (2) the
-backbone is the benchmark's EA-EEGNet, shared with the other transfer rows.
+Two optional components of the full method (paper §III-B, §III-C) are NOT ported
+here: data-driven inner-loop LAYER FREEZING (§III-B, Fig. 4 — freeze layers whose
+parameters change little after adapting to a held-out validation domain) and the
+NEGATIVE-TRANSFER MITIGATION (§III-C, described there as an "ad hoc" strategy —
+skip the Eq. 1 update of a pair when it worsens the loss on S_j). This file keeps
+the core domain-paired episodic loop. The backbone is the benchmark's shared
+EA-EEGNet, as used by the other transfer rows.
 """
 from __future__ import annotations
 
@@ -78,9 +93,10 @@ class MDMAML(Strategy):
         cyc = {k: cycle_batches(source.select(source.domain == k), cfg.batch_size,
                                 cfg.seed + 101 * (k + 1)) for k in domains}
         params = list(model.parameters())
-        # Adam meta-optimizer for the outer loop (learn2learn's default): plain SGD
-        # at the paper's beta=0.001 badly undertrains EEGNet, so the 0-shot meta-model
-        # collapses to near chance; Adam adapts the per-parameter step and recovers it.
+        # Adam meta-optimizer for the outer loop (a benchmark deviation from the
+        # plain-SGD meta-update in Eq. 4): SGD at the paper's beta=0.001 badly
+        # undertrains EEGNet here, so the 0-shot meta-model collapses to near
+        # chance; Adam adapts the per-parameter step and recovers it.
         meta_opt = torch.optim.Adam(params, lr=meta_lr)
         rng = np.random.RandomState(cfg.seed)
         # many meta-updates per epoch: one episode (M/2 pairs -> one meta-update) per
@@ -120,7 +136,7 @@ class MDMAML(Strategy):
                     _, logits_j = model(bj.x)
                     loss_j = crit(logits_j, bj.y)
                     grads_j = torch.autograd.grad(loss_j, params, create_graph=False)
-                    for acc, g in zip(meta_grads, grads_j):    # FOMAML: accumulate query grad
+                    for acc, g in zip(meta_grads, grads_j):    # first-order: accumulate query grad (Eq. 2)
                         acc.add_(g.detach())
                     with torch.no_grad():                       # restore theta for the next pair
                         for pr, s in zip(params, saved):

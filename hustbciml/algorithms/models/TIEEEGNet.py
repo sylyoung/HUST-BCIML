@@ -13,45 +13,63 @@
 #     doi     = {10.1109/TNSRE.2022.3204540},
 #   }
 # ===========================================================================
-"""TIE-EEGNet — Temporal Information Enhanced EEGNet (Peng, ..., Wu, IEEE TNSRE 2022).
+"""TIE-EEGNet (Peng et al., 2022, IEEE TNSRE) — Temporal Information Enhanced
+EEGNet for cross-patient seizure subtype classification.
 
-NOTE (domain fit): TIE-EEGNet was **developed for seizure (subtype) classification**,
-not motor imagery — the paper is "TIE-EEGNet ... for Seizure Subtype Classification".
-Its time-positional design targets seizure EEG and **may not be well-suited to MI**;
-in this benchmark it only matches the EEGNet baseline on the MI datasets. It is kept
-here for coverage of the lab's backbones, with this caveat flagged on the leaderboard
-and in the algorithm card.
+The paper targets EEG-based seizure subtype classification (Sec. I): given a
+short EEG segment, predict which subtype of epileptic seizure it belongs to,
+across patients (train and test come from different patients). Standard EEGNet's
+square temporal-convolution filters have small receptive fields and are weak at
+capturing the temporal structure of seizure EEG, in particular the repeated
+spike-and-wave discharges (SWDs, Fig. 1). To address this, the paper augments
+EEGNet with a Temporal Information Enhancement (TIE) module that adds a
+sinusoidal time-positional embedding to the feature maps of EEGNet's FIRST
+convolution layer, turning it into a "TIE-Conv2D" layer (Sec. III-D, Fig. 4);
+all other EEGNet blocks are unchanged. The method is supervised (trained with
+cross-entropy). It was evaluated on the public TUSZ dataset and the authors' own
+CHSZ (infant/child) dataset, and on a source-free transfer scenario from TUSZ to
+CHSZ (Sec. IV).
 
-A lab backbone: standard EEGNet with exactly ONE layer changed — the first
-temporal convolution becomes a "TIE-Conv2D" that adds a bounded, periodic
-sinusoidal time-positional embedding to the ordinary convolution output. Every
-other block is EEGNet verbatim, so it is a true drop-in Backbone whose output
-shapes match EEGNet.
+This benchmark uses TIE-EEGNet as a backbone. Because the TIE module was designed
+for seizure EEG rather than motor imagery, its periodic time-positional encoding
+need not help on the MI datasets used here (the paper itself lists seizure
+detection/classification and sleep staging — not MI — as its intended temporal
+tasks, Sec. V); the algorithm card flags this domain caveat.
 
-The TIE convolution computes (paper Eq. 6)
+The TIE module descends from the Encoding Kernel (EnK) of Singh & Lin, 2020
+(paper ref. [44]), which embeds a LINEAR time encoding into the convolution
+(paper Eq. 3). TIE keeps EnK's idea of adding a time-dependent term to the
+convolution output but replaces the linear encoding with a BOUNDED, PERIODIC
+sinusoidal encoding, which the paper motivates by three requirements on the
+positional term (Sec. III-C): it should be bounded, periodic (to simulate the
+repeated SWDs), and preserve the intra-period time-sequence (wave-shape)
+information. The TIE convolution is (paper Eq. 6)
 
-    Z[u, v] = (P * K)[u, v]  +  b · SE(t_v) · R[u, v]
+    Z[u, v] = P[u, v] * K  +  b · SE(t_v) · R[u, v]
 
-where ``(P * K)`` is the ordinary temporal convolution, ``b`` is a single learned
-scalar, ``R[u, v]`` is the *average* of the input over the same receptive field
-as the convolution (paper Eq. 7 — average pooling with the temporal kernel's
-window), and the sinusoidal positional term (paper Eq. 5) is
+where ``P[u, v] * K`` is the ordinary (dot-product) temporal convolution at time
+position ``t_v = v``, ``b`` is a single trainable scalar controlling the
+embedding's intensity, and the sinusoidal encoding SE (paper Eq. 5) is
 
     SE(t_v) = sin(t_v / omega)  if t_v is even,   cos(t_v / omega)  if t_v is odd,
 
-with the period regulator ``omega = sfreq / f_c``. It descends from EnK but swaps
-EnK's linear encoding for a bounded sinusoid and EnK's sum for an average, fixing
-the unboundedness and magnitude mismatch. It is a positional-encoding term, not
-attention or recurrence.
+with ``omega`` the period regulator. ``R[u, v]`` is the "representation matrix"
+(paper Eq. 7): the AVERAGE (via average pooling) of the input over the same
+receptive field as the convolution, representing the local background of
+``P[u, v]``. Using the average — rather than EnK's SUM — keeps the embedding at
+the same magnitude as the convolved input (Sec. III-C). SE is a fixed positional
+term, not attention or recurrence.
 
-Faithful-adaptation notes (disclosed in the card): (1) to keep a single-axis
-network comparison, this uses the benchmark's EEGNet capacity (F1=4, D=2, F2=8,
-dropout=0.25) shared with the other backbones; the paper's own config is
-F1=8/F2=16/dropout=0.5, kept as the reference range. (2) The paper trains one
-model per omega in a candidate set and keeps the lowest validation loss; here
-``omega`` is a fixed hyperparameter (default 10.0, within the paper's candidate
-set) so it drops into the shared per-backbone learning-rate tuner without a
-nested omega sweep.
+Notes on this benchmark's adaptation. (1) Capacity: this file uses the
+benchmark's shared EEGNet configuration (F1=4, D=2, F2=8, dropout=0.25) so all
+backbones differ only in architecture; these specific capacity hyperparameters
+are a benchmark choice and are not fixed by the paper. (2) Period regulator: the
+paper does not fix a single ``omega``. It derives candidates ``omega = f_s / f_c``
+from the EEG-band frequency bounds f_c in {0.5, 4, 8, 12, 16, 32, 64} Hz
+(paper Eqs. 8-9), trains one model per candidate in parallel, and keeps the one
+with the lowest validation loss (Fig. 4, Fig. 8). Here ``omega`` is instead a
+single fixed hyperparameter (default 10.0, near a paper candidate) so the model
+plugs into the shared per-backbone tuner without a nested ``omega`` sweep.
 """
 from __future__ import annotations
 
@@ -73,8 +91,8 @@ class _TIEConv2d(nn.Module):
         K = int(kern_length)
         self.pad = nn.ZeroPad2d((K // 2 - 1, K - K // 2, 0, 0))
         self.conv = nn.Conv2d(1, F1, (1, K), stride=1, bias=False)
-        self.avg = nn.AvgPool2d((1, K), stride=1)          # R: mean over the conv window
-        self.b = nn.Parameter(torch.ones(1))               # learned scalar b (paper Eq. 6)
+        self.avg = nn.AvgPool2d((1, K), stride=1)          # R (Eq. 7): mean over the conv window
+        self.b = nn.Parameter(torch.ones(1))               # trainable scalar b (paper Eq. 6)
         # SE(t): sin(t/omega) at even t, cos(t/omega) at odd t (paper Eq. 5)
         t = torch.arange(n_times, dtype=torch.float32)
         se = torch.where(t.long() % 2 == 0, torch.sin(t / omega), torch.cos(t / omega))
@@ -84,7 +102,7 @@ class _TIEConv2d(nn.Module):
         xp = self.pad(x)                    # (B, 1, C, T+K-1)
         z = self.conv(xp)                   # (B, F1, C, T)
         r = self.avg(xp)                    # (B, 1,  C, T)
-        return z + self.b * self.se * r     # broadcast over F1
+        return z + self.b * self.se * r     # Eq. 6: P*K + b·SE(t)·R, broadcast over F1
 
 
 class TIEEEGNet(EEGNet):

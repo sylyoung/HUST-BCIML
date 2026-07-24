@@ -3,44 +3,67 @@
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 # Original authors' code: https://github.com/xqchen914/PAT
 #
-# Reference (IEEE BibTeX):
+# Reference (IEEE BibTeX). Journal pre-proof (accepted, in press); no final
+# volume/pages yet, so only verifiable fields are set and ``note`` marks it as
+# in press.
 #   @Article{Chen2026,
 #     author  = {Chen, Xiaoqing and Jia, Tianwang and Tu, Yunlu and Wu, Dongrui},
 #     journal = {Fundamental Research},
 #     title   = {{PAT}: Privacy-Preserving Adversarial Transfer for Accurate, Robust and Privacy-Preserving {EEG} Decoding},
 #     year    = {2026},
 #     doi     = {10.1016/j.fmre.2026.04.034},
+#     note    = {In press},
 #   }
 # ===========================================================================
-"""PAT — Privacy-preserving Adversarial Transfer (Chen et al., 2026, Fund. Res.).
+"""PAT (Chen et al., 2026, Fundamental Research, in press) — Privacy-Preserving
+Adversarial Transfer: a unified transfer-learning framework that jointly
+integrates data alignment, adversarial training, and privacy-preserving transfer
+so that a target user's EEG decoder is at once accurate, adversarially robust, and
+privacy-preserving (Sec. 3.2). Given a small labeled calibration set from the
+target user plus a *source prior* (Sec. 3.2.1), PAT applies the SAME three-step
+pipeline regardless of scenario: (1) align the target calibration trials with
+Euclidean Alignment (EA; Eqs. 2-3, Sec. 3.2.5); (2) augment them by amplitude
+scaling ``X' = X * (1 +/- beta)``, beta = 0.05 (Eq. 4, Sec. 3.2.5); (3) fit the
+target classifier by adversarial training on the aligned+augmented target data,
+optionally combined with a supervised loss on the source prior. Adversarial
+training is the min-max / saddle-point problem of Eq. 5 with adversarial examples
+X^adv drawn from the ``l_inf`` ball of radius eps around each trial. The single
+pipeline is instantiated in three privacy-preserving scenarios that differ ONLY in
+which source prior is available (Algorithm 1): centralized source-free transfer
+(a model trained on aggregated source data, Sec. 3.2.2), federated source-free
+transfer (a federated global model, Sec. 3.2.3), and transfer with
+privacy-preserved source data (a user-wise perturbed source set that is safe to
+share, Sec. 3.2.4; then Eq. 8 adds the source-benign loss). PAT extends ABAT
+(single-domain EA -> AT; Chen et al., 2024) to the cross-domain, source-prior,
+privacy-preserving setting (Table 1). The paper reports benign, adversarial, and
+noisy classification accuracy on five EEG datasets (Sec. 4.2).
 
-PAT is a single training pipeline: **Euclidean Alignment -> scaling augmentation
--> adversarial training**, jointly improving clean accuracy and adversarial
-robustness. In the full paper it is instantiated in three privacy-preserving
-transfer scenarios (centralized / federated source-free, and transfer with
-privacy-preserved source data), which supply a source prior on top of this core.
+This file implements PAT's alignment + scaling-augmentation + adversarial-training
+procedure as a Strategy plug-in for the shared cross-subject LOSO protocol,
+composed with ``aligner: EA`` and ``augmenter: Scaling`` (Eq. 4). The three
+privacy-preserving scenarios and the source-prior guidance are out of scope for
+this single-axis protocol; here the procedure runs on the labeled source (train)
+data alone, with no source prior and no target calibration, and the leaderboard
+row measures benign accuracy. The privacy / robustness / multi-scenario story of
+the full method is not exercised by this row.
 
-This benchmark ports the **training procedure** as a Strategy plug-in, on par
-with ABAT: composed with ``aligner: EA`` and ``augmenter: Scaling`` (Eq. 4), it
-does adversarial training on the aligned + augmented source under the shared
-cross-subject protocol, and reports clean (benign) accuracy. The privacy /
-source-prior scenarios are out of scope for the current cross-subject-LOSO
-protocol (they use target-calibration fine-tuning); this row isolates PAT's
-alignment+augmentation+adversarial-training core.
+Adversarial samples follow the paper's PGD (Eqs. 6-7), with a GLOBAL ``l_inf``
+epsilon budget (one absolute eps for all channels, from the Eq. 5 ball
+``B(X_T, eps)``) — unlike ABAT's per-channel std-scaled budget. PGD starts from a
+noisy benign sample (Eq. 6: ``X^{adv,0} = X + xi``, ``xi ~ U(-eps, eps)``) and
+takes projected gradient-sign steps of size alpha <= eps that keep X^adv within
+the eps-ball (Eq. 7). Defaults follow the paper: ``eps = 0.03`` (0.01 on SEED,
+Sec. 4.4), step size ``alpha = 0.005``, ``steps = 10`` (Sec. 4.4).
 
-Adversarial samples follow the paper's PGD (Eqs. 5-7), which differs from ABAT's
-channel-std-scaled budget: a **global L-inf epsilon** ball, started from a noisy
-benign sample (Eq. 6, ``X^{adv,0} = X + xi``, ``xi ~ U(-eps, eps)``) and updated
-by projected sign-gradient steps (Eq. 7). Defaults are the paper's:
-``eps = 0.03``, step size ``alpha = 0.005``, ``steps = 10``. A short clean warmup
-(fraction of epochs, default 0.2) stabilizes the early gradient steps and mirrors
-the source pre-training the paper relies on; it is exposed as a hyperparameter.
-
-Faithful-adaptation notes. (1) Optimizer / early stopping match the shared ERM
-trainer (Adam + held-out-source early stop) as for every other strategy, keeping
-the strategy-axis comparison controlled, rather than the source's fixed schedule.
-(2) The scaling augmentation is supplied by the composed ``Scaling`` augmenter
-stage (Eq. 4), so PAT differs from ERM in exactly EA-augment-adversarial-train.
+Faithful-adaptation notes. (1) A short clean warmup (fraction of epochs, default
+0.2) trains benignly before the adversarial phase; the paper's own algorithm has
+no warmup, so this follows the authors' released training code and is exposed as a
+hyperparameter. (2) Optimizer / early stopping match the shared ERM trainer
+(Adam + held-out-source early stop) as for every other strategy, keeping the
+strategy-axis comparison controlled, rather than the source's fixed LR schedule.
+(3) The scaling augmentation is supplied by the composed ``Scaling`` augmenter
+stage (Eq. 4), so PAT differs from ERM in exactly EA + scaling-augment +
+adversarial training.
 """
 from __future__ import annotations
 
@@ -59,10 +82,11 @@ from ._common import forward_logits, supervised_train
 
 def _pgd_batch_global(model: nn.Module, x: torch.Tensor, y: torch.Tensor,
                       eps: float, alpha: float, steps: int) -> torch.Tensor:
-    """Global L-inf PGD (Chen et al. 2026, Eqs. 6-7). Starts from a noisy benign
-    sample ``x + U(-eps, eps)`` and takes ``steps`` projected sign-gradient steps
-    of size ``alpha``, keeping the perturbation within the eps-ball of ``x``.
-    Returns the adversarial batch (detached)."""
+    """PGD with a GLOBAL l_inf budget (Chen et al. 2026, Eqs. 5-7): one absolute
+    eps for all channels, matching the Eq. 5 ball ``B(x, eps)``. Starts from a
+    noisy benign sample ``x + U(-eps, eps)`` (Eq. 6) and takes ``steps`` projected
+    sign-gradient steps of size ``alpha`` (Eq. 7), keeping the perturbation within
+    the eps-ball of ``x``. Returns the adversarial batch (detached)."""
     was_training = model.training
     model.eval()
     x = x.detach()
@@ -83,10 +107,10 @@ def _pgd_batch_global(model: nn.Module, x: torch.Tensor, y: torch.Tensor,
 class PAT(Strategy):
     mode = "gradient"
 
-    eps: float = 0.03          # global L-inf budget (paper)
-    alpha: float = 0.005       # PGD step size (paper)
-    steps: int = 10            # PGD iterations (paper)
-    warmup_frac: float = 0.2   # clean-training warmup as a fraction of epochs
+    eps: float = 0.03          # global l_inf budget (Eq. 5 ball; Sec. 4.4, 0.01 on SEED)
+    alpha: float = 0.005       # PGD step size alpha <= eps (Eq. 7; Sec. 4.4)
+    steps: int = 10            # PGD iterations (Sec. 4.4)
+    warmup_frac: float = 0.2   # clean-training warmup fraction (authors' code; not in Algorithm 1)
 
     def fit(self, model: nn.Module, source: EEGEpochs, ctx: RunContext) -> nn.Module:
         hp = ctx.cfg.hp
@@ -96,9 +120,12 @@ class PAT(Strategy):
         warmup_frac = float(hp.get("pat_warmup", self.warmup_frac))
         warmup = int(round(warmup_frac * ctx.cfg.epochs))
 
+        # EA (Eqs. 2-3) is applied upstream by the aligner stage; this hook is the
+        # adversarial-training step (Eq. 5): once past the warmup, replace each
+        # aligned+augmented batch with its global-budget PGD adversarial counterpart.
         def at_batch(m, batch, epoch, _ctx):
             if epoch < warmup:
-                return batch                                        # clean warmup
+                return batch                                        # clean warmup (authors' code; not in Algorithm 1)
             adv = _pgd_batch_global(m, batch.x, batch.y, eps, alpha, steps)
             m.train()
             return EEGBatch(adv, batch.y, batch.domain)

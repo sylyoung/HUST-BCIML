@@ -72,6 +72,11 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-07-24 (v1.1.3).** Rewrote the in-source documentation of all 22 lab-proposed methods to
+  match their published papers — corrected citations, each paper's own terminology and equation
+  references, and honest scoping to the variant each file implements. Documentation only; no
+  benchmark numbers change.
+
 - **2026-07-24 (v1.1.2).** The method inventory was rewritten and the transfer and ensemble
   families reorganized: transfer methods are now grouped by when they use the unlabeled target
   (source-only, unsupervised domain adaptation, source-free, test-time), the privacy-preserving

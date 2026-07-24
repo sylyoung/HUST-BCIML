@@ -23,36 +23,49 @@
 #     doi     = {10.1109/MSP.2008.4408441},
 #   }
 # ===========================================================================
-"""CSP-Net — CSP-initialized EEGNet backbone (Jiang, Meng, Chen, Xu & Wu, Knowledge-Based Systems 2024).
+"""CSP-Net (Jiang et al., 2024, Knowledge-Based Systems) — Common Spatial
+Pattern empowered neural networks for EEG-based motor imagery classification.
 
-A lab backbone: a standard EEGNet whose depthwise spatial convolution is
-initialized with Common Spatial Pattern filters estimated from the (aligned)
-source data and then — in the default CSP-Net-2 configuration — frozen, so the
-spatial layer *is* the CSP solution while the temporal and separable
-convolutions train normally. It injects classical, well-understood CSP spatial
-filtering into the network as a structural prior.
+Supervised binary MI classification. The paper embeds classical Common Spatial
+Pattern (CSP) spatial filters into a CNN as knowledge-driven prior. CSP (Sec.
+2.1) designs spatial filters W that maximize the class-variance ratio J(W) =
+(W^T C1 W) / (W^T C2 W) (Eq. 1), solved as the generalized eigendecomposition
+of C2^-1 C1 (Eq. 2). The paper proposes TWO architectures (Sec. 2.3-2.4, Fig. 2):
+  * CSP-Net-1 (Sec. 2.3, Fig. 2b, Alg. 1): PREPENDS a CSP layer before a CNN
+    backbone, spatially filtering the raw EEG to improve input discriminability.
+  * CSP-Net-2 (Sec. 2.4, Fig. 2c, Alg. 2): REPLACES the CNN's spatial-filter
+    convolution with a CSP layer (for the EEGNet backbone, the DepthwiseConv2D
+    of the depthwise spatial filter block; Table 1). The CSP layer is
+    INITIALIZED with CSP filters designed on the training data.
+In both variants the CSP-initialized layer is then either kept FIXED (the "-fix"
+setting) or optimized by gradient descent together with the CNN (the "-upd"
+setting); the paper reports the fixed setting generally does better (Sec. 3.3).
+When a backbone's spatial block needs more kernels than f CSP filters, the CSP
+filters are REPLICATED to match (Sec. 3.2); the default is f = 8 filters
+(Sec. 3.6). Experiments on four public MI datasets show both CSP-Nets
+consistently improve over their CNN backbones, especially with few training
+samples (Sec. 3.3, Tables 7-11).
 
-This ports CSP-Net-2 (the "spatial-layer replacement" variant) from the authors'
-``CSP-Net/main_CSP_Net_2.py``: their ``block1.3.weight`` is our ``block1[3]``
-depthwise conv, of shape (F1*D, 1, n_chans, 1). ``n_csp`` CSP filters (default 8)
-are tiled to fill the F1*D spatial-conv output channels, matching the source's
-``filters.repeat(ceil(F1*D / n_csp), 1, 1, 1)[:F1*D]``. CSP-Net-1 — an
-alternative that *prepends* a CSP channel-projection layer rather than
-overwriting the spatial conv — is described in the algorithm card.
+This file implements CSP-Net-2 with the EEGNet backbone, in the fixed setting
+(CSP-Net-2-fix) by default. It subclasses EEGNet and overwrites ``block1[3]``,
+the (n_chans, 1) depthwise spatial conv of shape (F1*D, 1, n_chans, 1), with the
+CSP filter matrix. ``n_csp`` CSP filters (default 8) are replicated to fill the
+F1*D output channels; with EEGNet's default F1*D = 8 this equals n_csp, so no
+replication happens. CSP-Net-1 (the prepend variant) is not implemented here.
 
 Data-dependent init: the CSP filters need the source X, y, which the pipeline
 does not have when the backbone is built. So the backbone exposes
-``init_from_source(epochs)``, and the shared ``supervised_train`` loop calls it
-once, on the training split, before building the optimizer (frozen filters are
-then left out of the optimizer).
+``init_from_source(epochs)``, and the shared supervised training loop calls it
+once, on the training split, before building the optimizer (a frozen spatial
+layer is then left out of the optimizer).
 
-Faithful-adaptation notes (disclosed in the card): (1) like the source, the CSP
-filters are estimated on the raw epochs but applied *after* EEGNet's temporal
-conv, since they overwrite the depthwise layer — an approximation the paper
-adopts; (2) CSP is fit with mne ``transform_into='average_power', log=False,
-cov_est='epoch'`` to match the authors' trainer; (3) ``freeze_spatial=True``
-reproduces their default ``baseline=2`` (replace-and-freeze); set it False for
-``baseline=0`` (replace-and-fine-tune).
+Adaptation notes: (1) CSP is fit with mne ``transform_into='average_power',
+log=False, cov_est='epoch'`` to obtain the spatial filters ``csp.filters_``;
+(2) ``freeze_spatial=True`` gives CSP-Net-2-fix (initialize the spatial layer
+with CSP and keep it fixed), matching the paper's default and better-performing
+setting; set it False for CSP-Net-2-upd (fine-tune the CSP layer with the CNN).
+The replaced layer is EEGNet's depthwise spatial conv, which follows the temporal
+conv — exactly the block CSP-Net-2 targets in Fig. 2c, not a raw-input filter.
 """
 from __future__ import annotations
 
@@ -73,26 +86,33 @@ class CSPNet(EEGNet):
         super().__init__(n_chans=n_chans, n_times=n_times, n_classes=n_classes,
                          sfreq=sfreq, F1=F1, D=D, F2=F2,
                          kern_length=kern_length, dropout=dropout)
-        self.n_csp = int(n_csp)
-        self.freeze_spatial = bool(freeze_spatial)
-        self._n_spatial = F1 * D              # depthwise-conv output channels (spatial filters)
-        self._spatial_conv = self.block1[3]   # nn.Conv2d weight: (F1*D, 1, n_chans, 1)
+        self.n_csp = int(n_csp)               # f: number of CSP spatial filters (Sec. 3.6, default 8)
+        self.freeze_spatial = bool(freeze_spatial)   # True -> CSP-Net-2-fix; False -> CSP-Net-2-upd
+        self._n_spatial = F1 * D              # depthwise-conv output channels (the spatial filters to replace)
+        self._spatial_conv = self.block1[3]   # EEGNet's depthwise spatial conv, weight (F1*D, 1, n_chans, 1)
 
     @torch.no_grad()
     def init_from_source(self, epochs: EEGEpochs) -> None:
-        """Estimate CSP on the source epochs and write the filters into the
-        depthwise spatial conv, tiling to F1*D channels; freeze if configured.
+        """Design CSP filters on the source epochs (Eqs. 1-2) and write them into
+        EEGNet's depthwise spatial conv, replicating to F1*D channels (Sec. 3.2);
+        freeze the layer for the fixed setting (CSP-Net-2-fix).
 
-        Called once by ``supervised_train`` before the optimizer is built."""
+        Called once by the shared supervised training loop, on the training split,
+        before the optimizer is built."""
         from mne.decoding import CSP
         n_comp = min(self.n_csp, self.n_chans)
+        # mne CSP solves the same class-variance-ratio problem as Eqs. 1-2 via a
+        # generalized eigendecomposition; csp.filters_ are the spatial filters W.
         csp = CSP(n_components=n_comp, transform_into="average_power",
                   log=False, cov_est="epoch")
         csp.fit(epochs.X.astype(np.float64), epochs.y)
-        filt = np.asarray(csp.filters_[:n_comp], dtype=np.float32)      # (n_comp, n_chans)
+        filt = np.asarray(csp.filters_[:n_comp], dtype=np.float32)      # (n_comp, n_chans): W^T rows
         w = torch.from_numpy(filt).reshape(n_comp, 1, self.n_chans, 1)
+        # Replicate the CSP filters to fill the F1*D spatial-conv channels when
+        # the block needs more kernels than filters (Sec. 3.2). For EEGNet's
+        # default F1*D == n_csp == 8 this is a no-op (reps == 1).
         reps = math.ceil(self._n_spatial / n_comp)
         w = w.repeat(reps, 1, 1, 1)[: self._n_spatial]                  # (F1*D, 1, n_chans, 1)
         self._spatial_conv.weight.copy_(w.to(self._spatial_conv.weight.device))
-        if self.freeze_spatial:
+        if self.freeze_spatial:                # CSP-Net-2-fix: keep the CSP layer fixed
             self._spatial_conv.weight.requires_grad_(False)

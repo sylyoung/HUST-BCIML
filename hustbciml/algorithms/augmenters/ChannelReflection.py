@@ -23,11 +23,14 @@ is a valid *label-swapped* example of the opposite class. This augmenter appends
 to each batch the hemisphere-reflected copy of every trial with its label
 flipped, doubling the effective training set at no data cost.
 
-Because the reflection permutes *physical electrodes*, it must act on the raw
-channel space — a spatial aligner such as EA whitens (mixes) channels, after
-which a channel permutation is no longer an electrode reflection. So this
-augmenter is used with ``aligner: Identity`` (see the CR preset); the montage's
-left/right pairing comes from ``utils.montage.reflection_permutation``.
+The benchmark pairs this augmenter with ``aligner: Identity`` (see the CR preset)
+so the leaderboard measures its own contribution as a pure electrode-space
+transform, isolated from any aligner: on BNCI2014001 it lifts cross-subject
+EEGNet from ~69% (no augmentation) to ~73%. That pairing is a measurement choice,
+not a requirement of the method — the original paper (Wang et al., 2024, Fig. 3)
+applies EA before CR, and that EA+CR pipeline composes cleanly (~74%, on par with
+the raw-space regime). The montage's left/right pairing comes from
+``utils.montage.reflection_permutation``.
 
 Label swap is defined only for the 2-class (left/right) case; with any other
 class count the channels are still reflected but labels are kept unchanged.

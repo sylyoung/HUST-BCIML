@@ -13,39 +13,61 @@
 #     doi     = {10.1109/TNSRE.2022.3207494},
 #   }
 # ===========================================================================
-"""MSDT — Multi-Source Decentralized Transfer (Zhang, Wang & Wu, IEEE TNSRE 2022).
+"""MSDT — Multi-Source Decentralized Transfer (Zhang et al., 2022, IEEE TNSRE).
 
-A lab multi-source, source-free, privacy-preserving transfer method. Each source
-subject trains its own small MLP on Riemannian tangent-space features
-(decentralized — no source data is pooled). At transfer time only the source
-models are shared: the target adapts each source feature extractor (classifiers
-frozen) by information maximization — minimize per-instance entropy, maximize
-batch diversity — plus a source-inconsistency term that pulls the sources into
-agreement, with entropy-based per-source domain weighting. The final prediction
-is the domain-weighted ensemble of the source models.
+Decentralized, privacy-preserving cross-subject transfer for EEG-based BCIs.
+There are M source subjects, whose data and computations stay local; only the
+pre-trained source models are shared, so no source EEG is ever centralized
+(Sec. I, Sec. III, Fig. 1). MSDT runs in two stages. (1) Source model
+pre-training (Sec. III-A): each subject trains its own deep model theta_m =
+(g_m feature extractor . f_m classifier) locally on hand-crafted features --
+Riemannian tangent-space vectors for motor imagery (Sec. II-A) -- after optional
+signal augmentation (Table I), with a label-smoothed cross-entropy loss (Eq. 3).
+(2) Decentralized transfer to an unlabeled target subject, in two settings: a
+gray-box one (MSDT-G, Sec. III-B) that uses the source-model PARAMETERS, and a
+black-box one (MSDT-B, Sec. III-C) that only queries the source models as APIs
+and distills them into a single student (Eq. 11-13). The paper reports MSDT on
+motor imagery (BNCI IV-2a) and affective BCI (SEED).
 
-Per the LOSO protocol, each of the other subjects is one source domain (the
-user's "each subject as source"). Ported from the authors'
-``MSDT/{source_train_multi_mi, target_adapt_msdt_mi}.py`` (use_weight on).
-It maps onto hustbciml's fit/predict as:
+This file implements the GRAY-BOX variant (MSDT-G). Per source it builds a
+target model theta'_m = (g'_m . f_m): the feature extractor g'_m is initialized
+from g_m and adapted, while the classifier f_m is kept FROZEN (hypothesis
+transfer). The extractors are adapted on the unlabeled target by three terms
+(Sec. III-B): information maximization (IM, Eq. 5-6) -- minimize each source's
+conditional entropy H(Y|X) to sharpen predictions and maximize the marginal
+entropy so predictions stay class-balanced; source-consistency regularization
+(Eq. 7) -- minimize the spread of the per-class probabilities across the M source
+models so they agree on each target trial; and mixup regularization (Eq. 9). The
+target prediction is a transferability-weighted ensemble of the adapted models,
+theta_t(X_t) = sum_m alpha_m theta'_m(X_t) with sum_m alpha_m = 1 (Eq. 4); the
+per-source weights alpha_m are the source-transferability estimates of Eq. (8),
+so more transferable sources count more and negative transfer is suppressed.
 
-* ``fit``  — for every source subject: 7x signal augmentation, oas-covariance
-  tangent-space features, and train ``SourceMLP`` (SGD, label-smoothed CE,
-  best-val). The source raw data is then discarded (source-free / decentralized).
-* ``predict`` — tangent-map the target, adapt the source extractors by the
-  multi-source IM + inconsistency objective, predict the domain-weighted ensemble.
+Under leave-one-subject-out, each of the other subjects is one source domain, and
+this file maps onto hustbciml's fit/predict as:
+
+* ``fit``  -- source model pre-training (Sec. III-A). For every source subject:
+  the 7x signal augmentation of Table I, oas-shrinkage tangent-space features,
+  then train ``SourceMLP`` (SGD, label-smoothed CE Eq. 3, best-validation model).
+  The source raw data is then dropped (decentralized / source-free).
+* ``predict`` -- decentralized transfer (Sec. III-B). Tangent-map the target,
+  adapt the source feature extractors by IM (Eq. 5-6) + source consistency
+  (Eq. 7), then predict the transferability-weighted ensemble (Eq. 4, 8).
 
 ``mode='fit'`` (no neural backbone; the pipeline's EEGNet/Linear are unused).
-Faithful-adaptation notes (disclosed in the card): (1) the per-subject tangent
-map is the only alignment MSDT uses, matching the source (no EA/RA stage), so
-the preset aligner is Identity; (2) made device-agnostic (runs on CPU or CUDA);
-(3) the source models are (re)fit inside ``fit`` for each target rather than
-loaded from disk checkpoints — same models, folded into the framework;
-(4) the upstream ``use_mix`` mixup is a no-op in the authors' code — its
-``mixup_loss.backward()`` runs but the next line ``optimizer.zero_grad()`` wipes
-those gradients before ``loss_all.backward(); optimizer.step()``, so mixup never
-affected the published numbers. It is therefore omitted here (reproducing the
-effective optimization), not "fixed", which would change the numbers.
+Ported from the authors' ``MSDT/{source_train_multi_mi, target_adapt_msdt_mi}.py``
+(gray-box, source-transferability weighting on). Faithful-adaptation notes,
+disclosed in the model card: (1) the per-subject tangent map is the only
+alignment MSDT uses, matching the paper (no EA/RA stage), so the preset aligner
+is Identity; (2) made device-agnostic (runs on CPU or CUDA); (3) the source
+models are (re)fit inside ``fit`` for each target rather than loaded from disk
+checkpoints -- the same models, folded into the framework; (4) the paper's
+gray-box objective is L_all = L_im + beta*L_sc + gamma*L_mix (Eq. 10, beta=0.1,
+gamma=1); this port optimizes L_im + beta*L_sc (with beta the ``_incons`` weight,
+0.1) and omits the mixup term L_mix, because in the authors' code the mixup
+gradients are erased by an ``optimizer.zero_grad()`` before the backward/step of
+``loss_all``, so mixup never affected the published numbers -- it is omitted to
+reproduce the effective optimization, not "fixed", which would change them.
 Requires pyriemann + scikit-learn (imported lazily via the shared helpers).
 """
 from __future__ import annotations
@@ -105,7 +127,7 @@ class MSDT(Strategy):
         self.bottleneck = int(hp.get("msdt_bottleneck", self.bottleneck))
         self._src_lr = float(hp.get("msdt_src_lr", 0.01))     # source-MLP SGD LR
         self._tgt_lr = float(hp.get("msdt_tgt_lr", 0.001))    # target-adaptation SGD LR
-        self._incons = float(hp.get("msdt_incons", 0.1))      # source-inconsistency weight
+        self._incons = float(hp.get("msdt_incons", 0.1))      # beta: source-consistency weight (Eq. 7, 10)
         self._n_classes = source.n_classes
         self._models = []
         # cache key includes the source-training-affecting knobs so distinct grid
@@ -168,7 +190,8 @@ class MSDT(Strategy):
         Xt_np = tangent_features(target.X.astype(np.float64), cov_type="oas")
         Xt = torch.from_numpy(Xt_np.astype(np.float32)).to(device)
 
-        # adapt feature extractors (netF); freeze classifiers (netC)
+        # adapt each source feature extractor g'_m (netF); freeze the classifier
+        # f_m (netC) for hypothesis transfer (Sec. III-B)
         params = []
         for m in self._models:
             m.train()
@@ -192,10 +215,13 @@ class MSDT(Strategy):
                 _poly_lr(opt, self._tgt_lr, it, iters_per)
                 xb = Xt[idx]
                 logits = torch.stack([m(xb) for m in self._models], dim=1)   # (B, S, C)
+                # information maximization (Eq. 5-6: conditional-entropy + marginal-
+                # entropy terms) + source-consistency regularization L_sc (Eq. 7,
+                # weighted by beta = _incons). Mixup L_mix (Eq. 9) is omitted (see
+                # module docstring); the source-transferability weights alpha_m
+                # (Eq. 8) enter only at the weighted-ensemble prediction below.
                 loss = (instance_entropy_loss(logits) + batch_entropy_loss(logits)
                         + self._incons * source_inconsistency_loss(logits))
-                # entropy-based domain weights enter only at the weighted-ensemble
-                # prediction below; the upstream mixup term is a no-op (module docstring).
                 opt.zero_grad()
                 loss.backward()
                 opt.step()
@@ -206,6 +232,9 @@ class MSDT(Strategy):
     def _predict_ensemble(self, Xt: torch.Tensor) -> Tuple[np.ndarray, np.ndarray]:
         for m in self._models:
             m.eval()
+        # transferability-weighted ensemble theta_t = sum_m alpha_m theta'_m (Eq. 4),
+        # with the per-source weights alpha_m from source-transferability estimation
+        # (Eq. 8), normalized to sum to 1 over the S sources.
         w = domain_weights(self._models, Xt).detach()
         logits = torch.stack([m(Xt) for m in self._models], dim=1)       # (N, S, C)
         y_score = (torch.softmax(logits, dim=2) * w).sum(dim=1)          # (N, C) probabilities

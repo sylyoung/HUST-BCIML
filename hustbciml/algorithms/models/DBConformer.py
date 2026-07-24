@@ -15,24 +15,38 @@
 #     doi     = {10.1109/JBHI.2025.3622725},
 #   }
 # ===========================================================================
-"""DBConformer (Ziwei Wang et al., 2025/2026) is a dual-branch convolutional
-transformer for EEG decoding.
+"""DBConformer (Wang et al., 2026, IEEE JBHI) — a dual-branch convolutional
+Transformer for EEG decoding. It is a supervised end-to-end classifier
+(cross-entropy loss, Eq. 15) validated on three paradigms: motor imagery,
+epileptic seizure detection, and SSVEP (Sec. IV).
 
-Two parallel Conformer branches share a small embedding size:
+Unlike serial CNN-Transformer hybrids that push all spatial information through a
+temporal bottleneck, DBConformer runs two parallel branches (Fig. 2, Sec. III-C)
+and concatenates their features:
 
-  * **Temporal** — a multi-scale depthwise conv *Stem* turns the signal into P
-    temporal patches, then a Transformer encoder attends over time.
-  * **Spatial** — a per-channel conv encoder turns each channel into one token,
-    then a Transformer encoder attends over channels; the channel tokens are
-    pooled by a learned attention score.
+  * T-Conformer (temporal branch, Sec. III-C-2) -> F_t (Eq. 3). A "Temporal Patch
+    Embedding" (a depthwise-separable 1D convolution: pointwise/spatial Conv1D ->
+    BN -> depthwise temporal Conv1D -> BN&GELU -> average pooling) tokenizes the
+    signal into P non-overlapping temporal patches Z_t; a "T-Transformer encoder"
+    with learnable positional encoding (Eq. 6-7) models long-range temporal
+    dependencies; mean pooling over patches (Eq. 8) yields F_t.
+  * S-Conformer (spatial branch, Sec. III-C-3) -> F_s (Eq. 4). A "Spatial Patch
+    Embedding" (depthwise Conv1D over time -> average pool -> flatten/reshape ->
+    Linear) turns each EEG channel into one token Z_s; an "S-Transformer encoder"
+    with learnable positional encoding (Eq. 9-10) models inter-channel
+    dependencies; a lightweight "channel attention module" (Fig. 3, Eq. 11-13)
+    re-weights the channel tokens by a data-driven, softmax-normalized channel
+    importance score and sums them into F_s.
 
-The two branch representations are concatenated and compressed by a small MLP.
+The two branch features are concatenated, F_fused = [F_t; F_s] (Eq. 14), and an
+MLP classifier maps them to the class prediction (Eq. 14-15). The paper also
+applies Euclidean Alignment (EA, Eq. 1-2, Sec. III-B) as a preprocessing step;
+in this benchmark EA is a separate aligner stage, so it is not part of this file.
 
-This ports the paper's **default** configuration (``branch='all'``, gated fusion
-off, channel-attention pooling on, positional embeddings on); the source's worse
-single-branch / gated variants are omitted. As in the EEGConformer port, the
-paper's ``ClassificationHead`` MLP (80->64->32) is folded into
-``forward_features`` and ``out_features`` is 32, so the paper's final linear
+Faithful port of the paper's default architecture (Table II). As in the
+EEGConformer port, the paper's MLP classifier (2D -> 64 -> 32 -> N_classes,
+Table II; with D=40 the input is 2D=80) is split: the 80->64->32 stack is folded
+into ``forward_features`` (``out_features`` is 32) and the paper's final linear
 layer becomes the shared hustbciml ``Linear`` head.
 
 Source: github.com/wzwvv/DBConformer (``models/DBConformer.py``). Deviations, all
@@ -40,8 +54,8 @@ behaviour-preserving: the ``einops`` and ``timm`` dependencies are dropped
 (``rearrange`` rewritten with torch ops; ``timm.trunc_normal_`` ->
 ``torch.nn.init.trunc_normal_``), the global ``cudnn`` flags are not set, and the
 number of temporal patches P is inferred by a dummy forward (the paper fixes it
-via a hand-picked ``patch_size``; here ``patch_size`` defaults to ``n_times//8``
-so P~=8 on any dataset).
+via a hand-picked pooling window; here that window defaults to ``n_times//8`` so
+P~=8 on any dataset).
 """
 from __future__ import annotations
 
@@ -71,14 +85,18 @@ class _Conv(nn.Module):
 
 
 class _InterFre(nn.Module):
-    """sum the multi-scale branches, then GELU."""
+    """sum the temporal-conv branches (one when radix=1, as used here), then GELU
+    -- the "BN & GELU" non-linearity of the Temporal Patch Embedding (Table II)."""
 
     def forward(self, xs):
         return F.gelu(sum(xs))
 
 
 class _Stem(nn.Module):
-    """Multi-scale depthwise temporal conv + patch downsampling -> (B, D, P)."""
+    """Temporal Patch Embedding (T-Conformer, Sec. III-C-2-a, Table II):
+    depthwise-separable 1D conv (pointwise/spatial Conv1D -> depthwise temporal
+    Conv1D) + GELU + average pooling into P temporal patches -> (B, D, P).
+    radix defaults to 1, i.e. a single temporal scale as in the paper."""
 
     def __init__(self, in_planes, out_planes=40, kernel_size=63, patch_size=125,
                  radix=1, drop=0.5, drop_last_t=True):
@@ -122,7 +140,9 @@ class _TemporalPatch(nn.Module):
 
 
 class _SpatialPatch(nn.Module):
-    """Per-channel conv encoder: each channel -> one token."""
+    """Spatial Patch Embedding (S-Conformer, Sec. III-C-3-a, Table II): a
+    depthwise Conv1D over time is applied per channel, average-pooled over time,
+    then a Linear projects each channel to one token of width emb."""
 
     def __init__(self, spa_dim, emb):
         super().__init__()
@@ -142,7 +162,10 @@ class _SpatialPatch(nn.Module):
 
 
 class _MHA(nn.Module):
-    """Multi-head self-attention (einops-free); faithful to the source scaling."""
+    """Multi-head self-attention inside the Transformer encoder (Fig. 2, the
+    Q/K/V -> dot-product -> scaling -> softmax -> feed-forward path). einops-free;
+    the softmax is scaled by sqrt(emb) rather than sqrt(head_dim), matching the
+    original authors' code."""
 
     def __init__(self, emb, heads, drop):
         super().__init__()
@@ -175,7 +198,8 @@ class _FF(nn.Sequential):
 
 
 class _Block(nn.Module):
-    """Pre-norm residual attention + residual feed-forward."""
+    """One Transformer encoder layer (Eq. 7 / Eq. 10): pre-norm residual
+    self-attention + pre-norm residual feed-forward."""
 
     def __init__(self, emb, heads=10, drop=0.5):
         super().__init__()
@@ -211,9 +235,14 @@ class DBConformer(Backbone):
         self.pos_t = nn.Parameter(torch.randn(1, P, emb))
         self.pos_s = nn.Parameter(torch.randn(1, n_chans, emb))
 
-        self.temporal_tr = _Encoder(tem_depth, emb, heads, drop)
-        self.spatial_tr = _Encoder(chn_depth, emb, heads, drop)
+        self.temporal_tr = _Encoder(tem_depth, emb, heads, drop)   # T-Transformer encoder (Eq. 7)
+        self.spatial_tr = _Encoder(chn_depth, emb, heads, drop)    # S-Transformer encoder (Eq. 10)
+        # channel attention module (S-Conformer, Fig. 3, Eq. 11): Linear -> Tanh
+        # -> Linear scores each channel token; softmax over channels (Eq. 12) then
+        # gives the channel-importance weights used to pool the tokens (Eq. 13).
         self.attn_pool = nn.Sequential(nn.Linear(emb, emb), nn.Tanh(), nn.Linear(emb, 1))
+        # first two layers of the paper's MLP classifier (2D -> 64 -> 32, Table II);
+        # the final 32 -> N_classes layer is the shared hustbciml Linear head.
         self.feat = nn.Sequential(
             nn.Linear(emb * 2, 64), nn.ELU(), nn.Dropout(0.5),
             nn.Linear(64, 32), nn.ELU(), nn.Dropout(0.3),
@@ -239,11 +268,11 @@ class DBConformer(Backbone):
 
     def forward_features(self, x: torch.Tensor) -> torch.Tensor:   # (B, 1, C, T)
         x = x.squeeze(1)                                    # (B, C, T)
-        xt = self.temporal(x) + self.pos_t                  # (B, P, emb)
-        xs = self.spatial(x) + self.pos_s                   # (B, C, emb)
-        xt = self.temporal_tr(xt)
-        xs = self.spatial_tr(xs)
-        x_t = xt.mean(dim=1)                                # (B, emb)
-        attn = torch.softmax(self.attn_pool(xs), dim=1)     # (B, C, 1)
-        x_s = torch.sum(attn * xs, dim=1)                   # (B, emb)
-        return self.feat(torch.cat([x_t, x_s], dim=-1))     # (B, 32)
+        xt = self.temporal(x) + self.pos_t                  # T-Conformer patches + pos enc (Eq. 6)
+        xs = self.spatial(x) + self.pos_s                   # S-Conformer channel tokens + pos enc (Eq. 9)
+        xt = self.temporal_tr(xt)                           # T-Transformer encoder (Eq. 7)
+        xs = self.spatial_tr(xs)                            # S-Transformer encoder (Eq. 10)
+        x_t = xt.mean(dim=1)                                # F_t: mean pooling over patches (Eq. 8)
+        attn = torch.softmax(self.attn_pool(xs), dim=1)     # channel-importance weights alpha (Eq. 12)
+        x_s = torch.sum(attn * xs, dim=1)                   # F_s: attention-weighted channel sum (Eq. 13)
+        return self.feat(torch.cat([x_t, x_s], dim=-1))     # concat F_fused=[F_t;F_s] (Eq. 14) -> MLP

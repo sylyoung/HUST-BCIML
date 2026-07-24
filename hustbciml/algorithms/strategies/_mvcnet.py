@@ -15,12 +15,15 @@
 #   }
 # (The IFNet backbone is documented and cited in models/IFNet.py.)
 # ===========================================================================
-"""Vendored building blocks for the MVCNet strategy — SimCLR NT-Xent loss, the
-three augmented views (flip / frequency-shift / channel-reflection), and the
-auxiliary transformer-encoder + projector. Prefixed ``_`` so the registry skips it.
+"""Building blocks for the MVCNet strategy (Wang et al., 2025, Knowledge-Based
+Systems) — the SimCLR NT-Xent contrastive loss (paper Eq. 1/3), the three
+representative augmented views used here (Flip / FShift / Channel Reflection, one
+per time/frequency/space domain of Table 2), and the auxiliary transformer-encoder
++ projector that realize the paper's Transformer branch (Sec. 3.2). Prefixed ``_``
+so the registry skips it.
 
-Source: github.com/wzwvv/MVCNet (utils/contrastive_loss.py, utils/data_augment.py,
-utils/network.py).
+Original authors' code: github.com/wzwvv/MVCNet (utils/contrastive_loss.py,
+utils/data_augment.py, utils/network.py).
 """
 from __future__ import annotations
 
@@ -71,12 +74,13 @@ class NTXentLoss(nn.Module):
 
 # ----------------------------- the three views -----------------------------
 def flip_view(x: torch.Tensor) -> torch.Tensor:
-    """Amplitude negation (the source's 'flip' == data_neg_f)."""
+    """Time-domain view: amplitude negation (paper's Flip augmentation, Table 2)."""
     return -x
 
 
 def freqshift_view(x: torch.Tensor, sfreq: float, f_shift: float = 0.1) -> torch.Tensor:
-    """Hilbert-analytic frequency shift by ``f_shift`` Hz (the source's freq_shift)."""
+    """Frequency-domain view: Hilbert-transform frequency shift by ``f_shift`` Hz
+    (paper's FShift augmentation, Table 2)."""
     from scipy.signal import hilbert
     xb = x.squeeze(1).detach().cpu().numpy().astype(np.float64)     # (B, C, T)
     B, C, T = xb.shape
@@ -92,7 +96,8 @@ def freqshift_view(x: torch.Tensor, sfreq: float, f_shift: float = 0.1) -> torch
 
 
 def reflect_view(x: torch.Tensor, y: torch.Tensor, perm, n_classes: int):
-    """Channel reflection (left<->right) with a 2-class label swap (source 'cr')."""
+    """Space-domain view: Channel Reflection — left/right hemisphere channel swap
+    with the 2-class label swap (paper's CR augmentation, Table 2; Wang et al., 2024)."""
     C = x.shape[2]
     perm = torch.arange(C - 1, -1, -1, device=x.device) if perm is None else perm.to(x.device)
     xr = x[:, :, perm, :]
@@ -110,8 +115,10 @@ def make_reflection_perm(ch_names):
 
 # --------------------------- auxiliary modules ------------------------------
 def build_encoder(dim_e: int, nlayer: int = 1) -> nn.Module:
-    """Transformer encoder over channels-as-tokens (source netE). ``nhead`` divides
-    ``dim_e`` (the source notes head count barely matters)."""
+    """Transformer branch (paper Sec. 3.2): a self-attention encoder. Here channels
+    are the tokens and ``dim_e`` (= n_times) is the model dimension. ``nhead``
+    divides ``dim_e`` (the source notes head count barely matters; the paper's
+    ablation, Fig. 9, finds 2 layers / 2 heads best)."""
     nhead = 2 if dim_e % 2 == 0 else 1
     layer = nn.TransformerEncoderLayer(
         d_model=dim_e, nhead=nhead, dim_feedforward=max(2 * dim_e, 128),

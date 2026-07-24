@@ -8,29 +8,32 @@
 #     journal = {IEEE Transactions on Cognitive and Developmental Systems},
 #     title   = {Lightweight Source-Free Transfer for Privacy-Preserving Motor Imagery Classification},
 #     year    = {2023},
+#     volume  = {15},
 #     number  = {2},
 #     pages   = {938-949},
-#     volume  = {15},
 #     doi     = {10.1109/TCDS.2022.3193731},
 #   }
 # ===========================================================================
-"""LSFT helpers — Riemannian alignment, tangent-space features, and the
-JPDA/DJP-MMD subspace adaptation (Zhang & Wu, IEEE TCDS 2022).
+"""LSFT helpers — centroid alignment, tangent-space features, and the
+joint-probability MMD subspace adaptation (Zhang & Wu, 2023, IEEE TCDS).
 
 Vendored and refactored from the authors' ``LSFT/{data_align,dataloader,
-feature_adaptation}.py``. All three pieces operate on classical Riemannian
-features, no neural network:
+feature_adaptation}.py``. All three pieces are deep-learning-free, operating on
+classical Riemannian features:
 
-* ``ra_align`` — Riemannian centroid alignment (``centroid_align`` with
+* ``ra_align`` — centroid alignment (CA, Eq. 2; ``centroid_align`` with
   ``center_type='riemann'``): re-reference every trial by R^{-1/2}, R the
   Riemannian mean covariance of the (single-subject) set. LSFT's own alignment,
   so the hustbciml aligner stage is Identity.
 * ``tangent_features`` — Ledoit-Wolf covariances mapped to the Riemannian
-  tangent space, giving one C(C+1)/2 vector per trial.
-* ``feature_adaptation`` — a JDA/JPDA subspace: solve the generalized
-  eigenproblem ``(K M Kᵀ + λI) A = (K H Kᵀ) A Λ`` with the DJP-MMD joint
-  matrix ``M = R_min − μ R_max``, keep the ``dim`` smallest-eigenvalue vectors,
-  and project both domains into the shared subspace.
+  tangent space (TSM, Eq. 1/3), giving one C(C+1)/2 vector per trial.
+* ``feature_adaptation`` — the Step-3 joint-probability domain-adaptation
+  subspace (Sec. III-D): solve the generalized eigen-problem ``(K R Kᵀ + λI) A =
+  (K H Kᵀ) A Λ`` (Eq. 10) whose joint-probability-MMD matrix (Eq. 6/9) is
+  ``R = N_block − μ M_block`` -- N couples same-class source/target
+  (transferability), M couples each class against the others (discriminability),
+  with trade-off μ -- keep the ``dim`` (= p) trailing eigenvectors, and project
+  both domains into the shared subspace.
 
 Disclosed numerical fixes vs the source (see the card): (1) the generalized
 eigenproblem is solved with ``scipy.linalg.eig`` exactly as the source, but the
@@ -49,10 +52,12 @@ from sklearn.preprocessing import OneHotEncoder
 
 # ----------------------------------------------------------------- features ---
 def ra_align(X: np.ndarray, cov_type: str = "lwf") -> np.ndarray:
-    """Riemannian centroid alignment of one subject's trials ``(N, C, T)``.
+    """Centroid alignment (CA, Eq. 2) of one subject's trials ``(N, C, T)``.
 
     Re-reference each trial by R^{-1/2}, R the Riemannian mean of the trial
-    covariances — the ``centroid_align(center_type='riemann')`` of the source.
+    covariances -- the ``centroid_align(center_type='riemann')`` of the source.
+    Aligning each subject's covariances to the identity mitigates their
+    marginal-distribution divergence (Sec. III-B).
     """
     from pyriemann.utils.covariance import covariances
     from pyriemann.utils.mean import mean_covariance
@@ -75,11 +80,13 @@ def tangent_features(X: np.ndarray, cov_type: str = "lwf") -> np.ndarray:
 
 # ------------------------------------------------------------- DJP-MMD matrix ---
 def _matrix_M(Ys: np.ndarray, Yt_pseudo, ns: int, nt: int, C: int, mu: float) -> np.ndarray:
-    """DJP-MMD joint matrix ``M = R_min - mu * R_max`` (each block Frobenius-normalized).
+    """Joint-probability-MMD matrix ``R = Rmin - mu * Rmax`` (Eq. 6/9; blocks
+    Frobenius-normalized).
 
-    ``R_min`` (transferability) couples same-class source/target; ``R_max``
-    (discriminability) couples each class against the other C-1. Faithful to the
-    authors' ``get_matrix_M(..., mmd_type='djp-mmd')``.
+    ``Rmin`` (transferability) couples same-class source/target; ``Rmax``
+    (discriminability) couples each class against the other C-1. This is the
+    joint-probability MMD of Eq. 6, following the reference code's
+    ``get_matrix_M(..., mmd_type='djp-mmd')`` implementation.
     """
     ohe = OneHotEncoder()
     ohe.fit(np.unique(Ys).reshape(-1, 1))
@@ -105,25 +112,27 @@ def _matrix_M(Ys: np.ndarray, Yt_pseudo, ns: int, nt: int, C: int, mu: float) ->
 
 def feature_adaptation(Xs: np.ndarray, Ys: np.ndarray, Xt: np.ndarray, Yt_pseudo,
                        dim: int = 20, lamb: float = 1.0, mu: float = 0.1) -> np.ndarray:
-    """Learn the shared subspace and return ``Z`` (dim, ns+nt), column-normalized.
+    """Solve the Step-3 subspace (Eq. 7/10) and return ``Z`` (dim, ns+nt),
+    column-normalized -- the D_v and D_t features mapped by A^T.
 
     Split downstream as ``Xs_new = Z[:, :ns].T``, ``Xt_new = Z[:, ns:].T``.
-    ``kernel_type='primal'`` (K = X), matching the LSFT demo.
+    ``kernel_type='primal'`` (K = X), matching the LSFT demo; ``lamb`` is the
+    regularization weight and ``dim`` (= p) the target subspace dimensionality.
     """
     X = np.hstack((Xs.T, Xt.T))
     X = X @ np.diag(1.0 / np.linalg.norm(X, axis=0))
     m, n = X.shape
     ns, nt = len(Xs), len(Xt)
     C = len(np.unique(Ys))
-    H = np.eye(n) - 1.0 / n * np.ones((n, n))
+    H = np.eye(n) - 1.0 / n * np.ones((n, n))          # centering matrix (PCA constraint, Eq. 7)
 
-    M = _matrix_M(Ys, Yt_pseudo, ns, nt, C, mu)
+    M = _matrix_M(Ys, Yt_pseudo, ns, nt, C, mu)        # joint-probability-MMD matrix R (Eq. 9)
     K = X                                              # primal kernel
     a = np.linalg.multi_dot([K, M, K.T]) + lamb * np.eye(m)
     b = np.linalg.multi_dot([K, H, K.T])
-    w, V = scipy.linalg.eig(a, b)
+    w, V = scipy.linalg.eig(a, b)                      # generalized eigen-problem (Eq. 10)
     order = np.argsort(w.real)
-    A = np.real(V[:, order[:dim]])                     # real subspace (see module docstring)
+    A = np.real(V[:, order[:dim]])                     # p trailing eigenvectors (real; see module docstring)
     Z = A.T @ K
     Z = Z @ np.diag(1.0 / np.linalg.norm(Z, axis=0))
     return Z

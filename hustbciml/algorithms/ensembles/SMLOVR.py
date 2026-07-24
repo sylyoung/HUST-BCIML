@@ -2,7 +2,7 @@
 # SMLOVR.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 #
-# SML one-vs-rest — the lab's multi-class spectral meta-learner.
+# SML-OVR — the lab's one-vs-rest multi-class spectral meta-learner (label-free, hyperparameter-free).
 # Original authors' code: https://github.com/sylyoung/TestEnsemble
 #
 # References (IEEE BibTeX):
@@ -27,17 +27,27 @@
 #     doi     = {10.1073/pnas.1219097111},
 #   }
 # ===========================================================================
-"""SML one-vs-rest — the lab's multi-class generalization of the binary SML.
+"""SML-OVR — one-vs-rest multi-class Spectral Meta-Learner (Li et al., 2026).
 
-The binary Spectral Meta-Learner (Parisi et al. 2014) only handles two classes.
-This lab-proposed method (Li et al. 2026, "Black-Box Test-Time Ensemble",
-Algorithm 1 / Eqs. 12-13) extends it to any number of classes by a one-vs-rest
-decomposition: for each class it forms the one-vs-rest ±1 votes, takes the leading
-eigenvector of the model vote-covariance as the per-class model weights, and
-averages the per-class weightings into one reliability vector, then predicts the
-argmax of the reliability-weighted votes. For two classes it reduces exactly to the
-binary SML, which is why the two report identical accuracy on the two-class tasks;
-the multi-class advantage only appears on native multi-class data.
+The binary Spectral Meta-Learner (SML; Parisi et al., 2014) scores each base
+classifier's reliability with NO labels: under conditional independence, the
+leading eigenvector of the K x K covariance of the classifiers' +/-1 predictions
+has entries proportional to (2*BCA - 1), where BCA is a classifier's balanced
+classification accuracy, so the eigenvector doubles as a weight vector that favors
+the more accurate models. Plain SML is defined only for two classes.
+
+"Black-Box Test-Time Ensemble" (Li et al., 2026, IEEE CIM; Algorithm 1) lifts SML
+to K > 2 classes with a one-vs-rest split: for each class k the K models' votes are
+recoded to +/-1 (class k vs. the rest), the leading eigenvector v_k of that
+subtask's vote-covariance is taken (Lemma 2 holds per class), and the per-class
+eigenvectors are each sum-normalized and averaged into a single reliability vector
+v-bar (Eq. 12). The prediction is the argmax over classes of the v-bar-weighted
+one-hot votes (Eq. 13). It is hyperparameter-free and needs no ground truth.
+
+For K = 2 the two one-vs-rest subtasks are mirror images, so SML-OVR collapses to
+the binary SML -- which is why SML and SML-OVR post identical numbers on the
+two-class motor-imagery datasets, and SML-OVR only pulls ahead on natively
+multi-class data.
 """
 from __future__ import annotations
 
@@ -75,6 +85,6 @@ class SMLOVR(Combiner):
             if v[0] <= 0:                                # fix global sign (assume model 0 > chance)
                 v = -v
             weights_all.append(v / np.sum(v))            # normalize so the per-class weights sum to 1
-        wf = np.sum(np.array(weights_all), axis=0)       # v-bar: average reliability across classes
+        wf = np.sum(np.array(weights_all), axis=0)       # v-bar (Eq. 12): sum of the per-class normalized eigenvectors; the 1/K averaging factor is a global scale that does not change the argmax below
         # Predict argmax over classes of the reliability-weighted one-hot votes.
         return np.argmax(np.einsum("a,abc->bc", wf, oh), axis=1)

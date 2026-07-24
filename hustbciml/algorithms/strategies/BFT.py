@@ -2,72 +2,113 @@
 # BFT.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 #
-# Reference (IEEE BibTeX):
+# Reference (arXiv preprint; journal version not yet out — IEEE BibTeX):
 #   @Article{Li2026,
-#     author  = {Li, Siyang and Ouyang, Jiayi and Cui, Zhenyao and Wang, Ziwei and Jia, Tianwang and Wan, Feng and Wu, Dongrui},
-#     journal = {IEEE Journal of Biomedical and Health Informatics},
-#     title   = {Backpropagation-Free Test-Time Adaptation for Lightweight {EEG}-Based Brain-Computer Interfaces},
-#     year    = {2026},
-#     note    = {arXiv:2601.07556},
+#     author = {Li, Siyang and Ouyang, Jiayi and Cui, Zhenyao and Wang, Ziwei and Jia, Tianwang and Wan, Feng and Wu, Dongrui},
+#     title  = {Backpropagation-Free Test-Time Adaptation for Lightweight {EEG}-Based Brain-Computer Interfaces},
+#     year   = {2026},
+#     note   = {arXiv preprint arXiv:2601.07556},
 #   }
 # ===========================================================================
-"""BFT — Backpropagation-Free Test-time adaptation (Li et al., 2026), BFT-A variant.
+"""BFT (Li et al., 2026) — Backpropagation-Free Transformations for test-time
+adaptation of lightweight EEG-based BCIs. arXiv preprint arXiv:2601.07556 (v1,
+12 Jan 2026); the journal version is not yet out, so the preprint is
+authoritative here.
 
-Faithful port of the authors' released **BFT-A** pipeline (``BFT-classify/``:
-``train_pre_model.py``, ``train_loss_model.py``, ``augment.py``, ``test.py``,
-``models/{EEGNet,losspredictor}.py``). The method has three trained pieces and a
-backprop-free test phase — all reproduced here:
+Task and idea (Sec. III). Online test-time adaptation (TTA): unlabeled target
+trials from a new subject arrive one-by-one in a stream and each must be
+predicted immediately, with no source data and no per-use calibration (Sec. II-B).
+Existing TTA (e.g. Tent, T-TIME) refines model parameters by backpropagating a
+test-time loss, which costs compute, needs white-box access, and is fragile to
+noise (Sec. II-C). BFT instead adapts WITHOUT any gradient step: it applies a set
+of structured, label-preserving transformations to each test trial and aggregates
+their predictions. Because a well-adapted model should be stable under such
+perturbations, the spread of predictions across transformations is a surrogate
+for inference uncertainty, and averaging them reduces it (Sec. IV gives a
+variance-based justification, Theorems 1-2). BFT is thus backpropagation-free,
+privacy-preserving, noise-robust, and task-agnostic, covering both classification
+(Eq. 7) and regression (Eq. 8) over five MI / driver-drowsiness datasets (Sec. V).
 
-1. **Source model, trained WITH augmentation, on (t-1)-second trials.**
-   BFT's decoder ``g,h`` (EEGNet) is trained on the Euclidean-aligned source with
-   the paper's on-the-fly augmentation (Sec. V-C): each trial is randomly replaced
-   by ONE of ~14 knowledge-guided transforms per epoch — the K=12 label-preserving
-   views below plus the two label-aware ones, Channel Reflection (left/right-hand
-   only) and DWT/CSDA (same-class detail graft). Crucially,
-   every trial is truncated to ``eeg_length = (round(T/sfreq) - 1) * sfreq``
-   samples — the model runs on (t-1)-second inputs so that at test time a full
-   (t-1)-second window can *slide* within the t-second trial. This truncation is
-   intrinsic to BFT, so BFT trains its own model rather than sharing the
-   benchmark's full-length EA-EEGNet source (disclosed below).
+The paper defines two transformation families (Sec. III-B):
+  * BFT-A — knowledge-guided input augmentations (Eq. 1): Noise, Amplitude
+    Scaling, Frequency Shift, and Sliding Window.
+  * BFT-D — approximate Bayesian inference via reactivated Monte-Carlo Dropout
+    over features (Eq. 2-3).
+Both feed a shared learning-to-rank module (Sec. III-C) that scores each
+transformation's reliability, so more reliable views get higher aggregation
+weight. This module is two light networks: a ranking module r(.) that outputs a
+scalar reliability per transformed view, trained (Eq. 5-6) against task-loss-
+derived rank targets, and a mapping module m(.) that projects scores into a
+rank-like space and is pre-trained on synthetic data (Eq. 4). Predictions are
+then combined by a reliability-weighted, temperature-sharpened softmax for
+classification (Eq. 7) or a top-half reliability average for regression (Eq. 8).
 
-2. **Reliability / ranking module, trained on the source.** An
+This file implements the **classification** path of **BFT-A** (the benchmark
+combines EEG classifiers). It is a faithful port of the authors' BFT-A pipeline
+(``BFT-classify/``: ``train_pre_model.py``, ``train_loss_model.py``,
+``augment.py``, ``test.py``, ``models/{EEGNet,losspredictor}.py``), with three
+trained pieces and a backprop-free test phase:
+
+1. **Source model, trained WITH augmentation, on (t-1)-second trials.** The
+   decoder ``g,h`` (EEGNet) is trained on the Euclidean-aligned source (EA is
+   backprop-free and folded into every TTA row here, Sec. V-B) with the paper's
+   on-the-fly augmentation (Sec. V-C): each source trial is randomly replaced by
+   ONE of the training transformations per epoch (equal probability). Every trial
+   is truncated to ``eeg_length = (round(T/sfreq) - 1) * sfreq`` samples, i.e.
+   t-1 seconds (Sec. V-C), so that at test time a full (t-1)-second window can
+   *slide* within the t-second trial. This truncation is intrinsic to BFT, so it
+   trains its own model rather than sharing the benchmark's full-length EA-EEGNet
+   source (disclosed below).
+
+2. **Learning-to-rank reliability module, trained on the source.** An
    ``EEGNetLossPredictor`` (3-layer MLP on the flattened backbone features, the
-   authors' ``models/losspredictor.py``) is trained so that, over the K=12
-   transformations of a trial, ``softmax(-predicted_loss)`` rank-matches
-   ``softmax(-real_cross_entropy)`` — reliable (low-loss) views earn more weight.
+   authors' ``models/losspredictor.py``) plays the role of the ranking module
+   r(.): over the K=12 test-time transformations of a trial it is trained so that
+   ``softmax(-predicted_loss)`` rank-matches ``softmax(-real_cross_entropy)`` —
+   the task-loss-derived rank target of Eq. 5-6. Reliable (low-loss) views thus
+   earn more weight at aggregation.
 
-3. **Backprop-free test phase (the K=12 real transformations).** Each streamed
-   target trial is online-Euclidean-aligned, then K=12 label-preserving views are
-   built and predicted; the temperature-sharpened (tau=0.25) softmaxes are
-   averaged with per-view reliability weights (accumulated as a running mean over
-   the stream). No gradient is taken; the only adaptation is refreshing the
-   BatchNorm running statistics on a sliding window of the most recent trials.
+3. **Backprop-free test phase (the K=12 label-preserving transformations).** Each
+   streamed target trial is online-Euclidean-aligned, K=12 transformed views are
+   built and predicted, and the temperature-sharpened softmaxes are averaged with
+   per-view reliability weights (Eq. 7), accumulated as a running mean over the
+   stream. The temperature ``tau`` (config ``bft_temp``, default 0.25; the paper
+   uses 0.5, Sec. V-B) is a power of two below one, sharpening the class
+   distribution before the softmax. No gradient is taken; the only adaptation is
+   refreshing the BatchNorm running statistics on a sliding window of the most
+   recent trials (a BN-adapt step, Sec. II-B, that is itself backprop-free).
 
 The K=12 views (authors' ``generate_augmented_inputs``), each returned at
-``eeg_length`` samples: identity; additive uniform noise (per-trial std / 2);
-amplitude scaling x0.9, x1.1, x1.2; Hilbert analytic frequency shift +/-0.2 Hz;
-and **five real sliding windows** cropped from the full t-second trial at onsets
-stride*{1..5} (stride = 0.2 s) — the genuine (t-1)-second segments the method
-relies on for view diversity, not zero-padded shifts. Aggregation temperature
-tau = 0.25.
+``eeg_length`` samples: identity; additive uniform Noise (per-trial std / 2);
+amplitude Scaling x0.9, x1.1, x1.2; Hilbert-analytic Frequency Shift +/-0.2 Hz;
+and **five real Sliding Windows** cropped from the full t-second trial at onsets
+stride*{1..5} (stride = 0.2 s) — the genuine (t-1)-second segments described in
+Sec. V-C, not zero-padded shifts.
 
 Faithful-adaptation disclosures (research integrity):
   (1) Capacity: this port uses the benchmark's shared EEGNet capacity
       (F1=4/D=2/F2=8) so BFT is comparable to every other backbone/TTA row; the
-      paper uses F1=8/D=2/F2=16. The mechanism (truncated multi-view + reliability
-      aggregation + BN refresh) is otherwise the authors'.
-  (2) The reliability predictor in the release is trained with a SoDeep
-      differentiable-sorting Spearman loss whose *pretrained sorter weights are
-      not shipped*. It is replaced here by a soft-rank Spearman surrogate with the
-      same rank-correlation objective (``_soft_spearman_loss``); the predictor
-      architecture, inputs, and training target are otherwise the authors'.
-  (3) Training augmentation is the paper's on-the-fly random mix of 14 transforms
-      (Identity, Scale x3, Noise, Freq x2, Slide x5, plus the label-aware Channel
-      Reflection and DWT/CSDA), one drawn per trial per epoch. Channel Reflection is
-      dropped on datasets that are not left/right-hand (BNCI2014002/2015001 are
+      paper's EEGNet [37] uses F1=8/D=2/F2=16. The mechanism (truncated multi-view
+      + reliability aggregation + BN refresh) is otherwise the authors'.
+  (2) The paper's learning-to-rank module is a ranking module r(.) plus a mapping
+      module m(.) pre-trained on synthetic data with an L1 rank loss (Eq. 4),
+      following SoDeep (Engilberge et al., 2019) differentiable sorting. The
+      shipped ranking objective relies on SoDeep sorter weights that are not
+      released, so r(.) is trained here by a soft-rank Spearman surrogate with the
+      same rank-correlation objective (``_soft_spearman_loss``). Because m(.)'s
+      output is not used in aggregation (only r(.)'s scores are, Fig. 3), the
+      separate m(.) network is not instantiated; the predictor architecture,
+      inputs, and rank target are otherwise the authors'.
+  (3) Training uses the paper's on-the-fly random mix (Sec. V-C: fourteen
+      transformations for classification, one drawn per trial per epoch): the K=12
+      label-preserving views plus the two label-AWARE ones applied at training
+      only — Channel Reflection (Wang et al., 2024) and CSDA (Wang et al., 2025),
+      the same-class high-frequency detail graft of ref [40]. Channel Reflection
+      is dropped on datasets that are not left/right-hand (BNCI2014002/2015001 are
       right-hand-vs-feet), where its electrode mirror + label swap would poison
-      training — matching the benchmark's rule that CR is a two-class left/right
-      transform. The BFT-D dropout variant is not ported (BFT-A only).
+      training — matching the benchmark's rule that Channel Reflection is a
+      two-class left/right transform. The BFT-D dropout family is not ported
+      (BFT-A only).
 """
 from __future__ import annotations
 
@@ -145,12 +186,13 @@ def _bft_views(X_full: np.ndarray, sfreq: float, eeg_length: int, seed: int) -> 
 
 # --------------------------------------------------------------------------
 # Training augmentation (paper Sec. V-C): on-the-fly, each source trial is
-# randomly replaced by ONE of ~14 knowledge-guided transforms per epoch. The
-# label-preserving ones match the K=12 test-time views; the two label-AWARE ones
-# are Channel Reflection (left/right-hand only — it mirrors electrodes and swaps
-# the L<->R label) and DWT/CSDA (same-class high-frequency detail graft). This
-# operates on FULL-length trials and returns (t-1)-second samples, so the sliding
-# windows are real crops.
+# randomly replaced by ONE of the fourteen training transformations per epoch
+# (equal probability). Twelve are the label-preserving views that also serve at
+# test time; the two label-AWARE ones are applied at training only — Channel
+# Reflection (Wang et al., 2024; left/right-hand only, it mirrors electrodes and
+# swaps the L<->R label) and CSDA (Wang et al., 2025, ref [40]; same-class high-
+# frequency detail graft). This operates on FULL-length trials and returns
+# (t-1)-second samples, so the sliding windows are real crops.
 # --------------------------------------------------------------------------
 def _is_left_right(classes) -> bool:
     """True iff the two class names are a left/right-hand pair — the only case in
@@ -166,10 +208,11 @@ def _is_left_right(classes) -> bool:
 def _dwt_swap(Xb: np.ndarray, yb: np.ndarray, idx: np.ndarray, L: int,
               rng: np.random.RandomState, wavelet: str = "db4",
               mode: str = "smooth") -> np.ndarray:
-    """DWT/CSDA (Ziwei Wang et al., 2025) for the batch rows ``idx``: keep each
-    trial's low-frequency approximation, graft a random SAME-CLASS batch partner's
-    high-frequency detail. Falls back to the identity (t-1)s crop when a class is a
-    singleton in the batch or PyWavelets is unavailable."""
+    """CSDA (Wang et al., 2025, ref [40]) for the batch rows ``idx``: via a
+    discrete wavelet transform, keep each trial's low-frequency approximation and
+    graft a random SAME-CLASS batch partner's high-frequency detail. Falls back to
+    the identity (t-1)s crop when a class is a singleton in the batch or
+    PyWavelets is unavailable."""
     head = Xb[:, :, :L].astype(np.float64)                   # the (t-1)s window
     out = head[idx].copy()
     try:
@@ -296,10 +339,12 @@ def _bft_train(inner: nn.Module, source: EEGEpochs, ctx: RunContext,
 
 
 # --------------------------------------------------------------------------
-# Reliability predictor (authors' EEGNetLossPredictor) + its training objective.
+# Ranking module r(.) of the learning-to-rank module (Sec. III-C), realized by
+# the authors' EEGNetLossPredictor, plus its rank-correlation training objective.
 # --------------------------------------------------------------------------
 class EEGNetLossPredictor(nn.Module):
-    """3-layer MLP on the flattened backbone features -> a scalar predicted loss
+    """Ranking module r(.) (Sec. III-C): a 3-layer MLP on the flattened backbone
+    features -> a scalar reliability (predicted task loss) per transformed view
     (authors' models/losspredictor.py). ``in_features`` = backbone.out_features
     = F2 * (eeg_length // 32)."""
 
@@ -343,7 +388,7 @@ class BFT(Strategy):
     K = 12
 
     def fit(self, model: nn.Module, source: EEGEpochs, ctx: RunContext) -> nn.Module:
-        """Build and train BFT's own (t-1)-second EEGNet + reliability predictor.
+        """Build and train BFT's own (t-1)-second EEGNet + ranking module r(.).
 
         The Exp passes its full-length pipeline ``model`` but ignores ``fit``'s
         return value (it re-uses the same object for ``predict``). BFT needs a
@@ -373,15 +418,15 @@ class BFT(Strategy):
         inner = PipelineModel(backbone, head).to(device)
 
         # Train BFT's (t-1)-second decoder with the paper's on-the-fly augmentation
-        # (Sec. V-C): each source trial is randomly replaced by ONE of ~14
-        # knowledge-guided transforms per epoch. Channel Reflection is label-aware
-        # and left/right-hand only, so it enters the menu solely for L/R datasets
+        # (Sec. V-C): each source trial is randomly replaced by ONE of the fourteen
+        # training transformations per epoch. Channel Reflection is label-aware and
+        # left/right-hand only, so it enters the menu solely for L/R datasets
         # (dropped on right-hand-vs-feet, where the mirror has no valid label swap).
         inner = _bft_train(inner, source, ctx, sfreq, eeg_length)
         # surface the held-out-source val score on the passed model for the tuner
         setattr(model, "_val_score", getattr(inner, "_val_score", None))
 
-        # --- 2) reliability predictor: rank-match softmax(-pred) to softmax(-CE) --
+        # --- 2) ranking module r(.): rank-match softmax(-pred) to softmax(-CE) ----
         temp = float(cfg.hp.get("bft_temp", 0.25))
         lp_epochs = int(cfg.hp.get("bft_lp_epochs", 20))
         lp = EEGNetLossPredictor(int(backbone.out_features)).to(device)
