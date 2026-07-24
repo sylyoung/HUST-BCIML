@@ -219,7 +219,6 @@
     stat(stats, SITE.n_code, tr("papers with code"));
     stat(stats, SITE.n_papers || PUBS.length, tr("papers indexed"));
     stat(stats, topicList.length, tr("research areas"));
-    stat(stats, paradigmList.length, tr("BCI paradigms"));
     hero.appendChild(stats);
     o.appendChild(hero);
 

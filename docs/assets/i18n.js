@@ -52,7 +52,6 @@
       "papers with code": "含代码的论文",
       "papers indexed": "已收录论文",
       "research areas": "研究方向",
-      "BCI paradigms": "脑机接口范式",
       "Approaches in the benchmark": "基准中的全部方法",
       "Every approach evaluated in the benchmark, grouped by pipeline stage. The lab's own methods (Prof. Wu's group) are highlighted, and the external baselines they are compared against are shown alongside.":
         "基准中评测的每一个方法，按流水线阶段分组。实验室（伍冬睿教授课题组）自己提出的方法以高亮样式显示，与它们对比的外部基线也一并列出。",
