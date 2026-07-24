@@ -8,19 +8,13 @@
 
 伍冬睿教授 &nbsp;·&nbsp; 华中科技大学
 
-<br>
-
 一个统一、可复现的**脑电（EEG）解码基准** &nbsp;+&nbsp; 一个可检索的**论文到代码总览**。
-
-<br>
 
 ### &nbsp;[🌐&nbsp; 打开在线网页应用 &nbsp;↗](https://sylyoung.github.io/HUST-BCIML/)&nbsp;
 
 [![Open the live web app](https://img.shields.io/badge/sylyoung.github.io%2FHUST--BCIML-Open_the_live_web_app-2563EB?style=for-the-badge&labelColor=1e293b)](https://sylyoung.github.io/HUST-BCIML/)
 
 <sub>可检索的论文到代码总览&nbsp; ·&nbsp; 交互式基准排行榜&nbsp; ·&nbsp; 在浏览器中运行，无需安装</sub>
-
-<br>
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-3776ab)
 ![PyTorch](https://img.shields.io/badge/PyTorch-1.12%2B-ee4c2c)
@@ -38,8 +32,6 @@
 > 上方链接的实验室官方网站与伍冬睿教授的个人主页，是了解本实验室概况、成员、动态及完整论文列表的权威来源。
 >
 > **本仓库是实验室的开源*代码*主页**，包含一个统一的脑电解码方法基准，以及一份从论文到其公开代码的映射。它与实验室各官方页面互为补充，而不是取而代之。
-
-<br>
 
 ## 目录
 
@@ -60,12 +52,8 @@
 - [致谢](#致谢)
 - [许可证](#许可证)
 
-<br>
-
 <details>
 <summary><b>更新日志</b></summary>
-
-<br>
 
 完整版本历史见 [`CHANGELOG.md`](CHANGELOG.md)。近期要点：
 
@@ -105,8 +93,6 @@
 
 这是一个静态网页应用，把基准排行榜和一份覆盖实验室 **263 篇论文**（其中 76 篇有公开代码）的可检索**论文到代码总览**并列呈现。它可以作为本地文件直接打开，也可以托管在 GitHub Pages 上，且**无需构建步骤**。
 
-<br>
-
 ## 研究动机
 
 本实验室在脑电解码方向发表了大量成果，但相应的代码分散在众多相互独立的仓库中，各自的数据处理、评估划分与超参数约定都不一样。
@@ -118,8 +104,6 @@
 - 它在同一条共享流水线上**重新实现**这些方法，并在单一受控协议下评估，使排行榜中任意两行之间**恰好只有一个**组件不同。
 
 - 它把实验室的论文**映射**到其公开代码，让读者能够一步从一篇论文抵达可运行的实现。
-
-<br>
 
 ## 设计原则
 
@@ -142,8 +126,6 @@
 
 6. **自包含与零构建。**
    网页应用从单一文件渲染，无需构建步骤。基准则在一个内置的合成数据集上端到端运行，无需下载。因此在获取任何真实数据之前，两者都可以先行审阅。
-
-<br>
 
 ## 基准测试方法
 
@@ -193,8 +175,6 @@ EA  ·  no augmentation  ·  EEGNet  ·  Linear head  ·  ERM
 
 准确率是运动想象任务的主要指标，并在全文中报告。此外，基准代码在范式需要时还会计算 Cohen's κ、macro-F1 与 ROC-AUC。逐被试预测都会保存下来，因此任何额外指标都可以在不重新运行模型的情况下重新计算。
 
-<br>
-
 ## 方法清单
 
 由实验室提出的方法标记为 **(lab)**。每个插件都归在它所改动的那一个流水线阶段之下，隐私保护与集成方法跨越多个阶段，按角色列出。
@@ -223,8 +203,6 @@ EA  ·  no augmentation  ·  EEGNet  ·  Linear head  ·  ERM
 
 **集成聚合。**
 一个去中心化的黑箱场景。每名源被试只用自己的数据训练五个学习器，并且只共享硬预测标签，再由一个组合器在没有目标域标签的情况下把这些投票融合起来。组合器包括多数**投票**（基线）、谱元学习器 **SML** 和实验室的 **SML-OVR (lab)**、实验室的 **StackingNet (lab)**，以及一批群体标注和真值发现类聚合方法（**Dawid-Skene**、**EBCC**、**GLAD**、**ZenCrowd**、**MACE**、**PM**、**LAA**、**LA**、**M-MSR**、**Wawa**）。
-
-<br>
 
 ## 快速开始
 
@@ -262,8 +240,6 @@ python -m hustbciml.run --aligner EA --augmenter CSDA --backbone DBConformer \
 
 每次运行会写入 `results/<setting>/metrics.json`（逐被试准确率以及均值和标准差）、`predictions.npz` 与解析后的 `config.yaml`。完整命令参考见 [`hustbciml/README.md`](hustbciml/README.md)，当前数值见 [`hustbciml/RESULTS.md`](hustbciml/RESULTS.md)。
 
-<br>
-
 ## 论文到代码总览
 
 网页应用由人工整理的 YAML 经过单一脚本生成，不依赖任何框架。
@@ -277,8 +253,6 @@ python -m hustbciml.run --aligner EA --augmenter CSDA --backbone DBConformer \
 ```bash
 python3 gallery/build_site.py     # requires only PyYAML
 ```
-
-<br>
 
 ## 仓库结构
 
@@ -309,8 +283,6 @@ HUST-BCIML/
 └── requirements.txt
 ```
 
-<br>
-
 ## 复现与测量完整性
 
 基准中的每一个数值都是**实测**的三种子均值。没有任何数值是为了对上某篇论文而手工设定的。
@@ -326,8 +298,6 @@ HUST-BCIML/
 >
 > 若您发现任何不一致之处，请提交 issue 或联系维护者。欢迎指正。
 
-<br>
-
 ## 扩展基准
 
 添加 `hustbciml/algorithms/<group>/<Name>.py`，在其中定义一个符合相应阶段抽象基类（abstract base class）的类，它会**按文件名自动注册**。
@@ -335,8 +305,6 @@ HUST-BCIML/
 随后用一个预设 YAML 把它组合进来，在有了真实数值之后添加一个复现目标（reproduction target），并撰写一张算法卡片。每个新文件都带有一个标准文件头，包含作者、日期、确切的 IEEE 引用，以及在有原作者代码时指向该代码的链接。
 
 完整工作流见[移植指南（porting guide）](hustbciml/docs/porting_guide.md)。
-
-<br>
 
 ## 精选仓库
 
@@ -350,8 +318,6 @@ HUST-BCIML/
 - [**NT-Benchmark**](https://github.com/chamwen/NT-Benchmark)
 - [**TLBCI**](https://github.com/drwuHUST/TLBCI)
 
-<br>
-
 ## 路线图
 
 以下方向计划在未来版本中实现。
@@ -360,15 +326,11 @@ HUST-BCIML/
 - **范式广度**，在运动想象之外，增加 ERP/P300（以 ROC-AUC 为主要指标）与 SSVEP。
 - **可引用发布**，在结果冻结之后，发布一个带版本号、经 DOI 存档的版本。
 
-<br>
-
 ## 引用
 
 若本基准或其中的论文到代码总览对您的工作有帮助，请引用相关的实验室论文，[`references.bib`](references.bib) 中提供了每一种基准方法的 IEEE 风格 BibTeX，也请链接回本仓库。
 
 一个带 DOI 和版本号的可引用发布正在计划中。
-
-<br>
 
 ## 联系方式
 
@@ -376,15 +338,11 @@ HUST-BCIML/
 
 伍冬睿教授的邮箱地址可在实验室的任一篇论文中找到。
 
-<br>
-
 ## 致谢
 
 数据集通过 [MOABB](https://moabb.neurotechx.com/)（Mother of All BCI Benchmarks）提供。
 
 移植的方法在各自的文件头以及对应的算法卡片中标注其原作者。集成与隐私保护部分所用的群体聚合基线，连同其参考文献，在 [`hustbciml/RESULTS.md`](hustbciml/RESULTS.md) 中致谢。
-
-<br>
 
 ## 许可证
 

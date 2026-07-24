@@ -8,19 +8,13 @@
 
 Prof. Dongrui Wu &nbsp;·&nbsp; Huazhong University of Science and Technology
 
-<br>
-
 A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **paper-to-code gallery**.
-
-<br>
 
 ### &nbsp;[🌐&nbsp; Open the live web app &nbsp;↗](https://sylyoung.github.io/HUST-BCIML/)&nbsp;
 
 [![Open the live web app](https://img.shields.io/badge/sylyoung.github.io%2FHUST--BCIML-Open_the_live_web_app-2563EB?style=for-the-badge&labelColor=1e293b)](https://sylyoung.github.io/HUST-BCIML/)
 
 <sub>searchable paper-to-code gallery&nbsp; ·&nbsp; interactive benchmark leaderboard&nbsp; ·&nbsp; runs in the browser, no install</sub>
-
-<br>
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-3776ab)
 ![PyTorch](https://img.shields.io/badge/PyTorch-1.12%2B-ee4c2c)
@@ -42,8 +36,6 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 > benchmark of the laboratory's EEG-decoding methods together with a map from its papers to their
 > public code. It complements the laboratory pages rather than replacing them.
 
-<br>
-
 ## Contents
 
 - [Overview](#overview)
@@ -63,12 +55,8 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 - [Acknowledgements](#acknowledgements)
 - [License](#license)
 
-<br>
-
 <details>
 <summary><b>What's new</b></summary>
-
-<br>
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
@@ -147,8 +135,6 @@ A static web application that presents the benchmark leaderboard alongside a sea
 **paper-to-code gallery** over the laboratory's **263 publications** (76 of which have public
 code). It opens directly as a local file and hosts on GitHub Pages with **no build step**.
 
-<br>
-
 ## Motivation
 
 The laboratory has published extensively on EEG decoding, but the accompanying code is
@@ -166,8 +152,6 @@ This repository addresses the problem in two complementary ways.
 
 - It **maps** the laboratory's publications to their public code, so that a reader can move
   from a paper to a runnable implementation in one step.
-
-<br>
 
 ## Design principles
 
@@ -203,8 +187,6 @@ reporting rather than left to convention.
    The web app renders from a single file with no build step, and the benchmark runs end-to-end
    on a bundled synthetic dataset with no download, so that both are inspectable before any real
    data is fetched.
-
-<br>
 
 ## Benchmark methodology
 
@@ -273,8 +255,6 @@ benchmark code additionally computes Cohen's κ, macro-F1, and ROC-AUC where the
 for it. Per-subject predictions are saved so that any additional metric can be recomputed
 without re-running a model.
 
-<br>
-
 ## Method inventory
 
 Approaches proposed by the laboratory are marked **(lab)**. Each plug-in is listed under the one
@@ -334,8 +314,6 @@ lab's **SML-OVR (lab)**, the lab's **StackingNet (lab)**, and a set of crowd-lab
 truth-discovery aggregators (**Dawid-Skene**, **EBCC**, **GLAD**, **ZenCrowd**, **MACE**, **PM**,
 **LAA**, **LA**, **M-MSR**, **Wawa**).
 
-<br>
-
 ## Quickstart
 
 ### Browse the web app (no install, no server)
@@ -377,8 +355,6 @@ Each run writes `results/<setting>/metrics.json` (per-subject accuracies plus me
 [`hustbciml/README.md`](hustbciml/README.md) for the full command reference and
 [`hustbciml/RESULTS.md`](hustbciml/RESULTS.md) for the current numbers.
 
-<br>
-
 ## The paper-to-code gallery
 
 The web app is generated from human-curated YAML by a single script with no framework
@@ -396,8 +372,6 @@ To regenerate the web-app data after editing any YAML under `gallery/data/`:
 ```bash
 python3 gallery/build_site.py     # requires only PyYAML
 ```
-
-<br>
 
 ## Repository layout
 
@@ -427,8 +401,6 @@ HUST-BCIML/
 ├── references.bib              # IEEE-style BibTeX for every benchmarked method
 └── requirements.txt
 ```
-
-<br>
 
 ## Reproduction and measurement integrity
 
@@ -460,8 +432,6 @@ hit a target still holds.
 > If you spot a discrepancy, please open an issue or contact the maintainer. Corrections are
 > welcome.
 
-<br>
-
 ## Extending the benchmark
 
 Add `hustbciml/algorithms/<group>/<Name>.py` defining a class that conforms to the stage
@@ -473,8 +443,6 @@ citation, and a link to the original authors' code where one exists.
 
 The full workflow is in the
 [porting guide](hustbciml/docs/porting_guide.md).
-
-<br>
 
 ## Featured repositories
 
@@ -489,8 +457,6 @@ beginning with:
 - [**NT-Benchmark**](https://github.com/chamwen/NT-Benchmark)
 - [**TLBCI**](https://github.com/drwuHUST/TLBCI)
 
-<br>
-
 ## Roadmap
 
 The following directions are planned for future releases.
@@ -501,8 +467,6 @@ The following directions are planned for future releases.
   motor imagery.
 - **Citable release.** A versioned, DOI-archived release once the results are frozen.
 
-<br>
-
 ## Citation
 
 If the benchmark or gallery is useful in your work, please cite the relevant laboratory papers
@@ -511,16 +475,12 @@ and link back to this repository. IEEE-style BibTeX for every benchmarked method
 
 A versioned, citable release with a DOI is planned.
 
-<br>
-
 ## Contact
 
 The benchmark and web app are built and maintained by **Siyang Li**.
 [homepage](https://sylyoung.github.io/) &nbsp;·&nbsp; **lsyyoungll@gmail.com**
 
 Prof. Dongrui Wu's email address is available in any of the laboratory's publications.
-
-<br>
 
 ## Acknowledgements
 
@@ -531,8 +491,6 @@ Ported methods credit their original authors in each file header and in the corr
 algorithm card. The crowd-aggregation baselines used in the ensemble and privacy-preserving
 sections are credited, with their references, in
 [`hustbciml/RESULTS.md`](hustbciml/RESULTS.md).
-
-<br>
 
 ## License
 
