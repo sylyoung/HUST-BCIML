@@ -12,8 +12,8 @@
 # majority voting. BNCI2014001 is used as its two-class left/right subset throughout;
 # its native four-class variant stays available in code but is not reported here.
 # Combiner rows are mean-only (no std), per the leaderboard convention. `lab: true` marks a method proposed by Prof.
-# Dongrui Wu's group. Every citation is CrossRef/arXiv-verified; full BibTeX in
-# references.bib. Deltas are computed per dataset by gallery/build_site.py.
+# Dongrui Wu's group. Every citation is CrossRef/arXiv-verified, with the full BibTeX
+# in each method's source-file header. Deltas are computed per dataset by gallery/build_site.py.
 
 meta:
   dataset: BNCI2014001

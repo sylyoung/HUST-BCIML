@@ -5,7 +5,7 @@
 # M-MSR (Matrix Mean-Subsequence-Reduced) worker-skill aggregator (via crowdkit).
 # Ported from https://github.com/sylyoung/TestEnsemble ; reference implementation
 # https://github.com/Toloka/crowd-kit .
-# Citation (see gallery/data/benchmark.yml and references.bib):
+# Citation (see gallery/data/benchmark.yml):
 #   Q. Ma and A. Olshevsky, NeurIPS, 2020.
 # ===========================================================================
 """M-MSR (Ma & Olshevsky, 2020): worker skill from the agreement matrix.

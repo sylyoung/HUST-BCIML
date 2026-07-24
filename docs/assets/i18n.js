@@ -109,9 +109,7 @@
       "Open ": "打开 ",
       "Open the paper": "打开论文",
       "chance": "随机水平",
-      "README": "README",
       "RESULTS.md": "RESULTS.md",
-      "References (BibTeX)": "参考文献（BibTeX）",
       "Datasets": "数据集",
       /* dynamic datasets intro: "The benchmark spans " + N + " MOABB…" */
       "The benchmark spans ": "本基准涵盖 ",

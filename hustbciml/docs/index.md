@@ -27,7 +27,7 @@ cross-subject leave-one-subject-out (9 subjects, 2-class, chance 50%).
 
 | What | Path |
 |---|---|
-| Architecture overview, run commands | [`../README.md`](../README.md) |
+| Architecture overview, run commands | [`../../README.md`](../../README.md) |
 | Stage contracts (the five ABCs) | `../core/stages.py` |
 | Data containers (`EEGEpochs`, `EEGBatch`) | `../core/batch.py` |
 | Numeric registry (measured numbers, citations, notes) | `../tests/repro/repro_targets.yaml` |

@@ -178,4 +178,4 @@ and state the regime explicitly — do not change two things silently.
 
 ---
 
-See also: [glossary](glossary.md) · [algorithm cards](cards/README.md) · [RESULTS.md](../RESULTS.md) · [../README.md](../README.md).
+See also: [glossary](glossary.md) · [algorithm cards](cards/README.md) · [RESULTS.md](../RESULTS.md) · [../../README.md](../../README.md).

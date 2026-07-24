@@ -127,4 +127,4 @@ EA · no-augmentation · EEGNet · Linear head · ERM strategy
 
 ---
 
-See also: [porting guide](porting_guide.md) · [algorithm cards](cards/README.md) · [RESULTS.md](../RESULTS.md) · architecture in [../README.md](../README.md).
+See also: [porting guide](porting_guide.md) · [algorithm cards](cards/README.md) · [RESULTS.md](../RESULTS.md) · architecture in [../../README.md](../../README.md).

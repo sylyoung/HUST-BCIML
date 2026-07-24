@@ -308,8 +308,8 @@ python -m hustbciml.run --aligner EA --augmenter CSDA --backbone DBConformer \
 
 Each run writes `results/<setting>/metrics.json` (per-subject accuracies plus mean/std),
 `predictions.npz`, and the resolved `config.yaml`. See
-[`hustbciml/README.md`](hustbciml/README.md) for the full command reference and
-[`hustbciml/RESULTS.md`](hustbciml/RESULTS.md) for the current numbers.
+[`hustbciml/RESULTS.md`](hustbciml/RESULTS.md) for the current numbers and
+[`hustbciml/docs/`](hustbciml/docs/index.md) for the glossary, algorithm cards, and porting guide.
 
 ## The paper-to-code gallery
 
@@ -343,7 +343,7 @@ HUST-BCIML/
 │   │   ├── lab.yml              # lab bio, anchor project, featured repos
 │   │   └── benchmark.yml        # controlled-comparison leaderboard
 │   └── build_site.py           # YAML → docs/data/*.js   (requires only PyYAML)
-├── hustbciml/                  # THE BENCHMARK  (see hustbciml/README.md)
+├── hustbciml/                  # THE BENCHMARK
 │   ├── run.py                  # python -m hustbciml.run --algorithm EA-EEGNet --dataset BNCI2014001
 │   ├── core/                   # batch, stages (ABCs), registry, pipeline, config, context
 │   ├── exp/                    # exp_basic + one Exp class per protocol
@@ -354,7 +354,6 @@ HUST-BCIML/
 │   ├── tests/repro/            # repro_targets.yaml: measured vs. published, per method
 │   ├── docs/                   # glossary, porting guide, per-algorithm cards
 │   └── RESULTS.md              # the full leaderboard, in Markdown
-├── references.bib              # IEEE-style BibTeX for every benchmarked method
 └── requirements.txt
 ```
 
@@ -426,8 +425,8 @@ The following directions are planned for future releases.
 ## Citation
 
 If the benchmark or gallery is useful in your work, please cite the relevant laboratory papers
-and link back to this repository. IEEE-style BibTeX for every benchmarked method is provided in
-[`references.bib`](references.bib).
+and link back to this repository. Each method's source file carries its exact IEEE citation in
+its header.
 
 A versioned, citable release with a DOI is planned.
 

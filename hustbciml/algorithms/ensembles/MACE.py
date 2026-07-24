@@ -5,7 +5,7 @@
 # MACE (Multi-Annotator Competence Estimation) aggregator (via crowdkit).
 # Ported from https://github.com/sylyoung/TestEnsemble ; reference implementation
 # https://github.com/Toloka/crowd-kit .
-# Citation (see gallery/data/benchmark.yml and references.bib):
+# Citation (see gallery/data/benchmark.yml):
 #   D. Hovy, ..., NAACL-HLT, 2013.
 # ===========================================================================
 """MACE (Hovy et al., 2013): separate competent labelling from spamming.

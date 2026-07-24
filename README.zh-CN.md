@@ -226,7 +226,7 @@ python -m hustbciml.run --aligner EA --augmenter CSDA --backbone DBConformer \
                         --strategy ERM --head Linear --dataset BNCI2014001 --itr 3
 ```
 
-每次运行会写入 `results/<setting>/metrics.json`（逐被试准确率以及均值和标准差）、`predictions.npz` 与解析后的 `config.yaml`。完整命令参考见 [`hustbciml/README.md`](hustbciml/README.md)，当前数值见 [`hustbciml/RESULTS.md`](hustbciml/RESULTS.md)。
+每次运行会写入 `results/<setting>/metrics.json`（逐被试准确率以及均值和标准差）、`predictions.npz` 与解析后的 `config.yaml`。当前数值见 [`hustbciml/RESULTS.md`](hustbciml/RESULTS.md)，术语表、算法卡片与移植指南见 [`hustbciml/docs/`](hustbciml/docs/index.md)。
 
 ## 论文到代码总览
 
@@ -256,7 +256,7 @@ HUST-BCIML/
 │   │   ├── lab.yml              # lab bio, anchor project, featured repos
 │   │   └── benchmark.yml        # controlled-comparison leaderboard
 │   └── build_site.py           # YAML → docs/data/*.js   (requires only PyYAML)
-├── hustbciml/                  # THE BENCHMARK  (see hustbciml/README.md)
+├── hustbciml/                  # THE BENCHMARK
 │   ├── run.py                  # python -m hustbciml.run --algorithm EA-EEGNet --dataset BNCI2014001
 │   ├── core/                   # batch, stages (ABCs), registry, pipeline, config, context
 │   ├── exp/                    # exp_basic + one Exp class per protocol
@@ -267,7 +267,6 @@ HUST-BCIML/
 │   ├── tests/repro/            # repro_targets.yaml, measured vs. published, per method
 │   ├── docs/                   # glossary, porting guide, per-algorithm cards
 │   └── RESULTS.md              # the full leaderboard, in Markdown
-├── references.bib              # IEEE-style BibTeX for every benchmarked method
 └── requirements.txt
 ```
 
@@ -316,7 +315,7 @@ HUST-BCIML/
 
 ## 引用
 
-若本基准或其中的论文到代码总览对您的工作有帮助，请引用相关的实验室论文，[`references.bib`](references.bib) 中提供了每一种基准方法的 IEEE 风格 BibTeX，也请链接回本仓库。
+若本基准或其中的论文到代码总览对您的工作有帮助，请引用相关的实验室论文，也请链接回本仓库。每个方法的源文件头部都写有其对应的 IEEE 引用。
 
 一个带 DOI 和版本号的可引用发布正在计划中。
 

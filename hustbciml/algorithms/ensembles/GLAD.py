@@ -5,7 +5,7 @@
 # GLAD (Generative model of Labels, Abilities, and Difficulties) aggregator
 # (via crowdkit). Ported from https://github.com/sylyoung/TestEnsemble ; reference
 # implementation https://github.com/Toloka/crowd-kit .
-# Citation (see gallery/data/benchmark.yml and references.bib):
+# Citation (see gallery/data/benchmark.yml):
 #   J. Whitehill, ..., NeurIPS, 2009.
 # ===========================================================================
 """GLAD (Whitehill et al., 2009): jointly infer label, ability, and difficulty.

@@ -572,9 +572,7 @@
       }
       var la = el("div", { class: "actions" });
       la.appendChild(el("a", { class: "btn", href: REPO_URL + "/tree/main/" + PKG, target: "_blank", rel: "noopener" }, tr("Benchmark code")));
-      la.appendChild(el("a", { class: "btn ghost", href: REPO_URL + "/blob/main/" + PKG + "/README.md", target: "_blank", rel: "noopener" }, tr("README")));
       la.appendChild(el("a", { class: "btn ghost", href: REPO_URL + "/blob/main/" + PKG + "/RESULTS.md", target: "_blank", rel: "noopener" }, tr("RESULTS.md")));
-      la.appendChild(el("a", { class: "btn ghost", href: REPO_URL + "/blob/main/references.bib", target: "_blank", rel: "noopener" }, tr("References (BibTeX)")));
       li.appendChild(la);
       B.appendChild(li);
     }
