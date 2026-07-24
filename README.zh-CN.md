@@ -67,6 +67,8 @@
 
 <br>
 
+- **2026-07-24（v1.1.1）** 集成学习表拆分为两个子族，即非集成参照与集成学习，与迁移学习的版式一致，原先表格上方的汇总条也已移除。数据增强器改用全称显示，包括加性噪声、幅度缩放、频率平移、傅里叶替代、频率重组、通道对称与半样本重组。基准与概览的文字在中英文两版都做了重写，以提升清晰度。论文索引也做了去重，每篇论文只保留正式发表的版本（275 篇减至 263 篇）。
+
 - **2026-07** 网络骨干轴新增十种骨干网络：ADFCNN、CTNet、MSCFormer、MSVTNet、TMSA-Net、EEGWaveNet、SlimSeiz、FBMSNet、EEGNeX 与 EEG-Deformer。数据增强轴新增第八种基线，即幅度缩放（amplitude scaling）。以上方法均在三个数据集、三个随机种子上完成基准测试，测得的准确率已列入排行榜，各自附带可直接运行的预设（preset）。
 
 - **2026-07** 来自实验室数据增强研究的七种数据增强基线加入了增强轴：加性噪声、幅度翻转、频率平移、傅里叶替代（Fourier surrogate）、频率重组、通道对称与半样本重组。每一种都附带可运行的预设。
@@ -79,7 +81,7 @@
 
 - **2026-07** 又移植了四种实验室方法（**CSP-Net、DJP-MMD、LSFT、MSDT**），迁移表重新分组为仅源域、无监督域自适应、无源域、测试时几个族。
 
-- **2026-07** 网页应用新增了三数据集排行榜、实验室方法高亮显示，以及一份覆盖 **275** 篇论文的可检索论文到代码总览。
+- **2026-07** 网页应用新增了三数据集排行榜、实验室方法高亮显示，以及一份覆盖 **263** 篇论文的可检索论文到代码总览。
 
 </details>
 
@@ -95,7 +97,7 @@
 
 **2. 论文到代码网页应用**，位于目录 [`docs/`](docs/)。
 
-这是一个静态网页应用，把基准排行榜和一份覆盖实验室 **275 篇论文**（其中 80 篇有公开代码）的可检索**论文到代码总览**并列呈现。它可以作为本地文件直接打开，也可以托管在 GitHub Pages 上，且**无需构建步骤**。
+这是一个静态网页应用，把基准排行榜和一份覆盖实验室 **263 篇论文**（其中 76 篇有公开代码）的可检索**论文到代码总览**并列呈现。它可以作为本地文件直接打开，也可以托管在 GitHub Pages 上，且**无需构建步骤**。
 
 <br>
 
@@ -263,7 +265,7 @@ python -m hustbciml.run --aligner EA --augmenter CSDA --backbone DBConformer \
 
 网页应用由人工整理的 YAML 经过单一脚本生成，不依赖任何框架。
 
-- **唯一权威数据源（source of truth）**，位于 [`gallery/data/`](gallery/data/)，包括 `publications.yml`（275 篇论文）、`lab.yml`（简介、核心项目、精选仓库）与 `benchmark.yml`（受控比较排行榜）。
+- **唯一权威数据源（source of truth）**，位于 [`gallery/data/`](gallery/data/)，包括 `publications.yml`（263 篇论文）、`lab.yml`（简介、核心项目、精选仓库）与 `benchmark.yml`（受控比较排行榜）。
 
 - **生成器（Generator）**，即 [`gallery/build_site.py`](gallery/build_site.py)，把这些 YAML 文件编译为 `docs/data/*.js`。它只需要 PyYAML。
 
@@ -285,7 +287,7 @@ HUST-BCIML/
 │   └── data/                   # generated: lab.js, publications.js, benchmark.js
 ├── gallery/                    # source of truth for the web app's data
 │   ├── data/
-│   │   ├── publications.yml     # 275 papers (hand-curated)
+│   │   ├── publications.yml     # 263 papers (hand-curated)
 │   │   ├── lab.yml              # lab bio, anchor project, featured repos
 │   │   └── benchmark.yml        # controlled-comparison leaderboard
 │   └── build_site.py           # YAML → docs/data/*.js   (requires only PyYAML)

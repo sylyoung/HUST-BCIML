@@ -40,7 +40,7 @@ window.BENCHMARK = {
   },
   "library": {
     "title": "A unified, reproducible EEG-decoding benchmark",
-    "tagline": "An algorithm is a named composition of plug-in stages, namely an aligner, an augmenter and a backbone, trained under a chosen learning objective, with an optional ensemble that aggregates several models. Every controlled comparison varies one stage while the rest stay fixed.",
+    "tagline": "Every algorithm here is built from the same plug-in stages: an aligner, an augmenter, and a backbone, trained under one learning objective and optionally wrapped in an ensemble. A controlled comparison changes a single stage and holds the rest fixed, so any shift in accuracy traces back to that one change.",
     "pipeline": [
       "Aligner",
       "Augmenter",
@@ -57,7 +57,7 @@ window.BENCHMARK = {
     {
       "id": "alignment",
       "title": "Data Alignment",
-      "blurb": "The aligner stage. Each aligner normalizes a subject's trials into a common statistical frame before the backbone sees them, shrinking the between-subject covariance shift that otherwise dominates cross-subject decoding. It is label-free and applied per subject. The backbone and its training stay fixed, and the baseline applies no alignment.",
+      "blurb": "The aligner stage. Before the backbone sees anything, the aligner recenters each subject's trials into a shared statistical frame. This shrinks the between-subject covariance shift that otherwise dominates cross-subject decoding. Alignment needs no labels and runs per subject. The backbone and its training stay fixed, and the baseline aligns nothing.",
       "references": null,
       "context": null,
       "groups": [
@@ -167,7 +167,7 @@ window.BENCHMARK = {
     {
       "id": "augmentation",
       "title": "Data Augmentation",
-      "blurb": "The augmenter stage. Each augmenter synthesizes extra training trials to regularize the same backbone, which is otherwise trained identically. Each augmenter is compared against that backbone trained without it. The electrode-space transforms (Channel Reflection, HS, Symm) rearrange channels and must precede any spatial whitening, so they run on unaligned trials and are measured against the unaligned baseline; the remaining signal- and frequency-domain augmenters operate on the Euclidean-aligned trials and are measured against the aligned baseline.",
+      "blurb": "The augmenter stage. Each augmenter synthesizes extra training trials to regularize an otherwise-identical backbone, and is measured against that same backbone trained without it. The augmenters fall into two regimes by where they act. The electrode-space transforms (Channel Reflection, Half-Sample Recombination, and Channel Symmetry) rearrange channels, so they must run before any spatial whitening, on unaligned trials, and are compared to the unaligned baseline. The signal- and frequency-domain augmenters act on Euclidean-aligned trials, and are compared to the aligned baseline.",
       "references": null,
       "context": null,
       "groups": [
@@ -234,7 +234,7 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "FShift",
+              "name": "Frequency Shift",
               "acc": {
                 "BNCI2014001": {
                   "mean": 73.28,
@@ -265,7 +265,7 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "FComb",
+              "name": "Frequency Recombination",
               "acc": {
                 "BNCI2014001": {
                   "mean": 72.3,
@@ -296,7 +296,7 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "FSurr",
+              "name": "Fourier Surrogate",
               "acc": {
                 "BNCI2014001": {
                   "mean": 73.51,
@@ -327,7 +327,7 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "Noise",
+              "name": "Additive Noise",
               "acc": {
                 "BNCI2014001": {
                   "mean": 71.94,
@@ -358,7 +358,7 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "Scale",
+              "name": "Amplitude Scaling",
               "acc": {
                 "BNCI2014001": {
                   "mean": 72.97,
@@ -389,7 +389,7 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "Flip",
+              "name": "Amplitude Flip",
               "acc": {
                 "BNCI2014001": {
                   "mean": 70.6,
@@ -420,7 +420,7 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "HS",
+              "name": "Half-Sample Recombination",
               "acc": {
                 "BNCI2014001": {
                   "mean": 64.99,
@@ -451,7 +451,7 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "Symm",
+              "name": "Channel Symmetry",
               "acc": {
                 "BNCI2014001": {
                   "mean": 53.11,
@@ -519,7 +519,7 @@ window.BENCHMARK = {
     {
       "id": "network",
       "title": "Networks",
-      "blurb": "The backbone stage. Vary the deep network on the same Euclidean-aligned trials, holding alignment and the learning objective fixed. Each backbone is trained with its own learning rate and schedule, selected on held-out source-subject validation data. Baseline: EEGNet. MVCNet is a composite (an IFNet backbone trained with a multi-view contrastive objective), shown here among the backbones.",
+      "blurb": "The backbone stage. Only the deep network changes; the Euclidean-aligned input and the learning objective stay fixed. Each backbone keeps its own learning rate and schedule, tuned on held-out source subjects. The baseline is EEGNet. MVCNet is a composite (an IFNet backbone trained with a multi-view contrastive objective), listed here among the backbones.",
       "references": null,
       "context": null,
       "groups": [
@@ -1125,7 +1125,7 @@ window.BENCHMARK = {
     {
       "id": "transfer",
       "title": "Transfer Learning",
-      "blurb": "The learning-objective stage. Every row is the identical Euclidean-aligned EEGNet, and only the training or adaptation objective changes. Approaches are grouped by how much of the target they use and when. The families are source-only, unsupervised domain adaptation, source-free, and test-time. All are two-class on the three datasets and measured against the same no-transfer baseline (ERM). The privacy-preserving family keeps each subject's raw EEG local and is measured against Centralized Training rather than ERM (see its note).",
+      "blurb": "The learning-objective stage. Every row is the same Euclidean-aligned EEGNet; only the training or adaptation objective changes. The families below are ordered by how much of the target they use, and when: source-only, unsupervised domain adaptation, source-free, and test-time. All are two-class on the three datasets and measured against the same no-transfer baseline, ERM. The privacy-preserving family is the exception: it keeps each subject's raw EEG local and is measured against Centralized Training instead (see its note).",
       "references": null,
       "context": null,
       "groups": [
@@ -2090,35 +2090,83 @@ window.BENCHMARK = {
     {
       "id": "ensemble",
       "title": "Ensemble Learning",
-      "blurb": "The aggregation stage, in a fully decentralized privacy setting. Five heterogeneous learners (tangent-space LDA, tangent-space SVM, EEGNet, ShallowConvNet, and CSPNet) are trained on each source subject's data alone, and the subjects share only their hard predicted labels on the target, never model weights or raw EEG. A post-hoc combiner fuses the (N-1)×5 label votes into a consensus prediction. Every combiner sees the same hard votes, so none has an information advantage, and they differ only in how they weight and combine the votes. StackingNet is lab-proposed. SML-OVR is the lab's multi-class combiner, a one-vs-rest generalization of the binary SML that on these two-class tasks reduces exactly to it, so the two report the same accuracy and are placed together. The others (the binary SML and the crowd-labelling and truth-discovery aggregators) are established baselines. All three datasets are two-class (chance 50%), so the columns are directly comparable, and each combiner is measured against plain majority voting on the same dataset. Rows are ordered lab-proposed first, then the remaining combiners by accuracy, with plain majority voting (the baseline) last.",
+      "blurb": "The aggregation stage, in a fully decentralized, privacy-preserving setting. Each source subject trains five heterogeneous learners — tangent-space LDA, tangent-space SVM, EEGNet, ShallowConvNet, and CSP-Net — on its own data alone, and shares only the hard predicted labels on the target, never model weights or raw EEG. A post-hoc combiner fuses the (N−1)×5 label votes into one consensus prediction. Two non-ensemble references bracket the task, and the combiners are grouped beneath them.",
       "references": null,
-      "context": {
-        "BNCI2014001": {
-          "classes": "2-class",
-          "chance": 50.0,
-          "single_source": 61.22,
-          "centralized": 72.07,
-          "voting": 74.31
-        },
-        "BNCI2014002": {
-          "classes": "2-class",
-          "chance": 50.0,
-          "single_source": 59.61,
-          "centralized": 74.4,
-          "voting": 72.0
-        },
-        "BNCI2015001": {
-          "classes": "2-class",
-          "chance": 50.0,
-          "single_source": 59.59,
-          "centralized": 73.19,
-          "voting": 69.83
-        }
-      },
+      "context": null,
       "groups": [
         {
-          "subcat": null,
-          "blurb": "",
+          "subcat": "Non-ensemble references",
+          "blurb": "Decoding without any aggregation, to bracket the ensemble methods below. A single source learner applied to the target marks the floor; one model trained on all source subjects pooled together, Centralized Training, marks the non-private ceiling that the privacy-preserving combiners aim to match without ever sharing raw EEG.",
+          "baseline": null,
+          "reference": null,
+          "rows": [
+            {
+              "name": "Centralized Training",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 72.07,
+                  "std": null
+                },
+                "BNCI2014002": {
+                  "mean": 74.4,
+                  "std": null
+                },
+                "BNCI2015001": {
+                  "mean": 73.19,
+                  "std": null
+                }
+              },
+              "delta": {
+                "BNCI2014001": null,
+                "BNCI2014002": null,
+                "BNCI2015001": null
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": null,
+              "lab": false,
+              "code": null,
+              "desc": "EA-aligned EEGNet trained on all source subjects pooled into a single model. The non-private, non-ensemble reference — it uses the very raw data the decentralized combiners are denied.",
+              "ref": null,
+              "doi": null,
+              "pinAfter": null
+            },
+            {
+              "name": "single-source",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 61.22,
+                  "std": null
+                },
+                "BNCI2014002": {
+                  "mean": 59.61,
+                  "std": null
+                },
+                "BNCI2015001": {
+                  "mean": 59.59,
+                  "std": null
+                }
+              },
+              "delta": {
+                "BNCI2014001": null,
+                "BNCI2014002": null,
+                "BNCI2015001": null
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": null,
+              "lab": false,
+              "code": null,
+              "desc": "Mean accuracy of one source learner applied to the target, averaged over all (N−1)×5 individual learners. The floor, before any cross-subject aggregation.",
+              "ref": null,
+              "doi": null,
+              "pinAfter": null
+            }
+          ]
+        },
+        {
+          "subcat": "Ensemble learning",
+          "blurb": "Every combiner sees the identical hard votes, so none holds an information advantage; they differ only in how they weight and reconcile them. StackingNet and SML-OVR are the lab methods, with the binary SML pinned directly beneath SML-OVR because the two coincide on two-class tasks; the rest are established crowd-labelling and truth-discovery aggregators. Each is measured against plain majority voting on the same dataset. All three datasets are two-class (chance 50%), so the columns compare directly.",
           "baseline": "Majority voting",
           "reference": null,
           "rows": [

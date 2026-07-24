@@ -97,8 +97,8 @@
       /* ============ benchmark: library intro, datasets, guide ============ */
       "The benchmark": "基准测试",
       "A unified, reproducible EEG-decoding benchmark": "统一、可复现的脑电（EEG）解码基准",
-      "An algorithm is a named composition of plug-in stages, namely an aligner, an augmenter and a backbone, trained under a chosen learning objective, with an optional ensemble that aggregates several models. Every controlled comparison varies one stage while the rest stay fixed.":
-        "一个算法是若干可插拔阶段的具名组合，包括一个对齐器、一个数据增强器和一个骨干网络，在选定的学习目标下训练，还可以选择加入一个融合多个模型的集成模块。每一次受控对比只改变其中一个阶段，其余阶段保持固定。",
+      "Every algorithm here is built from the same plug-in stages: an aligner, an augmenter, and a backbone, trained under one learning objective and optionally wrapped in an ensemble. A controlled comparison changes a single stage and holds the rest fixed, so any shift in accuracy traces back to that one change.":
+        "这里的每个算法都由相同的可插拔阶段搭成。一个对齐器，一个数据增强器，一个骨干网络，在一个学习目标下训练，还可以再套上一层集成。做受控对比时只改动其中一个阶段，其余全部固定。这样一来，准确率的任何变化都只能归因于这一处改动。",
       /* pipeline-diagram stage labels + connector (benchmark library intro) */
       "Aligner": "对齐器",
       "Augmenter": "数据增强器",
@@ -133,8 +133,8 @@
         "右手对双脚，12 名被试，每名被试 200 个首次会话试次。全程为二分类，随机水平 50%。",
       "Controlled-comparison leaderboard": "受控对比排行榜",
       "How to read this leaderboard": "如何阅读本排行榜",
-      "Each table varies one stage of the pipeline and holds the rest at the default. The default is Euclidean-aligned trials, an EEGNet backbone, standard supervised training, so every row differs from its baseline in exactly one way. The three columns are the three datasets, and beneath each accuracy, Δ is the change versus that dataset's baseline. Every table is two-class (chance 50%) on all three datasets. This covers the pipeline-stage tables, the source-only, unsupervised-adaptation, source-free and test-time transfer families, the privacy-preserving family, and the ensemble-learning table, so the columns are directly comparable throughout. Each family is measured against its own baseline: the transfer families against ERM, the privacy-preserving family against Centralized Training, and the ensemble table against majority voting. Every row links to its implementation and its paper.":
-        "每张表只改变流水线中的一个阶段，其余保持默认配置，也就是经欧氏对齐（Euclidean alignment）的试次、EEGNet 骨干网络和标准监督训练，因此每一行与它的基线之间恰好只有一处不同。三列对应三个数据集，每个准确率下方的 Δ 表示相对该数据集基线的变化量。在全部三个数据集上，每张表都是二分类，随机水平 50%，包括各流水线阶段表，仅源域、无监督自适应、无源域和测试时这几类迁移方法族，隐私保护方法族，以及集成学习表，因此各列在全程都可以直接比较。每个方法族都以各自的基线来衡量，迁移各方法族以经验风险最小化（ERM）为基线，隐私保护方法族以集中式训练为基线，集成表以多数投票为基线。每一行都链接到它的实现代码和对应论文。",
+      "Read each row against its table's baseline. A table changes just one stage of the pipeline and holds the rest at the default: Euclidean-aligned trials, an EEGNet backbone, plain supervised training. So every row differs from the baseline in exactly one way, and any change in accuracy is down to that stage. The three columns are the three datasets. Under each accuracy, Δ is the gain or loss against that dataset's baseline. Every table is two-class (chance 50%) on all three datasets, so the columns stay comparable throughout. Each family has its own baseline: the transfer families use ERM, the privacy-preserving family uses Centralized Training, and the ensemble table uses majority voting. Every row links to its code and its paper.":
+        "每一行都要对照它所在表的基线来看。一张表只改动流水线中的一个阶段，其余保持默认配置，也就是经欧氏对齐的试次、EEGNet 骨干网络和普通监督训练。于是每一行与基线只有一处不同，准确率的任何变化都来自这个阶段。三列对应三个数据集。每个准确率下方的 Δ，是相对该数据集基线的增减。三个数据集上每张表都是二分类，随机水平 50%，因此各列自始至终可比。每一类方法都有自己的基线。迁移各方法族用经验风险最小化（ERM），隐私保护方法族用集中式训练，集成表用多数投票。每一行都链接到它的代码和论文。",
 
       /* ---- ensemble per-dataset context cards ---- */
       "single-source": "单源",
@@ -150,20 +150,24 @@
 
       /* ============ benchmark table titles & blurbs ============ */
       "Data Alignment": "数据对齐",
-      "The aligner stage. Each aligner normalizes a subject's trials into a common statistical frame before the backbone sees them, shrinking the between-subject covariance shift that otherwise dominates cross-subject decoding. It is label-free and applied per subject. The backbone and its training stay fixed, and the baseline applies no alignment.":
-        "对齐器阶段。每个对齐器在骨干网络处理之前，把某一名被试的试次归一化到共同的统计框架中，从而缩减被试之间的协方差偏移。如果不做处理，这种偏移会成为跨被试解码困难的主要来源。对齐不需要标签，按被试逐一施加。此时骨干网络及其训练保持固定，而基线不做任何对齐。",
+      "The aligner stage. Before the backbone sees anything, the aligner recenters each subject's trials into a shared statistical frame. This shrinks the between-subject covariance shift that otherwise dominates cross-subject decoding. Alignment needs no labels and runs per subject. The backbone and its training stay fixed, and the baseline aligns nothing.":
+        "对齐器阶段。在骨干网络接触数据之前，对齐器先把每名被试的试次重新对齐到一个共同的统计框架里。这样就压低了被试之间的协方差偏移。不做对齐时，这种偏移正是跨被试解码困难的主因。对齐不需要标签，按被试逐一进行。此时骨干网络和它的训练保持不变，基线则完全不做对齐。",
       "Data Augmentation": "数据增强",
-      "The augmenter stage. Each augmenter synthesizes extra training trials to regularize the same backbone, which is otherwise trained identically. Each augmenter is compared against that backbone trained without it. The electrode-space transforms (Channel Reflection, HS, Symm) rearrange channels and must precede any spatial whitening, so they run on unaligned trials and are measured against the unaligned baseline; the remaining signal- and frequency-domain augmenters operate on the Euclidean-aligned trials and are measured against the aligned baseline.":
-        "数据增强器阶段。每个增强器合成额外的训练试次来正则化同一个骨干网络，除此之外训练过程完全相同。每个增强器都与没有使用它的同一骨干网络作比较。其中，电极空间变换（通道反射 Channel Reflection、HS、Symm）会重排通道，必须在任何空间白化之前进行，因此它们作用于未对齐的试次，并以未对齐的基线为参照。其余的信号域与频率域增强器作用于经欧氏对齐的试次，并以对齐后的基线为参照。",
+      "The augmenter stage. Each augmenter synthesizes extra training trials to regularize an otherwise-identical backbone, and is measured against that same backbone trained without it. The augmenters fall into two regimes by where they act. The electrode-space transforms (Channel Reflection, Half-Sample Recombination, and Channel Symmetry) rearrange channels, so they must run before any spatial whitening, on unaligned trials, and are compared to the unaligned baseline. The signal- and frequency-domain augmenters act on Euclidean-aligned trials, and are compared to the aligned baseline.":
+        "数据增强器阶段。每个增强器都合成额外的训练试次，用来正则化一个在其他方面完全相同的骨干网络，并与没有用它的同一骨干网络作比较。这些增强器按作用位置分成两类。电极空间变换会重排通道，包括通道反射（Channel Reflection）、半样本重组（Half-Sample Recombination）和通道对称（Channel Symmetry）。它们必须在任何空间白化之前进行，作用于未对齐的试次，因此以未对齐基线为参照。信号域和频率域的增强器作用于经欧氏对齐的试次，以对齐后的基线为参照。",
       "Networks": "网络骨干",
-      "The backbone stage. Vary the deep network on the same Euclidean-aligned trials, holding alignment and the learning objective fixed. Each backbone is trained with its own learning rate and schedule, selected on held-out source-subject validation data. Baseline: EEGNet. MVCNet is a composite (an IFNet backbone trained with a multi-view contrastive objective), shown here among the backbones.":
-        "骨干网络阶段。在相同的经欧氏对齐试次上更换深度网络，同时固定对齐方式和学习目标。每个骨干网络使用各自的学习率和训练计划，都在留出的源被试验证数据上选定。基线是 EEGNet。MVCNet 是一个复合方法，以 IFNet 为骨干、在多视图对比目标下训练，这里把它列在各骨干网络当中。",
+      "The backbone stage. Only the deep network changes; the Euclidean-aligned input and the learning objective stay fixed. Each backbone keeps its own learning rate and schedule, tuned on held-out source subjects. The baseline is EEGNet. MVCNet is a composite (an IFNet backbone trained with a multi-view contrastive objective), listed here among the backbones.":
+        "骨干网络阶段。这里只更换深度网络，经欧氏对齐的输入和学习目标都保持固定。每个骨干网络都用各自的学习率和训练计划，并在留出的源被试上调好。基线是 EEGNet。MVCNet 是一个复合方法，以 IFNet 为骨干、在多视图对比目标下训练，这里把它列在各骨干网络当中。",
       "Transfer Learning": "迁移学习",
-      "The learning-objective stage. Every row is the identical Euclidean-aligned EEGNet, and only the training or adaptation objective changes. Approaches are grouped by how much of the target they use and when. The families are source-only, unsupervised domain adaptation, source-free, and test-time. All are two-class on the three datasets and measured against the same no-transfer baseline (ERM). The privacy-preserving family keeps each subject's raw EEG local and is measured against Centralized Training rather than ERM (see its note).":
-        "学习目标阶段。每一行都是完全相同的、经欧氏对齐的 EEGNet，只改变训练或自适应目标。各方法按照使用目标域数据的多少和时机来分组，分为仅源域、无监督域自适应（unsupervised domain adaptation）、无源域（source-free）和测试时（test-time）。它们在三个数据集上都是二分类，并以同一个无迁移基线（经验风险最小化 ERM）为基准来衡量。隐私保护方法族把每名被试的原始脑电保留在本地，以集中式训练而非 ERM 为基准来衡量，详见其说明。",
+      "The learning-objective stage. Every row is the same Euclidean-aligned EEGNet; only the training or adaptation objective changes. The families below are ordered by how much of the target they use, and when: source-only, unsupervised domain adaptation, source-free, and test-time. All are two-class on the three datasets and measured against the same no-transfer baseline, ERM. The privacy-preserving family is the exception: it keeps each subject's raw EEG local and is measured against Centralized Training instead (see its note).":
+        "学习目标阶段。每一行都是同一个经欧氏对齐的 EEGNet，只改动训练或自适应目标。下面几类方法按使用目标域数据的多少和时机排列，依次是仅源域、无监督域自适应（unsupervised domain adaptation）、无源域（source-free）和测试时（test-time）。它们在三个数据集上都是二分类，都以同一个无迁移基线，也就是经验风险最小化（ERM），作为基准。隐私保护方法族是个例外。它把每名被试的原始脑电留在本地，改以集中式训练为基准，详见该组说明。",
       "Ensemble Learning": "集成学习",
-      "The aggregation stage, in a fully decentralized privacy setting. Five heterogeneous learners (tangent-space LDA, tangent-space SVM, EEGNet, ShallowConvNet, and CSPNet) are trained on each source subject's data alone, and the subjects share only their hard predicted labels on the target, never model weights or raw EEG. A post-hoc combiner fuses the (N-1)×5 label votes into a consensus prediction. Every combiner sees the same hard votes, so none has an information advantage, and they differ only in how they weight and combine the votes. StackingNet is lab-proposed. SML-OVR is the lab's multi-class combiner, a one-vs-rest generalization of the binary SML that on these two-class tasks reduces exactly to it, so the two report the same accuracy and are placed together. The others (the binary SML and the crowd-labelling and truth-discovery aggregators) are established baselines. All three datasets are two-class (chance 50%), so the columns are directly comparable, and each combiner is measured against plain majority voting on the same dataset. Rows are ordered lab-proposed first, then the remaining combiners by accuracy, with plain majority voting (the baseline) last.":
-        "聚合阶段，在完全去中心化的隐私场景下进行。为每一名源被试单独训练五个异构学习器，分别是切空间 LDA、切空间 SVM、EEGNet、ShallowConvNet 和 CSPNet，每个学习器只用该被试自己的数据训练。各被试之间只共享其在目标域上的硬预测标签，绝不共享模型权重或原始脑电。每个目标试次因此得到 (N-1)×5 个硬投票，由一个事后组合器把这些投票融合成一个共识预测。每个组合器看到的硬投票完全相同，因此没有谁具有信息优势，它们的区别只在于如何对投票加权和组合。StackingNet 由实验室提出。SML-OVR 是实验室的多分类组合器，是二分类 SML 的一对多（one-vs-rest）推广，在这些二分类任务上会精确退化为二分类 SML，因此两者报告相同的准确率并相邻排列。其余方法，包括二分类的 SML 以及群体标注和真值发现类的聚合方法，都是成熟的基线。三个数据集都是二分类，随机水平 50%，因此各列可以直接比较，每个组合器都以同数据集上的普通多数投票为基准来衡量。行的排序是实验室方法在前，其余组合器按准确率排列，普通多数投票作为基线放在最后。",
+      "The aggregation stage, in a fully decentralized, privacy-preserving setting. Each source subject trains five heterogeneous learners — tangent-space LDA, tangent-space SVM, EEGNet, ShallowConvNet, and CSP-Net — on its own data alone, and shares only the hard predicted labels on the target, never model weights or raw EEG. A post-hoc combiner fuses the (N−1)×5 label votes into one consensus prediction. Two non-ensemble references bracket the task, and the combiners are grouped beneath them.":
+        "聚合阶段，在完全去中心化的隐私保护场景下进行。每名源被试只用自己的数据，各训练五个异构学习器，分别是切空间 LDA、切空间 SVM、EEGNet、ShallowConvNet 和 CSP-Net。被试之间只共享在目标域上的硬预测标签，绝不共享模型权重或原始脑电。之后由一个组合器把 (N−1)×5 个标签投票融合成一个共识预测。两个非集成的参照给出问题的上下界，各个组合器则分组列在它们下面。",
+      "Decoding without any aggregation, to bracket the ensemble methods below. A single source learner applied to the target marks the floor; one model trained on all source subjects pooled together, Centralized Training, marks the non-private ceiling that the privacy-preserving combiners aim to match without ever sharing raw EEG.":
+        "不做任何聚合时的解码效果，用来给下面的集成方法划定上下界。单个源学习器直接用到目标域，代表下界。把所有源被试的数据汇集起来训练的单一模型，也就是集中式训练，代表非隐私的上界。去中心化的隐私组合器要在不共享原始脑电的前提下追平这个上界。",
+      "Every combiner sees the identical hard votes, so none holds an information advantage; they differ only in how they weight and reconcile them. StackingNet and SML-OVR are the lab methods, with the binary SML pinned directly beneath SML-OVR because the two coincide on two-class tasks; the rest are established crowd-labelling and truth-discovery aggregators. Each is measured against plain majority voting on the same dataset. All three datasets are two-class (chance 50%), so the columns compare directly.":
+        "每个组合器看到的硬投票完全一样，因此谁都没有信息上的优势，区别只在于如何给这些投票加权、如何调和分歧。StackingNet 和 SML-OVR 是实验室方法。二分类的 SML 紧跟在 SML-OVR 后面，因为两者在二分类任务上结果一致。其余都是成熟的群体标注和真值发现类聚合方法。每个组合器都以同一数据集上的普通多数投票为基准。三个数据集都是二分类，随机水平 50%，各列可以直接比较。",
 
       /* ============ benchmark transfer sub-category (subcat) headers & blurbs ============ */
       "Source-only": "仅源域",
@@ -179,6 +183,8 @@
       "Adapts online as the target trials arrive at test time, updating the source-trained model without target labels. Measured against the no-transfer baseline.":
         "在测试时随着目标试次的到来进行在线自适应，在不使用目标域标签的情况下更新已在源域训练的模型。以无迁移基线为基准来衡量。",
       "Privacy-preserving": "隐私保护",
+      "Non-ensemble references": "非集成参照",
+      "Ensemble learning": "集成学习",
       "These approaches never pool raw EEG across subjects, since each subject's data stays local. They are the privacy-preserving counterpart to Centralized Training (the reference). FedBS, SAFE and FedAvg share model updates through a server (federated). MSDT shares only per-source models fused at test time (decentralized). All three datasets are two-class (chance 50%), so the columns are directly comparable. Δ is versus Centralized Training on the same dataset.":
         "这些方法从不跨被试汇集原始脑电，每名被试的数据都保留在本地，是集中式训练（作为参照）的隐私保护版本。FedBS、SAFE 和 FedAvg 通过服务器共享模型更新，属于联邦式（federated）。MSDT 只共享各源域模型，并在测试时融合，属于去中心化（decentralized）。三个数据集都是二分类，随机水平 50%，因此各列可以直接比较。Δ 表示相对同数据集上集中式训练的差值。",
 
@@ -187,11 +193,11 @@
       "Transfer learning, robustness, privacy, and fuzzy systems for EEG-based BCIs.":
         "面向脑电（EEG）脑机接口（BCI）的迁移学习、鲁棒性、隐私保护与模糊系统研究。",
       /* lab.repo_intro */
-      "This repository is the lab's open-source code home: a unified, reproducible EEG-decoding benchmark, plus a paper-to-code gallery mapping the lab's publications to their released code.":
-        "本仓库是实验室的开源代码主页，包含一个统一、可复现的脑电解码基准，以及一个把实验室论文映射到其已发布代码的论文到代码总览。",
+      "The lab's open-source home. It holds two things: a unified, reproducible EEG-decoding benchmark, and a paper-to-code gallery that links every lab publication to its released code.":
+        "实验室的开源主页。这里放着两样东西。一个是统一、可复现的脑电解码基准，另一个是把实验室每一篇论文都链接到其开源代码的论文到代码总览。",
       /* anchor.blurb */
-      "This repository. A unified, self-contained framework that reimplements 57 EEG-decoding approaches, spanning data alignment, data augmentation, network backbones, transfer learning, and ensemble aggregation, on one composable pipeline. It compares them head-to-head under a single controlled protocol on three MOABB motor-imagery EEG datasets, with per-method reproduction records.":
-        "即本仓库。这是一个统一、自包含的框架，在同一条可组合流水线上重新实现了 57 种脑电解码方法，涵盖数据对齐、数据增强、网络骨干、迁移学习和集成聚合，并在三个 MOABB 运动想象脑电数据集上依据单一受控协议对它们正面比较，同时提供逐方法的复现记录。",
+      "This repository. A single, self-contained framework that reimplements 57 EEG-decoding approaches, covering data alignment, data augmentation, network backbones, transfer learning, and ensemble aggregation, on one composable pipeline. It puts them head-to-head under one controlled protocol on three MOABB motor-imagery EEG datasets. Every number on the leaderboard is a measured reproduction, recorded per method.":
+        "即本仓库。这是一个自包含的统一框架，在同一条可组合流水线上重新实现了 57 种脑电解码方法，涵盖数据对齐、数据增强、网络骨干、迁移学习和集成聚合。它在三个 MOABB 运动想象脑电数据集上，依据单一受控协议把这些方法正面比较。排行榜上的每个数字都是实测复现，逐方法记录在案。",
 
       /* ---- flagship repo `pillar` labels (controlled vocabulary) ----
          "Transfer Learning" and "Data Augmentation" reuse the benchmark-table

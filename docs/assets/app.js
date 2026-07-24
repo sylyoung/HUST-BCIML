@@ -550,33 +550,6 @@
     });
     host.appendChild(table);
   }
-  // per-dataset frame for the ensemble-learning category: class count / chance,
-  // single-source mean, Centralized Training, and the majority-voting baseline. Shown
-  // above that table inside the Benchmark view (it is a category, not a separate tab).
-  function renderEnsembleContext(t, host) {
-    if (!t.context) return;
-    var ctxWrap = el("div", { class: "ens-context" });
-    DS.forEach(function (d) {
-      var c = t.context[d]; if (!c) return;
-      var card = el("div", { class: "ens-ctx-card" });
-      card.appendChild(el("div", { class: "ens-ctx-ds" }, d));   // dataset name: identifier
-      card.appendChild(el("div", { class: "ens-ctx-meta" },
-        (c.classes || "") + (c.chance != null ? " · " + tr("chance") + " " + c.chance + "%" : "")));
-      var nums = el("div", { class: "ens-ctx-nums" });
-      function num(lbl, v) {
-        var s = el("div", { class: "ens-ctx-num" });
-        s.appendChild(el("span", { class: "l" }, tr(lbl)));
-        s.appendChild(el("span", { class: "v" }, v == null ? "—" : v.toFixed(2)));
-        return s;
-      }
-      nums.appendChild(num("single-source", c.single_source));
-      nums.appendChild(num("Centralized Training", c.centralized));
-      nums.appendChild(num("majority voting", c.voting));
-      card.appendChild(nums);
-      ctxWrap.appendChild(card);
-    });
-    host.appendChild(ctxWrap);
-  }
   function benchmark() {
     var B = document.getElementById("benchmark");
     B.textContent = "";
@@ -612,22 +585,13 @@
     var guide = el("details", { class: "bench-guide" });
     guide.appendChild(el("summary", {}, tr("How to read this leaderboard")));
     guide.appendChild(el("p", {},
-      tr("Each table varies one stage of the pipeline and holds the rest at the default. The default is Euclidean-aligned " +
-      "trials, an EEGNet backbone, standard supervised training, so every row differs from its baseline in " +
-      "exactly one way. The three columns are the three datasets, and beneath each accuracy, Δ is the change " +
-      "versus that dataset's baseline. Every table is two-class (chance 50%) on all three datasets. This covers the " +
-      "pipeline-stage tables, the source-only, unsupervised-adaptation, source-free and test-time transfer " +
-      "families, the privacy-preserving family, and the ensemble-learning table, so the columns are directly " +
-      "comparable throughout. Each family is measured against its own baseline: the transfer families against " +
-      "ERM, the privacy-preserving family against Centralized Training, and the ensemble table against " +
-      "majority voting. Every row links to its implementation and its paper.")));
+      tr("Read each row against its table's baseline. A table changes just one stage of the pipeline and holds the rest at the default: Euclidean-aligned trials, an EEGNet backbone, plain supervised training. So every row differs from the baseline in exactly one way, and any change in accuracy is down to that stage. The three columns are the three datasets. Under each accuracy, Δ is the gain or loss against that dataset's baseline. Every table is two-class (chance 50%) on all three datasets, so the columns stay comparable throughout. Each family has its own baseline: the transfer families use ERM, the privacy-preserving family uses Centralized Training, and the ensemble table uses majority voting. Every row links to its code and its paper.")));
     B.appendChild(guide);
 
     (BENCH.tables || []).forEach(function (t) {
       var box = el("div", { class: "bench-table" });
       box.appendChild(el("h3", {}, tr(t.title)));
       if (t.blurb) box.appendChild(el("div", { class: "blurb" }, tr(t.blurb)));
-      if (t.id === "ensemble") renderEnsembleContext(t, box);   // per-dataset context cards
       renderTableMulti(t, DS, box);
       B.appendChild(box);
     });

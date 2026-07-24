@@ -70,6 +70,14 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 <br>
 
+- **2026-07-24 (v1.1.1).** The Ensemble Learning table was split into two sub-families,
+  non-ensemble references and ensemble learning, mirroring the Transfer Learning layout, and its
+  former summary strip was dropped. Augmenters now appear by full name (Additive Noise, Amplitude
+  Scaling, Frequency Shift, Fourier Surrogate, Frequency Recombination, Channel Symmetry, and
+  Half-Sample Recombination). The benchmark and overview prose was rewritten for clarity in both
+  English and Chinese, and the publication index was de-duplicated to the single official version
+  of each paper (275 → 263).
+
 - **2026-07.** The Networks axis gained ten more backbones (ADFCNN, CTNet, MSCFormer, MSVTNet,
   TMSA-Net, EEGWaveNet, SlimSeiz, FBMSNet, EEGNeX, and EEG-Deformer) and the augmentation axis an
   eighth baseline, amplitude scaling. All were benchmarked across the three datasets over three
@@ -98,7 +106,7 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
   families.
 
 - **2026-07.** The web app gained a three-dataset leaderboard, lab-approach highlighting, and a
-  searchable paper-to-code gallery over **275** publications.
+  searchable paper-to-code gallery over **263** publications.
 
 </details>
 
@@ -120,7 +128,7 @@ number.
 **2. The paper-to-code web app**, in directory [`docs/`](docs/).
 
 A static web application that presents the benchmark leaderboard alongside a searchable
-**paper-to-code gallery** over the laboratory's **275 publications** (80 of which have public
+**paper-to-code gallery** over the laboratory's **263 publications** (76 of which have public
 code). It opens directly as a local file and hosts on GitHub Pages with **no build step**.
 
 <br>
@@ -348,7 +356,7 @@ The web app is generated from human-curated YAML by a single script with no fram
 dependency.
 
 - **Source of truth.** The files under [`gallery/data/`](gallery/data/):
-  `publications.yml` (the 275 papers), `lab.yml` (bio, anchor project, featured repos), and
+  `publications.yml` (the 263 papers), `lab.yml` (bio, anchor project, featured repos), and
   `benchmark.yml` (the controlled-comparison leaderboard).
 
 - **Generator.** [`gallery/build_site.py`](gallery/build_site.py) compiles those YAML files
@@ -372,7 +380,7 @@ HUST-BCIML/
 │   └── data/                   # generated: lab.js, publications.js, benchmark.js
 ├── gallery/                    # source of truth for the web app's data
 │   ├── data/
-│   │   ├── publications.yml     # 275 papers (hand-curated)
+│   │   ├── publications.yml     # 263 papers (hand-curated)
 │   │   ├── lab.yml              # lab bio, anchor project, featured repos
 │   │   └── benchmark.yml        # controlled-comparison leaderboard
 │   └── build_site.py           # YAML → docs/data/*.js   (requires only PyYAML)

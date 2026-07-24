@@ -26,7 +26,7 @@ maintainer:
 # What THIS repository is, stated code-first. The official lab website and the PI
 # homepage above are the authoritative source for lab profile, members, news, and
 # the full publication list; this repo is the open-source code + benchmark.
-repo_intro: "This repository is the lab's open-source code home: a unified, reproducible EEG-decoding benchmark, plus a paper-to-code gallery mapping the lab's publications to their released code."
+repo_intro: "The lab's open-source home. It holds two things: a unified, reproducible EEG-decoding benchmark, and a paper-to-code gallery that links every lab publication to its released code."
 
 # The anchor project pinned first is THIS repository, the unified EEG-decoding
 # benchmark. DeepTransferEEG, which the benchmark grew out of, is the first
@@ -35,7 +35,7 @@ anchor:
   name: "HUST-BCIML: unified EEG-decoding benchmark"
   owner: "sylyoung"
   url: "https://github.com/sylyoung/HUST-BCIML"
-  blurb: "This repository. A unified, self-contained framework that reimplements 57 EEG-decoding approaches, spanning data alignment, data augmentation, network backbones, transfer learning, and ensemble aggregation, on one composable pipeline. It compares them head-to-head under a single controlled protocol on three MOABB motor-imagery EEG datasets, with per-method reproduction records."
+  blurb: "This repository. A single, self-contained framework that reimplements 57 EEG-decoding approaches, covering data alignment, data augmentation, network backbones, transfer learning, and ensemble aggregation, on one composable pipeline. It puts them head-to-head under one controlled protocol on three MOABB motor-imagery EEG datasets. Every number on the leaderboard is a measured reproduction, recorded per method."
 
 # Featured repositories. The first six are pinned in a curated order; the rest are
 # ranked by GitHub stars. `area` is the research theme shown as the card label.

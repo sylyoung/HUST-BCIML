@@ -15,12 +15,12 @@ window.LAB = {
     "homepage": "https://sylyoung.github.io/",
     "email": "lsyyoungll@gmail.com"
   },
-  "repo_intro": "This repository is the lab's open-source code home: a unified, reproducible EEG-decoding benchmark, plus a paper-to-code gallery mapping the lab's publications to their released code.",
+  "repo_intro": "The lab's open-source home. It holds two things: a unified, reproducible EEG-decoding benchmark, and a paper-to-code gallery that links every lab publication to its released code.",
   "anchor": {
     "name": "HUST-BCIML: unified EEG-decoding benchmark",
     "owner": "sylyoung",
     "url": "https://github.com/sylyoung/HUST-BCIML",
-    "blurb": "This repository. A unified, self-contained framework that reimplements 57 EEG-decoding approaches, spanning data alignment, data augmentation, network backbones, transfer learning, and ensemble aggregation, on one composable pipeline. It compares them head-to-head under a single controlled protocol on three MOABB motor-imagery EEG datasets, with per-method reproduction records."
+    "blurb": "This repository. A single, self-contained framework that reimplements 57 EEG-decoding approaches, covering data alignment, data augmentation, network backbones, transfer learning, and ensemble aggregation, on one composable pipeline. It puts them head-to-head under one controlled protocol on three MOABB motor-imagery EEG datasets. Every number on the leaderboard is a measured reproduction, recorded per method."
   },
   "flagships": [
     {
@@ -177,4 +177,4 @@ window.LAB = {
     }
   ]
 };
-window.SITE = {"generated": "2026-07-24", "n_papers": 275, "n_code": 80, "n_methods": 57};
+window.SITE = {"generated": "2026-07-24", "n_papers": 263, "n_code": 76, "n_methods": 57};

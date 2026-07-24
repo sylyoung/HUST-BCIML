@@ -162,17 +162,17 @@ channels and must precede any spatial whitening._
 | Augmenter | BNCI2014001 | BNCI2014002 | BNCI2015001 |
 |---|--:|--:|--:|
 | Channel Reflection **(lab)** | 73.23 ± 0.74 | — | — |
-| HS | 64.99 ± 0.61 | 61.07 ± 2.33 | 64.53 ± 1.14 |
-| Symm | 53.11 ± 1.70 | 59.90 ± 1.81 | 59.65 ± 0.81 |
+| Half-Sample Recombination | 64.99 ± 0.61 | 61.07 ± 2.33 | 64.53 ± 1.14 |
+| Channel Symmetry | 53.11 ± 1.70 | 59.90 ± 1.81 | 59.65 ± 0.81 |
 | none (no alignment) | 69.34 ± 0.65 | 61.90 ± 2.96 | 63.46 ± 0.83 |
 
 Channel Reflection mirrors each trial across the sagittal midline and **swaps** the left/right
 label, doubling the training set with anatomically valid copies (+3.88 on BNCI2014001). It is
 constitutionally two-class **left/right** and is therefore measured only on BNCI2014001;
 BNCI2014002 and BNCI2015001 are right-hand-vs-feet, with no left/right hemispheric symmetry to
-exploit. HS (half-sample hemispheric recombination) and Symm (sagittal channel symmetry) are
+exploit. Half-Sample Recombination and Channel Symmetry are
 the prior-art contrast: both rearrange hemispheres but keep the label unchanged. On the
-left/right task BNCI2014001 both fall well below the no-alignment baseline — most starkly Symm
+left/right task BNCI2014001 both fall well below the no-alignment baseline — most starkly Channel Symmetry
 (53.11, near chance) — because reflecting or recombining the montage without relabelling
 mislabels the synthetic copies on a task whose two classes are the two hemispheres. This is
 exactly the failure Channel Reflection fixes by swapping the label. On the right-hand-vs-feet
@@ -180,23 +180,22 @@ datasets, which lack that left/right structure, the degradation is milder.
 
 ## Augmentation (EA regime)
 _EA + EEGNet + ERM. Vary the augmenter. Baseline = EA-EEGNet (no augmentation). These signal-
-and frequency-domain augmenters all operate on the EA-aligned trials. Channel Reflection, HS
-and Symm above, by contrast, are electrode-space transforms held at no-alignment._
+and frequency-domain augmenters all operate on the EA-aligned trials. Channel Reflection, Half-Sample Recombination
+and Channel Symmetry above, by contrast, are electrode-space transforms held at no-alignment._
 
 | Augmenter | BNCI2014001 | BNCI2014002 | BNCI2015001 |
 |---|--:|--:|--:|
-| FSurr | 73.51 ± 0.83 | 74.14 ± 0.72 | 71.67 ± 1.06 |
-| FShift | 73.28 ± 0.51 | 75.00 ± 0.38 | 74.14 ± 0.31 |
-| Scale | 72.97 ± 0.83 | 72.83 ± 0.38 | 72.72 ± 1.53 |
+| Fourier Surrogate | 73.51 ± 0.83 | 74.14 ± 0.72 | 71.67 ± 1.06 |
+| Frequency Shift | 73.28 ± 0.51 | 75.00 ± 0.38 | 74.14 ± 0.31 |
+| Amplitude Scaling | 72.97 ± 0.83 | 72.83 ± 0.38 | 72.72 ± 1.53 |
 | CSDA **(lab)** | 72.74 ± 1.92 | 73.98 ± 0.32 | 73.53 ± 0.44 |
-| FComb | 72.30 ± 2.11 | 73.81 ± 0.07 | 73.58 ± 0.88 |
-| Noise | 71.94 ± 0.66 | 74.14 ± 0.81 | 73.18 ± 1.02 |
-| Flip | 70.60 ± 0.77 | 74.24 ± 0.03 | 73.28 ± 0.93 |
+| Frequency Recombination | 72.30 ± 2.11 | 73.81 ± 0.07 | 73.58 ± 0.88 |
+| Additive Noise | 71.94 ± 0.66 | 74.14 ± 0.81 | 73.18 ± 1.02 |
+| Amplitude Flip | 70.60 ± 0.77 | 74.24 ± 0.03 | 73.28 ± 0.93 |
 | none (EA-EEGNet) | 72.07 ± 1.58 | 74.40 ± 1.04 | 73.19 ± 0.81 |
 
 On the EA-aligned trials the augmentation gains are small and not uniform across datasets. On
-BNCI2014001 the frequency-domain augmenters lead — FSurr (+1.44, a phase-randomised Fourier
-surrogate) and FShift (+1.21, a spectral shift) — with amplitude scaling (+0.90) and the lab's
+BNCI2014001 the frequency-domain augmenters lead — Fourier Surrogate (+1.44, phase-randomised) and Frequency Shift (+1.21, a spectral shift) — with amplitude scaling (+0.90) and the lab's
 CSDA (+0.67, a db4-wavelet cross-subject detail-swap) modestly positive, while additive noise
 (−0.13) and amplitude flip (−1.47) are neutral-to-negative. The effects stay within roughly
 ±1.5 points on every dataset, the small-gain, high-variance profile expected of trial-level
