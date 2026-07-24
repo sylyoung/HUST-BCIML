@@ -32,6 +32,17 @@ left/right pairing comes from ``utils.montage.reflection_permutation``.
 Label swap is defined only for the 2-class (left/right) case; with any other
 class count the channels are still reflected but labels are kept unchanged.
 """
+# ---------------------------------------------------------------------------
+# Prior-art contrast: "channel symmetry" (reflect the montage but KEEP the label,
+# e.g. Deiss et al., HAMLET, arXiv:1803.09702, 2018). On a left/right task the
+# reflected trial actually depicts the OPPOSITE class, so keeping its label
+# mislabels the synthetic copy and drives cross-subject accuracy toward chance
+# (measured ~53% on BNCI2014001, well below the ~69% no-augmentation baseline).
+# That failure is exactly what the label swap below fixes, which is the whole
+# point of Channel Reflection. Channel symmetry is therefore not carried as a
+# separate benchmarked augmenter; the contrast is documented here instead. To
+# study it, drop the `1 - y_ref[known]` label swap in __call__ (keep y_ref = y).
+# ---------------------------------------------------------------------------
 from __future__ import annotations
 
 import numpy as np

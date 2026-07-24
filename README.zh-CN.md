@@ -4,13 +4,13 @@
 
 [English](README.md) | **简体中文**
 
-**脑机接口与机器学习实验室（Brain-Computer Interface and Machine Learning Laboratory）的开源代码主页**
+**脑机接口与机器学习实验室的开源代码主页**
 
-伍冬睿教授（Prof. Dongrui Wu） &nbsp;·&nbsp; 华中科技大学（Huazhong University of Science and Technology）
+伍冬睿教授 &nbsp;·&nbsp; 华中科技大学
 
 <br>
 
-一个统一、可复现的**脑电（EEG）解码基准（benchmark）** &nbsp;+&nbsp; 一个可检索的**论文到代码总览（paper-to-code gallery）**。
+一个统一、可复现的**脑电（EEG）解码基准** &nbsp;+&nbsp; 一个可检索的**论文到代码总览**。
 
 <br>
 
@@ -24,7 +24,7 @@
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-3776ab)
 ![PyTorch](https://img.shields.io/badge/PyTorch-1.12%2B-ee4c2c)
-![Approaches](https://img.shields.io/badge/approaches-57-4338ca)
+![Approaches](https://img.shields.io/badge/approaches-56-4338ca)
 ![Datasets](https://img.shields.io/badge/datasets-3%20MOABB%20MI-059669)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
@@ -63,9 +63,13 @@
 <br>
 
 <details>
-<summary><b>更新日志（What's new）</b></summary>
+<summary><b>更新日志</b></summary>
 
 <br>
+
+完整版本历史见 [`CHANGELOG.md`](CHANGELOG.md)。近期要点：
+
+- **2026-07-24（v1.1.2）** 重写了方法清单，并重新组织了迁移与集成两族。迁移方法现在按何时用到无标签目标域来分组，依次是仅源域、无监督域自适应、无源域和测试时。隐私保护一族更名为隐私保护迁移，说明也做了扩充。集成部分则讲清了去中心化的黑箱协议。通道对称（Channel Symmetry）不再作为基准增强器，其原理改放到通道反射的源码注释里，方法数因此变为 56。MVCNet 也改按普通网络骨干呈现。新增了 `CHANGELOG.md`，中文页面也改得更地道。
 
 - **2026-07-24（v1.1.1）** 集成学习表拆分为两个子族，即非集成参照与集成学习，与迁移学习的版式一致，原先表格上方的汇总条也已移除。数据增强器改用全称显示，包括加性噪声、幅度缩放、频率平移、傅里叶替代、频率重组、通道对称与半样本重组。基准与概览的文字在中英文两版都做了重写，以提升清晰度。论文索引也做了去重，每篇论文只保留正式发表的版本（275 篇减至 263 篇）。
 
@@ -93,7 +97,7 @@
 
 **1. 脑电解码基准**，位于目录 [`hustbciml/`](hustbciml/)。
 
-这是一个自包含的框架，围绕单一命令行入口和一个自动扫描的插件注册表（plug-in registry）构建。在这条可组合的流水线上，它重新实现了 **57 种脑电解码方法**，涵盖数据对齐、数据增强、网络骨干、迁移学习与集成聚合，并在**单一受控评估协议**下对它们正面比较，同时为每一个报告数值配上逐方法的复现记录。
+这是一个自包含的框架，围绕单一命令行入口和一个自动扫描的插件注册表构建。在这条可组合的流水线上，它重新实现了 **56 种脑电解码方法**，涵盖数据对齐、数据增强、网络骨干、迁移学习与集成聚合，并在**单一受控评估协议**下对它们正面比较，同时为每一个报告数值配上逐方法的复现记录。
 
 **2. 论文到代码网页应用**，位于目录 [`docs/`](docs/)。
 
@@ -119,22 +123,22 @@
 
 本基准围绕六条原则组织，每一条都由代码和报告方式来强制约束，而不是只靠惯例。
 
-1. **可组合性（Composability）。**
+1. **可组合性。**
    一个*算法*是若干阶段插件的具名组合。多数情况下，添加一种方法就是添加一个符合某阶段接口的单一文件，注册表会按文件名发现它。
 
-2. **受控比较（Controlled comparison）。**
+2. **受控比较。**
    每一次比较都只改变**一个**流水线阶段，其余阶段保持在固定的规范配置上。只在一个组件上有差异的两行，可以把该组件的作用单独分离出来。
 
-3. **测量完整性（Measurement integrity）。**
+3. **测量完整性。**
    每一个报告数值都是在三个随机种子上**实测**得到的均值。没有任何数值是为了对上某篇论文而手工设定的。每一个数值都记录在一个机器可读的复现文件里，协议匹配时对照论文自身的数值，协议不同时对照一个预期行为区间（expected-behaviour band）。
 
-4. **诚实报告（Honest reporting）。**
+4. **诚实报告。**
    负面结果和低于基线的结果都予以保留并加以说明，而不是隐藏。排名**按数据集分别给出**，并如实报告实测值。本仓库刻意**不**提供横跨所有方法的单一扁平排名。
 
-5. **可复现性（Reproducibility）。**
+5. **可复现性。**
    每次运行都固定随机种子，并持久化解析后的配置、逐被试预测与检查点（checkpoint）。凡是用到超参数选择的地方，都**只在留出的源被试上**进行，绝不触及目标或测试标签。
 
-6. **自包含与零构建（Self-containment and zero build）。**
+6. **自包含与零构建。**
    网页应用从单一文件渲染，无需构建步骤。基准则在一个内置的合成数据集上端到端运行，无需下载。因此在获取任何真实数据之前，两者都可以先行审阅。
 
 <br>
@@ -191,35 +195,32 @@ EA  ·  no augmentation  ·  EEGNet  ·  Linear head  ·  ERM
 
 ## 方法清单
 
-由实验室提出的方法标记为 **(lab)**。下表按流水线阶段对插件分组，复合、隐私保护与集成方法跨越多个阶段，按角色分组。
+由实验室提出的方法标记为 **(lab)**。每个插件都归在它所改动的那一个流水线阶段之下，隐私保护与集成方法跨越多个阶段，按角色列出。
 
-**信号对齐（对齐器 aligners）。**
-欧氏对齐（Euclidean Alignment, **EA**）、黎曼对齐（Riemannian Alignment, **RA**），以及 `Identity`（不做对齐）。
+**信号对齐（对齐器）。**
+欧氏对齐（**EA (lab)**，默认）、黎曼对齐（**RA**），以及 `Identity`（不做对齐）。对齐器在骨干网络看到数据之前，先把每名被试的试次重新对齐到一个共同的统计框架里，整个过程不需要标签。
 
-**数据增强（增强器 augmenters）。**
-**Channel Reflection (lab)** 是一种带左右标签互换的矢状正中面镜像。**CSDA (lab)** 是一种小波跨被试细节互换（wavelet cross-subject detail-swap）。此外还有 `Identity`，即不做增强。
+**数据增强（增强器）。**
+两种电极空间变换在对齐之前进行，即 **Channel Reflection (lab)**（把左右标签互换的矢状正中面镜像）和 **Half-Sample Recombination**。信号域和频率域的增强器则作用于经欧氏对齐的试次，包括 **CSDA (lab)**（一种小波跨被试细节互换）、**加性噪声**、**幅度翻转**、**幅度缩放**、**频率平移**、**傅里叶替代**和**频率重组**。`Identity` 不做任何增强。
 
 **网络骨干。**
-**EEGNet**（规范基线）、**ShallowConvNet**、**DeepConvNet**、**EEG Conformer**、**DBConformer (lab)**、**IFNet**、**CSP-Net (lab)**、**TIE-EEGNet (lab)** 与 **KDFNet (lab)**。
+在固定的经欧氏对齐、ERM 训练设置上，只更换网络。**EEGNet** 是规范基线，此外还有 **ShallowConvNet**、**DeepConvNet**、**EEG Conformer**、**CSP-Net (lab)**、**TIE-EEGNet (lab)**、**KDFNet (lab)**、**DBConformer (lab)**、**MVCNet (lab)**，以及一批较新的网络（**ADFCNN**、**CTNet**、**MSCFormer**、**MSVTNet**、**TMSA-Net**、**EEGWaveNet**、**SlimSeiz**、**FBMSNet**、**EEGNeX**、**EEG-Deformer**）。每个骨干网络都沿用其原论文的结构，只调学习率，而且只在留出的源被试上调。
 
-**迁移与自适应学习策略**（在固定的 EEGNet 上改变学习目标）。
-按各方法所用的信息量组织：
+**迁移与自适应学习策略**（在固定的经欧氏对齐 EEGNet 上改变学习目标）。各族方法的区别在于何时用到无标签的目标域，以及那时是否还留着源域数据。
 
-- *仅源域*（不使用目标域数据）：**ERM**（经验风险最小化，无迁移基线）、**MDMAML (lab)**、**ABAT (lab)**。
-- *无监督域自适应*（有标签源域加无标签目标域）：**MCC**、**CDAN**、**JAN**、**DAN**、**DANN**、**MDD**、**DJP-MMD (lab)**。
-- *无源域与测试时自适应*：**ASFA (lab)**、**SHOT**、**T-TIME (lab)**、**DELTA**、**ISFDA**、**SAR**、**PL**（伪标签 pseudo-labelling）、**BN-adapt**、**Tent**、**BFT (lab)**。
+- **仅源域**（完全不用目标域）：**ERM**（无迁移基线）、**MDMAML (lab)**、**ABAT (lab)**、**PAT (lab)**。
+- **无监督域自适应**（把 ERM 换成一个源域加目标域的联合目标）：**MCC**、**CDAN**、**JAN**、**DAN**、**DANN**、**MDD**、**DJP-MMD (lab)**，以及无网络的 **MEKT (lab)**。
+- **无源域自适应**（在源域 ERM 之后，只在目标域上再优化第二个目标，此时源域数据已不在）：**ASFA (lab)**、**SHOT**，以及无网络的 **LSFT (lab)**。
+- **测试时自适应**（在线进行，每次只用一小批目标试次）：**T-TIME (lab)**、**DELTA**、**ISFDA**、**SAR**、**PL**（伪标签）、**BN-adapt**、**BFT (lab)**、**Tent**。
 
-**经典（无网络）路径。**
-**CSP-LDA** 与 **Riemann-MDM** 作为无迁移基线。**MEKT (lab)** 与 **LSFT (lab)** 是基于黎曼切空间（Riemannian tangent-space）特征的经典迁移方法。
+**经典（无网络）基线。**
+**CSP-LDA** 与 **Riemann-MDM** 是无迁移基线，上面的经典迁移方法 **MEKT (lab)** 和 **LSFT (lab)** 作用于黎曼切空间特征。
 
-**复合方法。**
-**MVCNet (lab)** 以 IFNet 为骨干并配上多视图对比目标（multi-view contrastive objective），一次改变两个阶段。
+**隐私保护迁移。**
+从不汇集原始脑电的跨被试迁移，以**集中式训练**（会汇集数据）为对照。**联邦式**方法由一个服务器每一轮对各被试的模型更新做平均，包括 **FedAvg** 以及实验室的 **FedBS (lab)** 和 **SAFE (lab)**。去中心化的 **MSDT (lab)** 则只共享训练好的各被试模型，再在目标域上融合。
 
-**隐私保护、联邦、去中心化。**
-集中式训练（Centralized Training，作为参照）、**FedAvg**、**FedBS (lab)**、**SAFE (lab)** 与 **MSDT (lab)** 是联邦式或去中心化的隐私保护方法。另有一个去中心化的异构集成，为每名源被试训练五个学习器，各被试之间只共享硬预测标签，再由实验室的 **StackingNet (lab)** 以及成熟的群体聚合（crowd-aggregation）基线来组合。**SML-OVR (lab)** 是其中的多分类组合器，在二分类数据集上会退化为二分类的 **SML**。
-
-**多种子集成。**
-对某个基础算法的 K 个种子做硬投票组合，方法包括多数**投票（voting）**、上面同一批群体聚合基线，以及实验室的 **SML**、**SML-OVR (lab)** 与 **StackingNet (lab)**。
+**集成聚合。**
+一个去中心化的黑箱场景。每名源被试只用自己的数据训练五个学习器，并且只共享硬预测标签，再由一个组合器在没有目标域标签的情况下把这些投票融合起来。组合器包括多数**投票**（基线）、谱元学习器 **SML** 和实验室的 **SML-OVR (lab)**、实验室的 **StackingNet (lab)**，以及一批群体标注和真值发现类聚合方法（**Dawid-Skene**、**EBCC**、**GLAD**、**ZenCrowd**、**MACE**、**PM**、**LAA**、**LA**、**M-MSR**、**Wawa**）。
 
 <br>
 
@@ -339,14 +340,13 @@ HUST-BCIML/
 
 实验室的代表性仓库被置顶展示在[概览标签页](docs/index.html)，起始于：
 
-- [**DeepTransferEEG**](https://github.com/sylyoung/DeepTransferEEG)，本基准由它发展而来的迁移学习主力工具库
+- [**DeepTransferEEG**](https://github.com/sylyoung/DeepTransferEEG)
 - [**TestEnsemble**](https://github.com/sylyoung/TestEnsemble)
 - [**DBConformer**](https://github.com/wzwvv/DBConformer)
+- [**EEG-FM-Benchmark**](https://github.com/Dingkun0817/EEG-FM-Benchmark)
 - [**EEGAdversarialBenchmark**](https://github.com/xqchen914/EEGAdversarialBenchmark)
 - [**NT-Benchmark**](https://github.com/chamwen/NT-Benchmark)
 - [**TLBCI**](https://github.com/drwuHUST/TLBCI)
-
-其余仓库随后列出，按 GitHub 星标数排序。
 
 <br>
 

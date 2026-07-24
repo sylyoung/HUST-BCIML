@@ -163,25 +163,23 @@ channels and must precede any spatial whitening._
 |---|--:|--:|--:|
 | Channel Reflection **(lab)** | 73.23 ± 0.74 | — | — |
 | Half-Sample Recombination | 64.99 ± 0.61 | 61.07 ± 2.33 | 64.53 ± 1.14 |
-| Channel Symmetry | 53.11 ± 1.70 | 59.90 ± 1.81 | 59.65 ± 0.81 |
 | none (no alignment) | 69.34 ± 0.65 | 61.90 ± 2.96 | 63.46 ± 0.83 |
 
 Channel Reflection mirrors each trial across the sagittal midline and **swaps** the left/right
 label, doubling the training set with anatomically valid copies (+3.88 on BNCI2014001). It is
 constitutionally two-class **left/right** and is therefore measured only on BNCI2014001;
 BNCI2014002 and BNCI2015001 are right-hand-vs-feet, with no left/right hemispheric symmetry to
-exploit. Half-Sample Recombination and Channel Symmetry are
-the prior-art contrast: both rearrange hemispheres but keep the label unchanged. On the
-left/right task BNCI2014001 both fall well below the no-alignment baseline — most starkly Channel Symmetry
-(53.11, near chance) — because reflecting or recombining the montage without relabelling
-mislabels the synthetic copies on a task whose two classes are the two hemispheres. This is
-exactly the failure Channel Reflection fixes by swapping the label. On the right-hand-vs-feet
-datasets, which lack that left/right structure, the degradation is milder.
+exploit. Half-Sample Recombination is the prior-art contrast: it rearranges hemispheres but keeps
+the label unchanged. On the left/right task BNCI2014001 it falls well below the no-alignment
+baseline (64.99, −4.35), because recombining the montage without relabelling mislabels the
+synthetic copies on a task whose two classes are the two hemispheres. This is exactly the failure
+Channel Reflection fixes by swapping the label. On the right-hand-vs-feet datasets, which lack
+that left/right structure, the degradation is milder.
 
 ## Augmentation (EA regime)
 _EA + EEGNet + ERM. Vary the augmenter. Baseline = EA-EEGNet (no augmentation). These signal-
-and frequency-domain augmenters all operate on the EA-aligned trials. Channel Reflection, Half-Sample Recombination
-and Channel Symmetry above, by contrast, are electrode-space transforms held at no-alignment._
+and frequency-domain augmenters all operate on the EA-aligned trials. Channel Reflection and
+Half-Sample Recombination above, by contrast, are electrode-space transforms held at no-alignment._
 
 | Augmenter | BNCI2014001 | BNCI2014002 | BNCI2015001 |
 |---|--:|--:|--:|

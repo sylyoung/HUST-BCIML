@@ -26,7 +26,7 @@ SEEDS = [1, 2, 3]
 AUGMENTERS = {
     "Noise-EEGNet": "Noise", "Flip-EEGNet": "Flip", "Scale-EEGNet": "Scale",
     "FShift-EEGNet": "FShift", "FSurr-EEGNet": "FSurr", "FComb-EEGNet": "FComb",
-    "HS-EEGNet": "HS", "Symm-EEGNet": "Symm",
+    "HS-EEGNet": "HS",
 }
 BACKBONES = {
     "EA-ADFCNN": "ADFCNN", "EA-CTNet": "CTNet", "EA-MSCFormer": "MSCFormer",

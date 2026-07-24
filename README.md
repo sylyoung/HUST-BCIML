@@ -24,7 +24,7 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-3776ab)
 ![PyTorch](https://img.shields.io/badge/PyTorch-1.12%2B-ee4c2c)
-![Approaches](https://img.shields.io/badge/approaches-57-4338ca)
+![Approaches](https://img.shields.io/badge/approaches-56-4338ca)
 ![Datasets](https://img.shields.io/badge/datasets-3%20MOABB%20MI-059669)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
@@ -69,6 +69,17 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 <summary><b>What's new</b></summary>
 
 <br>
+
+The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
+
+- **2026-07-24 (v1.1.2).** The method inventory was rewritten and the transfer and ensemble
+  families reorganized: transfer methods are now grouped by when they use the unlabeled target
+  (source-only, unsupervised domain adaptation, source-free, test-time), the privacy-preserving
+  family was renamed **privacy-preserving transfer** and its explanation expanded, and the
+  ensemble section now spells out the decentralized black-box protocol. **Channel Symmetry** was
+  removed as a benchmarked augmenter (its rationale now lives in the Channel Reflection source),
+  bringing the count to **56** approaches, and MVCNet is presented as a plain network backbone.
+  A `CHANGELOG.md` was added and the Chinese pages were made more idiomatic.
 
 - **2026-07-24 (v1.1.1).** The Ensemble Learning table was split into two sub-families,
   non-ensemble references and ensemble learning, mirroring the Transfer Learning layout, and its
@@ -119,7 +130,7 @@ This repository bundles two deliverables, **code first**.
 **1. The EEG-decoding benchmark**, in directory [`hustbciml/`](hustbciml/).
 
 A self-contained framework built around a single command-line entry point and an
-auto-scanning plug-in registry. On this one composable pipeline it re-implements **57
+auto-scanning plug-in registry. On this one composable pipeline it re-implements **56
 EEG-decoding approaches** that span data alignment, data augmentation, network backbones,
 transfer learning, and ensemble aggregation. It compares them head-to-head under a **single
 controlled evaluation protocol**, with a per-method reproduction record for every reported
@@ -261,49 +272,62 @@ without re-running a model.
 
 ## Method inventory
 
-Approaches proposed by the laboratory are marked **(lab)**. The list below groups the plug-ins
-by pipeline stage. The composite, privacy-preserving, and ensemble methods span more than one
-stage and are grouped by role.
+Approaches proposed by the laboratory are marked **(lab)**. Each plug-in is listed under the one
+pipeline stage it changes; the privacy-preserving and ensemble methods span several stages and
+are listed by role.
 
 **Signal alignment (aligners).**
-Euclidean Alignment (**EA**), Riemannian Alignment (**RA**), and `Identity` (no alignment).
+Euclidean Alignment (**EA (lab)**, the default), Riemannian Alignment (**RA**), and `Identity`
+(no alignment). An aligner recenters each subject's trials into a shared statistical frame before
+the backbone sees them, using no labels.
 
 **Data augmentation (augmenters).**
-**Channel Reflection (lab)** is a sagittal-midline mirror with left/right label swap. **CSDA
-(lab)** is a wavelet cross-subject detail-swap. `Identity` applies no augmentation.
+Two electrode-space transforms run before alignment: **Channel Reflection (lab)**, a
+sagittal-midline mirror that swaps the left/right label, and **Half-Sample Recombination**. The
+signal- and frequency-domain augmenters run on EA-aligned trials: **CSDA (lab)** (a wavelet
+cross-subject detail-swap), **additive noise**, **amplitude flip**, **amplitude scaling**,
+**frequency shift**, **Fourier surrogate**, and **frequency recombination**. `Identity` applies
+none.
 
 **Network backbones.**
-**EEGNet** (the canonical baseline), **ShallowConvNet**, **DeepConvNet**, **EEG Conformer**,
-**DBConformer (lab)**, **IFNet**, **CSP-Net (lab)**, **TIE-EEGNet (lab)**, and **KDFNet (lab)**.
+On a fixed EA-aligned, ERM-trained setup, only the network changes. **EEGNet** is the canonical
+baseline, alongside **ShallowConvNet**, **DeepConvNet**, **EEG Conformer**, **CSP-Net (lab)**,
+**TIE-EEGNet (lab)**, **KDFNet (lab)**, **DBConformer (lab)**, **MVCNet (lab)**, and a set of
+recent networks (**ADFCNN**, **CTNet**, **MSCFormer**, **MSVTNet**, **TMSA-Net**, **EEGWaveNet**,
+**SlimSeiz**, **FBMSNet**, **EEGNeX**, **EEG-Deformer**). Each backbone keeps its own paper's
+architecture; only its learning rate is tuned, and only on held-out source subjects.
 
-**Transfer and adaptation strategies** (vary the learning objective on a fixed EEGNet).
-Organized by the information each paradigm uses:
+**Transfer and adaptation strategies** (vary the learning objective on a fixed EA-aligned
+EEGNet). The families differ in when the unlabeled target is used and whether the source data is
+still on hand:
 
-- **Source-only** (no target data): **ERM** (the no-transfer baseline), **MDMAML (lab)**,
-  **ABAT (lab)**.
-- **Unsupervised domain adaptation** (labeled source plus unlabeled target): **MCC**, **CDAN**,
-  **JAN**, **DAN**, **DANN**, **MDD**, **DJP-MMD (lab)**.
-- **Source-free and test-time adaptation**: **ASFA (lab)**, **SHOT**, **T-TIME (lab)**,
-  **DELTA**, **ISFDA**, **SAR**, **PL** (pseudo-labelling), **BN-adapt**, **Tent**,
-  **BFT (lab)**.
+- **Source-only** (no target at all): **ERM** (the no-transfer baseline), **MDMAML (lab)**,
+  **ABAT (lab)**, **PAT (lab)**.
+- **Unsupervised domain adaptation** (replaces ERM with a joint source-plus-target objective):
+  **MCC**, **CDAN**, **JAN**, **DAN**, **DANN**, **MDD**, **DJP-MMD (lab)**, and the network-free
+  **MEKT (lab)**.
+- **Source-free adaptation** (a second objective on the target after source ERM, source data
+  gone): **ASFA (lab)**, **SHOT**, and the network-free **LSFT (lab)**.
+- **Test-time adaptation** (online, one target batch at a time): **T-TIME (lab)**, **DELTA**,
+  **ISFDA**, **SAR**, **PL** (pseudo-labelling), **BN-adapt**, **BFT (lab)**, **Tent**.
 
-**Classical (network-free) track.**
-**CSP-LDA** and **Riemann-MDM** serve as no-transfer baselines. **MEKT (lab)** and **LSFT (lab)**
-are classical transfer methods on Riemannian tangent-space features.
+**Classical (network-free) baselines.**
+**CSP-LDA** and **Riemann-MDM** are no-transfer baselines; the classical transfer methods
+**MEKT (lab)** and **LSFT (lab)** above work on Riemannian tangent-space features.
 
-**Composite.**
-**MVCNet (lab)** is an IFNet backbone with a multi-view contrastive objective, which changes two
-stages at once.
+**Privacy-preserving transfer.**
+Cross-subject transfer that never pools raw EEG, measured against **Centralized Training** (which
+does). **Federated** methods run a server that averages per-subject model updates each round —
+**FedAvg**, and the lab's **FedBS (lab)** and **SAFE (lab)** — while **decentralized**
+**MSDT (lab)** shares only trained per-subject models, fused on the target.
 
-**Privacy-preserving / federated / decentralized.**
-Centralized Training (the reference), **FedAvg**, **FedBS (lab)**, **SAFE (lab)**,
-**MSDT (lab)**, and a decentralized-ensemble family that shares only hard predicted labels. That
-family combines the lab's **SML-OVR (lab)** and **StackingNet (lab)** with established
-crowd-aggregation baselines.
-
-**Multi-seed ensemble.**
-Hard-vote combiners over K seeds of a base algorithm. These include majority **voting**, the
-same crowd-aggregation baselines, and the lab's **SML / SML-OVR (lab) / StackingNet (lab)**.
+**Ensemble aggregation.**
+A decentralized, black-box setting: each source subject trains five learners on its own data and
+shares only hard predicted labels, and a combiner fuses the votes with no target labels. The
+combiners are majority **voting** (the baseline), the spectral meta-learners **SML** and the
+lab's **SML-OVR (lab)**, the lab's **StackingNet (lab)**, and a set of crowd-labelling and
+truth-discovery aggregators (**Dawid-Skene**, **EBCC**, **GLAD**, **ZenCrowd**, **MACE**, **PM**,
+**LAA**, **LA**, **M-MSR**, **Wawa**).
 
 <br>
 
@@ -452,15 +476,13 @@ The full workflow is in the
 The laboratory's flagship repositories are pinned on the [Overview tab](docs/index.html),
 beginning with:
 
-- [**DeepTransferEEG**](https://github.com/sylyoung/DeepTransferEEG), the transfer-learning
-  library this benchmark grew out of
+- [**DeepTransferEEG**](https://github.com/sylyoung/DeepTransferEEG)
 - [**TestEnsemble**](https://github.com/sylyoung/TestEnsemble)
 - [**DBConformer**](https://github.com/wzwvv/DBConformer)
+- [**EEG-FM-Benchmark**](https://github.com/Dingkun0817/EEG-FM-Benchmark)
 - [**EEGAdversarialBenchmark**](https://github.com/xqchen914/EEGAdversarialBenchmark)
 - [**NT-Benchmark**](https://github.com/chamwen/NT-Benchmark)
 - [**TLBCI**](https://github.com/drwuHUST/TLBCI)
-
-The remaining repositories follow, ordered by GitHub stars.
 
 <br>
 

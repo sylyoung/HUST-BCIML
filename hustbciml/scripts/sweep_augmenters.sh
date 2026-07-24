@@ -1,6 +1,6 @@
 #!/bin/bash
 # Augmentation-family sweep: the comparison-baseline augmenters from the CSDA and
-# Channel Reflection papers (Noise, Flip, Scale, FShift, FSurr, FComb, HS, Symm)
+# Channel Reflection papers (Noise, Flip, Scale, FShift, FSurr, FComb, HS)
 # x 3 MOABB MI datasets x 3 seeds, cross-subject LOSO on the EA-aligned EEGNet+ERM
 # setup. Results share hustbciml_results_aug so extract_augmenters_3ds.py picks
 # them up uniformly. Resume-safe (per-run done-markers). One GPU per invocation;

@@ -6,7 +6,7 @@
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-3776ab)
 ![PyTorch](https://img.shields.io/badge/PyTorch-1.12%2B-ee4c2c)
-![Approaches](https://img.shields.io/badge/approaches-57-4338ca)
+![Approaches](https://img.shields.io/badge/approaches-56-4338ca)
 ![Seeds](https://img.shields.io/badge/protocol-cross--subject%20LOSO%20%C3%97%203%20seeds-059669)
 
 </div>
@@ -38,7 +38,7 @@ in one way, so the comparison is fair. A separate **ensemble** axis aggregates s
 | Stage | Plug-ins |
 |---|---|
 | **Aligner**   | `EA`, `RA`, `Identity` |
-| **Augmenter** | `ChannelReflection`, `CSDA`, `Noise`, `Flip`, `Scaling`, `FShift`, `FSurr`, `FComb`, `HS`, `Symm`, `Identity` |
+| **Augmenter** | `ChannelReflection`, `CSDA`, `Noise`, `Flip`, `Scaling`, `FShift`, `FSurr`, `FComb`, `HS`, `Identity` |
 | **Backbone**  | `EEGNet`, `ShallowConvNet`, `DeepConvNet`, `EEGConformer`, `DBConformer`, `IFNet`, `CSPNet`, `TIEEEGNet`, `KDFNet`, `ADFCNN`, `CTNet`, `MSCFormer`, `MSVTNet`, `TMSANet`, `EEGWaveNet`, `SlimSeiz`, `FBMSNet`, `EEGNeX`, `EEGDeformer` |
 | **Head**      | `Linear` |
 | **Strategy**  | `ERM`, `MEKT`, `MDMAML`, `ABAT`, `DJPMMD`, `MCC`, `CDAN`, `JAN`, `DAN`, `DANN`, `MDD`, `ASFA`, `LSFT`, `SHOT`, `TTIME`, `DELTA`, `ISFDA`, `SAR`, `PL`, `BNAdapt`, `Tent`, `BFT`, `FedBS`, `SAFE`, `FedAvg`, `MSDT`, `MVCNet`, `CSP_LDA`, `RiemannMDM` |

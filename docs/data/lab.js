@@ -20,7 +20,7 @@ window.LAB = {
     "name": "HUST-BCIML: unified EEG-decoding benchmark",
     "owner": "sylyoung",
     "url": "https://github.com/sylyoung/HUST-BCIML",
-    "blurb": "This repository. A single, self-contained framework that reimplements 57 EEG-decoding approaches, covering data alignment, data augmentation, network backbones, transfer learning, and ensemble aggregation, on one composable pipeline. It puts them head-to-head under one controlled protocol on three MOABB motor-imagery EEG datasets. Every number on the leaderboard is a measured reproduction, recorded per method."
+    "blurb": "This repository. A single, self-contained framework that reimplements 56 EEG-decoding approaches, covering data alignment, data augmentation, network backbones, transfer learning, and ensemble aggregation, on one composable pipeline. It puts them head-to-head under one controlled protocol on three MOABB motor-imagery EEG datasets. Every number on the leaderboard is a measured reproduction, recorded per method."
   },
   "flagships": [
     {
@@ -29,7 +29,7 @@ window.LAB = {
       "owner": "sylyoung",
       "url": "https://github.com/sylyoung/DeepTransferEEG",
       "stars": 51,
-      "blurb": "T-TIME test-time adaptation, Euclidean Alignment, and ~15 domain-adaptation methods for cross-subject EEG. This is the transfer-learning library the benchmark grew out of."
+      "blurb": "Euclidean Alignment, T-TIME test-time adaptation, and around fifteen more domain-adaptation algorithms for cross-subject EEG. The transfer-learning library the benchmark grew out of, and the source of most of its transfer methods."
     },
     {
       "pillar": "Ensemble & Aggregation",
@@ -37,7 +37,7 @@ window.LAB = {
       "owner": "sylyoung",
       "url": "https://github.com/sylyoung/TestEnsemble",
       "stars": 2,
-      "blurb": "Black-box test-time ensembling: majority voting, crowd-label aggregators, and the lab's SML-OVR / StackingNet combiners, fusing hard predictions across independent models."
+      "blurb": "A library of black-box combiners that fuse hard predictions across independent models: majority voting, a dozen-plus crowd-label and truth-discovery aggregators, and the lab's SML-OVR and StackingNet. The benchmark's ensemble table is built on it."
     },
     {
       "pillar": "Deep Architectures",
@@ -45,7 +45,15 @@ window.LAB = {
       "owner": "wzwvv",
       "url": "https://github.com/wzwvv/DBConformer",
       "stars": 70,
-      "blurb": "Dual-branch convolutional transformer for EEG decoding, covering motor imagery, seizure, and SSVEP."
+      "blurb": "Dual-branch convolutional transformer for EEG decoding, across motor imagery, seizure, and SSVEP. Its repository also collects many EEG network backbones under one training and evaluation pipeline."
+    },
+    {
+      "pillar": "Foundation Models",
+      "name": "EEG-FM-Benchmark",
+      "owner": "Dingkun0817",
+      "url": "https://github.com/Dingkun0817/EEG-FM-Benchmark",
+      "stars": 125,
+      "blurb": "Benchmarks many EEG foundation models side by side under one evaluation protocol."
     },
     {
       "pillar": "Robustness & Security",
@@ -70,14 +78,6 @@ window.LAB = {
       "url": "https://github.com/drwuHUST/TLBCI",
       "stars": 72,
       "blurb": "Transfer learning for BCIs with non-deep (classical) machine learning, providing alignment and domain-adaptation baselines."
-    },
-    {
-      "pillar": "Foundation Models",
-      "name": "EEG-FM-Benchmark",
-      "owner": "Dingkun0817",
-      "url": "https://github.com/Dingkun0817/EEG-FM-Benchmark",
-      "stars": 125,
-      "blurb": "Benchmarking EEG foundation models."
     },
     {
       "pillar": "Foundation Models",
@@ -177,4 +177,4 @@ window.LAB = {
     }
   ]
 };
-window.SITE = {"generated": "2026-07-24", "n_papers": 263, "n_code": 76, "n_methods": 57};
+window.SITE = {"generated": "2026-07-24", "n_papers": 263, "n_code": 76, "n_methods": 56};
