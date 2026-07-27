@@ -7,6 +7,35 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.2.2] - 2026-07-27
+
+### Changed
+- **The web app's explanatory prose is rewritten in both languages.** Every stage blurb, dataset
+  role, leaderboard reading guide, disclaimer and Overview paragraph, plus the per-row method
+  descriptions. The English now follows the register of the lab's own papers: declarative, no
+  em-dashes, terms introduced once with the acronym in parentheses, US spelling, `i.e.,` where a
+  list is being named. What went, went for a reason — "before the backbone sees anything", "marks
+  the floor", "the whole problem is estimating how far to trust each learner", "two further
+  caveats worth stating" — an essay voice reads as unserious next to the numbers it is
+  explaining. The Chinese now follows the lab's own 公众号 writing: function first, then
+  mechanism, then what it is for, in noun-phrase compounds (变更/归因/参照/配置) rather than
+  spoken paraphrase, still under the existing ban on ——, ；and 引号. An English term is glossed
+  once as 中文（English, ABBR）and then kept short, so 欧氏对齐（Euclidean Alignment, EA）is
+  expanded in the reading guide and appears bare in every blurb below it.
+- **The anchor card counts what the page counts.** It claimed 56 approaches; the Overview beside
+  it has read 58 pipeline approaches and 14 ensemble combiners since 1.2.0, when the two
+  network-free classical rows were given their own table. It now states both numbers.
+
+### Fixed
+- **`check_i18n.py` was not checking the library card or the Overview prose.** It looked for
+  `library` under `window.LAB`, but app.js reads it from `window.BENCH`, so the lookup returned
+  nothing and all three fields were dropped silently — the headline of the Benchmark tab and its
+  one-paragraph description of the pipeline had no coverage at all. The lab tagline, the repo
+  intro, the anchor blurb and the flagship pillar labels were never listed either, though each is
+  a `tr()` call exactly like a table blurb. Generated strings checked go from 39 to 64. Two dead
+  half-sentence keys for the datasets intro, superseded by the whole-sentence template, are
+  removed: nothing called them, and a stale entry beside a live one attracts the wrong edit.
+
 ## [1.2.1] - 2026-07-27
 
 ### Fixed

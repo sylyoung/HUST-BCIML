@@ -103,13 +103,28 @@ def content_strings():
         if trials is not None and re.search(r"[A-Za-z]", str(trials)):
             out.append((f"dataset {d.get('name')!r} trials", str(trials)))
 
+    # The benchmark's library card. app.js reads it as `BENCH.library`, not from
+    # lab.js — this used to look it up under LAB, got nothing, and dropped all
+    # three fields silently, so the headline of the whole Benchmark tab and its
+    # one-paragraph explanation of the pipeline were unchecked for as long as
+    # this file existed.
+    lib = bench.get("library") or {}
+    for field in ("title", "tagline", "driver"):            # tr(lib.*) in app.js
+        out.append((f"library card {field}", lib.get(field)))
+
     if os.path.exists(LAB_JS):
         # lab.js holds two objects; the leading one is window.LAB.
         raw = open(LAB_JS, encoding="utf-8").read()
         lab = json.loads(raw[raw.index("{"):raw.index("\n};") + 2])
-        lib = lab.get("library") or {}
-        for field in ("title", "tagline", "driver"):        # tr(lib.*) in app.js
-            out.append((f"lab card {field}", lib.get(field)))
+        # The Overview's own prose: the lab tagline and the repo intro under the
+        # heading, and the anchor-project card. Each is a tr() call in app.js and
+        # so needs a key exactly as a table blurb does. Flagship `blurb` fields
+        # are deliberately absent: those render in English by design.
+        out.append(("lab tagline", lab.get("tagline")))
+        out.append(("lab repo_intro", lab.get("repo_intro")))
+        out.append(("anchor blurb", (lab.get("anchor") or {}).get("blurb")))
+        for f in lab.get("flagships") or []:
+            out.append((f"flagship pillar {f.get('name')!r}", f.get("pillar")))
         for group in ("mounts", "channels", "links", "official"):
             for m in lab.get(group) or []:
                 if isinstance(m, dict):

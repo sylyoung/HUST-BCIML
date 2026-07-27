@@ -60,6 +60,11 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-07-27 (v1.2.2).** Rewrote the web app's explanatory prose in both languages: the English in
+the register of the lab's own papers, the Chinese in that of the lab's own 公众号 writing. Fixed the
+anchor card's stale approach count, and closed a gap in `check_i18n.py` that left the library card
+and the Overview prose unchecked (39 generated strings checked, now 64).
+
 - **2026-07-27 (v1.2.1).** Bounded `scikit-learn` to `<1.8`: from 1.8 its `check_is_fitted` requires
 `__sklearn_tags__`, which crowd-kit's `Wawa` does not provide, so that combiner raised before
 aggregating and its leaderboard row could not be reproduced. Found by the CI added the same day, on

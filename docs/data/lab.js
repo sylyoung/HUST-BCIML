@@ -15,12 +15,12 @@ window.LAB = {
     "homepage": "https://sylyoung.github.io/",
     "email": "lsyyoungll@gmail.com"
   },
-  "repo_intro": "The lab's open-source home. It holds two things: a unified, reproducible EEG-decoding benchmark, and a paper-to-code gallery that links every lab publication to its released code.",
+  "repo_intro": "The lab's open-source home. It contains two components: a unified and reproducible EEG decoding benchmark, and a paper-to-code gallery that links each lab publication to its released code.",
   "anchor": {
     "name": "HUST-BCIML: unified EEG-decoding benchmark",
     "owner": "sylyoung",
     "url": "https://github.com/sylyoung/HUST-BCIML",
-    "blurb": "This repository. A single, self-contained framework that reimplements 56 EEG-decoding approaches, covering data alignment, data augmentation, network backbones, transfer learning, and ensemble aggregation, on one composable pipeline. It puts them head-to-head under one controlled protocol on three MOABB motor-imagery EEG datasets. Every number on the leaderboard is a measured reproduction, recorded per method."
+    "blurb": "This repository. A self-contained framework that reimplements 58 pipeline approaches and 14 ensemble combiners on a single composable pipeline, covering data alignment, data augmentation, network backbones, transfer learning and ensemble aggregation. All of them are compared under one controlled protocol on three MOABB motor imagery EEG datasets. Every result on the leaderboard is a measured reproduction, recorded for each approach."
   },
   "flagships": [
     {
@@ -29,7 +29,7 @@ window.LAB = {
       "owner": "sylyoung",
       "url": "https://github.com/sylyoung/DeepTransferEEG",
       "stars": 51,
-      "blurb": "Euclidean Alignment, T-TIME test-time adaptation, and around fifteen more domain-adaptation algorithms for cross-subject EEG. The transfer-learning library the benchmark grew out of, and the source of most of its transfer methods."
+      "blurb": "Euclidean Alignment, T-TIME test-time adaptation, and approximately fifteen further domain adaptation algorithms for cross-subject EEG. The transfer learning library from which this benchmark originated, and the source of most of its transfer approaches."
     },
     {
       "pillar": "Ensemble & Aggregation",
@@ -37,7 +37,7 @@ window.LAB = {
       "owner": "sylyoung",
       "url": "https://github.com/sylyoung/TestEnsemble",
       "stars": 2,
-      "blurb": "A library of black-box combiners that fuse hard predictions across independent models: majority voting, a dozen-plus crowd-label and truth-discovery aggregators, and the lab's SML-OVR and StackingNet. The benchmark's ensemble table is built on it."
+      "blurb": "A library of black-box combiners that fuse the hard predictions of independent models, including majority voting, more than a dozen crowd-labeling and truth-discovery aggregators, and the lab's SML-OVR and StackingNet. The ensemble table of this benchmark is built on it."
     },
     {
       "pillar": "Deep Architectures",
@@ -45,7 +45,7 @@ window.LAB = {
       "owner": "wzwvv",
       "url": "https://github.com/wzwvv/DBConformer",
       "stars": 70,
-      "blurb": "Dual-branch convolutional transformer for EEG decoding, across motor imagery, seizure, and SSVEP. Its repository also collects many EEG network backbones under one training and evaluation pipeline."
+      "blurb": "Dual-branch convolutional transformer for EEG decoding, evaluated on motor imagery, seizure and SSVEP. Its repository also collects many EEG network backbones under one training and evaluation pipeline."
     },
     {
       "pillar": "Foundation Models",
@@ -53,7 +53,7 @@ window.LAB = {
       "owner": "Dingkun0817",
       "url": "https://github.com/Dingkun0817/EEG-FM-Benchmark",
       "stars": 125,
-      "blurb": "Benchmarks many EEG foundation models side by side under one evaluation protocol."
+      "blurb": "Compares many EEG foundation models under one evaluation protocol."
     },
     {
       "pillar": "Robustness & Security",
@@ -69,7 +69,7 @@ window.LAB = {
       "owner": "chamwen",
       "url": "https://github.com/chamwen/NT-Benchmark",
       "stars": 17,
-      "blurb": "Negative-transfer benchmark: detecting and mitigating when transfer hurts in domain adaptation."
+      "blurb": "Negative transfer benchmark, for detecting and mitigating the cases in which transfer degrades the performance in domain adaptation."
     },
     {
       "pillar": "Transfer Learning",
@@ -77,7 +77,7 @@ window.LAB = {
       "owner": "drwuHUST",
       "url": "https://github.com/drwuHUST/TLBCI",
       "stars": 72,
-      "blurb": "Transfer learning for BCIs with non-deep (classical) machine learning, providing alignment and domain-adaptation baselines."
+      "blurb": "Transfer learning for BCIs with classical, i.e., non-deep, machine learning, providing alignment and domain adaptation baselines."
     },
     {
       "pillar": "Foundation Models",
@@ -85,7 +85,7 @@ window.LAB = {
       "owner": "staraink",
       "url": "https://github.com/staraink/MIRepNet",
       "stars": 122,
-      "blurb": "Pre-trained EEG motor-imagery foundation model and pipeline."
+      "blurb": "Pre-trained EEG motor imagery foundation model and its pipeline."
     },
     {
       "pillar": "Fuzzy Systems & CWW",
@@ -93,7 +93,7 @@ window.LAB = {
       "owner": "YuqiCui",
       "url": "https://github.com/YuqiCui/pytsk",
       "stars": 53,
-      "blurb": "TSK fuzzy-system toolbox, scikit-learn compatible."
+      "blurb": "TSK fuzzy system toolbox, compatible with scikit-learn."
     },
     {
       "pillar": "Transfer Learning",
@@ -101,7 +101,7 @@ window.LAB = {
       "owner": "chamwen",
       "url": "https://github.com/chamwen/MEKT",
       "stars": 47,
-      "blurb": "Manifold Embedded Knowledge Transfer. The reference implementation of the classical MEKT method."
+      "blurb": "Manifold Embedded Knowledge Transfer. The reference implementation of the classical MEKT approach."
     },
     {
       "pillar": "Transfer Learning",
@@ -109,7 +109,7 @@ window.LAB = {
       "owner": "hehe03",
       "url": "https://github.com/hehe03/EA",
       "stars": 27,
-      "blurb": "Euclidean Alignment. The field-standard cross-subject alignment."
+      "blurb": "Euclidean Alignment. The reference implementation of the most widely used cross-subject alignment."
     },
     {
       "pillar": "Data Augmentation",
@@ -117,7 +117,7 @@ window.LAB = {
       "owner": "wzwvv",
       "url": "https://github.com/wzwvv/CSDA",
       "stars": 20,
-      "blurb": "Time-frequency EEG data augmentation."
+      "blurb": "Time-frequency data augmentation for EEG."
     },
     {
       "pillar": "Fuzzy Systems & CWW",
@@ -125,7 +125,7 @@ window.LAB = {
       "owner": "drwuHUST",
       "url": "https://github.com/drwuHUST/MBGD_RDA",
       "stars": 15,
-      "blurb": "Mini-batch gradient descent with regularization for TSK fuzzy-system training."
+      "blurb": "Mini-batch gradient descent with regularization, for training TSK fuzzy systems."
     },
     {
       "pillar": "Active Learning",
@@ -133,7 +133,7 @@ window.LAB = {
       "owner": "drwuHUST",
       "url": "https://github.com/drwuHUST/iGS",
       "stars": 10,
-      "blurb": "Improved greedy sampling for pool-based active learning."
+      "blurb": "Improved greedy sampling for pool-based active learning regression."
     },
     {
       "pillar": "Speech (SEEG)",
@@ -141,7 +141,7 @@ window.LAB = {
       "owner": "WangHongbinary",
       "url": "https://github.com/WangHongbinary/SACM",
       "stars": 8,
-      "blurb": "SEEG-audio contrastive matching for Chinese speech decoding."
+      "blurb": "SEEG-audio contrastive matching, for Chinese speech decoding."
     },
     {
       "pillar": "Privacy-Preserving BCI",
@@ -149,7 +149,7 @@ window.LAB = {
       "owner": "TianwangJia",
       "url": "https://github.com/TianwangJia/FedBS",
       "stars": 7,
-      "blurb": "Federated motor-imagery classification."
+      "blurb": "Federated learning for motor imagery classification."
     },
     {
       "pillar": "Robustness & Security",
@@ -157,7 +157,7 @@ window.LAB = {
       "owner": "lbinmeng",
       "url": "https://github.com/lbinmeng/bci_adv_defense",
       "stars": 4,
-      "blurb": "Adversarial robustness harness for EEG BCIs."
+      "blurb": "Adversarial defenses for EEG-based BCIs."
     },
     {
       "pillar": "Biometrics",
@@ -165,7 +165,7 @@ window.LAB = {
       "owner": "hustmx721",
       "url": "https://github.com/hustmx721/BrainprintNet",
       "stars": 4,
-      "blurb": "EEG-based brainprint recognition."
+      "blurb": "EEG-based brainprint recognition, i.e., user identification from EEG."
     },
     {
       "pillar": "Intracortical iBCI",
@@ -173,7 +173,7 @@ window.LAB = {
       "owner": "SongYang008",
       "url": "https://github.com/SongYang008/SNN_iBCIs",
       "stars": 3,
-      "blurb": "Spiking neural networks for intra-cortical decoding."
+      "blurb": "Spiking neural networks for intracortical decoding."
     }
   ]
 };

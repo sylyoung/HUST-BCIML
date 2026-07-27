@@ -145,7 +145,7 @@
     f.appendChild(l2);
 
     f.appendChild(el("div", { class: "foot-disclaimer" },
-      tr("Disclaimer: this benchmark reimplements both external baselines and the lab's own methods independently. The reported numbers, both baseline reproductions and lab-method results, may differ from the original papers and can contain errors. Corrections are welcome, so please contact the maintainer.")));
+      tr("Disclaimer: both the external baselines and the lab's own approaches are independently reimplemented in this benchmark. The reported results, for the baseline reproductions and for the lab approaches alike, may differ from the original papers, and may contain errors. Corrections are welcome, and can be sent to the maintainer.")));
   }
 
   // ---------------- overview ----------------
@@ -279,7 +279,7 @@
       o.appendChild(el("div", { class: "section-title" },
         fmt(tr("Approaches in the benchmark ({n})"), { n: SITE.n_approaches || 0 })));
       o.appendChild(el("p", { class: "area-note" },
-        tr("Every approach evaluated in the benchmark, grouped by pipeline stage — including the ensemble combiners, which the headline count above reports separately. The lab's own methods (Prof. Wu's group) are highlighted, and the external baselines they are compared against are shown alongside.")));
+        tr("Every approach evaluated in the benchmark, grouped by pipeline stage, including the ensemble combiners, which the count above reports separately. The lab's own approaches, i.e., those proposed by Prof. Wu's group, are highlighted, and the external baselines they are compared with are listed alongside.")));
       var legend = el("div", { class: "approach-legend" });
       legend.appendChild(el("span", { class: "lgd lgd-lab" }, tr("lab-proposed")));
       legend.appendChild(el("span", { class: "lgd lgd-ext" }, tr("external baseline")));
@@ -320,8 +320,8 @@
     // papers as a paper-to-code map, secondary to the code above
     o.appendChild(el("div", { class: "section-title" }, tr("Browse the lab's work by area")));
     o.appendChild(el("p", { class: "area-note" },
-      tr("Publications grouped by research area, with how many have released code. " +
-      "Open Papers & Code to search and filter. The official sites above hold the full publication list.")));
+      tr("Publications grouped by research area, with the number of them that have released code. " +
+      "Use Papers & Code to search and filter. The official sites above hold the complete publication list.")));
     o.appendChild(pillarTable());
   }
 
@@ -614,7 +614,7 @@
     host.appendChild(el("div", { class: "section-title" }, tr("Datasets")));
     // dynamic intro: the number is dropped in between two translated fragments.
     host.appendChild(el("p", { class: "bench-intro" },
-      fmt(tr("The benchmark spans {n} MOABB motor-imagery EEG datasets, all evaluated cross-subject (leave-one-subject-out). Accuracies are comparable only within the same dataset and class count."), { n: list.length })));
+      fmt(tr("The benchmark covers {n} MOABB motor imagery EEG datasets, all evaluated cross-subject under leave-one-subject-out. The accuracies are comparable only within the same dataset and the same number of classes."), { n: list.length })));
     // The dataset table has seven columns with nowrap numeric cells; without a
     // scroll container it clips or forces the whole page to scroll sideways on a
     // phone. The benchmark tables already sit in one.
@@ -677,7 +677,7 @@
     var guide = el("details", { class: "bench-guide" });
     guide.appendChild(el("summary", {}, tr("How to read this leaderboard")));
     guide.appendChild(el("p", {},
-      tr("Read each row against its table's baseline. A table varies one stage of the pipeline and holds the rest at the default: Euclidean-aligned trials, an EEGNet backbone, plain supervised training. Most rows therefore differ from the baseline in exactly that one way — and where a row differs in more than one, it says so beneath its name, so a Δ is never read as a single-stage effect when it is not. The three columns are the three datasets. Under each accuracy, mean ± std is the mean over three seeds and the standard deviation across those seeds (a reproducibility figure, not the spread across subjects, which is roughly ten times larger). Δ is the gain or loss against that dataset's baseline. Every table is two-class (chance 50%) on all three datasets, so the columns stay comparable throughout. Each family has its own baseline: the transfer families use ERM, the privacy-preserving family uses Centralized Training, the ensemble table uses majority voting, and the network-free classical pipelines are shown against EA-EEGNet. Two further caveats worth stating: the baseline is the best checkpoint on a held-out source split while the domain-adaptation rows are the last iterate of a fixed schedule, as their reference implementations train them; and every EA row estimates the held-out subject's alignment reference from that subject's own unlabelled trials, which uses no labels but is transductive rather than zero-shot. Rows link to their code, and to their paper where a DOI is recorded.")));
+      tr("Each row should be read against the baseline of its own table. A table varies one stage of the pipeline and holds the rest at the default configuration, i.e., Euclidean-aligned trials, an EEGNet backbone, and supervised training. Most rows hence differ from the baseline in exactly one respect. A row that differs in more than one respect states so beneath its name, so that a Δ is not read as the effect of a single stage when it is not. The three columns are the three datasets. Under each accuracy, mean ± std is the mean over three random seeds and the standard deviation across those seeds. It quantifies the reproducibility, and not the spread across subjects, which is roughly ten times larger. Δ is the gain or the loss with respect to the baseline of the same dataset. Every table is two-class (chance 50%) on all three datasets, so the columns remain comparable throughout. Each family has its own baseline: the transfer families use ERM, the privacy-preserving family uses Centralized Training, the ensemble table uses majority voting, and the network-free classical pipelines are compared with EA-EEGNet. Two caveats apply. First, the baseline is the best checkpoint on a held-out source split, whereas the domain adaptation rows are the last iterate of a fixed schedule, as in their reference implementations. Second, every EA row estimates the alignment reference of the held-out subject from the unlabeled trials of that subject, which uses no label, but is transductive rather than zero-shot. Each row links to its code, and to its paper where a DOI is recorded.")));
     B.appendChild(guide);
 
     (BENCH.tables || []).forEach(function (t) {

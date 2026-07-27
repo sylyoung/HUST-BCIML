@@ -14,7 +14,7 @@ window.BENCHMARK = {
         "classes": 2,
         "chance": "50%",
         "trials": "288 / session",
-        "role": "Left vs right hand (two-class, chance 50%) for every table, including the privacy-preserving and ensemble families. The native dataset is four-class (both hands, feet, tongue). The benchmark uses its two-class left/right subset throughout, and the four-class variant stays available in code."
+        "role": "Left hand versus right hand (two-class, chance 50%) in every table, including the privacy-preserving and the ensemble families. The original dataset is four-class (left hand, right hand, both feet, and tongue). The benchmark uses its two-class left/right subset throughout, and the four-class variant remains available in the code."
       },
       {
         "name": "BNCI2014002",
@@ -24,7 +24,7 @@ window.BENCHMARK = {
         "classes": 2,
         "chance": "50%",
         "trials": 100,
-        "role": "Right hand vs feet, 14 subjects, 100 training-run trials each. Two-class (chance 50%) throughout."
+        "role": "Right hand versus both feet, 14 subjects, 100 training-run trials per subject. Two-class (chance 50%) throughout."
       },
       {
         "name": "BNCI2015001",
@@ -34,13 +34,13 @@ window.BENCHMARK = {
         "classes": 2,
         "chance": "50%",
         "trials": 200,
-        "role": "Right hand vs feet, 12 subjects, 200 first-session trials each. Two-class (chance 50%) throughout."
+        "role": "Right hand versus both feet, 12 subjects, 200 first-session trials per subject. Two-class (chance 50%) throughout."
       }
     ]
   },
   "library": {
-    "title": "A unified, reproducible EEG-decoding benchmark",
-    "tagline": "Every algorithm here is built from the same plug-in stages: an aligner, an augmenter, and a backbone, trained under one learning objective and optionally wrapped in an ensemble. A controlled comparison changes a single stage and holds the rest fixed, so any shift in accuracy traces back to that one change.",
+    "title": "A unified and reproducible EEG decoding benchmark",
+    "tagline": "Every approach is composed of the same modular stages, i.e., an aligner, an augmenter and a backbone, trained under a single learning objective and optionally aggregated by an ensemble. A controlled comparison varies one stage and fixes the rest, so that any change in the accuracy is attributable to that stage alone.",
     "pipeline": [
       "Aligner",
       "Augmenter",
@@ -57,7 +57,7 @@ window.BENCHMARK = {
     {
       "id": "alignment",
       "title": "Data Alignment",
-      "blurb": "The aligner stage. Before the backbone sees anything, the aligner recenters each subject's trials into a shared statistical frame. This shrinks the between-subject covariance shift that otherwise dominates cross-subject decoding. Alignment needs no labels and runs per subject. The backbone and its training stay fixed, and the baseline aligns nothing.",
+      "blurb": "The aligner stage. An aligner maps the trials of each subject into a shared statistical space prior to the backbone, reducing the between-subject covariance shift that otherwise dominates cross-subject decoding. Alignment requires no label, and is performed separately for each subject. The backbone and its training configuration are identical in every row, and the baseline performs no alignment.",
       "groups": [
         {
           "subcat": null,
@@ -91,7 +91,7 @@ window.BENCHMARK = {
               "key": "EA-EEGNet",
               "lab": true,
               "code": "hustbciml/algorithms/aligners/EA.py",
-              "desc": "Whitens each subject's trials by the inverse square root of their mean spatial covariance, so every subject's average covariance becomes the identity. The benchmark's default aligner.",
+              "desc": "Whitens the trials of each subject by the inverse square root of their mean spatial covariance, so that the average covariance of every subject becomes the identity matrix. The default aligner of the benchmark.",
               "ref": "H. He, D. Wu*, IEEE Trans. Biomed. Eng., 2020",
               "doi": "10.1109/TBME.2019.2913914",
               "naReason": null,
@@ -124,7 +124,7 @@ window.BENCHMARK = {
               "key": "RA-EEGNet",
               "lab": false,
               "code": "hustbciml/algorithms/aligners/RA.py",
-              "desc": "Normalizes each subject's trials against the affine-invariant Riemannian (Fréchet) mean of their spatial covariances. It recentres in the curved covariance geometry rather than the Euclidean one.",
+              "desc": "Normalizes the trials of each subject by the affine-invariant Riemannian (Fréchet) mean of their spatial covariances. The recentering is performed in the curved covariance geometry instead of the Euclidean one.",
               "ref": "P. Zanini et al., IEEE Trans. Biomed. Eng., 2018",
               "doi": "10.1109/TBME.2017.2742541",
               "naReason": null,
@@ -157,7 +157,7 @@ window.BENCHMARK = {
               "key": "NoAlign-EEGNet",
               "lab": false,
               "code": "hustbciml/algorithms/aligners/Identity.py",
-              "desc": "No alignment. Trials are fed to the backbone as recorded.",
+              "desc": "No alignment. The trials are passed to the backbone as recorded.",
               "ref": null,
               "doi": null,
               "naReason": null,
@@ -171,7 +171,7 @@ window.BENCHMARK = {
     {
       "id": "augmentation",
       "title": "Data Augmentation",
-      "blurb": "The augmenter stage. Each augmenter synthesizes extra training trials to regularize an otherwise-identical backbone, and is measured against that same backbone trained without it. The augmenters fall into two regimes by where they act. The electrode-space transforms (Channel Reflection and Half-Sample Recombination) rearrange channels, so they must run before any spatial whitening, on unaligned trials, and are compared to the unaligned baseline. The signal- and frequency-domain augmenters act on Euclidean-aligned trials, and are compared to the aligned baseline.",
+      "blurb": "The augmenter stage. An augmenter synthesizes additional training trials to regularize an otherwise identical backbone, and is measured against the same backbone trained without augmentation. The augmenters operate in two different spaces. The electrode-space transforms, i.e., Channel Reflection and Half-Sample Recombination, rearrange the channels, so they are applied to unaligned trials, before any spatial whitening, and are compared with the unaligned baseline. The signal-domain and frequency-domain augmenters are applied to Euclidean-aligned trials, and are compared with the aligned baseline.",
       "groups": [
         {
           "subcat": null,
@@ -199,10 +199,10 @@ window.BENCHMARK = {
               "key": "CR-EEGNet",
               "lab": true,
               "code": "hustbciml/algorithms/augmenters/ChannelReflection.py",
-              "desc": "Mirrors each trial across the sagittal midline and swaps its left/right label, adding anatomically valid copies that double the training set for two-class left/right motor imagery.",
+              "desc": "Mirrors each trial across the sagittal midline and swaps its left/right label, generating anatomically valid copies that double the training set in two-class left/right motor imagery.",
               "ref": "Z. Wang†, S. Li†, ..., D. Wu*, Neural Networks, 2024",
               "doi": "10.1016/j.neunet.2024.106351",
-              "naReason": "Channel Reflection needs a left/right two-class task; BNCI2014002 and BNCI2015001 are right-hand vs feet, and BNCI2014002 has no anatomical montage.",
+              "naReason": "Channel Reflection requires a two-class left/right task. BNCI2014002 and BNCI2015001 are right hand versus both feet, and BNCI2014002 provides no anatomical montage.",
               "alsoVaries": null,
               "pinAfter": null
             },
@@ -232,7 +232,7 @@ window.BENCHMARK = {
               "key": "CSDA-EEGNet",
               "lab": true,
               "code": "hustbciml/algorithms/augmenters/CSDA.py",
-              "desc": "Cross-subject wavelet detail-swap. It mixes the high-frequency wavelet detail of same-class trials from different subjects to synthesize new trials.",
+              "desc": "Cross-subject wavelet detail swap. It mixes the high-frequency wavelet details of same-class trials from different subjects, to synthesize new trials.",
               "ref": "Z. Wang, ..., D. Wu*, Knowl.-Based Syst., 2025",
               "doi": "10.1016/j.knosys.2025.113074",
               "naReason": null,
@@ -364,7 +364,7 @@ window.BENCHMARK = {
               "key": "Noise-EEGNet",
               "lab": false,
               "code": "hustbciml/algorithms/augmenters/Noise.py",
-              "desc": "Copies each trial once with zero-mean Gaussian noise added, scaled to the trial's own amplitude; the simplest label-preserving augmentation.",
+              "desc": "Copies each trial once, with zero-mean Gaussian noise added and scaled to the amplitude of the trial itself. The simplest label-preserving augmentation.",
               "ref": "D. Freer, G.-Z. Yang, J. Neural Eng., 2020",
               "doi": "10.1088/1741-2552/ab57c0",
               "naReason": null,
@@ -397,7 +397,7 @@ window.BENCHMARK = {
               "key": "Scale-EEGNet",
               "lab": false,
               "code": "hustbciml/algorithms/augmenters/Scaling.py",
-              "desc": "Copies each trial with its amplitude multiplied by a coefficient close to one; the augmentation half of the PAT pipeline.",
+              "desc": "Copies each trial with its amplitude multiplied by a coefficient close to one. It is the augmentation component of the PAT pipeline.",
               "ref": "X. Chen, ..., D. Wu*, Fundamental Research, 2026",
               "doi": "10.1016/j.fmre.2026.04.034",
               "naReason": null,
@@ -463,7 +463,7 @@ window.BENCHMARK = {
               "key": "HS-EEGNet",
               "lab": false,
               "code": "hustbciml/algorithms/augmenters/HS.py",
-              "desc": "Splices the left- and right-hemisphere channels from two same-class trials into a new trial, exploiting motor-imagery lateralization. An electrode-space transform, run on unaligned trials.",
+              "desc": "Splices the left-hemisphere and right-hemisphere channels of two same-class trials into a new trial, exploiting the lateralization of motor imagery. An electrode-space transform, applied to unaligned trials.",
               "ref": "Y. Pei et al., Front. Hum. Neurosci., 2021",
               "doi": "10.3389/fnhum.2021.645952",
               "naReason": null,
@@ -496,7 +496,7 @@ window.BENCHMARK = {
               "key": "EA-EEGNet",
               "lab": false,
               "code": null,
-              "desc": "EA-aligned EEGNet trained without augmentation, the baseline CSDA is measured against in the aligned regime. Channel Reflection is instead measured against the unaligned baseline, since it must run before whitening.",
+              "desc": "EA-aligned EEGNet trained without augmentation, which is the baseline for the augmenters applied to aligned trials. Channel Reflection is instead measured against the unaligned baseline, as it must be applied before whitening.",
               "ref": null,
               "doi": null,
               "naReason": null,
@@ -510,7 +510,7 @@ window.BENCHMARK = {
     {
       "id": "network",
       "title": "Networks",
-      "blurb": "The backbone stage. Only the deep network changes; the input stays Euclidean-aligned and the objective stays plain supervised ERM. Every backbone shares one training setup, Adam with batch size 32 for up to 100 epochs, stopped early on a 20% held-out slice of the source subjects, and each network keeps its own architecture hyperparameters from its original paper. The one tuned knob is the learning rate: it is grid-searched per backbone and chosen by that held-out-source validation accuracy, never the target, so no configuration is fit to the test set. The baseline is EEGNet.",
+      "blurb": "The backbone stage. Only the deep network varies. The input remains Euclidean-aligned, and the objective remains supervised empirical risk minimization (ERM). All backbones share one training configuration, i.e., Adam with batch size 32 for at most 100 epochs, early-stopped on a 20% held-out split of the source subjects, and each network retains the architecture hyperparameters of its original paper. The learning rate is the only tuned hyperparameter. It is grid-searched for each backbone and selected by that held-out source validation accuracy, never on the target, so that no configuration is fitted to the test data. The baseline is EEGNet.",
       "groups": [
         {
           "subcat": null,
@@ -544,7 +544,7 @@ window.BENCHMARK = {
               "key": "MVCNet",
               "lab": true,
               "code": "hustbciml/algorithms/strategies/MVCNet.py",
-              "desc": "Multi-View Contrastive Network. An IFNet convolutional backbone trained with a multi-view contrastive objective; at inference only the backbone and the linear head run.",
+              "desc": "Multi-View Contrastive Network. An IFNet convolutional backbone trained with a multi-view contrastive objective. At the inference time, only the backbone and the linear head are used.",
               "ref": "Z. Wang, ..., D. Wu*, Knowl.-Based Syst., 2025",
               "doi": "10.1016/j.knosys.2025.114205",
               "naReason": null,
@@ -643,7 +643,7 @@ window.BENCHMARK = {
               "key": "EA-TIEEEGNet",
               "lab": true,
               "code": "hustbciml/algorithms/models/TIEEEGNet.py",
-              "desc": "EEGNet whose first temporal convolution is replaced by a time-information-enhanced convolution that injects a fixed sinusoidal positional embedding into the signal. ⚠ Note: originally developed for seizure detection (Peng et al. 2022). This time-positional design targets seizure EEG and may not be well-suited to motor imagery.",
+              "desc": "EEGNet whose first temporal convolution is replaced by a time-information-enhanced convolution, which injects a fixed sinusoidal positional embedding into the signal. ⚠ Note: it was originally developed for seizure detection (Peng et al. 2022). This time-positional design targets seizure EEG, and may not be well suited to motor imagery.",
               "ref": "R. Peng, ..., D. Wu*, IEEE Trans. Neural Syst. Rehabil. Eng., 2022",
               "doi": "10.1109/TNSRE.2022.3204540",
               "naReason": null,
@@ -907,7 +907,7 @@ window.BENCHMARK = {
               "key": "EA-SlimSeiz",
               "lab": false,
               "code": "hustbciml/algorithms/models/SlimSeiz.py",
-              "desc": "A lightweight multi-branch 1D-convolution feature extractor paired with a single Mamba selective-state-space mixer; originally a seizure-prediction network.",
+              "desc": "A lightweight multi-branch 1D convolution feature extractor, paired with a single Mamba selective state space mixer. It was originally a seizure prediction network.",
               "ref": "G. Lu et al., IEEE Int. Symp. Circuits Syst., 2025",
               "doi": "10.1109/ISCAS56072.2025.11043364",
               "naReason": null,
@@ -1006,7 +1006,7 @@ window.BENCHMARK = {
               "key": "EA-ShallowConvNet",
               "lab": false,
               "code": "hustbciml/algorithms/models/ShallowConvNet.py",
-              "desc": "Shallow convolution-and-pooling network modelled on band-power features.",
+              "desc": "Shallow convolution-and-pooling network modeled on band-power features.",
               "ref": "R. T. Schirrmeister et al., Hum. Brain Mapp., 2017",
               "doi": "10.1002/hbm.23730",
               "naReason": null,
@@ -1105,7 +1105,7 @@ window.BENCHMARK = {
               "key": "EA-EEGWaveNet",
               "lab": false,
               "code": "hustbciml/algorithms/models/EEGWaveNet.py",
-              "desc": "A cascade of depthwise Conv1d layers repeatedly halves the sampling rate to extract multiscale temporal features; originally a seizure detector.",
+              "desc": "A cascade of depthwise Conv1d layers repeatedly halves the sampling rate, to extract multi-scale temporal features. It was originally a seizure detector.",
               "ref": "P. Thuwajit et al., IEEE Trans. Ind. Inform., 2022",
               "doi": "10.1109/TII.2021.3133307",
               "naReason": null,
@@ -1138,7 +1138,7 @@ window.BENCHMARK = {
               "key": "EA-EEGNet",
               "lab": false,
               "code": "hustbciml/algorithms/models/EEGNet.py",
-              "desc": "Compact convolutional network: a temporal convolution, a depthwise spatial convolution, and a separable convolution. The benchmark's default backbone.",
+              "desc": "Compact convolutional network, consisting of a temporal convolution, a depthwise spatial convolution and a separable convolution. The default backbone of the benchmark.",
               "ref": "V. J. Lawhern et al., J. Neural Eng., 2018",
               "doi": "10.1088/1741-2552/aace8c",
               "naReason": null,
@@ -1152,7 +1152,7 @@ window.BENCHMARK = {
     {
       "id": "classical",
       "title": "Classical Pipelines",
-      "blurb": "No backbone at all. These rows replace the deep network with a classical decoding pipeline fitted on the same Euclidean-aligned trials without any gradient loop, so there is no early stopping and no random initialization: each row is deterministic and its across-seed std is exactly zero. They change more than one stage at once and are therefore not a controlled comparison of a single stage. They are here as the reference the deep rows are worth being measured against, shown against EA-EEGNet on each dataset.",
+      "blurb": "No backbone. These rows replace the deep network with a classical decoding pipeline, fitted on the same Euclidean-aligned trials without any gradient-based training. There is hence neither early stopping nor random initialization, and each row is deterministic, with an across-seed standard deviation of exactly zero. They vary more than one stage simultaneously, and hence are not a controlled comparison of a single stage. They are reported as a reference for the deep rows, and are compared with EA-EEGNet on each dataset.",
       "groups": [
         {
           "subcat": null,
@@ -1202,7 +1202,7 @@ window.BENCHMARK = {
               "key": "CSP-LDA",
               "lab": false,
               "code": "hustbciml/algorithms/strategies/CSP_LDA.py",
-              "desc": "Common Spatial Pattern filters (10 components) into Linear Discriminant Analysis. The classical motor-imagery baseline, and still competitive with a deep network cross-subject.",
+              "desc": "Common Spatial Pattern filters (10 components) followed by Linear Discriminant Analysis. The classical motor imagery baseline, which remains competitive with a deep network in cross-subject decoding.",
               "ref": "H. Ramoser et al., IEEE Trans. Rehabil. Eng., 2000",
               "doi": "10.1109/86.895946",
               "naReason": null,
@@ -1235,7 +1235,7 @@ window.BENCHMARK = {
               "key": "Riemann-MDM",
               "lab": false,
               "code": "hustbciml/algorithms/strategies/RiemannMDM.py",
-              "desc": "Each trial becomes a spatial covariance matrix and is assigned to the nearest class mean under the affine-invariant Riemannian metric. No filters and no features beyond the covariance.",
+              "desc": "Each trial is represented by its spatial covariance matrix, and assigned to the nearest class mean under the affine-invariant Riemannian metric. No filter and no feature beyond the covariance is used.",
               "ref": "A. Barachant et al., IEEE Trans. Biomed. Eng., 2012",
               "doi": "10.1109/TBME.2011.2172210",
               "naReason": null,
@@ -1249,11 +1249,11 @@ window.BENCHMARK = {
     {
       "id": "transfer",
       "title": "Transfer Learning",
-      "blurb": "The learning-objective stage. Every row is the same Euclidean-aligned EEGNet; only the training or adaptation objective changes. The families differ in when the unlabelled target is used and whether the source data is still on hand. Unsupervised domain adaptation replaces plain ERM with a joint objective trained on the labelled source and the unlabelled target together. Source-free adaptation first trains an ERM source model, then optimizes a second objective on the target alone, with the source data gone. Test-time adaptation also starts from an ERM source model but adapts it online, one incoming target batch at a time. Source-only methods use no target at all. Each strategy keeps the shared EA-EEGNet training setup (Adam, batch 32, learning rate 1e-3) and adds only its own loss trade-offs and adaptation steps, read from its preset; all are two-class on the three datasets and measured against the same no-transfer baseline, ERM. Privacy-preserving transfer is the exception: it keeps each subject's raw EEG local and is measured against Centralized Training instead (see its note).",
+      "blurb": "The learning-objective stage. Every row uses the same Euclidean-aligned EEGNet, and only the training or adaptation objective varies. The families differ in when the unlabeled target data are used, and whether the source data are still available. Unsupervised domain adaptation replaces ERM with a joint objective, trained on the labeled source and the unlabeled target together. Source-free adaptation first trains an ERM source model, and then optimizes a second objective on the target alone, without access to the source data. Test-time adaptation also starts from an ERM source model, but updates it online, one incoming target batch at a time. Source-only approaches do not use the target at all. Each strategy retains the shared EA-EEGNet training configuration (Adam, batch size 32, learning rate 1e-3), and adds only its own loss trade-offs and adaptation steps, which are read from its preset. All are two-class on the three datasets, and measured against the same no-transfer baseline, ERM. Privacy-preserving transfer is the exception. It keeps the raw EEG of each subject local, and hence is measured against Centralized Training instead, as its own note describes.",
       "groups": [
         {
           "subcat": "Source-only",
-          "blurb": "Trained on the labelled source subjects only. The target is never used for adaptation, and inference is a plain forward pass. Baseline: ERM.",
+          "blurb": "Trained on the labeled source subjects only. The target is never used for adaptation, and the inference is a single forward pass. The baseline is ERM.",
           "baseline": "ERM",
           "reference": null,
           "rows": [
@@ -1393,7 +1393,7 @@ window.BENCHMARK = {
         },
         {
           "subcat": "Unsupervised domain adaptation",
-          "blurb": "Trained jointly on the labelled source and the unlabelled target, aligning the two distributions during source training. No target labels are used. Measured against the no-transfer baseline.",
+          "blurb": "Trained jointly on the labeled source and the unlabeled target, aligning the two distributions during the source training. No target label is used. Measured against the no-transfer baseline.",
           "baseline": null,
           "reference": {
             "name": "EEGNet baseline (ERM, no transfer)",
@@ -1443,7 +1443,7 @@ window.BENCHMARK = {
               "ref": "W. Zhang, D. Wu*, IEEE Trans. Neural Syst. Rehabil. Eng., 2020",
               "doi": "10.1109/TNSRE.2020.2985996",
               "naReason": null,
-              "alsoVaries": "the whole neural pipeline: this is a network-free Riemannian / tangent-space method, so the aligner is Identity and the EEGNet backbone and Linear head are unused. Read it as a context row, not as a one-stage change to the EA-EEGNet baseline.",
+              "alsoVaries": "the whole neural pipeline: this is a network-free Riemannian and tangent-space approach, so the aligner is Identity, and the EEGNet backbone and the Linear head are unused. It is a context row rather than a one-stage change to the EA-EEGNet baseline.",
               "pinAfter": null
             },
             {
@@ -1681,7 +1681,7 @@ window.BENCHMARK = {
         },
         {
           "subcat": "Source-free adaptation",
-          "blurb": "Adapts a source-trained model to the target while keeping no source data at transfer time. Measured against the no-transfer baseline.",
+          "blurb": "Adapts a source-trained model to the target, retaining no source data at the transfer time. Measured against the no-transfer baseline.",
           "baseline": null,
           "reference": {
             "name": "EEGNet baseline (ERM, no transfer)",
@@ -1731,7 +1731,7 @@ window.BENCHMARK = {
               "ref": "W. Zhang, D. Wu*, IEEE Trans. Cogn. Devel. Syst., 2023",
               "doi": "10.1109/TCDS.2022.3193731",
               "naReason": null,
-              "alsoVaries": "the whole neural pipeline: this is a network-free Riemannian / tangent-space method, so the aligner is Identity and the EEGNet backbone and Linear head are unused. Read it as a context row, not as a one-stage change to the EA-EEGNet baseline.",
+              "alsoVaries": "the whole neural pipeline: this is a network-free Riemannian and tangent-space approach, so the aligner is Identity, and the EEGNet backbone and the Linear head are unused. It is a context row rather than a one-stage change to the EA-EEGNet baseline.",
               "pinAfter": null
             },
             {
@@ -1804,7 +1804,7 @@ window.BENCHMARK = {
         },
         {
           "subcat": "Test-time adaptation",
-          "blurb": "Adapts online as the target trials arrive at test time, updating the source-trained model without target labels. Measured against the no-transfer baseline.",
+          "blurb": "Adapts online as the target trials arrive at the test time, updating the source-trained model without any target label. Measured against the no-transfer baseline.",
           "baseline": null,
           "reference": {
             "name": "EEGNet baseline (ERM, no transfer)",
@@ -2092,7 +2092,7 @@ window.BENCHMARK = {
         },
         {
           "subcat": "Privacy-preserving transfer",
-          "blurb": "Cross-subject transfer that never pools raw EEG. Each subject's data stays on their own device, so these methods trade a little accuracy for privacy against Centralized Training, which pools everything. Two mechanisms appear. Federated methods (FedAvg, and the lab's FedBS and SAFE) run a central server that averages the per-subject model updates each round and sends the shared model back, so only weights, never EEG, are exchanged. FedBS additionally keeps each client's batch normalization local and seeks a flat minimum, and SAFE adds adversarial robustness on top. Decentralized MSDT uses no server at all: each source subject trains its own classifier, and only those trained models are shared and then fused on the target. All three datasets are two-class (chance 50%), so the columns are directly comparable. Δ is versus Centralized Training on the same dataset.",
+          "blurb": "Cross-subject transfer that never pools the raw EEG. The data of each subject remain on their own device, so these approaches trade a small amount of accuracy for privacy, relative to Centralized Training, which pools all data. Two mechanisms are included. The federated approaches (FedAvg, and the lab's FedBS and SAFE) use a central server, which averages the per-subject model updates in each round and returns the shared model, so that only the model weights, and never the EEG, are transmitted. FedBS additionally keeps the batch normalization of each client local and seeks a flat minimum, and SAFE further adds adversarial robustness. Decentralized MSDT uses no server. Each source subject trains its own classifier, and only the trained models are shared and then fused on the target. All three datasets are two-class (chance 50%), so the columns are directly comparable. Δ is computed against Centralized Training on the same dataset.",
           "baseline": "Centralized Training",
           "reference": null,
           "rows": [
@@ -2192,7 +2192,7 @@ window.BENCHMARK = {
               "ref": "W. Zhang, ..., D. Wu*, IEEE Trans. Neural Syst. Rehabil. Eng., 2022",
               "doi": "10.1109/TNSRE.2022.3207494",
               "naReason": null,
-              "alsoVaries": "the whole neural pipeline: this is a network-free Riemannian / tangent-space method, so the aligner is Identity and the EEGNet backbone and Linear head are unused. Read it as a context row, not as a one-stage change to the EA-EEGNet baseline.",
+              "alsoVaries": "the whole neural pipeline: this is a network-free Riemannian and tangent-space approach, so the aligner is Identity, and the EEGNet backbone and the Linear head are unused. It is a context row rather than a one-stage change to the EA-EEGNet baseline.",
               "pinAfter": null
             },
             {
@@ -2268,11 +2268,11 @@ window.BENCHMARK = {
     {
       "id": "ensemble",
       "title": "Ensemble Learning",
-      "blurb": "The aggregation stage, in a fully decentralized, privacy-preserving setting. Each source subject trains five different learners — tangent-space LDA, tangent-space SVM, EEGNet, ShallowConvNet, and CSP-Net — on its own data alone, and shares only its hard predicted labels on the target, never model weights or raw EEG. A combiner then fuses those (N−1)×5 label votes into one prediction, with no target labels to learn from. Since it sees only hard votes, the whole problem is estimating how far to trust each learner without any ground truth. Two non-ensemble references bracket the task, and the combiners are grouped beneath them.",
+      "blurb": "The aggregation stage, in a fully decentralized and privacy-preserving setting. Each source subject trains five different learners, i.e., tangent-space LDA, tangent-space SVM, EEGNet, ShallowConvNet and CSP-Net, on its own data alone, and shares only its hard predicted labels on the target, never the model weights or the raw EEG. A combiner then fuses the resulting (N−1)×5 label votes into a single prediction, without any target label. Because only the hard votes are observed, the task reduces to estimating the reliability of each learner in the absence of the ground truth. Two non-ensemble references bound the task, and the combiners are grouped below them.",
       "groups": [
         {
           "subcat": "Non-ensemble references",
-          "blurb": "Decoding without any aggregation, to bracket the ensemble methods below. A single source learner applied to the target marks the floor; one model trained on all source subjects pooled together, Centralized Training, marks the non-private ceiling that the privacy-preserving combiners aim to match without ever sharing raw EEG.",
+          "blurb": "Decoding without any aggregation, to bound the ensemble approaches below. A single source learner applied to the target gives the lower reference. One model trained on all source subjects pooled together, i.e., Centralized Training, gives the non-private upper reference, which the privacy-preserving combiners approach without ever sharing the raw EEG.",
           "baseline": null,
           "reference": null,
           "rows": [
@@ -2346,7 +2346,7 @@ window.BENCHMARK = {
         },
         {
           "subcat": "Ensemble learning",
-          "blurb": "Every combiner sees the identical hard votes, so none has an information advantage; they differ only in how they estimate each learner's reliability with no labels. Plain majority voting trusts all learners equally and is the baseline. The spectral meta-learners weight each learner by the leading eigenvector of the vote agreement, an unsupervised accuracy estimate: SML is the binary form, and the lab's SML-OVR extends it to any number of classes, so the binary SML is pinned beneath SML-OVR because the two coincide on these two-class tasks. The crowd-labelling and truth-discovery aggregators (Dawid-Skene, EBCC, GLAD, and the rest) instead infer each learner's confusion or skill from how the votes agree. StackingNet, another lab method, learns per-learner weights directly on the unlabelled target. Each is measured against majority voting on the same dataset. All three datasets are two-class (chance 50%), so the columns compare directly.",
+          "blurb": "All combiners observe identical hard votes, and hence none of them has an information advantage. They differ only in how the reliability of each learner is estimated without labels. Majority voting weights all learners equally, and is the baseline. The spectral meta-learners weight each learner by the leading eigenvector of the vote agreement, which is an unsupervised estimate of the accuracy. SML is the binary form, and the lab's SML-OVR extends it to an arbitrary number of classes, so the binary SML is listed immediately below SML-OVR, as the two coincide on these two-class tasks. The crowd-labeling and truth-discovery aggregators (Dawid-Skene, EBCC, GLAD, and others) instead infer the confusion matrix or the skill of each learner from the agreement among the votes. StackingNet, another lab approach, learns the per-learner weights directly on the unlabeled target. Each combiner is measured against majority voting on the same dataset. All three datasets are two-class (chance 50%), so the columns are directly comparable.",
           "baseline": "Majority voting",
           "reference": null,
           "rows": [
