@@ -43,6 +43,10 @@ def _ensemble_keys():
     method's LOSO sweep. They are therefore exempt from the preset and
     repro-registry checks — and held to their own provenance requirement instead
     (``test_ensemble_rows_carry_their_own_provenance``).
+
+    Returns an empty set as of v1.2.5: the Ensemble Learning table was withdrawn from
+    the leaderboard, so there are no combiner rows to exempt. The exemptions below stay
+    in place so the table can be restored without re-deriving them.
     """
     data = _load(BENCHMARK_PATH)
     keys = set()
@@ -175,12 +179,19 @@ def test_ensemble_rows_carry_their_own_provenance():
     They are exempt from the reproduction registry (no single-run reference range
     applies), so this is the check that keeps them from being the one family with
     no traceable provenance at all.
+
+    The table is withdrawn as of v1.2.5, so this test asserts its absence rather than
+    passing over an empty loop. A guard that quietly checks nothing reads exactly like
+    a guard that checks everything, which is the failure this file exists to avoid; the
+    assertion below fails the moment the table returns without provenance.
     """
     data = _load(BENCHMARK_PATH)
+    tables = [t for t in data.get("tables", []) if t.get("id") == "ensemble"]
+    if not tables:
+        assert not _ensemble_keys(), "an ensemble table reappeared; re-enable this check"
+        return
     bad = []
-    for table in data.get("tables", []):
-        if table.get("id") != "ensemble":
-            continue
+    for table in tables:
         for group in table.get("groups", []) or [table]:
             for row in group.get("rows", []) or []:
                 if not row.get("key"):

@@ -7,6 +7,43 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.2.5] - 2026-07-27
+
+### Removed
+- **The Ensemble Learning table, withdrawn from the leaderboard** (web app, both READMEs). An
+  audit of it found two problems, neither of them in the combiner implementations. First, the
+  configuration is not the one the Networks table reports. `_base_hetero` builds the five
+  per-source learners by deep-copying the `EA-EEGNet` preset and swapping `backbone` alone, so
+  ShallowConvNet and CSP-Net train at `lr = 1e-3` under a 100-epoch ceiling, whereas
+  `scripts/tune_networks.py` grid-searches the learning rate per backbone under a 300-epoch
+  ceiling and selects `1e-4` for ShallowConvNet on BNCI2015001, `3e-3` for it on BNCI2014001,
+  and `3e-4` for CSP-Net on BNCI2014001. Those two learners are therefore not the configuration
+  published for the same names one table above. (EEGNet's fixed `1e-3` does coincide with its
+  tuned selection on the datasets whose tuning record is unambiguous, so the mismatch is confined
+  to the other two backbones.) Second, three rows are degenerate rather than
+  weak: M-MSR, GLAD and ZenCrowd sit five to ten points below majority voting because they emit
+  a single class on most target subjects, and on BNCI2015001 seed 1 each collapses on 8 of the
+  12 targets, while every combiner that beats voting collapses on none. An accuracy column
+  cannot distinguish that from an ordinary low score. Republishing requires a per-backbone
+  configuration and a class-balance diagnostic; both are absent, so the table is withdrawn
+  rather than annotated.
+- `n_ensemble_methods` from the generated site data, the "ensemble combiners" statistic from the
+  Overview, and the ensemble-combiner count from both READMEs and the anchor card.
+
+### Changed
+- **`hustbciml/RESULTS.md` keeps the measurements** and states the withdrawal above the table.
+  Its rows are declared in `NOT_ON_LEADERBOARD` in `tests/repro/test_results_md.py`, so their
+  numbers are now checked by nothing, which the declaration records explicitly. 199 cells remain
+  cross-checked against `benchmark.yml`.
+- `test_ensemble_rows_carry_their_own_provenance` asserts the table's absence instead of looping
+  over no rows, so it cannot pass vacuously, and fails if the table returns without provenance.
+
+### Unchanged
+- The 14 combiner implementations, `scripts/decentralized.py`, the ensemble presets, and the
+  multi-seed ensemble experiment in `RESULTS.md`, which is a separate experiment over K seeds of
+  one algorithm and is not affected. No other leaderboard table, and no reported number outside
+  the withdrawn table, changes: **58** approaches as before.
+
 ## [1.2.4] - 2026-07-27
 
 ### Fixed
@@ -567,6 +604,7 @@ stop moving during training.
 - Consolidated the benchmark package as `hustbciml`; extended the privacy-preserving comparison to
   three MOABB datasets and refreshed the tables via held-out-source hyperparameter selection.
 
+[1.2.5]: https://github.com/sylyoung/HUST-BCIML/releases/tag/v1.2.5
 [1.2.4]: https://github.com/sylyoung/HUST-BCIML/releases/tag/v1.2.4
 [1.2.3]: https://github.com/sylyoung/HUST-BCIML/releases/tag/v1.2.3
 [1.2.2]: https://github.com/sylyoung/HUST-BCIML/releases/tag/v1.2.2

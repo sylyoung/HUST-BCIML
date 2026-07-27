@@ -371,6 +371,19 @@ decentralized ensemble, where weak per-subject base models spread the combiners 
 
 ## Decentralized-heterogeneous ensemble
 
+> **Withdrawn from the leaderboard (v1.2.5).** The numbers below are the measurements as taken and
+> are kept as the record, but this table is no longer published on the web app or in the READMEs,
+> for two reasons. First, `_base_hetero` builds the five per-source learners by copying the
+> `EA-EEGNet` preset and swapping `backbone` alone, so ShallowConvNet and CSPNet train at
+> `lr = 1e-3` and a 100-epoch ceiling, whereas the Networks table grid-searches the learning rate
+> per backbone (selecting 1e-4 for ShallowConvNet on BNCI2015001 and 3e-3 on BNCI2014001, and 3e-4
+> for CSP-Net on BNCI2014001) under a 300-epoch ceiling. Those two learners are therefore not the
+> configuration the Networks table reports under the same names. Second, the −5 to −10 rows are not
+> weak aggregation but degenerate output: on BNCI2015001 seed 1, M-MSR, GLAD and ZenCrowd each emit
+> a single class on 8 of 12 target subjects, and every combiner that beats voting collapses on none,
+> which a bare accuracy column cannot show. Republishing needs a per-backbone configuration and a
+> class-balance column. The combiner implementations and `scripts/decentralized.py` are unchanged.
+
 _A fully decentralized, privacy-preserving ensemble. Five heterogeneous learners (tangent-space
 LDA, tangent-space SVM, EEGNet, ShallowConvNet, and CSPNet) are trained on each source subject's
 EA-aligned data alone, and the subjects share only their **hard predicted labels** on the target,

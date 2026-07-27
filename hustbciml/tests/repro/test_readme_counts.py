@@ -34,14 +34,14 @@ CLAIMS = [
     ("README.zh-CN.md", "approaches badge", r"badge/approaches-(\d+)-"),
     ("README.zh-CN.md", "approaches prose", r"重新实现了 \*\*(\d+) 种脑电解码方法\*\*"),
 ]
-ENSEMBLE_CLAIMS = [
-    ("README.md", "ensemble prose", r"\*\*(\d+) ensemble combiners\*\*"),
-    ("README.zh-CN.md", "ensemble prose", r"\*\*(\d+) 种集成聚合方法\*\*"),
-]
+# The ensemble-combiner count was checked here too, against `n_ensemble_methods`, while
+# the Ensemble Learning table was on the leaderboard. The table is withdrawn, so the
+# build no longer emits that count and the READMEs no longer state one: the combiners
+# are described as implemented and runnable, without a headline figure to drift.
 
 
 def site_counts():
-    """n_methods / n_ensemble_methods as the build computed them."""
+    """n_methods as the build computed it."""
     if not os.path.exists(LAB_JS):
         pytest.skip("no built docs/data/lab.js — run gallery/build_site.py first")
     raw = open(LAB_JS, encoding="utf-8").read()
@@ -49,11 +49,10 @@ def site_counts():
     return json.loads(raw[raw.index(marker) + len(marker):].strip().rstrip(";"))
 
 
-@pytest.mark.parametrize("path,what,pattern",
-                         [(p, w, r) for p, w, r in CLAIMS + ENSEMBLE_CLAIMS])
+@pytest.mark.parametrize("path,what,pattern", CLAIMS)
 def test_readme_count_matches_the_leaderboard(path, what, pattern):
     site = site_counts()
-    expected = site["n_ensemble_methods"] if "ensemble" in what else site["n_methods"]
+    expected = site["n_methods"]
     text = open(os.path.join(ROOT, path), encoding="utf-8").read()
     m = re.search(pattern, text)
     assert m, (f"{path}: the {what} is no longer where this test looks for it "

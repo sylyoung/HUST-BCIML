@@ -163,8 +163,7 @@ def build_benchmark(bench):
     """Every table is emitted as a list of sub-category `groups` (a flat table is
     one unnamed group), so the web app renders both shapes uniformly. The
     per-dataset delta-vs-baseline is computed here so the app just displays. The
-    dataset column order comes from meta.datasets; the ensemble table also carries
-    its per-dataset `context`."""
+    dataset column order comes from meta.datasets."""
     datasets = [d["name"] for d in bench.get("meta", {}).get("datasets", [])]
     tables = []
     for t in bench["tables"]:
@@ -181,19 +180,16 @@ def build_benchmark(bench):
             "datasets": datasets, "tables": tables}
 
 
-def method_keys(benchmark, include_ensemble=False):
+def method_keys(benchmark):
     """Distinct algorithms in the leaderboard, by provenance key.
 
-    The ensemble table is separated rather than merged because its rows are
-    post-hoc combiners applied to several trained models, not pipeline
-    compositions — they are counted, but under their own name.
+    Every table now counts the same way. There used to be an `include_ensemble`
+    split, because the withdrawn Ensemble Learning table held post-hoc combiners
+    over several trained models rather than pipeline compositions, and was counted
+    under its own name.
     """
     keys = set()
     for t in benchmark["tables"]:
-        if t["id"] == "ensemble" and not include_ensemble:
-            continue
-        if t["id"] != "ensemble" and include_ensemble:
-            continue
         for g in t["groups"]:
             for r in g["rows"]:
                 if not r.get("isReference") and r.get("key"):
@@ -202,13 +198,12 @@ def method_keys(benchmark, include_ensemble=False):
 
 
 def approach_names(benchmark):
-    """Every distinct named approach the site renders as a chip, across all
-    tables including ensembles.
+    """Every distinct named approach the site renders as a chip, across all tables.
 
     The Overview shows a headline count and, directly beneath it, the list of
     names. Those were computed from two different populations — the count in
-    Python over non-ensemble keyed rows, the chips in JavaScript over every named
-    row — so the page disagreed with itself by 18. Both now come from here.
+    Python over keyed rows, the chips in JavaScript over every named row — so the
+    page disagreed with itself by 18. Both now come from here.
     """
     names = set()
     for t in benchmark["tables"]:
@@ -278,16 +273,12 @@ def main():
 
     benchmark = build_benchmark(bench)
     pipeline_keys = method_keys(benchmark)
-    ensemble_keys = method_keys(benchmark, include_ensemble=True)
     site = {"n_papers": len(papers), "n_code": n_code,
             # Pipeline compositions (alignment, augmentation, backbone, transfer).
             "n_methods": len(pipeline_keys),
             # Of those, how many are the lab's own — computed over the same
             # population as n_methods, so "N of M are the lab's" is a true reading.
             "n_lab_methods": len(lab_keys(benchmark, pipeline_keys)),
-            # Ensemble combiners, counted separately because they are post-hoc
-            # aggregators over trained models rather than pipeline stages.
-            "n_ensemble_methods": len(ensemble_keys),
             # Every named approach the Overview renders as a chip, so the headline
             # number and the list beneath it describe the same set.
             "n_approaches": len(approach_names(benchmark))}
@@ -302,9 +293,9 @@ def main():
 
     n_rows = sum(len(g["rows"]) for t in benchmark["tables"] for g in t["groups"])
     print("papers=%d with_code=%d tables=%d rows=%d methods=%d (lab %d) "
-          "ensembles=%d approach_chips=%d"
+          "approach_chips=%d"
           % (len(papers), n_code, len(benchmark["tables"]), n_rows, site["n_methods"],
-             site["n_lab_methods"], site["n_ensemble_methods"], site["n_approaches"]))
+             site["n_lab_methods"], site["n_approaches"]))
     print("wrote docs/data/{lab.js,publications.js,benchmark.js}")
 
 

@@ -260,12 +260,11 @@
     var stats = el("div", { class: "stats" });
     // Both counts come from build_site.py, computed over the SAME population.
     // They used to be computed separately — the "lab" figure here in JavaScript
-    // over every table including ensembles, the total in Python over the
-    // non-ensemble keyed rows — so the two sat side by side inviting the reading
-    // "N of M are the lab's" when they did not describe the same M.
+    // over every table, the total in Python over a subset of them — so the two sat
+    // side by side inviting the reading "N of M are the lab's" when they did not
+    // describe the same M.
     stat(stats, SITE.n_lab_methods, tr("lab approaches"));
-    stat(stats, SITE.n_methods, tr("pipeline approaches benchmarked"));
-    if (SITE.n_ensemble_methods) stat(stats, SITE.n_ensemble_methods, tr("ensemble combiners"));
+    stat(stats, SITE.n_methods, tr("approaches benchmarked"));
     stat(stats, SITE.n_code, tr("papers with code"));
     stat(stats, SITE.n_papers || PUBS.length, tr("papers indexed"));
     stat(stats, topicList.length, tr("research areas"));
@@ -279,7 +278,7 @@
       o.appendChild(el("div", { class: "section-title" },
         fmt(tr("Approaches in the benchmark ({n})"), { n: SITE.n_approaches || 0 })));
       o.appendChild(el("p", { class: "area-note" },
-        tr("Every approach evaluated in the benchmark, grouped by pipeline stage, including the ensemble combiners, which the count above reports separately. The lab's own approaches, i.e., those proposed by Prof. Wu's group, are highlighted, and the external baselines they are compared with are listed alongside.")));
+        tr("Every approach evaluated in the benchmark, grouped by pipeline stage. The lab's own approaches, i.e., those proposed by Prof. Wu's group, are highlighted, and the external baselines they are compared with are listed alongside.")));
       var legend = el("div", { class: "approach-legend" });
       legend.appendChild(el("span", { class: "lgd lgd-lab" }, tr("lab-proposed")));
       legend.appendChild(el("span", { class: "lgd lgd-ext" }, tr("external baseline")));
@@ -677,7 +676,7 @@
     var guide = el("details", { class: "bench-guide" });
     guide.appendChild(el("summary", {}, tr("How to read this leaderboard")));
     guide.appendChild(el("p", {},
-      tr("Each row should be read against the baseline of its own table. A table varies one stage of the pipeline and holds the rest at the default configuration, i.e., Euclidean-aligned trials, an EEGNet backbone, and supervised training. Most rows hence differ from the baseline in exactly one respect. A row that differs in more than one respect states so beneath its name, so that a Δ is not read as the effect of a single stage when it is not. The three columns are the three datasets. Under each accuracy, mean ± std is the mean over three random seeds and the standard deviation across those seeds. It quantifies the reproducibility, and not the spread across subjects, which is roughly ten times larger. Δ is the gain or the loss with respect to the baseline of the same dataset. Every table is two-class (chance 50%) on all three datasets, so the columns remain comparable throughout. Each family has its own baseline: the transfer families use ERM, the privacy-preserving family uses Centralized Training, the ensemble table uses majority voting, and the network-free classical pipelines are compared with EA-EEGNet. Two caveats apply. First, the baseline is the best checkpoint on a held-out source split, whereas the domain adaptation rows are the last iterate of a fixed schedule, as in their reference implementations. Second, every EA row estimates the alignment reference of the held-out subject from the unlabeled trials of that subject, which uses no label, but is transductive rather than zero-shot. Each row links to its code, and to its paper where a DOI is recorded.")));
+      tr("Each row should be read against the baseline of its own table. A table varies one stage of the pipeline and holds the rest at the default configuration, i.e., Euclidean-aligned trials, an EEGNet backbone, and supervised training. Most rows hence differ from the baseline in exactly one respect. A row that differs in more than one respect states so beneath its name, so that a Δ is not read as the effect of a single stage when it is not. The three columns are the three datasets. Under each accuracy, mean ± std is the mean over three random seeds and the standard deviation across those seeds. It quantifies the reproducibility, and not the spread across subjects, which is roughly ten times larger. Δ is the gain or the loss with respect to the baseline of the same dataset. Every table is two-class (chance 50%) on all three datasets, so the columns remain comparable throughout. Each family has its own baseline: the transfer families use ERM, the privacy-preserving family uses Centralized Training, and the network-free classical pipelines are compared with EA-EEGNet. Two caveats apply. First, the baseline is the best checkpoint on a held-out source split, whereas the domain adaptation rows are the last iterate of a fixed schedule, as in their reference implementations. Second, every EA row estimates the alignment reference of the held-out subject from the unlabeled trials of that subject, which uses no label, but is transductive rather than zero-shot. Each row links to its code, and to its paper where a DOI is recorded.")));
     B.appendChild(guide);
 
     (BENCH.tables || []).forEach(function (t) {

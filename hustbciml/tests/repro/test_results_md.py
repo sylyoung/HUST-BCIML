@@ -49,7 +49,7 @@ CELL = re.compile(r"^\*{0,2}(\d+\.\d+)"          # the mean
 # A minimum that must actually be compared. Set well below the current count so
 # ordinary edits do not trip it, but above zero so a parser that silently stops
 # matching cannot pass.
-MIN_CELLS_CHECKED = 200
+MIN_CELLS_CHECKED = 190
 
 # RESULTS.md names a row by what it *is* in its table — "none (no alignment)",
 # "_EA-EEGNet (deep reference)_" — while benchmark.yml carries the bare name. That
@@ -67,18 +67,30 @@ ALIAS = {
     "none (EA-EEGNet)":                           ("none", "augmentation"),
     "EA-EEGNet (deep reference)":                 ("EA (Euclidean)", "alignment"),
     "EA-EEGNet (reference)":                      ("EA (Euclidean)", "alignment"),
-    "majority voting (baseline)":                 ("Majority voting", "ensemble"),
-    "single-source (5-learner mean)":             ("single-source", "ensemble"),
-    "Centralized Training (reference)":           ("Centralized Training", "ensemble"),
+    # The decentralized-ensemble section's reference row states the same three numbers
+    # as the transfer table's Centralized Training, so it stays checked against that
+    # table even though its own table is no longer published.
+    "Centralized Training (reference)":           ("Centralized Training", "transfer"),
     "Centralized Training (EA-EEGNet, reference)": ("Centralized Training", "transfer"),
 }
 
-# Rows RESULTS.md reports that the leaderboard deliberately does not carry. Empty, and
-# worth keeping that way: the two entries it held — the network-free CSP-LDA and
-# Riemann-MDM — turned out not to be a deliberate omission at all. Declaring them here
-# is what made it visible that six published numbers had no source of truth, which is
-# why they are now a leaderboard table of their own.
-NOT_ON_LEADERBOARD = set()
+# Rows RESULTS.md reports that the leaderboard deliberately does not carry.
+#
+# This set was empty, and worth keeping that way: the two entries it held — the
+# network-free CSP-LDA and Riemann-MDM — turned out not to be a deliberate omission at
+# all. Declaring them here is what made it visible that six published numbers had no
+# source of truth, which is why they are now a leaderboard table of their own.
+#
+# It holds the decentralized-ensemble rows from v1.2.5, where the omission *is*
+# deliberate: that table was withdrawn from the leaderboard, and RESULTS.md keeps the
+# measurements as the record. Their numbers are consequently checked by nothing, which
+# is the price of keeping them, and is why the withdrawal note sits above the table.
+# The reasons are in that note and in gallery/data/benchmark.yml's header.
+NOT_ON_LEADERBOARD = {
+    "PM", "LAA", "Dawid-Skene", "EBCC", "StackingNet", "LA", "SML-OVR", "SML", "Wawa",
+    "MACE", "ZenCrowd", "GLAD", "M-MSR",
+    "majority voting (baseline)", "single-source (5-learner mean)",
+}
 
 
 def clean_name(cell):
