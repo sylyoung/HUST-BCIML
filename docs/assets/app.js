@@ -46,6 +46,32 @@
     return n;
   }
   function txt(s) { return document.createTextNode(s); }
+  // Substitute into a whole translated sentence rather than concatenating
+  // separately translated fragments. Chinese needs a different constituent order
+  // and a measure word, which fragment concatenation cannot express — so the
+  // result read as machine-assembled at exactly the places a Chinese-speaking
+  // visitor looks first, the result counter and the section intros.
+  function fmt(template, vars) {
+    return String(template).replace(/\{(\w+)\}/g, function (m, k) {
+      return Object.prototype.hasOwnProperty.call(vars, k) ? String(vars[k]) : m;
+    });
+  }
+  // Only http(s) and mailto reach an href. Every link on this page comes from a
+  // generated data file, but those files are produced from hand-edited YAML, and
+  // a `javascript:` value slipping into one would become an executable link on a
+  // public site. Anything else renders as plain text instead of a link.
+  function safeUrl(u) {
+    if (typeof u !== "string") return null;
+    var s = u.trim();
+    return /^(https?:|mailto:)/i.test(s) ? s : null;
+  }
+  function link(url, attrs, label) {
+    var u = safeUrl(url);
+    if (!u) return txt(label);
+    attrs = attrs || {};
+    attrs.href = u; attrs.target = "_blank"; attrs.rel = "noopener";
+    return el("a", attrs, label);
+  }
   function hue(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 360; return h; }
   function counts(field, isArray) {
     var m = new Map();
@@ -62,10 +88,26 @@
   // ---------------- navigation ----------------
   function activate(name) {
     if (VIEWS.indexOf(name) < 0) name = "overview";
-    document.querySelectorAll(".tab").forEach(function (t) { t.classList.toggle("active", t.dataset.view === name); });
+    ensureView(name);
+    document.querySelectorAll(".tab").forEach(function (t) {
+      var on = t.dataset.view === name;
+      t.classList.toggle("active", on);
+      if (t.dataset.view) t.setAttribute("aria-selected", on ? "true" : "false");
+    });
     document.querySelectorAll(".view").forEach(function (v) { v.classList.toggle("active", v.id === name); });
   }
-  function go(name) { activate(name); history.replaceState(null, "", "#" + name); window.scrollTo({ top: 0 }); }
+  function go(name) {
+    activate(name);
+    // pushState, not replaceState: with replaceState, Overview -> Papers ->
+    // Benchmark then Back left the site entirely instead of stepping back through
+    // the views. The existing hashchange listener handles the resulting navigation.
+    if (location.hash.slice(1) !== name) history.pushState(null, "", "#" + name);
+    window.scrollTo({ top: 0 });
+    // Move focus into the newly shown view so keyboard and screen-reader users get
+    // the same "you are now here" cue that sighted users get from the layout.
+    var v = document.getElementById(name);
+    if (v) { v.setAttribute("tabindex", "-1"); v.focus({ preventScroll: true }); }
+  }
   document.getElementById("tabs").addEventListener("click", function (e) {
     // only view tabs carry data-view; the language toggle (also .tab) is skipped here
     var b = e.target.closest(".tab"); if (b && b.dataset.view) go(b.dataset.view);
@@ -126,7 +168,7 @@
   }
   function pillarTable() {
     var max = topicList.length ? topicList[0][1] : 1;
-    var codeByTopic = {};
+    var codeByTopic = Object.create(null);   // data-derived keys; see benchApproaches
     PUBS.forEach(function (p) { if (p.code_url) codeByTopic[p.topic] = (codeByTopic[p.topic] || 0) + 1; });
     var table = el("table", { class: "pillars" });
     var head = el("tr", {});
@@ -157,7 +199,11 @@
       // three datasets — but it should still show as a single chip. The no-op
       // baseline placeholder ("none", i.e. no alignment / no augmentation) is not
       // an approach, so it is skipped.
-      var order = [], byName = {};
+      // Object.create(null), not {}: these are indexed by method names from a data
+      // file, and on a plain object an inherited key such as "constructor" or
+      // "toString" is truthy, so a method named after one would be silently
+      // dropped from the chips or miscounted.
+      var order = [], byName = Object.create(null);
       (t.groups || []).forEach(function (g) {
         (g.rows || []).forEach(function (r) {
           if (!r.name || r.name.toLowerCase() === "none") return;
@@ -212,10 +258,14 @@
     if (LAB.repo_intro) hero.appendChild(el("p", { class: "repo-intro" }, tr(LAB.repo_intro)));
     hero.appendChild(officialLinks());
     var stats = el("div", { class: "stats" });
-    var labKeys = new Set();
-    (BENCH.tables || []).forEach(function (t) { (t.groups || []).forEach(function (g) { (g.rows || []).forEach(function (r) { if (r.lab && r.key) labKeys.add(r.key); }); }); });
-    stat(stats, labKeys.size, tr("lab approaches"));
-    stat(stats, SITE.n_methods, tr("approaches benchmarked"));
+    // Both counts come from build_site.py, computed over the SAME population.
+    // They used to be computed separately — the "lab" figure here in JavaScript
+    // over every table including ensembles, the total in Python over the
+    // non-ensemble keyed rows — so the two sat side by side inviting the reading
+    // "N of M are the lab's" when they did not describe the same M.
+    stat(stats, SITE.n_lab_methods, tr("lab approaches"));
+    stat(stats, SITE.n_methods, tr("pipeline approaches benchmarked"));
+    if (SITE.n_ensemble_methods) stat(stats, SITE.n_ensemble_methods, tr("ensemble combiners"));
     stat(stats, SITE.n_code, tr("papers with code"));
     stat(stats, SITE.n_papers || PUBS.length, tr("papers indexed"));
     stat(stats, topicList.length, tr("research areas"));
@@ -226,9 +276,10 @@
     // lab's own methods highlighted and the external baselines muted.
     var lm = benchApproaches();
     if (lm) {
-      o.appendChild(el("div", { class: "section-title" }, tr("Approaches in the benchmark")));
+      o.appendChild(el("div", { class: "section-title" },
+        fmt(tr("Approaches in the benchmark ({n})"), { n: SITE.n_approaches || 0 })));
       o.appendChild(el("p", { class: "area-note" },
-        tr("Every approach evaluated in the benchmark, grouped by pipeline stage. The lab's own methods (Prof. Wu's group) are highlighted, and the external baselines they are compared against are shown alongside.")));
+        tr("Every approach evaluated in the benchmark, grouped by pipeline stage — including the ensemble combiners, which the headline count above reports separately. The lab's own methods (Prof. Wu's group) are highlighted, and the external baselines they are compared against are shown alongside.")));
       var legend = el("div", { class: "approach-legend" });
       legend.appendChild(el("span", { class: "lgd lgd-lab" }, tr("lab-proposed")));
       legend.appendChild(el("span", { class: "lgd lgd-ext" }, tr("external baseline")));
@@ -275,13 +326,17 @@
   }
 
   // ---------------- papers & code gallery ----------------
-  var state = { q: "", topics: new Set(), paradigms: new Set(), codeOnly: true };
+  var state = { q: "", qRaw: "", topics: new Set(), paradigms: new Set(), codeOnly: true };
   var listEl, countEl, searchInput, codeCheck;
 
   function makeChip(kind, label, n) {
     // data-label stays the English value (it is the filter key matched against
     // p.topic / p.paradigm); only the visible text is translated.
-    var c = el("span", { class: "chip", "data-kind": kind, "data-label": label,
+    // A <button>, not a <span>: these are the topic and paradigm filters, and as
+    // spans they were mouse-only — not focusable, with no role and no pressed
+    // state for assistive technology.
+    var c = el("button", { class: "chip", type: "button", "aria-pressed": "false",
+      "data-kind": kind, "data-label": label,
       onclick: function () { toggleFacet(kind, label); } });
     c.appendChild(txt(tr(label)));
     c.appendChild(el("span", { class: "c" }, String(n)));
@@ -294,7 +349,9 @@
   }
   function syncChips() {
     document.querySelectorAll(".chip").forEach(function (c) {
-      c.classList.toggle("on", state[c.dataset.kind].has(c.dataset.label));
+      var on = state[c.dataset.kind].has(c.dataset.label);
+      c.classList.toggle("on", on);
+      c.setAttribute("aria-pressed", on ? "true" : "false");
     });
   }
   function setTopicFilter(topic) {
@@ -326,7 +383,8 @@
       }
       return true;
     });
-    countEl.textContent = tr("showing") + " " + res.length + " " + tr("of") + " " + PUBS.length;
+    countEl.textContent = fmt(tr("showing {n} of {total}"),
+                              { n: res.length, total: PUBS.length });
     renderList(res);
   }
   function paperCard(p) {
@@ -334,28 +392,34 @@
     var head = el("div", { class: "paper-head" });
     if (p.year) head.appendChild(el("span", { class: "year" }, String(p.year)));
     var title = el("h3", { class: "paper-title" });
-    if (p.doi) title.appendChild(el("a", { href: "https://doi.org/" + p.doi, target: "_blank", rel: "noopener" }, p.title || ""));
+    // An in-press paper has a pre-assigned DOI that is not registered yet, so
+    // linking it sends the reader to a 404 that looks like rot rather than like a
+    // paper still on its way. Show the title as plain text until the DOI goes live.
+    if (p.doi && !p.in_press) title.appendChild(el("a", { href: "https://doi.org/" + p.doi, target: "_blank", rel: "noopener" }, p.title || ""));
     else title.appendChild(txt(p.title || ""));
     head.appendChild(title);
     art.appendChild(head);
 
-    var meta = [p.authors, p.venue].filter(Boolean).join(" · ");
+    var meta = [p.authors, p.venue, p.in_press ? tr("in press") : null].filter(Boolean).join(" · ");
     if (meta) art.appendChild(el("div", { class: "paper-meta" }, meta));
 
     var tags = el("div", { class: "paper-tags" });
     // topic / paradigm display text is translated; the value passed to the filter
     // handlers stays the English key. Paper title/authors/venue/tldr stay English.
-    if (p.topic) tags.appendChild(el("span", { class: "topic-badge", onclick: function () { setTopicFilter(p.topic); } }, tr(p.topic)));
+    if (p.topic) tags.appendChild(el("button", { class: "topic-badge", type: "button",
+      title: tr("Filter by this topic"),
+      onclick: function () { setTopicFilter(p.topic); } }, tr(p.topic)));
     (p.paradigm || []).forEach(function (pd) {
-      var t = el("span", { class: "tag", onclick: function () { toggleFacet("paradigms", pd); } }, tr(pd));
+      var t = el("button", { class: "tag", type: "button", title: tr("Filter by this paradigm"),
+        onclick: function () { toggleFacet("paradigms", pd); } }, tr(pd));
       t.style.background = "hsl(" + hue(pd) + " 65% 90%)";
       t.style.color = "hsl(" + hue(pd) + " 55% 30%)";
       tags.appendChild(t);
     });
     // code-first: the code link leads, then the paper
     var links = el("span", { class: "paper-links" });
-    if (p.code_url) links.appendChild(el("a", { class: "codelink", href: p.code_url, target: "_blank", rel: "noopener" }, tr("code")));
-    if (p.doi) links.appendChild(el("a", { href: "https://doi.org/" + p.doi, target: "_blank", rel: "noopener" }, tr("paper")));
+    if (p.code_url) links.appendChild(link(p.code_url, { class: "codelink" }, tr("code")));
+    if (p.doi && !p.in_press) links.appendChild(link("https://doi.org/" + p.doi, {}, tr("paper")));
     if (!p.code_url) links.appendChild(el("span", { class: "nocode" }, tr("no code")));
     tags.appendChild(links);
     art.appendChild(tags);
@@ -396,9 +460,22 @@
 
     var controls = el("div", { class: "controls" });
     var searchrow = el("div", { class: "searchrow" });
-    searchInput = el("input", { class: "search", type: "search", placeholder: tr("Search title, authors, venue, summary…") });
-    searchInput.addEventListener("input", function () { state.q = searchInput.value.trim().toLowerCase(); applyFilters(); });
-    if (state.q) searchInput.value = state.q;   // preserve query text across re-render
+    searchInput = el("input", { class: "search", type: "search",
+      "aria-label": tr("Search title, authors, venue, summary…"),
+      placeholder: tr("Search title, authors, venue, summary…") });
+    // Debounced: every keystroke rebuilt all 263 paper cards, which will only get
+    // worse as the gallery grows. 120 ms is below the threshold where typing feels
+    // laggy and collapses a burst of keystrokes into one render.
+    var searchTimer = null;
+    searchInput.addEventListener("input", function () {
+      state.qRaw = searchInput.value;                 // as typed, for redisplay
+      state.q = searchInput.value.trim().toLowerCase();   // folded, for matching
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(applyFilters, 120);
+    });
+    // Restore what the user typed, not the lower-cased copy — toggling the
+    // language used to rewrite "EEG Decoding" into "eeg decoding" in the box.
+    if (state.qRaw) searchInput.value = state.qRaw;
     searchrow.appendChild(searchInput);
     var tg = el("label", { class: "toggle" });
     codeCheck = el("input", { type: "checkbox" });
@@ -407,7 +484,9 @@
     tg.appendChild(codeCheck); tg.appendChild(txt(tr("has code")));
     searchrow.appendChild(tg);
     searchrow.appendChild(el("button", { class: "clearbtn", onclick: clearAll }, tr("Show all")));
-    countEl = el("span", { class: "count" });
+    // aria-live: filtering changes the result count with no other cue, so a
+    // screen-reader user otherwise gets no feedback that typing did anything.
+    countEl = el("span", { class: "count", "aria-live": "polite", "aria-atomic": "true" });
     searchrow.appendChild(countEl);
     controls.appendChild(searchrow);
 
@@ -434,13 +513,13 @@
   }
   function codeLink(code) {
     if (!code) return null;
-    return el("a", { class: "codelink code-impl", href: REPO_URL + "/blob/main/" + code,
-      target: "_blank", rel: "noopener", title: tr("Open ") + code }, tr("code"));
+    return link(REPO_URL + "/blob/main/" + code,
+      { class: "codelink code-impl", title: tr("Open ") + code }, tr("code"));
   }
   function paperLink(r) {
     if (!r.doi) return null;
-    return el("a", { class: "codelink paper-impl", href: "https://doi.org/" + r.doi,
-      target: "_blank", rel: "noopener", title: tr("Open the paper") }, tr("paper"));
+    return link("https://doi.org/" + r.doi,
+      { class: "codelink paper-impl", title: tr("Open the paper") }, tr("paper"));
   }
   // one per-dataset accuracy cell: the acc ± std on top, the coloured Δ vs that
   // dataset's baseline beneath. An absent cell (method inapplicable here) is n/a.
@@ -471,6 +550,13 @@
     if (pl) line1.appendChild(pl);
     name.appendChild(line1);
     if (r.desc) name.appendChild(el("div", { class: "m-desc" }, r.desc));
+    // A row that changes more than its table's axis says so here, so the Δ is not
+    // read as a single-stage effect that it is not.
+    if (r.alsoVaries) name.appendChild(el("div", { class: "m-caveat" },
+      tr("Also varies: ") + r.alsoVaries));
+    // ... and an empty dataset cell says which kind of empty it is.
+    if (r.naReason) name.appendChild(el("div", { class: "m-caveat" },
+      tr("Not applicable on some datasets: ") + r.naReason));
     if (r.ref) name.appendChild(el("div", { class: "m-ref" }, r.ref));
     rowTr.appendChild(name);
     datasets.forEach(function (d) {
@@ -528,8 +614,11 @@
     host.appendChild(el("div", { class: "section-title" }, tr("Datasets")));
     // dynamic intro: the number is dropped in between two translated fragments.
     host.appendChild(el("p", { class: "bench-intro" },
-      tr("The benchmark spans ") + list.length +
-      tr(" MOABB motor-imagery EEG datasets, all evaluated cross-subject (leave-one-subject-out). Accuracies are comparable only within the same dataset and class count.")));
+      fmt(tr("The benchmark spans {n} MOABB motor-imagery EEG datasets, all evaluated cross-subject (leave-one-subject-out). Accuracies are comparable only within the same dataset and class count."), { n: list.length })));
+    // The dataset table has seven columns with nowrap numeric cells; without a
+    // scroll container it clips or forces the whole page to scroll sideways on a
+    // phone. The benchmark tables already sit in one.
+    var scroller = el("div", { class: "table-scroll" });
     var table = el("table", { class: "pillars datasets" });
     var head = el("tr", {});
     ["Dataset", "Subjects", "Channels", "Rate", "Classes", "Chance", "Trials/subj"]
@@ -541,13 +630,19 @@
       name.appendChild(el("div", { class: "ds-name" }, d.name));   // dataset name: identifier, kept as-is
       if (d.role) name.appendChild(el("div", { class: "ds-role" }, tr(d.role)));
       rowTr.appendChild(name);
+      // `trials` carries a word ("288 / session") where a dataset counts per session
+      // rather than per subject, so it goes through tr(); a bare count passes straight
+      // through. Hz is a unit and needs no translation, and `classes`/`chance` are now
+      // plain values under a translated header.
       [d.subjects, d.channels, (d.sfreq != null ? d.sfreq + " Hz" : null),
-       d.classes, d.chance, d.trials].forEach(function (v) {
-        rowTr.appendChild(el("td", { class: "num" }, v == null ? "—" : String(v)));
-      });
+       d.classes, d.chance, (d.trials != null ? tr(String(d.trials)) : null)]
+        .forEach(function (v) {
+          rowTr.appendChild(el("td", { class: "num" }, v == null ? "—" : String(v)));
+        });
       table.appendChild(rowTr);
     });
-    host.appendChild(table);
+    scroller.appendChild(table);
+    host.appendChild(scroller);
   }
   function benchmark() {
     var B = document.getElementById("benchmark");
@@ -582,7 +677,7 @@
     var guide = el("details", { class: "bench-guide" });
     guide.appendChild(el("summary", {}, tr("How to read this leaderboard")));
     guide.appendChild(el("p", {},
-      tr("Read each row against its table's baseline. A table changes just one stage of the pipeline and holds the rest at the default: Euclidean-aligned trials, an EEGNet backbone, plain supervised training. So every row differs from the baseline in exactly one way, and any change in accuracy is down to that stage. The three columns are the three datasets. Under each accuracy, Δ is the gain or loss against that dataset's baseline. Every table is two-class (chance 50%) on all three datasets, so the columns stay comparable throughout. Each family has its own baseline: the transfer families use ERM, the privacy-preserving family uses Centralized Training, and the ensemble table uses majority voting. Every row links to its code and its paper.")));
+      tr("Read each row against its table's baseline. A table varies one stage of the pipeline and holds the rest at the default: Euclidean-aligned trials, an EEGNet backbone, plain supervised training. Most rows therefore differ from the baseline in exactly that one way — and where a row differs in more than one, it says so beneath its name, so a Δ is never read as a single-stage effect when it is not. The three columns are the three datasets. Under each accuracy, mean ± std is the mean over three seeds and the standard deviation across those seeds (a reproducibility figure, not the spread across subjects, which is roughly ten times larger). Δ is the gain or loss against that dataset's baseline. Every table is two-class (chance 50%) on all three datasets, so the columns stay comparable throughout. Each family has its own baseline: the transfer families use ERM, the privacy-preserving family uses Centralized Training, the ensemble table uses majority voting, and the network-free classical pipelines are shown against EA-EEGNet. Two further caveats worth stating: the baseline is the best checkpoint on a held-out source split while the domain-adaptation rows are the last iterate of a fixed schedule, as their reference implementations train them; and every EA row estimates the held-out subject's alignment reference from that subject's own unlabelled trials, which uses no labels but is transductive rather than zero-shot. Rows link to their code, and to their paper where a DOI is recorded.")));
     B.appendChild(guide);
 
     (BENCH.tables || []).forEach(function (t) {
@@ -594,20 +689,47 @@
     });
   }
 
-  // (the ensemble-learning table renders inline in the Benchmark view as a
-  //  category, via renderEnsembleContext + renderTableMulti in the benchmark() builder.)
 
   // ---------------- render + language toggle ----------------
   // Rebuild all three views + header/footer from scratch. Safe to call repeatedly;
   // each builder clears its own container first. Filter state in `state` persists
   // across calls, so switching language keeps the papers filters intact.
+  // The browser tab, the search snippet and any shared preview all come from
+  // <title> and <meta name="description">, which the language toggle never
+  // touched — so in Chinese mode the page still presented itself as English
+  // everywhere outside the document body.
+  function applyDocumentMeta() {
+    document.title = tr(document.documentElement.getAttribute("data-title-en")
+                        || document.title);
+    var d = document.querySelector('meta[name="description"]');
+    if (d) d.setAttribute("content", tr(d.getAttribute("data-en") || d.content));
+  }
+
+  // Built views, so a view is constructed once per render pass and only when it
+  // is actually shown. render() used to build all three every time — the full
+  // 263-card gallery and every leaderboard table — even for a visitor landing
+  // directly on #benchmark, and again on every language toggle.
+  var built = Object.create(null);
+  var BUILDERS = { overview: overview, papers: papers, benchmark: benchmark };
+
+  function ensureView(name) {
+    if (built[name] || !BUILDERS[name]) return;
+    BUILDERS[name]();
+    built[name] = true;
+  }
+
   function render() {
+    applyDocumentMeta();
     header();
     footer();
-    overview();
-    papers();
-    benchmark();
+    built = Object.create(null);            // language or data changed: rebuild lazily
+    ensureView(currentView());
     applyTabLabels();
+  }
+
+  function currentView() {
+    var h = location.hash.slice(1);
+    return VIEWS.indexOf(h) >= 0 ? h : "overview";
   }
 
   // The three tab labels live as static text in index.html; translate them here so
@@ -637,8 +759,12 @@
     if (!langToggle) return;
     // show the language you would switch TO
     langToggle.textContent = (LANG === "zh") ? "EN" : "中文";
-    langToggle.setAttribute("aria-label", (LANG === "zh") ? "Switch to English" : "切换到中文");
-    langToggle.setAttribute("title", (LANG === "zh") ? "Switch to English" : "切换到中文");
+    // The accessible name must be in the page's CURRENT language, not the target
+    // one: documentElement.lang is "en" while in English, so a Chinese aria-label
+    // there is announced by a screen reader as if it were English.
+    var label = (LANG === "zh") ? "切换到英文" : "Switch to Chinese";
+    langToggle.setAttribute("aria-label", label);
+    langToggle.setAttribute("title", label);
   }
   (function mountLangToggle() {
     // inject a toggle button styled like the tabs, into the header nav

@@ -177,4 +177,4 @@ window.LAB = {
     }
   ]
 };
-window.SITE = {"generated": "2026-07-24", "n_papers": 263, "n_code": 76, "n_methods": 56};
+window.SITE = {"n_papers": 263, "n_code": 72, "n_methods": 58, "n_lab_methods": 20, "n_ensemble_methods": 14, "n_approaches": 75};

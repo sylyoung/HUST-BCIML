@@ -32,6 +32,11 @@ from hustbciml.utils.seed import fix_random_seed
 from .exp_basic import Exp_Basic
 
 
+def _mask_labels(epochs):
+    """A copy of ``epochs`` with every label replaced by ``UNLABELED``."""
+    return replace(epochs, y=np.full(len(epochs), UNLABELED, dtype=np.int64))
+
+
 class Exp_CrossSubject(Exp_Basic):
     def run(self):
         """Run one leave-one-subject-out sweep and save the aggregated result.
@@ -49,22 +54,45 @@ class Exp_CrossSubject(Exp_Basic):
         fix_random_seed(cfg.seed)
         epochs = self._get_data()
         targets = list_targets(epochs)
-        # Hyperparameter-tuning hook (honest, opt-in): when ``hp.dev_targets`` is
-        # set, score only those subjects as held-out pseudo-targets (sources = all
-        # others, exactly as in the real protocol). The tuner selects one global HP
-        # on this source-only signal, never peeking at the reported target results.
+        # Hyperparameter-tuning hook (opt-in): when ``hp.dev_targets`` is set,
+        # score only those subjects as held-out pseudo-targets (sources = all
+        # others, exactly as in the real protocol) and select one global HP on
+        # that signal.
+        #
+        # Be precise about what this is and is not. It uses no target labels at
+        # *training* time — the fold is the ordinary LOSO fold. But the selection
+        # score IS each dev subject's held-out accuracy, computed against its true
+        # labels. So if the dev subjects also appear in the finally reported
+        # cohort (they do, as ``tune_algorithm._dev_spread`` picks a spread across
+        # all subjects), those folds' labels informed model selection. That is the
+        # common "one global HP chosen on a subject subset" practice, and it is
+        # disclosed in the cards — it is not a source-only signal.
+        #
+        # A dev-subset run is therefore *not* a full LOSO result, and must not be
+        # able to overwrite one: the run identity gets a ``dev`` tag so the two
+        # land in different folders and the distinction survives into the results
+        # tree rather than living only in a printed line.
         dev = cfg.hp.get("dev_targets")
         if dev is not None:
             want = {int(s) for s in (dev if isinstance(dev, (list, tuple)) else str(dev).split(","))}
             targets = [t for t in targets if int(t) in want]
+            dev_tag = "dev" + "-".join(str(s) for s in sorted(want))
+            cfg.run_tag = f"{cfg.run_tag}_{dev_tag}" if cfg.run_tag else dev_tag
         print(f"[data] {cfg.dataset}: {len(epochs)} trials, {len(targets)} subjects, "
               f"C={cfg.n_chans} T={cfg.n_times} classes={cfg.n_classes} sfreq={cfg.sfreq}"
-              f"{' [DEV tuning subset]' if dev is not None else ''}")
+              f"{' [DEV tuning subset — selection signal, not a reportable LOSO result]' if dev is not None else ''}")
 
         per_subject = []
         predictions = []
         val_scores = []
+        log = (lambda m: print(m, flush=True)) if cfg.verbose else (lambda m: None)
         for tid in targets:
+            # Optional per-fold reseeding. Off by default because it changes the
+            # RNG stream and therefore every published number; on, each fold is
+            # reproducible on its own instead of depending on how much randomness
+            # the folds before it consumed.
+            if cfg.fold_seed:
+                fix_random_seed(cfg.seed * 1000 + int(tid))
             # Rebuild the pipeline (and its randomly initialised model) for every
             # fold so subject ``tid``'s result never carries over weights trained
             # while another subject was held out.
@@ -80,17 +108,26 @@ class Exp_CrossSubject(Exp_Basic):
 
             # target alignment: offline (own reference) for gradient/fit strategies;
             # raw for tta (the strategy aligns online).
+            #
+            # The target handed to the aligner has its labels masked. No shipped
+            # aligner reads ``y`` (all three declare ``requires_labels = False``,
+            # and ``build_pipeline`` refuses a label-requiring aligner under this
+            # protocol), but preprocessing the held-out subject is exactly where a
+            # future supervised aligner would silently read target labels and
+            # inflate every LOSO score. Masking makes that impossible rather than
+            # merely disallowed.
             is_tta = pipe.strategy.mode == "tta"
-            target_a = None if is_tta else pipe.aligner.transform(target)
+            target_masked = _mask_labels(target)
+            target_a = None if is_tta else replace(pipe.aligner.transform(target_masked),
+                                                   y=target.y)
 
             # transductive strategies get the aligned target with labels masked out
             target_unlabeled = None
             if not is_tta and getattr(pipe.strategy, "uses_target", False):
-                target_unlabeled = replace(
-                    target_a, y=np.full(len(target_a), UNLABELED, dtype=np.int64))
+                target_unlabeled = _mask_labels(target_a)
 
             ctx = RunContext(cfg=cfg, device=self.device, augmenter=pipe.augmenter,
-                             aligner=pipe.aligner, log=lambda m: None,
+                             aligner=pipe.aligner, log=log,
                              target_unlabeled=target_unlabeled)
 
             # Train on the aligned source. The strategy carves its own validation
@@ -111,7 +148,11 @@ class Exp_CrossSubject(Exp_Basic):
             m = score(target.y, y_pred, y_score, paradigm=epochs.paradigm,
                       n_classes=epochs.n_classes)
             per_subject.append(m)
-            predictions.append({"subject": tid, "y_true": target.y, "y_score": y_score})
+            # ``y_pred`` is stored, not recomputed downstream as argmax(y_score):
+            # the metrics above were computed from it, and the two are not
+            # identical for every strategy.
+            predictions.append({"subject": tid, "y_true": target.y,
+                                "y_pred": y_pred, "y_score": y_score})
             print(f"[S{tid}] primary={m['primary']:.2f}  acc={m['accuracy']:.2f}  "
                   f"kappa={m['kappa']:.3f}  auc={m['auc']:.2f}")
 

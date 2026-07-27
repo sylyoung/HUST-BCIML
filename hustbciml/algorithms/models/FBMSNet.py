@@ -75,6 +75,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from hustbciml.core.stages import Backbone
+from hustbciml.utils.shapes import probe
 
 
 # ---------------------------------------------------------------------------
@@ -208,7 +209,7 @@ class FBMSNet(Backbone):
 
         # Infer the flattened feature width with a dummy forward so the backbone
         # is dataset-agnostic (the reference hardcodes this via get_size).
-        with torch.no_grad():
+        with probe(self):
             f = self.forward_features(torch.zeros(1, 1, self.n_chans, self.n_times))
         self.out_features = int(f.shape[1])
 
@@ -247,9 +248,17 @@ class FBMSNet(Backbone):
             try:
                 order, wn = cheb2ord(f_pass, f_stop, a_pass, a_stop)
                 b, a = cheby2(order, a_stop, wn, btype="bandpass")
-            except Exception:
-                # fall back to a fixed-order design if order estimation fails
-                b, a = cheby2(self.filt_order, a_stop, f_pass, btype="bandpass")
+            except Exception as exc:
+                # A fallback here silently changes the filter bank the row is named
+                # after — the run still completes and still reports "FBMSNet". Order
+                # estimation only fails when the band and the sampling rate are
+                # genuinely incompatible, which is a configuration error worth
+                # seeing rather than papering over.
+                raise ValueError(
+                    f"FBMSNet: Chebyshev-II order estimation failed for band "
+                    f"{lo}-{hi} Hz at sfreq={self.sfreq} Hz (pass {f_pass}, stop {f_stop}). "
+                    f"The band is not realisable at this sampling rate."
+                ) from exc
             # zero-phase impulse response -> symmetric FIR kernel for this band
             kernel = filtfilt(b, a, impulse).astype(np.float32)
             w[i, 0, 0, :] = kernel

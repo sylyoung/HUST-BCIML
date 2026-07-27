@@ -36,11 +36,15 @@ concatenated/flattened as in Sec. 3.4 (Fig. 5); the composed Linear head is the
 FC classifier of Sec. 3.5 (Eq. 8). Two knowledge priors are injected at fit time:
 
 * Temporal conv <- a windowed-sinc **band-pass FIR filter bank** (Sec. 3.2,
-  Eq. 3-6): each kernel is a length-``l`` rectangular-windowed sinc for one
-  4-Hz sub-band, giving a strong band-pass inductive bias. Data-free (needs only
-  ``sfreq`` and ``l``; set in ``__init__``). Bands are ``m`` equal 4-Hz sub-bands
-  spanning ``f_low..f_high`` (default 8-32 Hz -> 8-12, ..., 28-32; the paper's
-  m=6, l=61 default).
+  Eq. 3-6): each kernel is a length-``l`` windowed sinc for one 4-Hz sub-band,
+  giving a strong band-pass inductive bias. Data-free (needs only ``sfreq`` and
+  ``l``; set in ``__init__``). Bands are ``m`` equal 4-Hz sub-bands spanning
+  ``f_low..f_high`` (default 8-32 Hz -> 8-12, ..., 28-32; the paper's m=6, l=61
+  default). Built with ``scipy.signal.firwin``, whose default taper is a
+  **Hamming** window, not the rectangular one the paper's Eq. 3-6 truncation
+  implies. Hamming is the better-behaved band-pass prior (far lower stopband
+  ripple than a bare rectangular truncation) and is what the published row used;
+  ``window="boxcar"`` would give the literal rectangular sinc.
 * Spatial conv <- per-band **CSP filters** (Sec. 3.3; CSP objective in Sec. 2.1,
   Eq. 1-2), fit on the (aligned) source in ``init_from_source`` (the shared
   supervised training loop fires this hook on the training split before the
@@ -63,7 +67,14 @@ Linear head, so that FC initialization is omitted and the head trains from
 scratch. Table 9 shows the FC init+fine-tuning matters most among the modules, so
 this is a genuine simplification (the paper's FC is still fine-tuned after init,
 which the from-scratch head partially recovers). (3) A ``log(var+eps)`` stabilizer
-is used; the paper's log-variance (Eq. 7) omits the eps.
+is used; the paper's log-variance (Eq. 7) omits the eps. (4) The CSP filters are
+fit on signals produced by ``scipy.signal.lfilter`` — a causal, full-length FIR
+pass — whereas inference runs the same taps as a ``Conv2d`` valid convolution
+followed by BatchNorm. The taps are identical and symmetric, so the two differ by
+a group-delay shift and the ``l-1`` edge samples the valid convolution drops, not
+by the filter itself; the CSP spatial filters are estimated on band-power over the
+whole trial, which is insensitive to that shift. Fitting through the temporal
+module itself would remove the difference entirely and is the cleaner form.
 """
 from __future__ import annotations
 

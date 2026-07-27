@@ -22,15 +22,17 @@ NT = "/home/sylyoung/hustbciml_results_nettune"
 DATASETS = ["BNCI2014001", "BNCI2014002", "BNCI2015001"]
 SEEDS = [1, 2, 3]
 
-# sweep methods -> (network-trained transfer/privacy). SAFE runs 4-class on 2014001.
+# sweep methods -> (network-trained transfer/privacy).
 SWEEP = ["MEKT", "MDMAML", "ASFA", "SAFE"]
 # backbones tuned via tune_networks (display name == tuned-file key)
 BACKBONES = ["TIE-EEGNet", "KDFNet"]
 
 
 def ds_for(algo, ds):
-    if algo == "SAFE" and ds == "BNCI2014001":
-        return "BNCI2014001-4"
+    # Identity: every method in this table is read from its two-class run. SAFE was
+    # special-cased to BNCI2014001-4, which pulled a four-class result into the
+    # two-class privacy column; the four-class numbers live in the RESULTS.md
+    # appendix and are extracted separately.
     return ds
 
 

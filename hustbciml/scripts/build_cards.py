@@ -176,7 +176,7 @@ def index_md(content, repro):
     out = [
         "# Algorithm cards",
         "",
-        "One card per benchmarked method, generated from the reproduction registry. "
+        "One card per benchmarked method — every key on the public leaderboard except the ensemble combiners, which are post-hoc aggregators over several trained models rather than pipeline compositions and are documented on the leaderboard row itself. `tests/repro/test_repro_targets.py` fails if a key is missing. Generated from the reproduction registry. "
         "Accuracy is the 3-seed mean ± the standard deviation across seeds on "
         "**BNCI2014001**, cross-subject leave-one-subject-out (9 subjects, 2-class, "
         "chance 50%). Single-axis methods show Δ against that axis's baseline; "

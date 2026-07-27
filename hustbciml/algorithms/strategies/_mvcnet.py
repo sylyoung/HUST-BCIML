@@ -32,7 +32,8 @@ import torch
 import torch.nn as nn
 
 from hustbciml.core.batch import UNLABELED
-from hustbciml.utils.montage import reflection_permutation
+from hustbciml.utils.montage import (check_montage, left_right_class_swap,
+                                     reflection_permutation)
 
 
 class NTXentLoss(nn.Module):
@@ -95,22 +96,41 @@ def freqshift_view(x: torch.Tensor, sfreq: float, f_shift: float = 0.1) -> torch
     return torch.from_numpy(out.astype(np.float32)).unsqueeze(1).to(x.device)
 
 
-def reflect_view(x: torch.Tensor, y: torch.Tensor, perm, n_classes: int):
+def reflect_view(x: torch.Tensor, y: torch.Tensor, perm):
     """Space-domain view: Channel Reflection — left/right hemisphere channel swap
-    with the 2-class label swap (paper's CR augmentation, Table 2; Wang et al., 2024)."""
-    C = x.shape[2]
-    perm = torch.arange(C - 1, -1, -1, device=x.device) if perm is None else perm.to(x.device)
+    with the left/right label swap (paper's CR augmentation, Table 2; Wang et al.,
+    2024).
+
+    ``perm`` must be a real anatomical mirror and the task must be left-vs-right;
+    ``make_reflection_perm`` is what establishes both, and the caller drops this
+    view entirely when it returns None. There is deliberately no fallback here:
+    reflecting an arbitrary channel order, or swapping the label of a
+    right-hand-vs-feet trial, produces mislabeled training data.
+    """
+    perm = perm.to(x.device)
     xr = x[:, :, perm, :]
     yr = y.clone()
-    if n_classes == 2:
-        known = yr != UNLABELED
-        yr[known] = 1 - yr[known]
+    known = yr != UNLABELED
+    yr[known] = 1 - yr[known]
     return xr, yr
 
 
-def make_reflection_perm(ch_names):
-    perm = reflection_permutation(list(ch_names) if ch_names else [])
-    return None if len(perm) == 0 else torch.from_numpy(perm).long()
+def make_reflection_perm(ch_names, classes):
+    """The reflection permutation, or None when Channel Reflection does not apply.
+
+    None means two different things, both of which must disable the view rather
+    than trigger a substitute: the montage is not a set of 10-20 electrode
+    positions (BNCI2014002 exposes ``EEG1 ... EEG15``), or the two classes are not
+    a left/right pair (BNCI2014002 and BNCI2015001 are right-hand vs feet, whose
+    mirror image is still the same class).
+    """
+    ok, _ = check_montage(list(ch_names or []))
+    if not ok:
+        return None
+    ok, _ = left_right_class_swap(list(classes or []))
+    if not ok:
+        return None
+    return torch.from_numpy(reflection_permutation(list(ch_names))).long()
 
 
 # --------------------------- auxiliary modules ------------------------------

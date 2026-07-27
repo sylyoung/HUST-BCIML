@@ -5,6 +5,7 @@ aligner, EEGNet backbone, Linear head, and both strategies compose and run
 end-to-end, and EA-EEGNet learns above chance on the synthetic task.
 """
 import dataclasses
+import hashlib
 
 from hustbciml.core.config import Config
 from hustbciml.core import registry
@@ -18,6 +19,12 @@ def _toy_cfg(**over):
                 lr=1e-3, seed=2023, itr=1, device="cpu", early_stop_patience=8,
                 results_dir="/tmp/hustbciml_test_results")
     base.update(over)
+    # Every distinct test config gets its own results folder. Two tests that run
+    # the same algorithm with different knobs (T-TIME at steps=0 and steps=1, say)
+    # otherwise share one ``setting()`` and one of them overwrites the other's
+    # metrics — which is precisely what ``save_results`` now refuses to do.
+    base.setdefault("run_tag", hashlib.sha1(
+        ",".join(f"{k}={over[k]}" for k in sorted(over)).encode()).hexdigest()[:8])
     return Config(**base)
 
 
@@ -67,9 +74,16 @@ def test_ea_eegnet_learns_above_chance():
     assert summary["accuracy"]["mean"] > 85.0, summary["accuracy"]
 
 
-def test_ea_beats_no_alignment():
-    """Transfer works AND EA helps: EA-aligned mean >= no-alignment mean.
-    (On toy, EA ~99 vs no-align ~90 with much higher variance.)"""
+def test_ea_does_not_regress_against_no_alignment():
+    """Transfer works and EA does not hurt: EA-aligned mean is within 1 point of,
+    or above, the no-alignment mean, and is clearly above chance.
+
+    Named for what it asserts. The tolerance is deliberate — on a 4-subject toy
+    set the two are close enough that a strict inequality would be flaky — but a
+    test called "EA beats no alignment" that passes when EA is a point *worse* is
+    worse than no test, because the name is what a reader trusts when skimming.
+    (On toy, EA ~99 vs no-align ~90 with much higher variance.)
+    """
     ea = Exp_CrossSubject(_toy_cfg(epochs=50, aligner="EA")).run()
     noa = Exp_CrossSubject(_toy_cfg(epochs=50, aligner="Identity", algorithm=None)).run()
     assert ea["accuracy"]["mean"] >= noa["accuracy"]["mean"] - 1.0, (ea, noa)

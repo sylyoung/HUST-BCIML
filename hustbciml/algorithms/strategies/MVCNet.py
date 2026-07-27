@@ -86,6 +86,11 @@ from ._mvcnet import (NTXentLoss, build_encoder, build_projector, flip_view,
 class MVCNet(Strategy):
     mode = "gradient"
 
+    # Defaults, overridable per run with ``--hp mvc_lamda1=0.1`` etc. The
+    # benchmark's published MVCNet rows use the 1.0/1.0 weights below, which are
+    # ten times the paper's 0.1/0.1 — a deviation that used to be visible only in
+    # these two comments and reachable from nowhere, because the strategy never
+    # read ``cfg.hp``. Both facts are now stated in the MVCNet card.
     lamda1: float = 1.0       # L_CVC weight = paper's lambda (Eq. 6; paper uses 0.1)
     lamda2: float = 1.0       # L_CMC weight = paper's gamma  (Eq. 6; paper uses 0.1)
     temperature: float = 0.2  # NT-Xent temperature tau (Eq. 1/3)
@@ -95,17 +100,30 @@ class MVCNet(Strategy):
         cfg, device = ctx.cfg, ctx.device
         model.to(device)
 
+        lamda1 = float(cfg.hp.get("mvc_lamda1", self.lamda1))
+        lamda2 = float(cfg.hp.get("mvc_lamda2", self.lamda2))
+        temperature = float(cfg.hp.get("mvc_temp", self.temperature))
+        f_shift = float(cfg.hp.get("mvc_f_shift", self.f_shift))
+
         C, T = source.n_channels, source.n_times
         feat_dim = model.backbone.out_features
         netE = build_encoder(T).to(device)                 # Transformer-branch encoder (paper Sec. 3.2)
         netP = build_projector(C * T, feat_dim * 4, feat_dim).to(device)  # projector onto CNN feature dim
-        perm = make_reflection_perm(cfg.ch_names)
+        # Channel Reflection is a *conditional* view: it needs a real 10-20
+        # montage and a left/right class pair. On BNCI2014002 (generic EEG1..15
+        # labels, right-hand vs feet) and BNCI2015001 (right-hand vs feet) it
+        # applies to neither, so the view is dropped rather than fabricated. The
+        # contrastive losses below are written over however many views survive.
+        perm = make_reflection_perm(cfg.ch_names, cfg.classes)
+        ctx.log(f"  [MVCNet] views: flip, freq-shift"
+                f"{', channel-reflection' if perm is not None else ' (channel reflection N/A here)'}")
 
         params = list(model.parameters()) + list(netE.parameters()) + list(netP.parameters())
         optimizer = torch.optim.Adam(params, lr=cfg.lr, weight_decay=cfg.weight_decay)
         criterion = nn.CrossEntropyLoss()
 
-        tr_idx, va_idx = split_train_val(len(source), cfg.val_ratio, cfg.seed)
+        tr_idx, va_idx = split_train_val(len(source), cfg.val_ratio, cfg.seed,
+                                         domain=source.domain, mode=cfg.val_split)
         train_epochs = source.select(tr_idx)
         has_val = len(va_idx) > 0
         val_epochs = source.select(va_idx) if has_val else None
@@ -123,34 +141,37 @@ class MVCNet(Strategy):
                     continue
                 batch = batch.to(device)
                 x, y = batch.x, batch.y
-                x1, y1 = flip_view(x), y
-                x2, y2 = freqshift_view(x, source.sfreq, self.f_shift), y
-                x3, y3 = reflect_view(x, y, perm, cfg.n_classes)
+                # The paper's three views: time-domain flip, frequency shift, and
+                # (where valid) the space-domain channel reflection.
+                views = [(flip_view(x), y),
+                         (freqshift_view(x, source.sfreq, f_shift), y)]
+                if perm is not None:
+                    views.append(reflect_view(x, y, perm))
 
-                # CNN branch: features f* and logits o* for raw + 3 views
+                # CNN branch: features f* and logits o* for raw + each view
                 f0, o0 = model(x)
-                f1, o1 = model(x1)
-                f2, o2 = model(x2)
-                f3, o3 = model(x3)
+                fv, ov = zip(*(model(xv) for xv, _ in views))
                 # L_CLS (Eq. 5): CE over the raw trial and the augmented views
-                ce = criterion(o0, y) + criterion(o1, y1) + criterion(o2, y2) + criterion(o3, y3)
+                ce = criterion(o0, y) + sum(criterion(o, yv)
+                                            for o, (_, yv) in zip(ov, views))
 
                 # Transformer branch: features z* for the same signals
-                z0, z1, z2, z3 = project(x), project(x1), project(x2), project(x3)
+                z0 = project(x)
+                zv = [project(xv) for xv, _ in views]
                 bs = f0.shape[0]
-                cvc = NTXentLoss(device, bs * 2, self.temperature)
-                cmc = NTXentLoss(device, bs * 4, self.temperature)
+                n_rep = 1 + len(views)
+                cvc = NTXentLoss(device, bs * 2, temperature)
+                cmc = NTXentLoss(device, bs * n_rep, temperature)
                 # L_CVC (Eq. 1-2): raw as anchor vs each view, averaged; per trial the
                 # branch features [f;z] are stacked so both branches see the views.
                 raw_rep = torch.cat([f0, z0])
-                loss_cvc = (cvc(raw_rep, torch.cat([f1, z1]))
-                            + cvc(raw_rep, torch.cat([f2, z2]))
-                            + cvc(raw_rep, torch.cat([f3, z3]))) / 3
+                loss_cvc = sum(cvc(raw_rep, torch.cat([f, z]))
+                               for f, z in zip(fv, zv)) / len(views)
                 # L_CMC (Eq. 3-4): align CNN-branch features vs Transformer-branch
                 # features of the same trial (across all views).
-                loss_cmc = cmc(torch.cat([f0, f1, f2, f3]), torch.cat([z0, z1, z2, z3]))
+                loss_cmc = cmc(torch.cat([f0, *fv]), torch.cat([z0, *zv]))
                 # L_all (Eq. 6): classification + lambda*CVC + gamma*CMC
-                loss = ce + self.lamda1 * loss_cvc + self.lamda2 * loss_cmc
+                loss = ce + lamda1 * loss_cvc + lamda2 * loss_cmc
 
                 optimizer.zero_grad()
                 loss.backward()

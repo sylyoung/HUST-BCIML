@@ -97,13 +97,21 @@ def _seed_run(dataset, seed, device, data_dir, results_dir, algorithm, combiners
     for c in combiners:
         if c == "SML" and C != 2:                # binary SML undefined for >2 classes
             continue
-        if c == "SML-OVR" and C == 2:            # multi-class one-vs-rest variant
-            continue
+        fn = COMBINERS[c]
+        if c == "SML-OVR" and C == 2:
+            # One policy across all three runners: SML-OVR is the multi-class
+            # one-vs-rest extension of SML and reduces exactly to binary SML on two
+            # classes, so report that number under the SML-OVR key rather than
+            # skipping the row here and aliasing it in decentralized.py. Two
+            # runners disagreeing on what an "SML-OVR" row means for the same
+            # two-class benchmark is the thing worth avoiding. The native
+            # multi-class path (C > 2) still runs SMLOVR.
+            fn = COMBINERS["SML"]
         try:
             accs = []
             for t in subjects:
                 stack = np.stack(list(hard[t].values()))     # (n_backbones, N, C) one-hot
-                accs.append(accuracy_score(ytrue[t], COMBINERS[c](stack)))
+                accs.append(accuracy_score(ytrue[t], fn(stack)))
             out[c] = float(np.mean(accs) * 100)
         except Exception as e:                   # a degenerate combiner must not kill the run
             print(f"[warn] combiner {c!r} failed, skipping it — {type(e).__name__}: {e}")

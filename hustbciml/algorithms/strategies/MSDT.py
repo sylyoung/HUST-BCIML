@@ -101,6 +101,8 @@ def _label_smooth_ce(logits: torch.Tensor, y: torch.Tensor, n_classes: int, eps:
 
 class MSDT(Strategy):
     mode = "fit"
+    transductive_predict = True   # predict() adapts the source models on the whole
+                                  # unlabeled target batch before scoring it
     # Each source subject's model depends only on that subject's own data, not on the
     # target, so under leave-one-subject-out it is identical across the targets it is a
     # source for. Train it once per (dataset, seed, subject) and reuse a deep copy per

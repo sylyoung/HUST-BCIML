@@ -11,8 +11,8 @@ A standard EEGNet whose depthwise spatial convolution is initialized with Common
 
 | Metric | Value |
 |---|--:|
-| Accuracy (mean ± std across seeds) | 76.13 ± 0.85 |
-| Δ vs baseline (EA-EEGNet, 72.07) | +4.06 |
+| Accuracy (mean ± std across seeds) | 75.15 ± 1.06 |
+| Δ vs baseline (EA-EEGNet, 72.07) | +3.08 |
 | Reference range (expected band) | 72–82 |
 
 Accuracy is the mean over seeds; ± is the standard deviation *across* seeds (a reproducibility figure, not the cross-subject spread). The reference range is the published / expected band on this dataset.

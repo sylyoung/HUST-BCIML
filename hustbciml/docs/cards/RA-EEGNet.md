@@ -11,8 +11,8 @@ Riemannian Alignment recenters each subject by the affine-invariant (Fréchet) g
 
 | Metric | Value |
 |---|--:|
-| Accuracy (mean ± std across seeds) | 73.97 ± 1.27 |
-| Δ vs baseline (no-alignment EEGNet, 69.34) | +4.63 |
+| Accuracy (mean ± std across seeds) | 73.69 ± 1.09 |
+| Δ vs baseline (no-alignment EEGNet, 69.34) | +4.35 |
 | Reference range (expected band) | 70–80 |
 
 Accuracy is the mean over seeds; ± is the standard deviation *across* seeds (a reproducibility figure, not the cross-subject spread). The reference range is the published / expected band on this dataset.

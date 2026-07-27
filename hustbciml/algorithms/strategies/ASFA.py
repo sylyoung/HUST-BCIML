@@ -126,13 +126,23 @@ class ASFA(Strategy):
         opt = torch.optim.SGD(list(model.backbone.parameters()) + list(aux.parameters()),
                               lr=adapt_lr, momentum=0.9)
 
+        # A held-out subject with fewer trials than ``batch_size`` yields no
+        # batches at all under ``drop_last=True``: the loop body never runs, and
+        # ``predict`` returns the un-adapted source model — an ERM result
+        # published under ASFA's name with no warning. Keep the whole-batch
+        # schedule (which is what the reported numbers used, and what the three
+        # shipped datasets always produce) and fall back to keeping the short
+        # batch only when it would otherwise be nothing at all.
+        drop_last = len(target) >= cfg.batch_size
+        adapt_steps = 0
         for epoch in range(adapt_epochs):
             model.backbone.train()
             model.head.eval()
             for batch in iterate_batches(target, cfg.batch_size, shuffle=True,
-                                         drop_last=True, seed=cfg.seed + epoch):
+                                         drop_last=drop_last, seed=cfg.seed + epoch):
                 if batch.x.size(0) <= 1:                       # BatchNorm needs >1
                     continue
+                adapt_steps += 1
                 xb = batch.x.to(device)
                 feats, logits = model(xb)
 
@@ -160,6 +170,12 @@ class ASFA(Strategy):
 
         for p in model.head.parameters():
             p.requires_grad_(True)
+        if adapt_steps == 0:
+            raise RuntimeError(
+                f"ASFA performed 0 adaptation steps on a target of {len(target)} trials "
+                f"(batch_size={cfg.batch_size}); the returned model is the un-adapted "
+                f"source model and must not be reported as ASFA."
+            )
 
         logits = forward_logits(model, target, device)
         y_score = torch.softmax(torch.from_numpy(logits), dim=1).numpy()

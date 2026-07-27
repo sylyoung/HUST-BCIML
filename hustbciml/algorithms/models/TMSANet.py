@@ -58,6 +58,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from hustbciml.core.stages import Backbone
+from hustbciml.utils.shapes import probe
 
 
 # --- Multi-scale 1D convolution (paper Section 2.3, local-key generator) ----
@@ -66,14 +67,18 @@ class _MultiScaleConv1d(nn.Module):
     their outputs along the channel axis. Used inside the attention module to
     produce local keys that see short temporal contexts of sizes 3 and 5."""
 
-    def __init__(self, in_channels, out_channels, kernel_sizes, padding):
+    def __init__(self, in_channels, out_channels, kernel_sizes, padding, dropout=0.5):
         super().__init__()
         self.convs = nn.ModuleList([
             nn.Conv1d(in_channels, out_channels, kernel_size=k, padding=p)
             for k, p in zip(kernel_sizes, padding)
         ])
         self.bn = nn.BatchNorm1d(out_channels * len(kernel_sizes))
-        self.dropout = nn.Dropout(0.5)
+        # Configurable rather than a literal 0.5: TMSANet exposes ``attn_drop``,
+        # so a sweep that appears to change attention dropout was leaving this
+        # part of the attention mechanism pinned. 0.5 stays the default, which is
+        # what the published row used.
+        self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
         conv_outs = [conv(x) for conv in self.convs]
@@ -99,7 +104,8 @@ class _MultiHeadedAttention(nn.Module):
         # multi-scale conv over the sequence supplies the local keys
         kernel_sizes = [3, 5]
         padding = [1, 2]
-        self.multi_scale_conv_k = _MultiScaleConv1d(d_model, d_model, kernel_sizes, padding)
+        self.multi_scale_conv_k = _MultiScaleConv1d(d_model, d_model, kernel_sizes,
+                                                    padding, dropout=dropout)
 
         # linear projections: query, local key, global key, value, output
         self.w_q = nn.Linear(d_model, n_head * self.d_k)
@@ -253,7 +259,7 @@ class TMSANet(Backbone):
 
         # infer the pre-logit feature width via a dummy forward, so the backbone
         # is dataset-agnostic (the paper's final Linear to n_classes is removed)
-        with torch.no_grad():
+        with probe(self):
             feas = self._embed(torch.zeros(1, 1, n_chans, n_times))
         self.out_features = feas.reshape(1, -1).shape[1]
 

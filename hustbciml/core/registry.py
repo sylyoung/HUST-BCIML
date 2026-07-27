@@ -49,6 +49,20 @@ def available(group: str) -> List[str]:
     return sorted(names)
 
 
+def _expected_base(group: str):
+    """The ABC a plug-in in ``group`` must subclass.
+
+    Imported lazily so ``registry`` stays importable from ``stages`` without a
+    cycle, and so listing the catalog never pulls torch in.
+    """
+    from . import stages
+    return {
+        "aligners": stages.Aligner, "augmenters": stages.Augmenter,
+        "models": stages.Backbone, "heads": stages.Head,
+        "strategies": stages.Strategy, "ensembles": stages.Combiner,
+    }[group]
+
+
 def resolve(group: str, name: str) -> Type:
     """Return the class ``name`` from ``algorithms/<group>/<name>.py``.
 
@@ -57,6 +71,13 @@ def resolve(group: str, name: str) -> Type:
     the same ``name`` is pulled out of it. If the module exists but does not
     define that class, the error lists what the module does define, which is the
     usual symptom of a file whose class name drifted from its file name.
+
+    The class must also subclass the ABC for its group. Filename and class name
+    matching is not enough on its own: a file in ``strategies/`` that defines a
+    class of the right name but the wrong base is accepted by the naming
+    convention and only fails much later, at the first call whose contract it
+    does not implement — or worse, not at all, if it happens to be call-compatible
+    with a different stage's contract.
     """
     if group not in GROUPS:
         raise KeyError(f"unknown plug-in group {group!r}; expected one of {GROUPS}")
@@ -67,7 +88,14 @@ def resolve(group: str, name: str) -> Type:
             f"(filename == class name); found: "
             f"{[a for a in dir(module) if not a.startswith('_')]}"
         )
-    return getattr(module, name)
+    cls = getattr(module, name)
+    base = _expected_base(group)
+    if not (isinstance(cls, type) and issubclass(cls, base)):
+        raise TypeError(
+            f"{module.__name__}.{name} must subclass {base.__name__} to be a "
+            f"{group[:-1]} plug-in; got {cls!r}"
+        )
+    return cls
 
 
 def build(group: str, name: str, **kwargs):
@@ -80,17 +108,24 @@ def build(group: str, name: str, **kwargs):
     return resolve(group, name)(**kwargs)
 
 
-def catalog() -> Dict[str, List[str]]:
+def catalog(strict: bool = True) -> Dict[str, List[str]]:
     """All available plug-ins, grouped — for ``run.py --list``.
 
-    Best-effort by design: if one group fails to scan (a broken folder, say),
-    its entry becomes an error string instead of aborting the whole listing, so
-    the user still sees every other group.
+    ``strict=True`` (the default) propagates a scan failure. A whole stage family
+    that cannot be loaded is a broken installation, and rendering it as a
+    plausible-looking catalog entry — the previous behaviour, which stored the
+    error string *as if it were a plug-in name* — hides that from the one command
+    a user runs to check the installation.
+
+    ``strict=False`` keeps the best-effort listing for diagnostics, where seeing
+    which groups do load is the point.
     """
     out = {}
     for g in GROUPS:
         try:
             out[g] = available(g)
-        except Exception as exc:  # pragma: no cover - diagnostic only
+        except Exception as exc:
+            if strict:
+                raise RuntimeError(f"plug-in group {g!r} failed to scan: {exc}") from exc
             out[g] = [f"<error: {exc}>"]
     return out

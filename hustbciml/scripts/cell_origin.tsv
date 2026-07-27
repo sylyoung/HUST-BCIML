@@ -1,0 +1,213 @@
+# Which server produced each published leaderboard cell.
+# HUST-BCIML EEG-decoding benchmark. Author: Siyang Li <lsyyoungll@gmail.com>, 2026.
+#
+# The benchmark is bit-reproducible on a given machine but NOT across machines.
+# Measured spread on a single seed reaches 2.08 accuracy points.
+#
+# It is not the GPU. Every machine here runs a different NVIDIA driver, yet
+# NoAlign-EEGNet — a full GPU training run, and the only configuration that skips
+# Euclidean Alignment — is bit-identical everywhere, while every aligned
+# configuration differs. EA whitens with a covariance inverse square root: a LAPACK
+# eigendecomposition, on the CPU, whose last bits training then amplifies. All four
+# machines run the same Python 3.8.13 / torch 1.11.0 / numpy 1.22.3 stack, so the
+# package versions are not the variable either. The BLAS underneath them is:
+#
+#   machine  BLAS                                CPU
+#   10022    Intel MKL (conda)                   Xeon Gold 6278
+#   20022    Intel MKL (conda)                   Xeon Platinum 8176
+#   7002     reference cblas/blas (micromamba)   Xeon Gold 6230
+#   60022    reference cblas/blas (micromamba)   Xeon Platinum 8375C
+#
+# 10022 and 20022 are bit-identical to each other and are exactly the two linked
+# against MKL. 7002 and 60022 share a BLAS build but sit on different CPU
+# microarchitectures, and a reference build picks kernels per CPU; each is its own
+# regime.
+#
+# A cell must therefore be re-measured on the machine that produced its published
+# value, or the old-vs-new delta mixes the code change with a machine change.
+#
+# confidence: exact    = surviving evidence reproduces the published value, either an
+#                        ordinary 3-seed run tree or a verdict file (tuned_<dataset>.json)
+#                        from tune_networks.py (backbone learning rates) or
+#                        tune_algorithm.py (per-method knobs), which records the
+#                        selected configuration with its 3-seed mean and std
+#             inferred = no surviving evidence; assigned from the preset pattern
+#
+# Which of the two kinds of evidence a cell has is not a bookkeeping detail: it decides
+# how the cell must be re-measured. A run tree publishes the preset's defaults, so the
+# preset re-runs it. A verdict file publishes whatever the grid search selected, so only
+# re-running that selection reproduces what the number means. Re-running the preset
+# instead reports a delta that mixes a code change with a configuration change. The
+# evidence column below names the file, so the kind is always recoverable.
+#
+# Every row is currently `exact`. The three that were `inferred` — CSDA-EEGNet on
+# BNCI2014001, MDMAML and MVCNet on BNCI2015001 — were not gaps at all: their numbers
+# live in verdict files, which the resolver read only under hustbciml_results_nettune
+# and only for the four learning-rate-tuned backbones. Two of the three had been
+# assigned to the wrong machine as a result, so their re-measurement was scheduled on a
+# different BLAS family than produced them. Reading every tuned_<dataset>.json on every
+# reachable box resolved all three and 14 further cells that had no entry.
+#
+# algorithm	dataset	origin	confidence	basis
+ABAT	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+ABAT	BNCI2014002	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
+ABAT	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+ASFA	BNCI2014001	7002	exact	3-seed mean reproduces the published value
+ASFA	BNCI2014002	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
+ASFA	BNCI2015001	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
+BFT	BNCI2014002	60022	exact	3-seed mean reproduces the published value
+BFT	BNCI2015001	60022	exact	3-seed mean reproduces the published value
+BN-adapt	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+BN-adapt	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+BN-adapt	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+CDAN	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+CDAN	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+CDAN	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+CR-EEGNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+CSDA-EEGNet	BNCI2014001	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
+CSDA-EEGNet	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+CSDA-EEGNet	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+CSP-LDA	BNCI2014001	20022	exact	73.7654 in eegdec_results; deterministic, so seed1 is the 3-seed mean
+CSP-LDA	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+CSP-LDA	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+CSP-Net	BNCI2014001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
+CSP-Net	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+CSP-Net	BNCI2015001	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/nets2015001/tuned_<ds>.json
+DAN	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+DAN	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+DAN	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+DELTA	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+DELTA	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+DELTA	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+DJP-MMD	BNCI2014001	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
+DJP-MMD	BNCI2014002	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
+DJP-MMD	BNCI2015001	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
+EA-ADFCNN	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+EA-ADFCNN	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+EA-ADFCNN	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+EA-CTNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+EA-CTNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+EA-CTNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+EA-DANN	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+EA-DANN	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+EA-DANN	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+EA-DBConformer	BNCI2014001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
+EA-DBConformer	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+EA-DBConformer	BNCI2015001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
+EA-DeepConvNet	BNCI2014001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
+EA-DeepConvNet	BNCI2014002	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
+EA-DeepConvNet	BNCI2015001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
+EA-EEGConformer	BNCI2014001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
+EA-EEGConformer	BNCI2014002	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
+EA-EEGConformer	BNCI2015001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
+EA-EEGDeformer	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+EA-EEGDeformer	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+EA-EEGDeformer	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+EA-EEGNeX	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+EA-EEGNeX	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+EA-EEGNeX	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+EA-EEGNet	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+EA-EEGNet	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+EA-EEGNet	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+EA-EEGWaveNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+EA-EEGWaveNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+EA-EEGWaveNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+EA-FBMSNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+EA-FBMSNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+EA-FBMSNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+EA-KDFNet	BNCI2014001	7002	exact	3-seed mean reproduces the published value
+EA-KDFNet	BNCI2014002	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
+EA-KDFNet	BNCI2015001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
+EA-MSCFormer	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+EA-MSCFormer	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+EA-MSCFormer	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+EA-MSVTNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+EA-MSVTNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+EA-MSVTNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+EA-ShallowConvNet	BNCI2014001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
+EA-ShallowConvNet	BNCI2014002	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
+EA-ShallowConvNet	BNCI2015001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
+EA-SlimSeiz	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+EA-SlimSeiz	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+EA-SlimSeiz	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+EA-TMSANet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+EA-TMSANet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+EA-TMSANet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+FComb-EEGNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+FComb-EEGNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+FComb-EEGNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+FShift-EEGNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+FShift-EEGNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+FShift-EEGNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+FSurr-EEGNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+FSurr-EEGNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+FSurr-EEGNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+FedAvg	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+FedAvg	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+FedAvg	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+FedBS	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+FedBS	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+FedBS	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+Flip-EEGNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+Flip-EEGNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+Flip-EEGNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+HS-EEGNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+HS-EEGNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+HS-EEGNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+ISFDA	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+ISFDA	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+ISFDA	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+JAN	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+JAN	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+JAN	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+LSFT	BNCI2014001	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
+LSFT	BNCI2014002	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
+LSFT	BNCI2015001	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
+MCC	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+MCC	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+MCC	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+MDD	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+MDD	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+MDD	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+MDMAML	BNCI2014001	7002	exact	3-seed mean reproduces the published value
+MDMAML	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+MDMAML	BNCI2015001	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/priv/tuned_<ds>.json
+MSDT	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+MSDT	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+MVCNet	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+MVCNet	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+MVCNet	BNCI2015001	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/mvcnet/tuned_<ds>.json
+NoAlign-EEGNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+Noise-EEGNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+Noise-EEGNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+Noise-EEGNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+PAT	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+PAT	BNCI2014002	60022	exact	3-seed mean reproduces the published value
+PAT	BNCI2015001	60022	exact	3-seed mean reproduces the published value
+PL	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+PL	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+PL	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+RA-EEGNet	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+RA-EEGNet	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+RA-EEGNet	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+Riemann-MDM	BNCI2014001	20022	exact	71.6821 in eegdec_results; deterministic, so seed1 is the 3-seed mean
+Riemann-MDM	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+Riemann-MDM	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+SAFE	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+SAFE	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+SAFE	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+SAR	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+SAR	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+SAR	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+SHOT	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+SHOT	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+SHOT	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+Scale-EEGNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
+Scale-EEGNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
+Scale-EEGNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+T-TIME	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+T-TIME	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+T-TIME	BNCI2015001	7002	exact	3-seed mean reproduces the published value
+Tent	BNCI2014001	60022	exact	3-seed mean reproduces the published value
+Tent	BNCI2014002	7002	exact	3-seed mean reproduces the published value
+Tent	BNCI2015001	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json

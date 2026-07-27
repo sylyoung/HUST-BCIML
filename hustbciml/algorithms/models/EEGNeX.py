@@ -55,6 +55,7 @@ import torch
 import torch.nn as nn
 
 from hustbciml.core.stages import Backbone
+from hustbciml.utils.shapes import probe
 
 
 class EEGNeX(Backbone):
@@ -103,7 +104,7 @@ class EEGNeX(Backbone):
 
         # Infer the flattened pre-logit width by a dummy forward, replacing the
         # reference's hardcoded 8 * (time_step // 32) so any (C, T) works.
-        with torch.no_grad():
+        with probe(self):
             dummy = torch.zeros(1, 1, n_chans, n_times)
             self.out_features = self._features(dummy).shape[1]
 

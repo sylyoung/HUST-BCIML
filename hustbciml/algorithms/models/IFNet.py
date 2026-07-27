@@ -37,6 +37,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from hustbciml.core.stages import Backbone
+from hustbciml.utils.shapes import probe
 
 
 class _Conv(nn.Module):
@@ -102,6 +103,20 @@ class IFNet(Backbone):
         # paper's value on BNCI2014001, so roughly 8 temporal patches survive.
         if patch_size is None:
             patch_size = max(1, (n_times - (1 if drop_last_t else 0)) // 8)
+        # ``radix`` is the number of frequency bands the stem expects to be stacked
+        # on the channel axis. ``forward_features`` feeds it ``x.squeeze(1)``, which
+        # has exactly ``n_chans`` channels, so anything other than radix=1 asks the
+        # first grouped convolution for ``n_chans * radix`` channels it will never
+        # receive. That used to surface as a shape error from inside the
+        # construction-time dummy forward; say what is actually wrong instead.
+        if int(radix) != 1:
+            raise NotImplementedError(
+                f"IFNet radix={radix}: the multi-band input path is not wired up in this "
+                f"port — the pipeline supplies a single-band (n_chans, n_times) trial, so "
+                f"the stem would expect {n_chans * radix} channels and get {n_chans}. "
+                f"Only radix=1 is supported; a filter-bank front end would have to produce "
+                f"the stacked bands first."
+            )
         # The interactive-frequency stem: filter-bank split, per-band temporal
         # conv, InterFre fusion, and patch-average pooling (see _Stem).
         self.stem = _Stem(n_chans * radix, embed_dims, kernel_size, patch_size,
@@ -110,7 +125,7 @@ class IFNet(Backbone):
         # forward. The paper applies a LogPower step and a linear classifier on
         # top of these features. Here the shared hustbciml Linear head plays that
         # final classifier role.
-        with torch.no_grad():
+        with probe(self):
             feat = self.stem(torch.zeros(1, n_chans, n_times)).flatten(1)
         self.out_features = feat.shape[1]
         self.apply(self._init)

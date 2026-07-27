@@ -186,11 +186,20 @@ class Strategy(ABC):
     """
 
     mode: str = "gradient"
-    # Whether the strategy is transductive, meaning it looks at the (unlabeled)
-    # target during fit. When True, the Exp fills ``ctx.target_unlabeled`` with
-    # the aligned, label-masked target epochs and the strategy reads it there.
-    # DANN and MEKT set this; plain ERM does not.
+    # Whether the strategy is transductive *during fit*: it looks at the
+    # (unlabeled) target while training. When True, the Exp fills
+    # ``ctx.target_unlabeled`` with the aligned, label-masked target epochs and
+    # the strategy reads it there. DANN, CDAN, MCC, MDD, DAN, JAN and DJP-MMD set
+    # this; plain ERM does not.
     uses_target: bool = False
+    # Whether the strategy is transductive *during predict*: it consumes the whole
+    # unlabeled target batch to fit projections or pseudo-labels before scoring
+    # it. The classical ``mode='fit'`` transfer methods (MEKT, LSFT, MSDT) work
+    # this way — they never see ``ctx.target_unlabeled`` because they are handed
+    # the target directly in ``predict``. Kept as a separate flag so that
+    # "reads unlabeled target data" can be answered correctly for every strategy;
+    # reading only ``uses_target`` would classify these three as non-transductive.
+    transductive_predict: bool = False
 
     @abstractmethod
     def fit(self, model: nn.Module, source: EEGEpochs, ctx) -> nn.Module:

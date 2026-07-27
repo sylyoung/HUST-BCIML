@@ -54,7 +54,14 @@ class SML(Combiner):
         Q = dev @ dev.T / (pred.shape[1] - 1)            # (K, K) vote covariance
         # Leading eigenvector of Q ~ the models' balanced accuracies (the SML weights).
         v = principal_eigvec(Q)
-        if np.any(v < 0):                                # fix global sign: weights are accuracies (>=0)
-            v = np.abs(v)
+        # Eigenvector sign is ambiguous for the *whole* vector, so the repair is a
+        # single global flip, not an element-wise ``abs``. Taking ``abs`` also
+        # flipped individual entries — and a genuinely negative entry is the
+        # spectral method's signal that a base learner is anti-correlated with the
+        # consensus. Flattening it turns a below-chance learner into a
+        # positive-weight voter, i.e. exactly the classifiers SML exists to
+        # down-weight end up voting with the ensemble.
+        if v.sum() < 0:
+            v = -v
         # Consensus = sign of the accuracy-weighted vote sum, mapped back to {0,1}.
         return np.where(np.einsum("a,ab->b", v, pred) >= 0, 1, 0)

@@ -13,6 +13,21 @@
 #   prod_sweep_full.sh <GPU_ID> <SHARD> <NSHARD> [ITR]   # neural methods on a GPU
 #   prod_sweep_full.sh cpu       0       1       [ITR]   # the 2 classical methods
 set -u
+
+# Failed runs are recorded and re-reported at the end, and the shard exits
+# non-zero. Printing "FAILED ... (continuing)" and then exiting 0 makes a partial
+# sweep look operationally complete, and the aggregation scripts downstream cannot
+# tell a missing cell from one that was never scheduled.
+FAILURES=()
+report_failures() {
+  if [ ${#FAILURES[@]} -gt 0 ]; then
+    echo "=== ${#FAILURES[@]} RUN(S) FAILED ==="
+    printf '  %s\n' "${FAILURES[@]}"
+    echo "This shard is INCOMPLETE; do not aggregate its results as-is."
+    exit 1
+  fi
+  echo "all runs completed"
+}
 GPU=${1:?gpu id or 'cpu'}; SHARD=${2:?shard idx}; NSHARD=${3:?num shards}; ITR=${4:-3}
 RESULTS=/home/sylyoung/hustbciml_results_3seed
 DATA=/home/sylyoung/data
@@ -77,6 +92,7 @@ run_one () {
       touch "$marker"
     else
       echo "FAILED $label seed $s (continuing)"
+      FAILURES+=("$label seed $s")
     fi
   done
 }
@@ -87,6 +103,7 @@ if [ "$GPU" = "cpu" ]; then
     run_one "$label" cpu $args
   done
   echo "CPU SHARD DONE"
+  report_failures
 else
   i=0
   for entry in "${NEURAL[@]}"; do
@@ -97,4 +114,5 @@ else
     i=$((i + 1))
   done
   echo "SHARD ${SHARD}/${NSHARD} (gpu ${GPU}) DONE"
+  report_failures
 fi

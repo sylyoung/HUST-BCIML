@@ -49,6 +49,7 @@ import torch
 import torch.nn as nn
 
 from hustbciml.core.stages import Backbone
+from hustbciml.utils.shapes import probe
 
 
 class EEGWaveNet(Backbone):
@@ -93,7 +94,7 @@ class EEGWaveNet(Backbone):
         )
 
         # Infer the pre-logit feature width by a dummy forward (dataset-agnostic).
-        with torch.no_grad():
+        with probe(self):
             self.out_features = self.forward_features(
                 torch.zeros(1, 1, n_chans, n_times)).shape[1]
 

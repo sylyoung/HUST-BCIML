@@ -11,8 +11,8 @@ DeepConvNet stacks four temporal/spatial convolution-plus-pooling blocks — dee
 
 | Metric | Value |
 |---|--:|
-| Accuracy (mean ± std across seeds) | 74.05 ± 0.66 |
-| Δ vs baseline (EA-EEGNet, 72.07) | +1.98 |
+| Accuracy (mean ± std across seeds) | 73.79 ± 0.46 |
+| Δ vs baseline (EA-EEGNet, 72.07) | +1.72 |
 | Reference range (expected band) | 66–78 |
 
 Accuracy is the mean over seeds; ± is the standard deviation *across* seeds (a reproducibility figure, not the cross-subject spread). The reference range is the published / expected band on this dataset.

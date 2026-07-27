@@ -16,14 +16,28 @@ Selection signals (never the reported target/test set):
                   adversarial/augmentation knobs change that source model, so its
                   held-out accuracy is a valid, cheap selector.
 
-  select="dev"  — mean accuracy over a few held-out SOURCE subjects used as
-                  pseudo-targets (via ``--hp dev_targets=...``). Adaptation-phase
-                  knobs (ASFA beta, Tent test_batch/steps, DJP-MMD mu, MSDT/LSFT/
-                  MDMAML internals) do not move the source-val signal, so they are
-                  selected on this leave-source-subjects-out proxy instead. One
-                  global HP is chosen and then applied to the full cohort — the
-                  standard practice, disclosed in the card. The real target
-                  subjects' labels are never used for selection.
+  select="dev"  — mean accuracy over a few subjects held out as pseudo-targets
+                  (via ``--hp dev_targets=...``). Adaptation-phase knobs (ASFA
+                  beta, Tent test_batch/steps, DJP-MMD mu, MSDT/LSFT/MDMAML
+                  internals) do not move the source-val signal, so they are
+                  selected on this leave-subjects-out proxy instead. One global HP
+                  is chosen and then applied to the full cohort.
+
+                  Be precise about what this signal is. ``_dev_spread`` picks a
+                  spread across the WHOLE cohort (on BNCI2014001: subjects 0, 4,
+                  8 of 0-8), each dev subject is scored by its own held-out
+                  accuracy against its TRUE labels, and the final result averages
+                  over the full cohort — which includes those same subjects. So
+                  three of the reported folds also served as the selection signal.
+                  No target labels enter training, and the chosen value is a
+                  single global one rather than per-fold, so this is the ordinary
+                  "one HP selected on a subject subset" practice; it is not a
+                  source-only signal, and calling it one would be wrong. The
+                  README states the same thing under "Hyperparameter selection".
+
+                  A dev-subset run cannot masquerade as a full LOSO result: the
+                  Exp appends a ``dev<ids>`` tag to the run identity, so it writes
+                  to its own results folder.
 
 Each grid point runs as its own subprocess into its own results dir, so global
 state (torch/CUDA, method caches) cannot leak across configs and one bad config

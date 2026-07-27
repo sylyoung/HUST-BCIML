@@ -62,6 +62,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from hustbciml.core.stages import Backbone
+from hustbciml.utils.shapes import probe
 
 
 class _PatchEmbeddingCNN(nn.Module):
@@ -223,7 +224,7 @@ class MSCFormer(Backbone):
 
         # Infer the token-sequence length (plus the class token) with a dummy
         # forward, so the learnable positional encoding is sized for any input.
-        with torch.no_grad():
+        with probe(self):
             n_tokens = self.cnn(torch.zeros(1, 1, n_chans, n_times)).shape[1]
         pos_length = n_tokens + 1                          # + class token
 
@@ -242,6 +243,12 @@ class MSCFormer(Backbone):
         b, l, e = x.shape
 
         # Prepend a class token like BERT (device-agnostic zeros).
+        # NOT learnable, deliberately: the reference builds it the same way inside
+        # forward — `torch.zeros((b, 1, e), requires_grad=True).cuda()`, which
+        # creates a fresh leaf every call that no optimizer ever sees. So the
+        # documented "learnable class token" is not learnable there either, and
+        # this port reproduces the reference implementation rather than the paper's
+        # description. Making it an `nn.Parameter` would change the MSCFormer row.
         cls = torch.zeros(b, 1, e, device=x.device, dtype=x.dtype)
         x = torch.cat((cls, x), dim=1)                     # (B, N+1, emb)
         x = x * math.sqrt(self.emb_size)

@@ -49,12 +49,22 @@ maps the fused feature to class scores) is removed here so the shared hustbciml
 ``Linear`` head produces the logits.
 
 Source: github.com/UM-Tao/ADFCNN-MI, as mirrored in DBConformer/models/ADFCNN.py.
-Deviations, all behaviour-preserving: the paper hardcodes the classifier kernel
-to a fixed input length, so that final classifier is dropped in favour of the
-shared head and the fused feature width is measured by a dummy forward. No
-global cudnn flags are set. Layer sizes, kernel lengths, pooling, dropout, and
-nonlinearities are kept identical to the reference default configuration
-(F1=8, D=1, F2=8, dropout=0.25, mean pooling).
+
+Behaviour-preserving deviations: the paper hardcodes the classifier kernel to a
+fixed input length, so that final classifier is dropped in favour of the shared
+head and the fused feature width is measured by a dummy forward. No global cudnn
+flags are set. Layer sizes, kernel lengths, pooling, dropout, and nonlinearities
+are kept identical to the reference default configuration (F1=8, D=1, F2=8,
+dropout=0.25, mean pooling).
+
+KNOWN DEFECT INHERITED FROM THE REFERENCE — see `_ScaledDotAttention.forward`.
+The attention output is reinterpreted with `.reshape(B, N, C)` where a transpose
+is meant, so the residual fusion adds token-indexed features to channel-indexed
+ones. The line is character-identical in the reference
+(`DBConformer/models/ADFCNN.py`), so this port reproduces the published ADFCNN
+*implementation* faithfully — and that implementation departs from the module the
+paper describes. Kept as-is for comparability; correcting it changes the
+EA-ADFCNN row and needs a re-run.
 """
 from __future__ import annotations
 
@@ -65,6 +75,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from hustbciml.core.stages import Backbone
+from hustbciml.utils.shapes import probe
 
 
 class _Conv2dWithConstraint(nn.Conv2d):
@@ -163,7 +174,7 @@ class ADFCNN(Backbone):
 
         # Infer the flattened fused-feature width (dataset-dependent) by a dummy
         # forward, so the shared Linear head can be sized generically.
-        with torch.no_grad():
+        with probe(self):
             self.out_features = self.forward_features(torch.zeros(1, 1, n_chans, n_times)).shape[1]
 
     def forward_features(self, x: torch.Tensor) -> torch.Tensor:   # (B, 1, C, T)
@@ -191,6 +202,11 @@ class ADFCNN(Backbone):
         d_k = q.size(-1)
         attn = (q @ k.transpose(-2, -1)) / math.sqrt(d_k)
         attn = attn.softmax(dim=-1)
+        # `attn @ v` is (B, C, N). `.reshape(B, N, C)` reinterprets that buffer
+        # instead of transposing it, so it only coincides with a transpose when
+        # C == N. Inherited verbatim from the reference implementation (see the
+        # module docstring); a transpose here would be `permute(0, 2, 1)` and would
+        # change the published EA-ADFCNN number.
         x = (attn @ v).reshape(B, N, C)
 
         # Residual add, reshape back to feature-map form, dropout, then flatten.

@@ -63,6 +63,7 @@ import torch
 import torch.nn as nn
 
 from hustbciml.core.stages import Backbone
+from hustbciml.utils.shapes import probe
 
 
 class _Conv2dWithConstraint(nn.Conv2d):
@@ -236,7 +237,7 @@ class EEGDeformer(Backbone):
 
         # Infer the concatenated pre-classifier feature width via a dummy forward,
         # so the backbone is dataset-agnostic (paper derives it via get_hidden_size).
-        with torch.no_grad():
+        with probe(self):
             feat = self.forward_features(torch.zeros(1, 1, n_chans, n_times))
         self.out_features = int(feat.shape[1])
 

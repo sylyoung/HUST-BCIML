@@ -239,6 +239,10 @@ def main(argv=None):
     p.add_argument("--combiners",
                    default="voting,Dawid-Skene,Wawa,M-MSR,MACE,GLAD,ZenCrowd,PM,"
                            "LA,LAA,EBCC,SML,SML-OVR,StackingNet")
+    p.add_argument("--overwrite", action="store_true",
+                   help="replace an existing result file even when it covers seeds "
+                        "this run does not (off by default: that silently discards "
+                        "the run a published number came from)")
     a = p.parse_args(argv)
 
     seeds = [int(s) for s in a.seeds.split(",")]
@@ -246,6 +250,24 @@ def main(argv=None):
     single_all, comb_all = [], {c: [] for c in combiners}
     os.makedirs(a.results_dir, exist_ok=True)
     out_path = os.path.join(a.results_dir, f"decentralized_{a.dataset}_{a.base}_{a.algorithm}.json")
+
+    # The filename encodes dataset, base and preset but NOT the seed set, so a
+    # narrower re-run silently replaces a wider one and the published table loses
+    # the artefact it came from. This is not hypothetical: the v1.1.x ensemble
+    # table was measured over three seeds and the surviving JSON records
+    # ``seeds_done: [1]``, so the numbers can no longer be traced to a run. Refuse
+    # to shrink an existing result; ``--overwrite`` is the deliberate way past.
+    if os.path.exists(out_path) and not a.overwrite:
+        with open(out_path) as fh:
+            prev = json.load(fh)
+        prev_seeds = prev.get("seeds_done") or []
+        if not set(prev_seeds).issubset(seeds):
+            raise FileExistsError(
+                f"{out_path} already holds a run over seeds {prev_seeds}, and this run covers "
+                f"{seeds} — writing would discard seeds {sorted(set(prev_seeds) - set(seeds))}. "
+                f"Move the old file aside, point --results_dir somewhere else, or pass "
+                f"--overwrite if replacing it is what you mean."
+            )
 
     for seed in seeds:
         single, out = _seed_run(a.dataset, seed, a.device, a.data_dir,

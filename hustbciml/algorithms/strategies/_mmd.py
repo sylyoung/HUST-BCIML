@@ -95,6 +95,19 @@ class MultipleKernelMaximumMeanDiscrepancy(nn.Module):
         self.linear = linear
 
     def forward(self, z_s: torch.Tensor, z_t: torch.Tensor) -> torch.Tensor:
+        # The paired MK-MMD estimator this vendors assumes |source| == |target|:
+        # the index matrix is built for ``2 * z_s.size(0)`` rows and multiplied
+        # against a kernel matrix over the concatenation. A short target batch
+        # makes those shapes disagree, and the failure is a raw broadcasting error
+        # deep inside the loss. ``cycle_batches`` can produce one whenever a domain
+        # holds fewer trials than ``batch_size``, so say what is wrong instead.
+        if z_s.size(0) != z_t.size(0):
+            raise ValueError(
+                f"MK-MMD needs equally sized source and target batches (got "
+                f"{z_s.size(0)} and {z_t.size(0)}); this paired estimator is not "
+                f"defined for unequal batches. Lower --batch_size below the smallest "
+                f"domain's trial count."
+            )
         features = torch.cat([z_s, z_t], dim=0)
         batch_size = int(z_s.size(0))
         self.index_matrix = _update_index_matrix(batch_size, self.index_matrix, self.linear).to(z_s.device)

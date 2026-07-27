@@ -11,8 +11,8 @@ TIE-EEGNet is EEGNet with its first temporal convolution replaced by a time-info
 
 | Metric | Value |
 |---|--:|
-| Accuracy (mean ± std across seeds) | 72.51 ± 0.24 |
-| Δ vs baseline (EA-EEGNet, 72.07) | +0.44 |
+| Accuracy (mean ± std across seeds) | 73.51 ± 0.25 |
+| Δ vs baseline (EA-EEGNet, 72.07) | +1.44 |
 | Reference range (expected band) | 66–78 |
 
 Accuracy is the mean over seeds; ± is the standard deviation *across* seeds (a reproducibility figure, not the cross-subject spread). The reference range is the published / expected band on this dataset.

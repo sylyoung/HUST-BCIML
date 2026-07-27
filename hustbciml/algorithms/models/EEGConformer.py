@@ -31,6 +31,7 @@ import torch
 import torch.nn as nn
 
 from hustbciml.core.stages import Backbone
+from hustbciml.utils.shapes import probe
 
 
 class EEGConformer(Backbone):
@@ -63,7 +64,7 @@ class EEGConformer(Backbone):
 
         # Token count depends on T, so measure it with a dummy forward before
         # sizing the MLP that reads the flattened sequence.
-        with torch.no_grad():
+        with probe(self):
             n_tok = self._embed(torch.zeros(1, 1, n_chans, n_times)).shape[1]
         # Compression MLP of the paper's head, folded in here so `out_features`
         # is `feat_dim` and the shared Linear head produces the class logits.

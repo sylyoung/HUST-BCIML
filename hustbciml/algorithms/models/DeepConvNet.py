@@ -27,6 +27,7 @@ import torch
 import torch.nn as nn
 
 from hustbciml.core.stages import Backbone
+from hustbciml.utils.shapes import probe
 
 
 def _block(cin, cout, kt, spatial=None, drop=0.5):
@@ -57,7 +58,7 @@ class DeepConvNet(Backbone):
         )
         # Four conv-and-pool stages shrink the time axis by a data-dependent
         # amount, so size the flat feature width with a dummy forward.
-        with torch.no_grad():
+        with probe(self):
             self.out_features = self._feat(torch.zeros(1, 1, n_chans, n_times)).shape[1]
 
     def _feat(self, x):

@@ -43,8 +43,10 @@ Adaptation to this benchmark. The paper reassembles source with target-train
 trials of the same class (Eq. 5-6). Under the cross-subject leave-one-subject-out
 protocol the target is unlabeled and the Augmenter contract sees only source
 minibatches, but a source batch spans many source subjects, so pairing each trial
-with a random same-class partner in the batch preserves the cross-subject
-coefficient-reassembling mechanism within the contract. The paper applies
+with a random same-class partner *from a different subject in the batch*
+preserves the cross-subject coefficient-reassembling mechanism within the
+contract. A trial with no such partner in its batch is left un-augmented rather
+than paired within its own subject. The paper applies
 Euclidean Alignment before the transform for the MI paradigm (Sec. 4.1, 4.10);
 here that is supplied by the pipeline's aligner stage (compose with ``aligner: EA``).
 
@@ -69,8 +71,16 @@ class CSDA(Augmenter):
         self.wavelet = wavelet
         self.mode = mode
 
-    def _pair_same_class(self, y: np.ndarray) -> np.ndarray:
-        """A random same-class partner index for each trial (-1 if none)."""
+    def _pair_same_class(self, y: np.ndarray, domain: np.ndarray) -> np.ndarray:
+        """A random same-class, *different-subject* partner index per trial (-1 if none).
+
+        The domain constraint is the "cross-subject" in the method's name. Pairing
+        on the label alone — which is what this did — lets a large share of the
+        augmented trials be same-subject detail swaps, so what gets benchmarked is
+        not necessarily the cross-subject variant described to users. A trial with
+        no same-class partner from another subject in this batch is skipped rather
+        than paired within its own subject.
+        """
         partner = -np.ones(len(y), dtype=int)
         for c in np.unique(y):
             if c == UNLABELED:
@@ -78,11 +88,10 @@ class CSDA(Augmenter):
             idx = np.where(y == c)[0]
             if len(idx) < 2:
                 continue
-            perm = np.random.permutation(idx)
-            fixed = perm == idx                     # avoid pairing a trial with itself
-            if fixed.any():
-                perm[fixed] = np.roll(idx, 1)[fixed]
-            partner[idx] = perm
+            for i in idx:
+                cand = idx[domain[idx] != domain[i]]
+                if len(cand):
+                    partner[i] = cand[np.random.randint(len(cand))]
         return partner
 
     def __call__(self, batch: EEGBatch) -> EEGBatch:
@@ -96,14 +105,18 @@ class CSDA(Augmenter):
         xn = x.squeeze(1).cpu().numpy().astype(np.float64)      # (B, C, T)
         yn = batch.y.cpu().numpy()
 
-        partner = self._pair_same_class(yn)
+        partner = self._pair_same_class(yn, batch.domain.cpu().numpy())
         valid = partner >= 0
         if not valid.any():
             return batch
         safe = np.where(valid, partner, 0)          # dummy index for invalid rows (discarded)
 
         # DWT into approximation (cA) and detail (cD) coefficients (Eq. 1, db4).
-        cA, cD = pywt.dwt(xn, self.wavelet, axis=-1)            # (B, C, T') each
+        # ``mode`` must be passed here too: the inverse transform below uses
+        # ``self.mode``, and a forward/inverse pair with different boundary
+        # extensions leaves an edge artifact on every augmented trial that has
+        # nothing to do with the intended detail-coefficient swap.
+        cA, cD = pywt.dwt(xn, self.wavelet, mode=self.mode, axis=-1)   # (B, C, T') each
         # Cross-subject coefficient reassembling + iDWT (Sec. 3.2, step 2):
         aug1 = pywt.idwt(cA, cD[safe], self.wavelet, self.mode, axis=-1)[..., :T]  # Eq. 5: self cA + partner cD
         aug2 = pywt.idwt(cA[safe], cD, self.wavelet, self.mode, axis=-1)[..., :T]  # Eq. 6: partner cA + self cD

@@ -49,11 +49,17 @@ class SAM(torch.optim.Optimizer):
 
     @torch.no_grad()
     def second_step(self, zero_grad=False):
+        # Restore every parameter that was perturbed, keyed on whether ``old_p``
+        # exists rather than on whether it has a gradient *this* pass. A parameter
+        # that had a first-pass gradient (so was climbed to ``w + e(w)``) but no
+        # second-pass gradient — conditional execution, a masked branch, a frozen
+        # sub-module — would otherwise be left sitting at the adversarial point and
+        # carry the perturbation into every later update.
         for group in self.param_groups:
             for p in group["params"]:
-                if p.grad is None:
-                    continue
-                p.data = self.state[p]["old_p"]  # get back to "w" from "w + e(w)"
+                old = self.state.get(p, {}).pop("old_p", None)
+                if old is not None:
+                    p.data = old                 # get back to "w" from "w + e(w)"
 
         self.base_optimizer.step()  # do the actual "sharpness-aware" update
 

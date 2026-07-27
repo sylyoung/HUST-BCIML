@@ -100,7 +100,16 @@ def main(argv=None):
             val_by_lr["%g" % lr] = vp
             print(f"[grid ] {a.dataset} {b:15s} lr={lr:<7g} val={vp}", flush=True)
         cand = {lr: val_by_lr["%g" % lr] for lr in lrs if val_by_lr["%g" % lr] is not None}
-        best_lr = max(cand, key=cand.get) if cand else lrs[len(lrs) // 2]
+        if not cand:
+            # Falling back to the middle of the grid would produce "final" test
+            # numbers for an arbitrary learning rate that no validation signal
+            # ever selected — a silent fallback inside measurement code.
+            raise RuntimeError(
+                f"learning-rate selection for backbone {b!r} on {a.dataset} has no valid "
+                f"grid point: every run in {lrs} failed or produced no val_primary. "
+                f"Fix the failing runs before evaluating on the reported seeds."
+            )
+        best_lr = max(cand, key=cand.get)
 
         # ---- phase 2: evaluate the selected LR on the reported seeds (test) ----
         accs, kaps = [], []

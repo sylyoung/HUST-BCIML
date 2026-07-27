@@ -5,7 +5,7 @@
 **Stage configuration:** `EA · no-aug · EEGNet · Linear · BNAdapt`
 
 ## Mechanism
-BatchNorm adaptation recomputes the BatchNorm running mean and variance from the target batch — no gradient step and no parameter update — correcting covariate shift by re-normalizing the features with target statistics.
+BatchNorm adaptation re-estimates the BatchNorm statistics from the target stream — no gradient step and no parameter update — correcting covariate shift by re-normalizing the features with target statistics. Note the form: the BN layers are put in training mode and the sliding target batch is forwarded, so PyTorch folds the batch statistics into the running estimates by its momentum EMA rather than replacing them. The adapted statistics therefore still depend on the source BN state, the momentum and the stream order; a pure recompute-from-the-target-batch variant would set momentum to 1.0 and is a different measurement.
 
 ## Result — 3 seeds (1, 2, 3)
 

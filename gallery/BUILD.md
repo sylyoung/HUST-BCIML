@@ -13,10 +13,22 @@ in `gallery/data/` into JavaScript data files in `docs/data/` by `build_site.py`
 - **`data/lab.yml`** — lab bio, links, the anchor project, and the flagship repos
   shown on the Overview page.
 - **`data/benchmark.yml`** — the controlled-comparison leaderboard, one block per
-  stage axis. Accuracy/kappa are synced from `hustbciml/RESULTS.md`; each row's
-  `key` links to its provenance entry in `hustbciml/tests/repro/repro_targets.yaml`
-  (paper citation, reference range, note), which the generator reads for the
-  per-method cards.
+  stage axis. Accuracy/kappa are synced from `hustbciml/RESULTS.md`. Each row's
+  `key` is also the key of its provenance entry in
+  `hustbciml/tests/repro/repro_targets.yaml` (paper citation, reference range,
+  note) — but the two files are **separate hand-maintained sources**:
+  `build_site.py` reads only the three files in this directory, and
+  `hustbciml/scripts/build_cards.py` reads only `repro_targets.yaml` plus
+  `docs/cards/_content.yaml`. Editing one does **not** update the other. That is
+  why `hustbciml/tests/repro/test_repro_targets.py` exists: it fails the build if
+  the two publish different numbers for the same method and dataset, or if a
+  leaderboard key has no provenance entry. Update both in the same commit and let
+  the test confirm it.
+
+  Optional per-row honesty fields, both rendered on the site:
+  `na_reason` (why a dataset cell is empty, so "n/a" is not read as "not run
+  yet") and `also_varies` (what else the row changes besides its table's axis, so
+  a Δ is not read as a single-stage effect).
 
 ## Generate
 

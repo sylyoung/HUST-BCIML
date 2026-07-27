@@ -18,13 +18,27 @@ original but a randomized phase. For each trial the discrete Fourier transform i
 taken, every frequency bin's magnitude is kept, and a fresh random phase is
 assigned, then the signal is transformed back:
 
-    X'(f) = |X(f)| * exp(j * phi_f),   phi_f ~ Uniform(0, 2*pi)
+    X'(f) = X(f) * exp(j * phi_f),   phi_f ~ Uniform(0, 2*pi)
 
-The same random phase is used across channels at each frequency, which preserves
-the cross-channel spectral relationships while decorrelating the waveform from
-the original. The direct-current bin (and the Nyquist bin for an even length) is
-left with zero phase so the surrogate stays real and its mean is preserved. The
-surrogate keeps the label and doubles the batch.
+The phase *increment* phi_f is shared across channels at each frequency. That is
+what preserves the cross-channel spectral relationships: rotating every channel's
+bin by the same angle leaves all pairwise phase differences — the inter-channel
+coupling a spatial filter reads — exactly as they were, while decorrelating the
+waveform from the original.
+
+Note this is a rotation of the original spectrum, not a rebuild from magnitude
+alone. Writing ``|X(f)| * exp(j*phi_f)`` instead, as a straightforward reading of
+the surrogate formula suggests, discards each channel's own phase and therefore
+forces every channel to the *same* phase at each frequency: perfect zero-lag
+coherence across the whole montage, which is not physiologically plausible EEG
+and is the opposite of preserving cross-channel structure.
+
+The direct-current bin (and the Nyquist bin for an even length) is copied
+verbatim rather than rotated, so the surrogate stays real and the channel means
+are preserved *including their sign* — rebuilding those bins from magnitude turns
+a negative mean into a positive one, a baseline shift that has nothing to do with
+Fourier-surrogate augmentation. The surrogate keeps the label and doubles the
+batch.
 
 Implemented with a real-input Fourier transform so the output is exactly real and
 no SciPy dependency is needed.
@@ -50,13 +64,16 @@ class FSurr(Augmenter):
         B, _, _, T = x.shape
         R = torch.fft.rfft(x, dim=-1)                 # (B, 1, C, F) complex
         F = R.shape[-1]
-        mag = R.abs()
 
-        phi = (2 * math.pi) * torch.rand(B, 1, 1, F, device=x.device)   # shared across channels
-        phi[..., 0] = 0.0                             # keep DC real (preserve mean)
+        # One random phase per frequency, shared across channels: a common
+        # rotation leaves every pairwise inter-channel phase difference intact.
+        phi = (2 * math.pi) * torch.rand(B, 1, 1, F, device=x.device)
+        R_surr = R * torch.complex(torch.cos(phi), torch.sin(phi))
+        # DC (and Nyquist, for even T) must stay real for the inverse transform to
+        # be real; copy them across unchanged so their sign survives too.
+        R_surr[..., 0] = R[..., 0]
         if T % 2 == 0:
-            phi[..., -1] = 0.0                        # keep Nyquist real
-        R_surr = torch.complex(mag * torch.cos(phi), mag * torch.sin(phi))
+            R_surr[..., -1] = R[..., -1]
         x_aug = torch.fft.irfft(R_surr, n=T, dim=-1).to(x.dtype)
 
         x_new = torch.cat([x, x_aug], dim=0)

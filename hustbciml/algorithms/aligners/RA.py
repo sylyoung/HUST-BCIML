@@ -43,8 +43,39 @@ from hustbciml.core.batch import EEGEpochs
 from hustbciml.core.stages import Aligner
 
 
+# Largest imaginary component tolerated (relative to the real part) before a
+# matrix power / log / exp is treated as having left the SPD manifold. Round-off
+# in ``fractional_matrix_power`` on a genuinely SPD input is ~1e-12 relative; a
+# real departure from SPD is orders of magnitude larger.
+_IMAG_TOL = 1e-8
+
+
+def _real(M: np.ndarray, what: str) -> np.ndarray:
+    """Drop round-off imaginary parts — and only round-off.
+
+    Every Riemannian operation here (``M^p``, ``logm``, ``expm``) is real-valued
+    on an SPD input, so a non-negligible imaginary component means the input was
+    not SPD: a covariance that lost positive-definiteness through rank deficiency
+    or numerical drift. Taking ``np.real`` unconditionally, as this did, converts
+    that failure signal into a plausible-looking real matrix and lets an invalid
+    manifold operation flow into the reported alignment.
+    """
+    if np.iscomplexobj(M):
+        scale = max(float(np.abs(M.real).max()), 1e-30)
+        resid = float(np.abs(M.imag).max()) / scale
+        if resid > _IMAG_TOL:
+            raise FloatingPointError(
+                f"Riemannian Alignment: {what} produced an imaginary residual of "
+                f"{resid:.3g} (tolerance {_IMAG_TOL:.0e}); the covariance is not SPD."
+            )
+        M = M.real
+    if not np.all(np.isfinite(M)):
+        raise FloatingPointError(f"Riemannian Alignment: {what} produced non-finite values.")
+    return M
+
+
 def _sqrtm(M: np.ndarray, power: float) -> np.ndarray:
-    return np.real(fractional_matrix_power(M, power))
+    return _real(fractional_matrix_power(M, power), f"M^{power}")
 
 
 def _riemann_mean(covs: np.ndarray, tol: float = 1e-4, max_iter: int = 30) -> np.ndarray:
@@ -56,24 +87,30 @@ def _riemann_mean(covs: np.ndarray, tol: float = 1e-4, max_iter: int = 30) -> np
         # mean of the trials mapped to R's tangent space
         S = np.zeros_like(R)
         for c in covs:
-            S += np.real(logm(R_isqrt @ c @ R_isqrt))
+            S += _real(logm(R_isqrt @ c @ R_isqrt), "logm")
         S /= len(covs)
-        R = R_sqrt @ np.real(expm(S)) @ R_sqrt
+        R = R_sqrt @ _real(expm(S), "expm") @ R_sqrt
         if np.linalg.norm(S, ord="fro") < tol:
             break
     return R
 
 
 def _reference_inv_sqrt(X: np.ndarray) -> np.ndarray:
-    """R^{-1/2} for one subject's trials X:(n, C, T), R = Riemannian mean."""
+    """R^{-1/2} for one subject's trials X:(n, C, T), R = Riemannian mean.
+
+    Each covariance gets a light ridge scaled to *its own* trace, which is what
+    keeps ``logm`` well-defined on a near-singular trial. Deriving one ridge from
+    the first trial and reusing it, as this did, makes the whole subject's
+    reference depend on trial order: a first trial with an unusually small trace
+    leaves every later rank-deficient covariance under-regularised, and an
+    unusually large one biases all of them toward that trial's scale.
+    """
     C = X.shape[1]
     covs = np.empty((X.shape[0], C, C))
-    ridge = None
+    eye = np.eye(C)
     for i in range(X.shape[0]):
         cov = np.cov(X[i])
-        if ridge is None:                     # light ridge keeps logm well-defined
-            ridge = 1e-6 * np.trace(cov) / C * np.eye(C)
-        covs[i] = cov + ridge
+        covs[i] = cov + 1e-6 * np.trace(cov) / C * eye
     R = _riemann_mean(covs)
     return _sqrtm(R, -0.5)
 

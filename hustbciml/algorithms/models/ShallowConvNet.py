@@ -27,6 +27,7 @@ import torch
 import torch.nn as nn
 
 from hustbciml.core.stages import Backbone
+from hustbciml.utils.shapes import probe
 
 
 class _Square(nn.Module):
@@ -72,7 +73,7 @@ class ShallowConvNet(Backbone):
         )
         # Length after the strided pool depends on T, so size the flat feature
         # width with a dummy forward instead of a closed form.
-        with torch.no_grad():
+        with probe(self):
             self.out_features = self._feat(torch.zeros(1, 1, n_chans, n_times)).shape[1]
 
     def _feat(self, x):

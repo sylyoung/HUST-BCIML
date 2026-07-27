@@ -5,7 +5,7 @@
 **Stage configuration:** `EA · no-aug · EEGNet · Linear · SHOT`
 
 ## Mechanism
-Source Hypothesis Transfer is source-free: the source classifier head is frozen and only the feature extractor is adapted on the target, by information maximization plus self-supervised pseudo-labeling, with no access to source data at adapt time. It ties ABAT here.
+Source Hypothesis Transfer is source-free: the source classifier head is frozen and only the feature extractor is adapted on the target, with no access to source data at adapt time. This is the information-maximization variant (SHOT-IM) — conditional-entropy minimization plus marginal-diversity maximization. The paper's third term, self-supervised pseudo-labelling from target cluster centroids, is not implemented here, so the row is SHOT-IM rather than full SHOT. It ties ABAT here.
 
 ## Result — 3 seeds (1, 2, 3)
 

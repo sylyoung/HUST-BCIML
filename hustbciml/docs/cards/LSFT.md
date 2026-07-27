@@ -11,8 +11,8 @@ Lightweight Source-Free Transfer keeps no raw source data at transfer time: pret
 
 | Metric | Value |
 |---|--:|
-| Accuracy (mean ± std across seeds) | 74.23 ± 0.00 |
-| Δ vs reference (EA-EEGNet, 72.07) — context | +2.16 |
+| Accuracy (mean ± std across seeds) | 74.77 ± 0.00 |
+| Δ vs reference (EA-EEGNet, 72.07) — context | +2.70 |
 | Reference range (expected band) | 70–80 |
 
 Accuracy is the mean over seeds; ± is the standard deviation *across* seeds (a reproducibility figure, not the cross-subject spread). The reference range is the published / expected band on this dataset.

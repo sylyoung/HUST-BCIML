@@ -5,7 +5,7 @@
 **Stage configuration:** `EA · no-aug · EEGNet · Linear · PL`
 
 ## Mechanism
-Pseudo-Label self-training at test time turns the model's own confident predictions on target trials into training targets for a few online gradient steps — simple confirmation-based adaptation.
+Pseudo-Label self-training at test time turns the model's own argmax predictions on target trials into training targets for a few online gradient steps — simple confirmation-based adaptation. Every trial in the sliding batch contributes: there is no confidence threshold, so ambiguous trials are trained on as if they were labelled, which is the confirmation-bias risk in its unfiltered form.
 
 ## Result — 3 seeds (1, 2, 3)
 

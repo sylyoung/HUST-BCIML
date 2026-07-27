@@ -296,7 +296,8 @@ def _bft_train(inner: nn.Module, source: EEGEpochs, ctx: RunContext,
     ctx.log(f"  [BFT] training aug: {'14' if use_cr else '13'} transforms, "
             f"Channel Reflection {'ON (left/right-hand)' if use_cr else 'OFF (not left/right-hand)'}")
 
-    tr_idx, va_idx = split_train_val(len(source), cfg.val_ratio, cfg.seed)
+    tr_idx, va_idx = split_train_val(len(source), cfg.val_ratio, cfg.seed,
+                                     domain=source.domain, mode=cfg.val_split)
     has_val = len(va_idx) > 0
     Xtr = source.X[tr_idx].astype(np.float64)
     ytr = source.y[tr_idx].astype(np.int64)
@@ -528,7 +529,12 @@ class BFT(Strategy):
                 y_score.append(agg.cpu().numpy())
 
             # ---- refresh BN running statistics on the recent (t-1)-s window ----
-            if (i + 1) >= tb:
+            # Gated on ``cfg.steps`` and ``cfg.stride`` like every other TTA
+            # strategy, so ``--steps 0`` really does recover a frozen base model
+            # and a BFT ablation is controlled by the same knobs as the rest of
+            # the test-time table. (BFT takes no gradient step, so ``steps`` acts
+            # as an on/off switch here rather than a repeat count.)
+            if cfg.steps > 0 and (i + 1) >= tb and (i + 1) % max(1, cfg.stride) == 0:
                 batch = aligned_trunc[i - tb + 1: i + 1].reshape(tb, 1, C, L)
                 xb = torch.from_numpy(batch).float().to(device)
                 inner.train()                                # BN tracks the target batch

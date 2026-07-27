@@ -33,6 +33,14 @@ from hustbciml.core.batch import EEGEpochs
 
 
 # ---------------------------------------------------------------- Toy ---------
+# Symmetric sensorimotor montage for the synthetic dataset: every lateral
+# electrode has its mirror present (C5/C6, C3/C4, C1/C2, FC1/FC2) and Cz/CPz sit
+# on the midline, so ``reflection_permutation`` accepts it. Sliced to the
+# requested channel count, which is why the first eight already form a closed
+# mirror set.
+_TOY_CH = ["C5", "C3", "C1", "Cz", "C2", "C4", "C6", "CPz", "FC1", "FC2"]
+
+
 class ToyDataset:
     """Synthetic 2-class MI designed so cross-subject transfer is possible and
     EA demonstrably helps:
@@ -80,10 +88,15 @@ class ToyDataset:
                     y.append(c)
                     dom.append(s)
         X = np.stack(X).astype(np.float32)
+        # A real, left/right-symmetric sensorimotor montage rather than ch0..ch7,
+        # so montage-aware stages (Channel Reflection, MVCNet's reflected view)
+        # are exercisable on the bundled data. Note the two class topographies are
+        # independent random vectors, not mirror images, so a reflection test on
+        # Toy checks the plumbing, not the augmentation's validity.
         return EEGEpochs(
             X=X, y=np.array(y), domain=np.array(dom), sfreq=self.sfreq,
-            n_classes=2, ch_names=[f"ch{i}" for i in range(self.n_chans)],
-            paradigm="MI", classes=["class0", "class1"],
+            n_classes=2, ch_names=_TOY_CH[:self.n_chans],
+            paradigm="MI", classes=["left_hand", "right_hand"],
         )
 
 
@@ -109,6 +122,12 @@ class NumpyDataset:
     therefore recovers ``domain`` by slicing that fixed stride, and it selects
     the training session by index because the dump keeps sessions concatenated
     the same way.
+
+    Not wired into ``DATA_DICT``: every benchmark dataset is served by
+    ``MOABBAdapter``. Note that this loader emits placeholder channel names
+    (``ch0 … chN``) because the ``.npy`` dump carries no montage, so
+    montage-aware stages — Channel Reflection, MVCNet's reflected view — will
+    correctly refuse to run on it rather than inventing a mirror.
     """
 
     def __init__(self, name: str, data_dir: str = "./data", **_):
@@ -228,13 +247,43 @@ class MOABBAdapter:
             # arrays, so they are cast back to float/int. ``ch_names`` and
             # ``classes`` were stored as fixed-width unicode string arrays (see
             # the savez comment below) and are turned back into plain str lists.
-            # ``allow_pickle=True`` is kept for backward compatibility with any
-            # older object-array cache.
-            d = np.load(cache, allow_pickle=True)
-            return EEGEpochs(
-                X=d["X"], y=d["y"], domain=d["domain"], sfreq=float(d["sfreq"]),
-                n_classes=int(d["n_classes"]), ch_names=[str(c) for c in d["ch_names"]],
-                paradigm="MI", classes=[str(c) for c in d["classes"]])
+            # ``allow_pickle=False``: a .npz that unpickles is arbitrary code
+            # execution at load time, and ``--data_dir`` routinely points at a
+            # cache copied in from elsewhere (that is the whole point of the fast
+            # path on the offline GPU server). Since the writer below stores only
+            # plain arrays and unicode string arrays, nothing here needs pickle.
+            # An older object-array cache now fails loudly instead of executing.
+            # The guard has to wrap the field *reads*, not the ``np.load``: for a
+            # .npz that call only opens the archive, and each member is decoded
+            # lazily on ``d[key]``, so an object array raises there and a try
+            # around ``np.load`` alone would never fire.
+            d = np.load(cache, allow_pickle=False)
+            try:
+                ep = EEGEpochs(
+                    X=d["X"], y=d["y"], domain=d["domain"], sfreq=float(d["sfreq"]),
+                    n_classes=int(d["n_classes"]), ch_names=[str(c) for c in d["ch_names"]],
+                    paradigm="MI", classes=[str(c) for c in d["classes"]])
+            except ValueError as exc:
+                if "allow_pickle" not in str(exc):
+                    raise
+                # Do NOT tell the caller to delete the cache. On the offline
+                # server it is the only copy of the exact trials a published
+                # number was measured on, and regenerating it through moabb is
+                # neither possible there nor guaranteed to reproduce it byte for
+                # byte. Converting keeps the payload and only restates the two
+                # string fields in a dtype that loads without pickle.
+                raise ValueError(
+                    f"{cache} was written by an older version that stored 'ch_names' and "
+                    f"'classes' as pickled object arrays, which this loader refuses to "
+                    f"unpickle. Convert it in place, keeping X/y/domain untouched:\n"
+                    f"    z = np.load({cache!r}, allow_pickle=True)\n"
+                    f"    out = dict(z)\n"
+                    f"    out['ch_names'] = np.asarray([str(c) for c in z['ch_names']])\n"
+                    f"    out['classes']  = np.asarray([str(c) for c in z['classes']])\n"
+                    f"    np.savez({cache!r}, **out)"
+                ) from exc
+            self._check_cache(ep, cache)
+            return ep
 
         import moabb
         import moabb.datasets as D
@@ -288,7 +337,42 @@ class MOABBAdapter:
         # arrays: object arrays are pickled, and a pickle written by numpy 2.x
         # (``numpy._core``) cannot be read by numpy 1.x. Plain string arrays use
         # the version-stable .npy format, so the cache loads across numpy versions.
-        np.savez(cache, X=ep.X, y=ep.y, domain=ep.domain, sfreq=ep.sfreq,
+        self._check_cache(ep, "<freshly built>")
+        # Write to a temporary file and rename into place. ``MOABBAdapter.load``
+        # used to write the .npz before its caller (``scripts/_gen_cache``) ran its
+        # assertions, so a failed generation left an invalid cache on disk for the
+        # next benchmark run to load through the fast path above.
+        tmp = cache + ".tmp.npz"
+        np.savez(tmp, X=ep.X, y=ep.y, domain=ep.domain, sfreq=ep.sfreq,
                  n_classes=ep.n_classes, ch_names=np.asarray(ep.ch_names, dtype="U"),
                  classes=np.asarray(ep.classes, dtype="U"))
+        os.replace(tmp, cache)
         return ep
+
+    def _check_cache(self, ep: EEGEpochs, where: str) -> None:
+        """Confirm the loaded epochs are the dataset this spec describes.
+
+        The cache path is only ``<name>_epochs.npz`` — it says nothing about the
+        MOABB version, paradigm parameters, channel set, sampling rate or class
+        list that produced it. A cache built under different preprocessing loads
+        silently through the fast path and becomes the data behind a published
+        number. These are the invariants the spec pins, so they are the ones worth
+        asserting; a mismatch means the cache does not belong to this dataset
+        definition and must be regenerated.
+        """
+        spec = self.spec
+        problems = []
+        if float(ep.sfreq) != float(spec["sfreq"]):
+            problems.append(f"sfreq {ep.sfreq} != {spec['sfreq']}")
+        if list(ep.ch_names) != list(spec["ch_names"]):
+            problems.append(f"{len(ep.ch_names)} channels, expected {len(spec['ch_names'])}"
+                            f" ({spec['ch_names'][:3]}…)")
+        expected_classes = 2 if spec.get("two_class") else spec["n_classes"]
+        if int(ep.n_classes) != expected_classes:
+            problems.append(f"{ep.n_classes} classes, expected {expected_classes}")
+        if len(ep.X) == 0 or ep.X.ndim != 3:
+            problems.append(f"X has shape {ep.X.shape}")
+        if problems:
+            raise ValueError(
+                f"cached epochs for {self.name} at {where} do not match its spec: "
+                + "; ".join(problems) + ". Delete the cache and regenerate it.")

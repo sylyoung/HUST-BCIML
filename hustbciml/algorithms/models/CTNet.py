@@ -53,12 +53,28 @@ flattened width (emb_size times the number of tokens), inferred by a dummy
 forward so any (C, T) input works instead of the source's hardcoded
 `flatten_eeg1`.
 
-Source: github.com/snailpt/CTNet. Deviations, all behaviour-preserving: the
-`einops` dependency is dropped (the `Rearrange` reshape and the `rearrange`
-calls inside attention are rewritten with plain torch ops), the learnable
-positional encoding no longer forces `.cuda()` so it stays device-agnostic, and
-the flattened feature width is inferred by a dummy forward rather than fixed by
-the `flatten_eeg1` constant.
+Source: github.com/snailpt/CTNet.
+
+Behaviour-preserving deviations: the `einops` dependency is dropped (the
+`Rearrange` reshape and the `rearrange` calls inside attention are rewritten with
+plain torch ops), the learnable positional encoding no longer forces `.cuda()` so
+it stays device-agnostic, and the flattened feature width is inferred by a dummy
+forward rather than fixed by the `flatten_eeg1` constant.
+
+BEHAVIOUR-CHANGING deviations from the source, made deliberately so the row means
+the same thing on every dataset:
+* the temporal kernel is `round(sfreq / 4)` rather than the source's fixed 64
+  samples. 64 is a quarter-second at the paper's 250 Hz; carried unchanged to the
+  512 Hz datasets here it would be an eighth of a second, so the "same"
+  architecture would span different durations across the three benchmark cells.
+  EEGNet in this repo is sized the same way (`kern_length = sfreq // 2`).
+* the positional table is sized from the actual pooled token count instead of the
+  source's fixed `length=100`, which silently capped the input window length.
+* the paper's pre-classifier `Dropout(0.5)` is kept inside `forward_features`.
+  The paper's `ClassificationHead` is `Dropout(0.5) -> Linear`; the `Linear` is
+  the framework's shared head, which has no dropout, so dropping the whole head
+  would have trained CTNet with less classifier regularisation than the
+  architecture it is named after.
 """
 from __future__ import annotations
 
@@ -69,6 +85,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from hustbciml.core.stages import Backbone
+from hustbciml.utils.shapes import probe
 
 
 class _PatchEmbeddingCNN(nn.Module):
@@ -201,9 +218,13 @@ class _TransformerEncoder(nn.Sequential):
 class _PositionalEncoding(nn.Module):
     """Learnable positional embedding added to the token sequence (paper Section 2.3)."""
 
-    def __init__(self, embedding, length=100, dropout=0.1):
+    def __init__(self, embedding, length, dropout=0.1):
         super().__init__()
         self.dropout = nn.Dropout(dropout)
+        # ``length`` is required rather than defaulted to the source's 100: the
+        # table has to cover the actual pooled token count, and a fixed 100 silently
+        # caps how long a window CTNet accepts while the file claims its dimensions
+        # are data-derived.
         self.encoding = nn.Parameter(torch.randn(1, length, embedding))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:  # (B, N, emb)
@@ -217,24 +238,43 @@ class CTNet(Backbone):
 
     def __init__(self, n_chans: int, n_times: int, n_classes: int, sfreq: float,
                  heads: int = 4, emb_size: int = 40, depth: int = 6,
-                 f1: int = 20, kernel_size: int = 64, D: int = 2,
+                 f1: int = 20, kernel_size: int = None, D: int = 2,
                  pooling_size1: int = 8, pooling_size2: int = 8,
-                 dropout_rate: float = 0.3, **_):
+                 dropout_rate: float = 0.3, head_dropout: float = 0.5, **_):
         super().__init__()
         self.emb_size = emb_size
+
+        # Temporal kernel in *samples*, derived from the sampling rate. The source
+        # hard-codes 64, which is the paper's quarter-second at its 250 Hz data;
+        # carried over unchanged to the benchmark's 512 Hz datasets it becomes an
+        # eighth of a second, so the same "architecture" would span a different
+        # duration on different datasets and the cross-dataset row would not be
+        # comparing like with like. EEGNet in this repo is sized the same way
+        # (``kern_length = sfreq // 2``).
+        kernel_size = int(round(sfreq / 4)) if kernel_size is None else int(kernel_size)
 
         # convolutional patch embedding (paper Section 2.2)
         self.cnn = _PatchEmbeddingCNN(
             f1=f1, kernel_size=kernel_size, D=D,
             pooling_size1=pooling_size1, pooling_size2=pooling_size2,
             dropout_rate=dropout_rate, number_channel=n_chans)
+        # Token count comes from the patch embedding, so the positional table is
+        # sized to the data like everything else.
+        with probe(self):
+            n_tokens = self.cnn(torch.zeros(1, 1, n_chans, n_times)).shape[1]
         # learnable positional embedding + transformer encoder (paper Section 2.3)
-        self.position = _PositionalEncoding(emb_size, dropout=0.1)
+        self.position = _PositionalEncoding(emb_size, length=n_tokens, dropout=0.1)
         self.trans = _TransformerEncoder(heads, depth, emb_size)
         self.flatten = nn.Flatten()
+        # The paper's ClassificationHead is Dropout(0.5) -> Linear. The Linear is
+        # the framework's shared head, which has no dropout, so the dropout is kept
+        # here (train-time only, and it does not change ``out_features``) rather
+        # than dropped — otherwise the CTNet row trains with less classifier
+        # regularisation than the architecture it is named after.
+        self.head_drop = nn.Dropout(head_dropout)
 
         # infer the flattened residual-feature width (source hardcodes flatten_eeg1)
-        with torch.no_grad():
+        with probe(self):
             self.out_features = self.forward_features(
                 torch.zeros(1, 1, n_chans, n_times)).shape[1]
 
@@ -247,4 +287,4 @@ class CTNet(Backbone):
         # residual skip over the whole transformer, then flatten (paper Section 2.4)
         features = cnn + trans
         features = self.flatten(features)        # (B, N * emb)
-        return features
+        return self.head_drop(features)          # paper's pre-classifier Dropout(0.5)

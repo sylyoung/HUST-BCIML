@@ -20,7 +20,7 @@ import dataclasses
 
 import numpy as np
 
-from hustbciml.core.config import resolve_config
+from hustbciml.core.config import IMPLEMENTED_PROTOCOLS, resolve_config
 from hustbciml.core.registry import catalog
 
 # protocol registry — extend as protocols land
@@ -37,6 +37,14 @@ PROTOCOLS = {
     # "cross_session": ...,   (M1)
     # "online": ...,          (M1)
 }
+
+# ``--protocol`` advertises exactly the protocols implemented here. Asserting it
+# at import time is what stops the CLI from accepting a name that has no Exp and
+# failing only after the user has scripted around it.
+assert set(PROTOCOLS) == set(IMPLEMENTED_PROTOCOLS), (
+    f"run.PROTOCOLS {sorted(PROTOCOLS)} and config.IMPLEMENTED_PROTOCOLS "
+    f"{sorted(IMPLEMENTED_PROTOCOLS)} must list the same protocols"
+)
 
 
 def _print_catalog():

@@ -26,8 +26,7 @@
 """Federated-learning training + inference shared by FedAvg and FedBS.
 
 Under leave-one-subject-out, ``fit`` treats every SOURCE subject as one federated
-client that trains on its own local data only — the server never sees raw EEG, so
-this is privacy-preserving cross-subject transfer. The loop is the standard FedAvg
+client that trains on its own local data only. The loop is the standard FedAvg
 communication protocol (McMahan et al., 2017); FedBS (Jia et al., IEEE TNSRE 2024)
 adds two options on top, both switched here by flags:
 
@@ -41,6 +40,23 @@ adds two options on top, both switched here by flags:
   ICLR 2021; the vendored ``_sam.SAM`` wrapping the same Adam base optimizer)
   instead of plain Adam, seeking a flat local minimum so the aggregated global
   model generalizes better.
+
+**What this measures, and what it does not.** This is a *simulated* federated
+protocol running in one process: ``federated_train`` is handed the whole pooled
+``EEGEpochs`` and slices each client's view out of it internally. The client
+boundary is a convention in the loop, not an enforced one — nothing stops the
+server side from reading any client's trials, and no data ever crosses a process,
+a machine, or a network. So what the privacy-preserving table measures is the
+**accuracy cost of the federated update schedule** (local epochs, partial client
+participation, n_k-weighted aggregation, per-client BN), which is a legitimate
+and useful quantity. It is *not* evidence about a privacy boundary, and no claim
+of one is made here or in the cards.
+
+A second axis to read the deltas with: the federated path trains for fixed local
+loops with no validation split and no early stopping, whereas the "Centralized
+Training" reference goes through ``supervised_train``, which holds out a source
+validation split and restores the best checkpoint. The delta versus Centralized
+therefore includes that difference in model selection as well as the federation.
 
 Faithful-adaptation notes (disclosed in the card): (1) the backbone is the
 benchmark's EEGNet (F1=4, F2=8), not the paper's F1=8/F2=16, so every privacy-

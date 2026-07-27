@@ -96,20 +96,29 @@ def to_long_df(preds: np.ndarray):
 def crowdkit_predict(preds: np.ndarray, method) -> np.ndarray:
     """Fit a crowdkit aggregator on the votes and return task-ordered labels.
 
-    Every task carries all K votes, so no task is dropped; we still reindex to the
-    original ``0..N-1`` order and fall back to the majority vote for any task the
-    aggregator failed to score (never silently — the array is validated). The fit
-    runs under ``fixed_seed`` so a stochastic crowdkit method is reproducible.
+    Every task carries all K votes, so no task should be dropped; the result is
+    reindexed to the original ``0..N-1`` order. The fit runs under ``fixed_seed``
+    so a stochastic crowdkit method is reproducible.
+
+    A task the aggregator failed to score is an error, not something to patch
+    over. Substituting the majority vote — the previous behaviour, unlogged and
+    uncounted — means the row published under "Dawid-Skene" or "GLAD" is partly
+    plain majority voting, with no way for anything downstream to tell. Every
+    caller here is generating a benchmark number, so the failure surfaces.
     """
     N = preds.shape[1]
     with fixed_seed(0):
         series = method.fit_predict(to_long_df(preds))
     aligned = series.reindex(range(N))
-    if aligned.isna().any():                       # should not happen; guard anyway
-        from scipy import stats
-
-        fallback = stats.mode(preds, axis=0, keepdims=False).mode
-        aligned = aligned.fillna(dict(enumerate(fallback)))
+    missing = int(aligned.isna().sum())
+    if missing:
+        raise RuntimeError(
+            f"{type(method).__name__} scored only {N - missing} of {N} tasks; the "
+            f"unscored tasks (first few: "
+            f"{list(aligned.index[aligned.isna()][:5])}) have no aggregated label. "
+            f"Falling back to majority vote for them would report a partly-majority-vote "
+            f"result under this aggregator's name."
+        )
     return aligned.to_numpy().astype(int)
 
 

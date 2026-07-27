@@ -45,14 +45,26 @@ classification heads: both the auxiliary per-branch heads and the main head. The
 shared hustbciml `Linear` head then produces the logits, so only the main
 feature path (MSTSConv -> concat -> Transformer -> CLS) is kept here.
 
-Source: github.com/SheldonLiu0412/MSVTNet. Deviations, all behaviour-preserving:
-the `einops` `Rearrange('b d 1 t -> b t d')` is rewritten with plain torch ops
-(`squeeze` plus `permute`), the in-place positional-encoding add is written
-out-of-place, and `seq_len` and `d_model` are inferred by a dummy forward in
-`__init__` (the reference derives them the same way from a random dummy input)
-so any (C, T) dataset works. Default hyper-parameters match the reference
-(F = [9, 9, 9, 9], C1 = [15, 31, 63, 125], C2 = 15, D = 2, P1 = 8, P2 = 7,
-Pc = 0.3, nhead = 8, ff_ratio = 1, Pt = 0.5, transformer layers = 2).
+Source: github.com/SheldonLiu0412/MSVTNet.
+
+Behaviour-preserving deviations: the `einops` `Rearrange('b d 1 t -> b t d')` is
+rewritten with plain torch ops (`squeeze` plus `permute`), the in-place
+positional-encoding add is written out-of-place, and `seq_len` and `d_model` are
+inferred by a dummy forward in `__init__` (the reference derives them the same
+way from a random dummy input) so any (C, T) dataset works. Default
+hyper-parameters match the reference (F = [9, 9, 9, 9], C1 = [15, 31, 63, 125],
+C2 = 15, D = 2, P1 = 8, P2 = 7, Pc = 0.3, nhead = 8, ff_ratio = 1, Pt = 0.5,
+transformer layers = 2).
+
+BEHAVIOUR-CHANGING deviation — read the leaderboard row accordingly: the
+auxiliary per-branch classification heads are dropped along with the main head,
+and with them MSVTNet's joint loss. The published method trains the four branch
+classifiers with a weighted auxiliary loss *plus* the main loss; here only the
+CLS feature reaches the shared `Linear` head under a single cross-entropy. So
+this row measures **MSVTNet's backbone**, not MSVTNet's full training procedure,
+and a gap against the paper's number is expected. Implementing the auxiliary
+losses would require a dedicated strategy (the heads live outside the Backbone
+contract); that is the honest way to add the full method later.
 """
 from __future__ import annotations
 
@@ -60,6 +72,7 @@ import torch
 import torch.nn as nn
 
 from hustbciml.core.stages import Backbone
+from hustbciml.utils.shapes import probe
 
 
 class _TSConv(nn.Sequential):
@@ -154,7 +167,7 @@ class MSVTNet(Backbone):
 
         # Infer token-sequence length and model width by a dummy forward, so the
         # backbone is dataset-agnostic (the reference derives these the same way).
-        with torch.no_grad():
+        with probe(self):
             tokens = self._forward_mstsconv(torch.zeros(1, 1, n_chans, n_times))
         seq_len, d_model = tokens.shape[1], tokens.shape[2]
 

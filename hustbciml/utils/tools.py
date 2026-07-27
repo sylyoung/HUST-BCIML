@@ -42,7 +42,13 @@ class EarlyStopping:
             # later in-place updates do not mutate it), and reset the patience
             # counter.
             self.best = value
-            self.best_state = copy.deepcopy(model.state_dict())
+            # Snapshot to CPU. A deepcopy of a CUDA state_dict keeps the copy on
+            # the accelerator alongside the live model, so peak GPU memory is
+            # roughly doubled for the parameters — and early epochs improve often,
+            # so the copy runs nearly every epoch. On a shared lab GPU that
+            # directly reduces how many runs fit at once.
+            self.best_state = {k: v.detach().to("cpu", copy=True)
+                               for k, v in model.state_dict().items()}
             self.counter = 0
             return True
         # No improvement: count it, and once ``patience`` such checks pass in a

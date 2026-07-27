@@ -11,8 +11,8 @@ Multi-View Contrastive Network is a composite algorithm: it pairs an IFNet backb
 
 | Metric | Value |
 |---|--:|
-| Accuracy (mean ± std across seeds) | 75.64 ± 0.95 |
-| Δ vs baseline (EA-EEGNet, 72.07) | +3.57 |
+| Accuracy (mean ± std across seeds) | 75.75 ± 0.56 |
+| Δ vs baseline (EA-EEGNet, 72.07) | +3.68 |
 | Reference range (expected band) | 70–82 |
 
 Accuracy is the mean over seeds; ± is the standard deviation *across* seeds (a reproducibility figure, not the cross-subject spread). The reference range is the published / expected band on this dataset.

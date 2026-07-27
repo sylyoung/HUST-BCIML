@@ -17,5 +17,27 @@ mne>=1.5               # pulled in by moabb; EEG I/O
 # --- specific algorithms (optional) ---
 PyWavelets>=1.4         # CSDA augmenter (discrete wavelet transform)
 
+# --- ensemble combiners (needed for the Ensemble Learning table) ---
+# Five of the fourteen aggregators (Dawid-Skene, GLAD, MACE, M-MSR, Wawa) are
+# thin wrappers over crowd-kit, and the shared wrapper builds their long-format
+# vote table with pandas. Neither was listed, so `pip install -r requirements.txt`
+# followed by the documented ensemble command failed on import.
+crowd-kit>=1.2          # Dawid-Skene, GLAD, MACE, M-MSR, Wawa
+pandas>=1.5             # long-format vote table for the crowd-kit wrappers
+
 # The web app (docs/) has NO Python runtime dependency — it opens as a static
 # file. Regenerating its data files needs only PyYAML (see gallery/build_site.py).
+
+# --- reproducing the published numbers ---
+# The bounds above are COMPATIBILITY FLOORS, not the environment the leaderboard
+# was measured in. torch, numpy, scikit-learn, MOABB and MNE all change default
+# initialisations, RNG streams, kernel selection and dataset preprocessing across
+# the releases these ranges admit, so installing today can give materially
+# different behaviour from the run that produced the tables.
+#
+# To pin an environment for a re-run, capture it on the machine that produces the
+# numbers and commit the result alongside them:
+#     pip freeze > requirements-lock.txt
+# and record the Python, CUDA and driver versions in RESULTS.md next to the run
+# they belong to. This file is deliberately not a hand-written lock: an invented
+# pin set would look authoritative while matching nothing that was ever run.

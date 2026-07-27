@@ -29,6 +29,11 @@ from . import registry
 from .config import Config
 from .stages import Aligner, Augmenter, Backbone, Head, Strategy
 
+# The strategy ``mode`` values the protocols know how to run. Anything else is a
+# typo or an unimplemented procedure, and must fail before a run rather than fall
+# through to the default path.
+VALID_STRATEGY_MODES = frozenset({"gradient", "fit", "tta"})
+
 
 class PipelineModel(nn.Module):
     """Backbone followed by head, returning ``(feats, logits)``.
@@ -86,11 +91,14 @@ def build_pipeline(cfg: Config) -> Pipeline:
 
     # Aligner takes no data dims: it works on raw (C, T) trials per subject.
     aligner: Aligner = registry.build("aligners", cfg.aligner)
-    # Augmenter gets montage and paradigm context so montage-aware augmentations
-    # (e.g. left/right channel reflection) know the electrode layout.
+    # Augmenter gets montage, class and paradigm context so montage-aware
+    # augmentations (e.g. left/right channel reflection) know both the electrode
+    # layout and what the classes actually are — a reflection may only swap
+    # labels when the two classes are mirror images of each other.
     augmenter: Augmenter = registry.build(
         "augmenters", cfg.augmenter,
         ch_names=cfg.ch_names, n_classes=cfg.n_classes, sfreq=cfg.sfreq,
+        classes=cfg.classes,
     )
 
     # Backbone is sized from the data (n_chans, n_times, n_classes, sfreq). The
@@ -114,12 +122,59 @@ def build_pipeline(cfg: Config) -> Pipeline:
     # because it reads its hyperparameters from the config at run time.
     strategy: Strategy = registry.build("strategies", cfg.strategy)
 
-    # composition sanity checks
-    if aligner.requires_labels and cfg.protocol == "cross_subject":
-        # A label-alignment aligner needs the target's labels to align it. Under
-        # cross-subject that is available offline (all target labels known ahead
-        # of scoring) but not in a live online stream. Placeholder for the online
-        # guard; harmless offline, hence the bare pass.
-        pass
+    _validate_composition(cfg, aligner, strategy)
     return Pipeline(aligner=aligner, augmenter=augmenter, model=model,
                     strategy=strategy, cfg=cfg)
+
+
+def _validate_composition(cfg: Config, aligner: Aligner, strategy: Strategy) -> None:
+    """Reject compositions whose result would carry a misleading label.
+
+    Each check below exists because the alternative is not a crash but a number:
+    the run completes, writes a metrics file, and lands on the leaderboard
+    describing something other than what executed.
+    """
+    # 1. Strategy mode. The protocol branches on this string to decide whether the
+    #    target is aligned offline or streamed to the strategy. An unrecognised
+    #    value silently takes the offline branch, so a mistyped or unsupported mode
+    #    would publish a number measured under the wrong procedure.
+    if strategy.mode not in VALID_STRATEGY_MODES:
+        raise ValueError(
+            f"strategy {cfg.strategy!r} declares mode {strategy.mode!r}; expected one of "
+            f"{sorted(VALID_STRATEGY_MODES)}"
+        )
+
+    # 2. Label-requiring aligners under a held-out-target protocol. Aligning the
+    #    held-out subject with its own labels is leakage, and the LOSO score would
+    #    be inflated with nothing to show for it in the results file. Every shipped
+    #    aligner sets ``requires_labels = False``, so this guards what comes next.
+    if aligner.requires_labels and cfg.protocol == "cross_subject":
+        raise ValueError(
+            f"aligner {cfg.aligner!r} declares requires_labels=True, but the "
+            f"{cfg.protocol!r} protocol hides the target's labels: aligning the held-out "
+            f"subject would need labels it must not see. Use a label-free aligner, or add "
+            f"a calibrated protocol that grants a labelled target slice explicitly."
+        )
+
+    # 3. Online alignment under test-time adaptation. A TTA strategy walks the raw
+    #    target stream and aligns it incrementally, which only some aligners can do.
+    #    Without this check a composition like ``--aligner RA --strategy Tent`` runs
+    #    and reports itself as RA while the online loop applies EA's update.
+    if strategy.mode == "tta" and cfg.aligner != "Identity" and not aligner.supports_online:
+        raise ValueError(
+            f"strategy {cfg.strategy!r} is test-time (mode='tta') and needs to update the "
+            f"alignment reference per trial, but aligner {cfg.aligner!r} sets "
+            f"supports_online=False. Use EA (or Identity) for online strategies."
+        )
+
+    # 4. Transductive + test-time. ``uses_target`` is served by the Exp as
+    #    ``ctx.target_unlabeled``, which is only filled on the offline path; a TTA
+    #    strategy declaring it would receive None and quietly run without the target
+    #    data its definition requires.
+    if strategy.mode == "tta" and getattr(strategy, "uses_target", False):
+        raise ValueError(
+            f"strategy {cfg.strategy!r} sets both mode='tta' and uses_target=True. The "
+            f"protocol supplies ctx.target_unlabeled only to offline strategies, so the "
+            f"strategy would silently receive None. A TTA strategy reads the target from "
+            f"the stream it is handed in predict()."
+        )

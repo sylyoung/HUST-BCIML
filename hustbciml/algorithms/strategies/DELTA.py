@@ -94,6 +94,12 @@ class DELTA(Strategy):
                     batch_raw = np.matmul(W[None, :, :], batch_raw)
                 bx = torch.from_numpy(batch_raw.reshape(tb, 1, C, T)).float().to(device)
                 model.train()
+                # The class-balance estimate ``z`` tracks *arriving data*, so it
+                # advances once per online update event. Updating it inside the
+                # inner ``steps`` loop made ``--steps 3`` age the DOT memory three
+                # times per batch, which confounds a step-count sweep with a
+                # different class-balance schedule.
+                update_z = (i + 1) % tb == 0
                 for _ in range(steps):
                     _, logits = model(bx)
                     prob = torch.softmax(logits / temp, dim=1)          # (tb, K)
@@ -104,8 +110,9 @@ class DELTA(Strategy):
                     w = 1.0 / (z[pl] + _EPS)                            # (tb,)
                     w_bar = tb * w / w.sum()                            # (tb,)
                     weighted_marginal = (prob * w_bar.unsqueeze(1)).sum(dim=0) / tb   # (K,)
-                    if (i + 1) % tb == 0:                               # z EMA cadence
+                    if update_z:                                        # z EMA cadence
                         z = z * _LAMBDA_Z + msoftmax.detach() * (1 - _LAMBDA_Z)
+                        update_z = False                                # once per batch, not per step
                     gdiv = torch.sum(weighted_marginal * torch.log(weighted_marginal + _EPS))
                     loss = cem + gdiv
                     opt.zero_grad()

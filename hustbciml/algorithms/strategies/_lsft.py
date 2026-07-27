@@ -70,7 +70,22 @@ def ra_align(X: np.ndarray, cov_type: str = "lwf") -> np.ndarray:
 
 
 def tangent_features(X: np.ndarray, cov_type: str = "lwf") -> np.ndarray:
-    """Ledoit-Wolf covariances -> Riemannian tangent-space vectors ``(N, C(C+1)/2)``."""
+    """Ledoit-Wolf covariances -> Riemannian tangent-space vectors ``(N, C(C+1)/2)``.
+
+    ``fit_transform`` estimates the tangent point from whatever set it is handed,
+    so calling this separately for source (in ``fit``) and target (in ``predict``)
+    expands each domain around *its own* Riemannian mean rather than a shared one.
+    That is deliberate and matches the reference implementation, which likewise
+    calls ``TangentSpace().fit_transform`` once per domain
+    (``LSFT/dataloader.py``). It is also why centroid alignment runs first: after
+    ``ra_align`` both means sit near the identity, so the two tangent points
+    nearly coincide and the source classifiers are queried in an almost identical
+    basis. "Almost" is the caveat worth knowing — on a dataset where centroid
+    alignment converges poorly the two bases drift apart, and the residual
+    train/test basis mismatch is inside the reported number. Fitting one shared
+    tangent space in ``fit`` and calling ``transform`` on the target would remove
+    it, at the cost of comparability with the published LSFT results.
+    """
     from pyriemann.estimation import Covariances
     from pyriemann.tangentspace import TangentSpace
 

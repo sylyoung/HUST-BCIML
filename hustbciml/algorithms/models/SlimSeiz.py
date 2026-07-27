@@ -62,6 +62,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from hustbciml.core.stages import Backbone
+from hustbciml.utils.shapes import probe
 
 
 class _MambaBlock(nn.Module):
@@ -235,7 +236,7 @@ class SlimSeiz(Backbone):
 
         # Infer the feature width via a dummy forward so the backbone is
         # dataset-agnostic. The paper's final Linear(32, 2) head is removed.
-        with torch.no_grad():
+        with probe(self):
             feat = self.forward_features(torch.zeros(1, 1, n_chans, n_times))
         self.out_features = feat.shape[1]
 

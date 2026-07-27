@@ -51,12 +51,16 @@ class JAN(Strategy):
                      (GaussianKernel(sigma=0.92, track_running_stats=False),)),
             linear=False)
 
+        # Transfer-loss weight; 1.0 is the reference default and what the published
+        # row used. Sweepable with ``--hp jan_align=<w>``.
+        align_w = float(ctx.cfg.hp.get("jan_align", 1.0))
+
         def da_step(m, bs, bt, aux, it, max_iter, ctx):
             feat_s, out_s = m(bs.x)
             feat_t, out_t = m(bt.x)
             align = jmmd((feat_s, torch.softmax(out_s, dim=1)),
                          (feat_t, torch.softmax(out_t, dim=1)))
-            return criterion(out_s, bs.y) + align                  # alignment_weight = 1.0
+            return criterion(out_s, bs.y) + align_w * align
 
         return transductive_train(model, source, ctx, da_step)
 

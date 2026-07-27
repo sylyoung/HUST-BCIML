@@ -87,9 +87,22 @@ class SMLOVR(Combiner):
             dev = pred - mu[:, None]
             Q = dev @ dev.T / (pred.shape[1] - 1)        # (K, K) one-vs-rest vote covariance
             v = principal_eigvec(Q)                      # per-class model weights
-            if v[0] <= 0:                                # fix global sign (assume model 0 > chance)
+            # Global sign from the whole vector rather than from model 0 alone:
+            # "model 0 is above chance" is an arbitrary anchor, and a single
+            # anti-correlated learner at index 0 flips every weight.
+            if v.sum() < 0:
                 v = -v
-            weights_all.append(v / np.sum(v))            # normalize so the per-class weights sum to 1
+            total = np.sum(v)
+            if abs(total) < 1e-12:
+                # Balanced opposite learners make the signed eigenvector sum to
+                # zero; normalising by it yields inf weights and a constant class-0
+                # output that looks like a real consensus.
+                raise FloatingPointError(
+                    f"SML-OVR: per-class eigenvector for class {i} sums to {total:.3g}; "
+                    f"the spectral reliability estimate is not identifiable for this "
+                    f"learner pool (anti-correlated or tied base models)."
+                )
+            weights_all.append(v / total)                # normalize so the per-class weights sum to 1
         wf = np.sum(np.array(weights_all), axis=0)       # v-bar (Eq. 12): sum of the per-class normalized eigenvectors; the 1/K averaging factor is a global scale that does not change the argmax below
         # Predict argmax over classes of the reliability-weighted one-hot votes.
         return np.argmax(np.einsum("a,abc->bc", wf, oh), axis=1)

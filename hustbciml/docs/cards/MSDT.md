@@ -11,8 +11,8 @@ Multi-Source Decentralized Transfer trains one small MLP per source subject on R
 
 | Metric | Value |
 |---|--:|
-| Accuracy (mean ± std across seeds) | 73.33 ± 0.80 |
-| Δ vs reference (EA-EEGNet, 72.07) — context | +1.26 |
+| Accuracy (mean ± std across seeds) | 73.84 ± 0.23 |
+| Δ vs reference (EA-EEGNet, 72.07) — context | +1.77 |
 | Reference range (expected band) | 70–80 |
 
 Accuracy is the mean over seeds; ± is the standard deviation *across* seeds (a reproducibility figure, not the cross-subject spread). The reference range is the published / expected band on this dataset.

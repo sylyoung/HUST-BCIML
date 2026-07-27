@@ -61,7 +61,12 @@ class LA(VoteCombiner):
                 tally = {}
                 for w, lab in e2wl[item]:
                     tally[lab] = tally.get(lab, 0) + a[w]
-                best, cand = -1, []
+                # ``-inf``, not ``-1``: vote weights are ``a[w] * C - 1`` and go
+                # negative for a below-chance worker, so a class whose whole tally
+                # fell below -1 was skipped even when it was the best available —
+                # leaving ``cand`` empty and crashing ``rng.choice``, or dropping a
+                # legitimate candidate and biasing the output.
+                best, cand = -np.inf, []
                 for cl in labels:
                     if cl not in tally:
                         continue
@@ -80,7 +85,12 @@ class LA(VoteCombiner):
                 tally = {}
                 for w, lab in e2wl[item]:
                     tally[lab] = tally.get(lab, 0) + (a[w] * C - 1)
-                best, cand = -1, []
+                # ``-inf``, not ``-1``: vote weights are ``a[w] * C - 1`` and go
+                # negative for a below-chance worker, so a class whose whole tally
+                # fell below -1 was skipped even when it was the best available —
+                # leaving ``cand`` empty and crashing ``rng.choice``, or dropping a
+                # legitimate candidate and biasing the output.
+                best, cand = -np.inf, []
                 for cl in labels:
                     if cl not in tally:
                         continue

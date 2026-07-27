@@ -115,6 +115,23 @@ class MDDClassifier(nn.Module):
             nn.ReLU(),
             nn.Dropout(0.5),
         )
+        # KNOWN DEVIATION FROM THE PAPER — DO NOT "FIX" WITHOUT RE-MEASURING.
+        # These two lines initialise ``bottleneck[1]``, which is the *BatchNorm*:
+        # its scale is set to ~N(0, 0.005) and its shift to 0.1, so the bottleneck
+        # emits a near-constant 0.1 at initialisation, while the Linear at index 0
+        # keeps PyTorch's defaults. In tllib/DALIB's MDD the small-normal init is
+        # meant for the Linear bottleneck.
+        #
+        # The index shift has a traceable cause. Upstream DeepTransferEEG
+        # (``tl/utils/loss.py``) builds the same Sequential with a ``#pool_layer,``
+        # commented out as element 0; with the pool layer present, index 1 *was*
+        # the Linear. Commenting it out moved every element down one and these two
+        # lines were never updated. This port copied them verbatim.
+        #
+        # Kept as-is so the MDD row stays comparable with the lab's own
+        # DeepTransferEEG results, which carry the same initialisation. Recorded
+        # in the MDD card. Correcting it here means re-running MDD on all three
+        # datasets, and ideally fixing it upstream in the same change.
         self.bottleneck[1].weight.data.normal_(0, 0.005)
         self.bottleneck[1].bias.data.fill_(0.1)
         self.head = nn.Linear(bottleneck_dim, num_classes)

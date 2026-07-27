@@ -46,10 +46,16 @@ def _std(xs):
 def load_runs(results_dir: str, dataset: str = None):
     """One dict per metrics.json (one seed run), keeping the full stages map."""
     runs = []
+    unreadable = []
     for path in glob.glob(os.path.join(results_dir, "*", "metrics.json")):
         try:
             d = json.load(open(path))
-        except Exception:
+        except Exception as exc:
+            # Silently skipping a corrupt or truncated metrics file makes the
+            # aggregate look complete while a run is quietly missing from it.
+            # Collect them and fail after the scan, so the message lists every
+            # broken file rather than only the first.
+            unreadable.append(f"{path}: {type(exc).__name__}: {exc}")
             continue
         if dataset and d.get("dataset") != dataset:
             continue
@@ -66,6 +72,10 @@ def load_runs(results_dir: str, dataset: str = None):
             "kappa": s.get("kappa", {}).get("mean", float("nan")),
             "n_subjects": len(d.get("per_subject", [])),
         })
+    if unreadable:
+        raise RuntimeError(
+            "unreadable metrics files (a leaderboard built without them would "
+            "overstate completeness):\n  " + "\n  ".join(unreadable))
     return runs
 
 

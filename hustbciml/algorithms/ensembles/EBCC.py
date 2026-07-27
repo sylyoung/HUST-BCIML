@@ -82,7 +82,13 @@ class EBCC(VoteCombiner):
                 z_ik[:, [l]] += y_lij[l].sum(axis=-1)
             z_ik /= z_ik.sum(axis=-1, keepdims=True)            # init responsibilities = vote fractions
             if empirical_prior:
-                alpha = z_ik.sum(axis=0)
+                # A class no base model ever votes for gets an empirical count of
+                # exactly 0, and ``digamma(nu_k)`` on a zero concentration returns
+                # -inf, which then poisons every responsibility. The class exists —
+                # ``num_classes`` comes from ``preds.max() + 1`` — it just has no
+                # votes in this target batch, which is normal on a hard subject.
+                # Floor the Dirichlet concentration instead of letting it hit zero.
+                alpha = np.maximum(z_ik.sum(axis=0), 1e-6)
 
             zg_ikm = np.random.dirichlet(np.ones(num_groups), z_ik.shape) * z_ik[:, :, None]
             for _ in range(max_iter):

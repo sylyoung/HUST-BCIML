@@ -132,6 +132,40 @@ from hustbciml.core.batch import EEGEpochs
 from hustbciml.core.stages import Aligner
 
 
+# A mean covariance whose condition number exceeds this is effectively singular
+# in float64: its inverse square root is dominated by directions the data does not
+# actually span. Chosen well above anything the benchmark's band-passed EEG
+# produces (the three shipped datasets sit around 1e2-1e4), so it fires on genuine
+# rank deficiency — a flat or duplicated channel, or fewer time samples than
+# channels — rather than on ordinary ill-conditioning.
+_MAX_COND = 1e12
+
+
+def _check_reference(ref: np.ndarray, W: np.ndarray) -> np.ndarray:
+    """Fail loudly on a whitening matrix that is not usable.
+
+    Without this, a rank-deficient subject yields ``inf``/``nan`` entries, and
+    because ``transform`` takes ``np.real(...)`` the corruption is invisible: the
+    trials get scaled by garbage and training proceeds to a plausible-looking
+    accuracy. A benchmark number produced that way is a numerical artifact, so it
+    is better not to produce one at all.
+    """
+    if not np.all(np.isfinite(W)):
+        raise FloatingPointError(
+            "Euclidean Alignment produced a non-finite whitening matrix: the mean "
+            "covariance is singular. Check for flat/duplicated channels or trials "
+            "shorter than the channel count."
+        )
+    cond = np.linalg.cond(ref)
+    if not np.isfinite(cond) or cond > _MAX_COND:
+        raise FloatingPointError(
+            f"Euclidean Alignment: mean covariance is numerically singular "
+            f"(condition number {cond:.3g} > {_MAX_COND:.0e}); R^-1/2 would be "
+            f"dominated by noise directions."
+        )
+    return W
+
+
 def _reference_inv_sqrt(X: np.ndarray) -> np.ndarray:
     """Return R-bar^{-1/2} for one subject's trials ``X`` of shape (n, C, T).
 
@@ -144,7 +178,7 @@ def _reference_inv_sqrt(X: np.ndarray) -> np.ndarray:
     for i in range(X.shape[0]):
         cov[i] = np.cov(X[i])
     ref = np.mean(cov, axis=0)                 # R-bar: arithmetic mean covariance (Eq. 10)
-    return fractional_matrix_power(ref, -0.5)  # R-bar^{-1/2} (Eq. 11)
+    return _check_reference(ref, fractional_matrix_power(ref, -0.5))   # R-bar^{-1/2} (Eq. 11)
 
 
 class EA(Aligner):
@@ -190,16 +224,24 @@ class EA(Aligner):
     def online_update(x: np.ndarray, R, n: int):
         """Fold one new trial ``x`` (C, T) into a running mean covariance ``R``.
 
-        ``R`` is the running R-bar estimate after ``n`` trials; pass the sentinel
-        int 0 for the first sample. Returns the updated (C, C) reference, which
-        ``inv_sqrt`` then turns into R-bar^{-1/2} for streaming EA.
+        ``R`` is the running R-bar estimate after ``n`` trials; pass ``None`` for
+        the first sample. Returns the updated (C, C) reference, which ``inv_sqrt``
+        then turns into R-bar^{-1/2} for streaming EA.
+
+        ``None`` is the sentinel rather than the integer ``0`` that
+        DeepTransferEEG's ``EA_online`` used. A type check cannot distinguish "no
+        reference yet" from a caller that initialised the running mean as ``0.0``
+        or as a zero array; both of those fell through to the running-mean branch
+        and silently divided every subsequent reference by ``n + 1``, corrupting
+        the whole stream with no error. ``0`` is still accepted so existing
+        callers keep working.
         """
         cov = np.cov(x)
-        if isinstance(R, int):     # first sample: no prior reference yet
+        if R is None or isinstance(R, int):    # first sample: no prior reference yet
             return cov
         return (R * n + cov) / (n + 1)     # running arithmetic mean of trial covariances
 
     @staticmethod
     def inv_sqrt(R: np.ndarray) -> np.ndarray:
         """R-bar^{-1/2} for a reference covariance ``R`` (Eq. 11; used by the online path)."""
-        return fractional_matrix_power(R, -0.5)
+        return _check_reference(R, fractional_matrix_power(R, -0.5))

@@ -49,10 +49,16 @@ class DAN(Strategy):
         mkmmd = MultipleKernelMaximumMeanDiscrepancy(
             kernels=[GaussianKernel(alpha=2 ** k) for k in range(-3, 2)], linear=True)
 
+        # Transfer-loss weight. 1.0 is the reference default and what the
+        # published row used; ``--hp dan_align=<w>`` makes it sweepable, which it
+        # was not before — the repository has an ``hp`` mechanism precisely for
+        # method coefficients and this one was hard-coded past it.
+        align_w = float(ctx.cfg.hp.get("dan_align", 1.0))
+
         def da_step(m, bs, bt, aux, it, max_iter, ctx):
             feat_s, out_s = m(bs.x)
             feat_t, _ = m(bt.x)
-            return criterion(out_s, bs.y) + mkmmd(feat_s, feat_t)   # alignment_weight = 1.0
+            return criterion(out_s, bs.y) + align_w * mkmmd(feat_s, feat_t)
 
         return transductive_train(model, source, ctx, da_step)
 

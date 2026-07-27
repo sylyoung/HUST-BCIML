@@ -10,8 +10,39 @@
 
 Every `Acc` is the mean over seeds. The `±` is the std ACROSS seeds (reproducibility), not the
 cross-subject spread. Deterministic network-free methods have std 0.00 by construction.
+**Environment.** `requirements.txt` states compatibility floors, not the versions these
+numbers were measured with — torch, numpy, scikit-learn, MOABB and MNE all change default
+initialisations, RNG streams and dataset preprocessing across the releases those bounds admit,
+so a fresh install can differ materially. These numbers were measured with Python 3.8.13,
+torch 1.11.0 (CUDA 11.3, cuDNN 8.2.0), numpy 1.22.3, scipy 1.10.1, scikit-learn 1.3.2,
+MNE 1.6.1 and MOABB 1.0.0 — the same versions on every machine used.
+
 Measured on the hust-gpu servers, CUDA for the neural methods and CPU for the classical
 track.
+
+**Reproducible on a given machine, not across machines.** Identical code, identical seed and
+identical data give different accuracies on different servers here, by up to 2.08 accuracy points
+on a single seed. The cause is not the GPU. The NVIDIA driver differs across these machines, yet
+`NoAlign-EEGNet` — a full GPU training run, and the one configuration that skips Euclidean
+Alignment — comes back bit-identical everywhere, while every configuration that *does* align
+differs. EA whitens with a covariance inverse square root: a LAPACK eigendecomposition, on the CPU,
+whose last bits training then amplifies.
+
+What that eigendecomposition resolves to depends on the BLAS the environment is linked against:
+
+| machine | BLAS | CPU |
+|---|---|---|
+| 10022 | Intel MKL (conda) | Xeon Gold 6278 |
+| 20022 | Intel MKL (conda) | Xeon Platinum 8176 |
+| 7002 | reference cblas/blas (micromamba) | Xeon Gold 6230 |
+| 60022 | reference cblas/blas (micromamba) | Xeon Platinum 8375C |
+
+The two machines whose results agree bit-for-bit — 10022 and 20022 — are exactly the two linked
+against MKL. The other two share a BLAS build but sit on different CPU microarchitectures, and a
+reference build selects its kernels per CPU; each is its own regime. So reproducing a cell to the
+last decimal means matching the BLAS, not just the package versions. Reproducing it to the two
+decimals reported here does not. `hustbciml/scripts/cell_origin.tsv` records which machine produced
+each published cell, so a re-measurement can be run where its baseline was made.
 
 Each stage table varies exactly ONE axis and holds the rest at the canonical configuration
 (EA aligner, no augmentation, EEGNet backbone, Linear head, ERM strategy). A row's Δ
@@ -47,9 +78,9 @@ privacy methods **SAFE**, **FedBS** and **MSDT**, and the decentralized-ensemble
 matches, or an expected behavior band where it differs. Six methods added 2026-07-18 are marked
 *(new)*: **TIE-EEGNet**, **KDFNet** (backbones), **MEKT**, **MDMAML**, **ASFA** (transfer) and
 **SAFE** (privacy). A further ten network backbones (ADFCNN, CTNet, MSCFormer, MSVTNet, TMSA-Net,
-EEGWaveNet, SlimSeiz, FBMSNet, EEGNeX, EEG-Deformer) and eight augmentation baselines (additive
+EEGWaveNet, SlimSeiz, FBMSNet, EEGNeX, EEG-Deformer) and seven augmentation baselines (additive
 noise, amplitude flip, amplitude scaling, frequency shift, Fourier surrogate, frequency
-recombination, half-sample recombination, channel symmetry) were added 2026-07-24, all external
+recombination, half-sample recombination) were added 2026-07-24, all external
 comparison methods measured on all three datasets over three seeds.
 
 Regenerate live (on the server, where the raw results are), per dataset:
@@ -66,45 +97,48 @@ every other table. Baseline = EEGNet._
 
 | Backbone | BNCI2014001 | BNCI2014002 | BNCI2015001 |
 |---|--:|--:|--:|
-| MSCFormer | 76.29 ± 0.32 | 75.31 ± 1.35 | 72.35 ± 1.19 |
-| MSVTNet | 75.95 ± 0.07 | 75.76 ± 0.67 | 73.21 ± 0.45 |
+| DBConformer **(lab)** | 76.26 ± 0.84 | **77.19 ± 1.28** | 71.86 ± 0.23 |
+| MSCFormer | 75.67 ± 0.26 | 76.14 ± 1.21 | 73.44 ± 1.00 |
 | CSP-Net **(lab)** | 75.15 ± 1.06 | 74.40 ± 0.24 | 72.42 ± 0.38 |
-| DBConformer **(lab)** | 74.85 ± 0.98 | **77.05 ± 0.60** | 72.94 ± 0.84 |
-| DeepConvNet | 74.07 ± 1.04 | 68.64 ± 0.20 | 69.99 ± 1.07 |
-| EEGConformer | 74.05 ± 0.58 | 75.12 ± 1.00 | 73.07 ± 1.37 |
-| EEGNeX | 73.61 ± 1.09 | 72.98 ± 1.25 | 72.86 ± 0.66 |
-| TMSA-Net | 73.53 ± 0.41 | 74.38 ± 1.04 | 73.32 ± 0.91 |
+| MSVTNet | 74.82 ± 0.74 | 75.90 ± 1.07 | 73.17 ± 1.04 |
+| EEGNeX | 74.61 ± 0.92 | 73.60 ± 0.59 | 72.32 ± 0.64 |
+| CTNet | 73.97 ± 0.80 | 74.79 ± 0.48 | 72.33 ± 0.37 |
+| DeepConvNet | 73.79 ± 0.46 | 69.05 ± 0.44 | 69.29 ± 0.47 |
+| EEG-Deformer | 73.79 ± 1.78 | 75.02 ± 0.80 | 73.26 ± 0.09 |
 | TIE-EEGNet **(lab)** *(new)* | 73.51 ± 0.25 | 73.17 ± 0.35 | 73.83 ± 0.38 |
-| EEG-Deformer | 73.43 ± 0.96 | 74.93 ± 0.27 | 73.32 ± 1.09 |
-| ShallowConvNet | 72.69 ± 0.71 | 71.14 ± 0.25 | 73.03 ± 0.28 |
+| EEGConformer | 72.84 ± 0.76 | 74.88 ± 0.59 | 73.43 ± 0.79 |
 | EEGNet (baseline) | 72.53 ± 1.22 | 74.40 ± 1.04 | 73.39 ± 0.69 |
-| ADFCNN | 72.09 ± 1.13 | 71.79 ± 0.66 | 72.25 ± 0.72 |
+| ADFCNN | 72.17 ± 1.53 | 71.81 ± 0.38 | 71.62 ± 0.27 |
+| TMSA-Net | 71.84 ± 1.26 | 73.67 ± 0.24 | 70.92 ± 0.78 |
+| ShallowConvNet | 71.12 ± 1.05 | 70.88 ± 1.54 | 72.35 ± 0.65 |
+| FBMSNet | 70.91 ± 0.95 | 71.90 ± 0.41 | 69.72 ± 0.96 |
 | KDFNet **(lab)** *(new)* | 70.88 ± 0.32 | 72.64 ± 0.69 | 68.65 ± 1.05 |
-| CTNet | 70.47 ± 1.72 | 72.57 ± 0.78 | 71.28 ± 0.67 |
-| FBMSNet | 70.45 ± 0.17 | 70.95 ± 0.97 | 71.49 ± 0.40 |
 | SlimSeiz | 69.65 ± 0.42 | 74.79 ± 1.61 | 72.94 ± 1.04 |
-| EEGWaveNet | 66.64 ± 1.44 | 69.02 ± 1.40 | 68.94 ± 1.30 |
+| EEGWaveNet | 66.64 ± 1.44 | 68.93 ± 1.49 | 68.94 ± 1.30 |
 
-The backbone ranking is dataset-dependent, and the table reports it as measured. On
-BNCI2014001 the multi-scale convolutional transformers lead: MSCFormer (76.29) and MSVTNet
-(75.95) top the table, with the lab's CSP-Net (75.15, an EEGNet whose depthwise spatial
-convolution is initialized with frozen CSP filters) and the dual-branch DBConformer (74.85)
-just behind. On BNCI2014002 DBConformer still leads clearly (77.05), ahead of MSVTNet (75.76)
-and MSCFormer (75.31). On BNCI2015001 the field is tightly bunched around the EEGNet baseline
-(73.39): TIE-EEGNet edges ahead (73.83), with EEG-Deformer and TMSA-Net (both 73.32), MSVTNet
-(73.21) and EEGConformer (73.07) close behind, a faithful narrow spread. No single backbone
-dominates all three datasets, and rankings shift across them: the seizure-oriented EEGWaveNet
-(66.64) sits lowest on BNCI2014001, while SlimSeiz climbs from 69.65 there to 74.79 on
-BNCI2014002. KDFNet (an FBCSP-mirroring CNN) and the compact CTNet and FBMSNet land below the
-baseline on all three, honest below-baseline results for architectures built for other tasks
-or tighter parameter budgets.
+The backbone ranking is dataset-dependent, and the table reports it as measured. On BNCI2014001 the
+lab's dual-branch DBConformer leads (76.26), ahead of MSCFormer (75.67), the lab's CSP-Net (75.15,
+an EEGNet whose depthwise spatial convolution is initialized with frozen CSP filters) and MSVTNet
+(74.82). On BNCI2014002 DBConformer leads again and more clearly (77.19), ahead of MSCFormer
+(76.14) and MSVTNet (75.90). On BNCI2015001 the field is tightly bunched around the EEGNet baseline
+(73.39): TIE-EEGNet edges ahead (73.83), with MSCFormer (73.44), EEGConformer (73.43), EEG-Deformer
+(73.26) and MSVTNet (73.17) close behind, a faithful narrow spread — a spread smaller than several
+of these rows' own across-seed std, so the order within it should not be read as a ranking. No
+single backbone dominates all three datasets, and rankings shift across them: the seizure-oriented
+EEGWaveNet (66.64) sits lowest on BNCI2014001, while SlimSeiz climbs from 69.65 there to 74.79 on
+BNCI2014002. KDFNet (an FBCSP-mirroring CNN) and the compact FBMSNet land below the baseline on all
+three, honest below-baseline results for architectures built for other tasks or tighter parameter
+budgets. CTNet was in that group until this release: sizing its temporal kernel from the sampling
+rate rather than at a fixed 64 samples — a quarter-second at 250 Hz but an eighth at 512 Hz — moves
+it to **+1.44 / +0.39 / −1.06**, above the baseline on two of the three. It is the one case here
+where a fix changed a conclusion rather than a digit.
 
 ## Alignment
 _EEGNet + ERM, no aug. Vary the aligner. Baseline = no alignment._
 
 | Aligner | BNCI2014001 | BNCI2014002 | BNCI2015001 |
 |---|--:|--:|--:|
-| RA (Riemannian) | 73.97 ± 1.27 | 71.86 ± 1.23 | 72.39 ± 0.32 |
+| RA (Riemannian) | 73.69 ± 1.09 | 72.17 ± 0.93 | 71.97 ± 0.07 |
 | EA (Euclidean) | 72.07 ± 1.58 | 74.40 ± 1.04 | 73.19 ± 0.81 |
 | none | 69.34 ± 0.65 | 61.90 ± 2.96 | 63.46 ± 0.83 |
 
@@ -112,8 +146,8 @@ Alignment helps most where the raw cross-subject shift is largest: on BNCI201400
 BNCI2015001 EA lifts accuracy by **+12.5** and **+9.7** over no alignment (61.90 → 74.40,
 63.46 → 73.19), far more than on BNCI2014001 (+2.73). The two aligners trade places by
 dataset, though. RA (recentring on the Riemannian/Fréchet mean) is the best aligner on
-BNCI2014001 (+1.90 over EA), but on both new datasets RA falls **below** EA (71.86 vs
-74.40, and 72.39 vs 73.19), so the geometric mean is not universally the better reference. EA is
+BNCI2014001 (+1.62 over EA), but on both new datasets RA falls **below** EA (72.17 vs
+74.40, and 71.97 vs 73.19), so the geometric mean is not universally the better reference. EA is
 the safer default, and is the canonical aligner used throughout the rest of the benchmark.
 
 ## Transfer / adaptation strategy
@@ -183,21 +217,23 @@ Half-Sample Recombination above, by contrast, are electrode-space transforms hel
 
 | Augmenter | BNCI2014001 | BNCI2014002 | BNCI2015001 |
 |---|--:|--:|--:|
-| Fourier Surrogate | 73.51 ± 0.83 | 74.14 ± 0.72 | 71.67 ± 1.06 |
+| Fourier Surrogate | 73.28 ± 1.25 | 75.17 ± 0.58 | 72.88 ± 0.74 |
 | Frequency Shift | 73.28 ± 0.51 | 75.00 ± 0.38 | 74.14 ± 0.31 |
 | Amplitude Scaling | 72.97 ± 0.83 | 72.83 ± 0.38 | 72.72 ± 1.53 |
-| CSDA **(lab)** | 72.74 ± 1.92 | 73.98 ± 0.32 | 73.53 ± 0.44 |
+| CSDA **(lab)** | 72.45 ± 1.87 | 73.55 ± 0.29 | 73.42 ± 1.10 |
 | Frequency Recombination | 72.30 ± 2.11 | 73.81 ± 0.07 | 73.58 ± 0.88 |
 | Additive Noise | 71.94 ± 0.66 | 74.14 ± 0.81 | 73.18 ± 1.02 |
 | Amplitude Flip | 70.60 ± 0.77 | 74.24 ± 0.03 | 73.28 ± 0.93 |
 | none (EA-EEGNet) | 72.07 ± 1.58 | 74.40 ± 1.04 | 73.19 ± 0.81 |
 
 On the EA-aligned trials the augmentation gains are small and not uniform across datasets. On
-BNCI2014001 the frequency-domain augmenters lead — Fourier Surrogate (+1.44, phase-randomised) and Frequency Shift (+1.21, a spectral shift) — with amplitude scaling (+0.90) and the lab's
-CSDA (+0.67, a db4-wavelet cross-subject detail-swap) modestly positive, while additive noise
+BNCI2014001 the frequency-domain augmenters lead, and after the surrogate fix they lead *together*:
+Fourier Surrogate (phase-randomised) and Frequency Shift (a spectral shift) land level at **+1.21**.
+Amplitude scaling (+0.90) and the lab's
+CSDA (+0.38, a db4-wavelet cross-subject detail-swap) are modestly positive, while additive noise
 (−0.13) and amplitude flip (−1.47) are neutral-to-negative. The effects stay within roughly
 ±1.5 points on every dataset, the small-gain, high-variance profile expected of trial-level
-augmentation here; CSDA itself is +0.67 / −0.42 / +0.34 across the three. Only the paper's
+augmentation here; CSDA itself is +0.38 / −0.85 / +0.23 across the three. Only the paper's
 DWTaug variant of CSDA is ported (HHTaug omitted).
 
 ## Composite method (changes more than one stage)
@@ -206,17 +242,23 @@ context number only._
 
 | Method | BNCI2014001 | BNCI2014002 | BNCI2015001 |
 |---|--:|--:|--:|
-| MVCNet **(lab)** (IFNet + multi-view contrastive) | 75.64 ± 0.95 | 76.69 ± 0.94 | 72.21 ± 0.50 |
+| MVCNet **(lab)** (IFNet + multi-view contrastive) | 75.75 ± 0.56 | 77.86 ± 1.07 | 74.75 ± 0.10 |
 | _EA-EEGNet (reference)_ | 72.07 ± 1.58 | 74.40 ± 1.04 | 73.19 ± 0.81 |
 
 MVCNet changes two stages at once, an IFNet CNN backbone **and** a multi-view contrastive
 training strategy (cross-view + cross-modal supervised-contrastive losses), so it cannot
-sit in any one-axis table. At inference it is just IFNet + the linear head. It is strong on
-BNCI2014001 (75.64, +3.57 over the reference) and BNCI2014002 (76.69, +2.29). On BNCI2015001,
-selecting its learning rate on held-out source data (3e-4, not the preset 1e-3) lifts it from
-an earlier 67.93 to 72.21 (−0.98 below the reference), so the collapse was a learning-rate
-artifact rather than the method. Its two contrastive loss weights are set to 1.0 (the
+sit in any one-axis table. At inference it is just IFNet + the linear head. It is above the
+reference on all three: BNCI2014001 (75.75, +3.68), BNCI2014002 (77.86, +3.46) and
+BNCI2015001 (74.75, +1.56). Its learning rate is selected on held-out source data, which
+picks 3e-4 rather than the preset 1e-3; its two contrastive loss weights are set to 1.0 (the
 source has no hardcoded default).
+
+_The BNCI2015001 cell moved in v1.2.0, from 72.21 ± 0.50 to 74.75 ± 0.10, at the same
+selected learning rate — the re-run picked 3e-4 again. What changed is that MVCNet no longer
+builds a channel-reflection view on this dataset, where that view was mislabeled. The v1.1.x
+number was depressed by it at every learning rate in the grid, not only at the preset, so the
+earlier reading of this cell as a learning-rate artifact was wrong; `RERUN.md` gives the two
+grids side by side._
 
 ## Classical (network-free) baselines
 _EA-aligned trials into a classical pipeline (no backbone). Deterministic fit-mode, so the
@@ -268,8 +310,11 @@ none has an information advantage. Hard majority **voting** is the baseline. The
 combiners are the same crowd-label aggregators (Dawid-Skene, Wawa, M-MSR, MACE, GLAD,
 ZenCrowd, PM, LA, LAA, EBCC) and lab methods (SML, SML-OVR, StackingNet) used in the
 privacy section below. Measured on BNCI2014001, cross-subject LOSO (9 subjects, 2-class,
-chance 50%), K = 5 seeds {1–5}, and each combiner accuracy is the mean over subjects, shown
-without std (the leaderboard convention). Reproduce with `python -m hustbciml.scripts.ensemble
+chance 50%), K = 5 seeds {1–5}, and each combiner accuracy is the mean over subjects. There is no
+std here because the five seeds are the ensemble's *members*: they are consumed by one fusion, so
+nothing is repeated across seeds for a std to be taken over. (That is specific to this table. The
+decentralized ensemble below does report mean ± std over three seeds.) Reproduce with
+`python -m hustbciml.scripts.ensemble
 --algorithm T-TIME --dataset BNCI2014001 --seeds 1,2,3,4,5`._
 
 | Combiner | Acc | Δ vs single-seed base |
@@ -334,44 +379,57 @@ post-hoc black-box combiner fuses into one consensus label. There are no target 
 and no soft scores, so no combiner has an information advantage. They differ only in how they weight
 and combine the votes. Two combiners are lab-proposed (**StackingNet**, and the multi-class
 **SML-OVR**), and the rest are established crowd-labelling / truth-discovery aggregators. All three
-datasets are two-class (chance 50%), cross-subject LOSO, 1 seed, and each combiner is measured against
-plain majority **voting**. Reproduce with
+datasets are two-class (chance 50%), cross-subject LOSO, three seeds (mean ± std), and each combiner
+is measured against plain majority **voting**. Reproduce with
 `python -m hustbciml.scripts.decentralized --dataset <D> --base hetero`._
+
+_Two things changed here in v1.2.0, and they are worth separating. Three combiners changed their own
+maths (SML's global-sign repair instead of an element-wise absolute value, LAA's logits instead of
+double-softmaxed probabilities, PM's current-round normalisation and random tie-breaking), and every
+other row's input moved too, because ShallowConvNet is one of the five per-subject learners and
+starts from a different initialization once the construction-time shape probe stops advancing the
+RNG — so the hard votes every combiner consumes are different, including the ones majority voting
+counts. Independently of both, this table was previously reported at a single seed while every other
+table in this file is a mean over three; it is now three seeds, mean ± std, like the rest. A row's
+shift from the v1.1.x table is therefore not attributable to the code change alone._
 
 | Combiner | BNCI2014001 | BNCI2014002 | BNCI2015001 |
 |---|--:|--:|--:|
-| PM | 76.16 (+1.85) | 70.57 (−1.43) | 65.79 (−4.04) |
-| LAA | 76.08 (+1.77) | 73.36 (+1.36) | 72.71 (+2.88) |
-| EBCC | 76.08 (+1.77) | 72.43 (+0.43) | 71.17 (+1.34) |
-| SML-OVR **(lab)** | 75.46 (+1.15) | 73.14 (+1.14) | 72.71 (+2.88) |
-| SML | 75.46 (+1.15) | 73.14 (+1.14) | 72.71 (+2.88) |
-| StackingNet **(lab)** | 75.31 (+1.00) | 73.00 (+1.00) | 70.50 (+0.67) |
-| Dawid-Skene | 74.85 (+0.54) | 73.14 (+1.14) | 74.29 (+4.46) |
-| ZenCrowd | 74.85 (+0.54) | 66.93 (−5.07) | 59.21 (−10.62) |
-| GLAD | 74.61 (+0.30) | 67.29 (−4.71) | 59.83 (−10.00) |
-| Wawa | 74.38 (+0.07) | 72.14 (+0.14) | 68.50 (−1.33) |
-| LA | 74.38 (+0.07) | 70.21 (−1.79) | 65.29 (−4.54) |
-| MACE | 73.46 (−0.85) | 65.50 (−6.50) | 72.00 (+2.17) |
-| M-MSR | 72.92 (−1.39) | 68.07 (−3.93) | 59.54 (−10.29) |
-| _majority voting (baseline)_ | 74.31 | 72.00 | 69.83 |
-| _single-source (5-learner mean)_ | 61.22 | 59.61 | 59.59 |
-| _Centralized Training (reference)_ | 72.07 | 74.40 | 73.19 |
+| PM | 74.46 ± 0.11 (+0.69) | 71.57 ± 0.67 (−0.95) | 66.29 ± 0.37 (−3.78) |
+| LAA | 74.41 ± 0.57 (+0.64) | 72.86 ± 0.29 (+0.34) | 73.01 ± 0.33 (+2.94) |
+| Dawid-Skene | 74.15 ± 0.23 (+0.38) | 72.12 ± 0.45 (−0.40) | 73.35 ± 0.38 (+3.28) |
+| EBCC | 74.05 ± 0.89 (+0.28) | 71.05 ± 0.12 (−1.47) | 70.93 ± 0.73 (+0.86) |
+| StackingNet **(lab)** | 74.05 ± 0.82 (+0.28) | 72.57 ± 0.38 (+0.05) | 69.51 ± 0.25 (−0.56) |
+| LA | 74.02 ± 0.13 (+0.25) | 70.95 ± 0.22 (−1.57) | 66.00 ± 0.22 (−4.07) |
+| SML-OVR **(lab)** | 73.97 ± 0.16 (+0.20) | 71.86 ± 0.21 (−0.66) | 71.93 ± 0.41 (+1.86) |
+| SML | 73.97 ± 0.16 (+0.20) | 71.86 ± 0.21 (−0.66) | 71.93 ± 0.41 (+1.86) |
+| Wawa | 73.92 ± 0.44 (+0.15) | 71.76 ± 0.43 (−0.76) | 68.24 ± 0.50 (−1.83) |
+| MACE | 73.77 ± 0.79 (+0.00) | 69.10 ± 0.49 (−3.42) | 72.11 ± 0.68 (+2.04) |
+| ZenCrowd | 73.41 ± 0.73 (−0.36) | 67.17 ± 0.50 (−5.35) | 60.53 ± 1.10 (−9.54) |
+| GLAD | 73.25 ± 0.91 (−0.52) | 65.90 ± 0.76 (−6.62) | 59.83 ± 0.30 (−10.24) |
+| M-MSR | 68.26 ± 1.57 (−5.51) | 64.29 ± 1.11 (−8.23) | 60.40 ± 1.60 (−9.67) |
+| _majority voting (baseline)_ | 73.77 ± 0.98 | 72.52 ± 0.39 | 70.07 ± 0.36 |
+| _single-source (5-learner mean)_ | 59.45 ± 0.30 | 57.43 ± 0.44 | 58.60 ± 0.03 |
+| _Centralized Training (reference)_ | 72.07 ± 1.58 | 74.40 ± 1.04 | 73.19 ± 0.81 |
 
-Each per-subject learner is individually weak. The five-learner single-source mean is about 60%
-on every dataset, since each learner sees one subject's data only. Yet plain majority voting over
-the (N−1)×5 votes already recovers most of the accuracy, and on BNCI2014001 it clears Centralized
-Training, the non-private reference that pools all raw EEG (74.31 vs 72.07). On these weak,
-only-loosely-independent votes the combiners spread out. **Dawid-Skene** is the most consistent,
-beating voting on all three datasets (+0.54 / +1.14 / +4.46), and the lab's **StackingNet** also
-clears voting everywhere (+1.00 / +1.00 / +0.67), with **SML**, **LAA** and **EBCC** positive on
-all three. At the other end, the EM-heavy **M-MSR**, **GLAD** and **ZenCrowd** collapse on the
-weakest learners, down to about −10 on BNCI2015001, the honest failure mode of confusion-matrix
-aggregators when the base votes are noisy and correlated. **SML-OVR**, the lab's multi-class
-generalization of SML, reduces exactly to binary SML on these two-class tasks, so it reports the
-same numbers as **SML** and sits beside it. Its one-vs-rest form applies only to native multi-class
-data such as four-class BNCI2014001. Against Centralized Training the ensemble is ahead on
-BNCI2014001 but below it on BNCI2014002 (74.40) and BNCI2015001 (73.19), the accuracy cost of
-never pooling raw data.
+Each per-subject learner is individually weak. The five-learner single-source mean sits between 57
+and 60% on every dataset, since each learner sees one subject's data only. Yet plain majority voting
+over the (N−1)×5 votes already recovers most of the accuracy, and on BNCI2014001 it clears
+Centralized Training, the non-private reference that pools all raw EEG (73.77 vs 72.07). On these
+weak, only-loosely-independent votes the combiners spread out, and they do not agree on a winner
+across datasets. **LAA** is the only one positive on all three (+0.64 / +0.34 / +2.94).
+**Dawid-Skene** gains most where the votes are weakest, +3.28 on BNCI2015001, whose majority vote is
+the lowest of the three, but gives up 0.40 on BNCI2014002; the lab's **StackingNet** is the steadier
+of the two on the first two datasets (+0.28 / +0.05) and loses 0.56 on the third. At the other end,
+the EM-heavy **M-MSR**, **GLAD** and **ZenCrowd** collapse on the weakest learners, down to about
+−10 on BNCI2015001, the honest failure mode of confusion-matrix aggregators when the base votes are
+noisy and correlated. **SML-OVR**, the lab's multi-class generalization of SML, reduces exactly to
+binary SML on these two-class tasks, so it reports the same numbers as **SML** and sits beside it
+(identical to two decimals on all three datasets, std included). Its one-vs-rest form does something
+only on multi-class data — BNCI2014001's four-class variant, which the code supports but this file
+does not report. Against Centralized Training the best combiner is ahead on BNCI2014001 (+2.39),
+level on BNCI2015001 (+0.16), and behind only on BNCI2014002 (−1.54): the accuracy cost of never
+pooling raw data is smaller than the single-seed table implied, but it is not zero.
 
 The ten crowd-labelling / truth-discovery aggregators are ported from
 `github.com/sylyoung/TestEnsemble`: Dawid-Skene (Dawid & Skene, _J. R. Stat. Soc. C_ 1979), PM

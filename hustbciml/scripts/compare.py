@@ -31,7 +31,11 @@ CANONICAL = {"aligner": "EA", "augmenter": "Identity", "backbone": "EEGNet",
              "head": "Linear", "strategy": "ERM"}
 
 FIT_MODE_STRATEGIES = {"CSP_LDA", "RiemannMDM"}  # network-free classical pipelines
-SOURCE_FREE_STRATEGIES = {"LSFT", "MSDT"}        # lab classical source-free transfer
+# Lab classical source-free transfer. MSDT is not here: RESULTS.md moved it into
+# the privacy-preserving family, and leaving it in this set made the regenerated
+# comparison tables disagree with the published organisation.
+SOURCE_FREE_STRATEGIES = {"LSFT"}
+PRIVACY_STRATEGIES = {"MSDT", "FedAvg", "FedBS", "SAFE"}   # privacy-preserving family
 
 # friendly display names per axis value
 DISPLAY = {

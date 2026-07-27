@@ -64,6 +64,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from hustbciml.core.stages import Backbone
+from hustbciml.utils.shapes import probe
 
 
 class _Conv(nn.Module):
@@ -230,7 +231,7 @@ class DBConformer(Backbone):
 
         self.temporal = _TemporalPatch(n_chans, emb, patch_size, drop=drop, drop_last_t=drop_last_t)
         self.spatial = _SpatialPatch(spa_dim, emb)
-        with torch.no_grad():                               # infer #temporal patches
+        with probe(self):                               # infer #temporal patches
             P = self.temporal(torch.zeros(1, n_chans, n_times)).shape[1]
         self.pos_t = nn.Parameter(torch.randn(1, P, emb))
         self.pos_s = nn.Parameter(torch.randn(1, n_chans, emb))

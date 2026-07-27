@@ -140,6 +140,8 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 28px 20px 64px; }
 .clearbtn:hover { color: var(--text); }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .chip {
+  /* rendered as <button> for keyboard access; strip the UA button chrome */
+  font: inherit; text-align: left; -webkit-appearance: none; appearance: none;
   font-size: 12.5px; font-weight: 600; padding: 5px 11px; border-radius: 999px; cursor: pointer;
   background: var(--surface); border: 1px solid var(--border); color: var(--muted); transition: .12s;
 }
@@ -155,8 +157,8 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 28px 20px 64px; }
 .paper-title { font-size: 15.5px; margin: 0; font-weight: 650; }
 .paper-meta { color: var(--muted); font-size: 13px; margin: 3px 0 8px; }
 .paper-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.topic-badge { font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 6px; background: var(--accent-soft); color: var(--accent); cursor: pointer; }
-.tag { font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; cursor: pointer; }
+.topic-badge { border: 0; font-family: inherit; -webkit-appearance: none; appearance: none; font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 6px; background: var(--accent-soft); color: var(--accent); cursor: pointer; }
+.tag { border: 0; font-family: inherit; -webkit-appearance: none; appearance: none; font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; cursor: pointer; }
 .paper-links { display: inline-flex; gap: 12px; margin-left: auto; font-size: 13px; font-weight: 600; }
 .paper-links .nocode { color: var(--muted); font-weight: 500; }
 .tldr { color: var(--text); opacity: .9; font-size: 13.5px; margin: 9px 0 0; }
@@ -354,3 +356,41 @@ table.lb td.acc-cell { vertical-align: top; white-space: nowrap; }
 
 /* each stage row stacks its label above the chips on narrow screens */
 @media (max-width: 680px) { .lab-cat { flex-direction: column; gap: 8px; } .lab-cat-label { flex-basis: auto; } }
+
+
+/* ---------- review pass 2026-07: overflow, focus, row caveats ---------- */
+
+/* Any wide block (the 7-column dataset table, the leaderboard tables) scrolls
+   inside its own container. Without this the page itself scrolls sideways on a
+   phone, or the columns are simply clipped. */
+.table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* Header: brand + three tabs + language toggle does not fit one line on a narrow
+   phone, especially in Chinese where the tab labels are wider. Let it wrap, and
+   let the tab strip scroll rather than push the page wider than the viewport. */
+@media (max-width: 620px) {
+  .site-header { flex-wrap: wrap; gap: 8px 12px; padding: 10px 14px; }
+  .tabs { margin-left: 0; overflow-x: auto; max-width: 100%; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { padding: 6px 10px; white-space: nowrap; }
+}
+
+/* A visible focus ring on every interactive control. The filter chips and card
+   badges are keyboard-operable now, which is only useful if you can see where
+   the focus is. */
+.chip:focus-visible, .tag:focus-visible, .topic-badge:focus-visible,
+.tab:focus-visible, .clearbtn:focus-visible, .more:focus-visible,
+a:focus-visible, .search:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px;
+}
+/* The view containers take focus on tab switch (see go() in app.js); that is a
+   programmatic move, so it should not paint a ring. */
+.view:focus { outline: none; }
+
+/* Per-row qualifier: this row changes more than its table's axis, or its empty
+   dataset cells have a stated reason. Deliberately quieter than the description
+   but not hidden — it is the sentence that keeps a Δ from being over-read. */
+.lb .m-caveat {
+  font-size: 12px; color: var(--muted); margin-top: 3px; max-width: 76ch;
+  text-align: left; font-style: italic;
+}

@@ -1,5 +1,5 @@
 # FedAvg — federated averaging baseline (McMahan et al., 2017). Same privacy-
-# preserving federated schedule as FedBS (200 rounds, P=0.5, E=2, SGD mom 0.9) but
+# preserving federated schedule as FedBS (200 rounds, P=0.5, E=2, Adam) but
 # with standard BN and no SAM, so it isolates FedBS's two additions. EA-aligned
 # EEGNet, one shared backbone with the centralized reference. Optimizer knobs match
 # the shared 4-class scenario (lr 0.001, weight_decay 0.0, batch 32) — identical to

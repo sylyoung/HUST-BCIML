@@ -57,10 +57,20 @@ class RiemannMDM(Strategy):
     def predict(self, model, target: EEGEpochs, ctx: RunContext) -> Tuple[np.ndarray, np.ndarray]:
         covs = self.cov.transform(target.X.astype(np.float64))
         y_pred = self.mdm.predict(covs)
-        try:
+        # Only the "this pyriemann version has no predict_proba" case is a
+        # legitimate fallback. A blanket ``except Exception`` also swallowed shape
+        # mismatches and numerical failures, substituting a fabricated softmax for
+        # a real bug in a measurement path — the AUC would still print.
+        if hasattr(self.mdm, "predict_proba"):
             y_score = self.mdm.predict_proba(covs)
-        except Exception:                                   # older pyriemann: softmax of -distances
+        else:                                               # older pyriemann: softmax of -distances
             d = self.mdm.transform(covs)
             e = np.exp(-(d - d.min(axis=1, keepdims=True)))
             y_score = e / e.sum(axis=1, keepdims=True)
+        y_score = np.asarray(y_score, dtype=np.float64)
+        if y_score.shape != (len(covs), ctx.cfg.n_classes) or not np.all(np.isfinite(y_score)):
+            raise ValueError(
+                f"RiemannMDM produced scores of shape {y_score.shape} "
+                f"(expected {(len(covs), ctx.cfg.n_classes)}) or containing non-finite values."
+            )
         return np.asarray(y_pred, dtype=np.int64), y_score

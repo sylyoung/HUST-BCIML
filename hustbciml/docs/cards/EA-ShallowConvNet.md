@@ -11,8 +11,8 @@ ShallowConvNet is a single temporal convolution followed by a spatial convolutio
 
 | Metric | Value |
 |---|--:|
-| Accuracy (mean ± std across seeds) | 72.17 ± 0.89 |
-| Δ vs baseline (EA-EEGNet, 72.07) | +0.10 |
+| Accuracy (mean ± std across seeds) | 71.12 ± 1.05 |
+| Δ vs baseline (EA-EEGNet, 72.07) | -0.95 |
 | Reference range (expected band) | 68–78 |
 
 Accuracy is the mean over seeds; ± is the standard deviation *across* seeds (a reproducibility figure, not the cross-subject spread). The reference range is the published / expected band on this dataset.

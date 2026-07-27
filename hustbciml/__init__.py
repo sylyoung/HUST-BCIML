@@ -8,4 +8,7 @@ evaluated on MOABB public data.
 Entry point: ``python -m hustbciml.run``.
 """
 
-__version__ = "0.0.1.dev0"
+# Kept in step with the repository's release tags (v1.1.0 … v1.2.0), which cover
+# the library and the website together. There is no packaging metadata to read it
+# from, so it is set here by hand when a release is tagged.
+__version__ = "1.2.0"

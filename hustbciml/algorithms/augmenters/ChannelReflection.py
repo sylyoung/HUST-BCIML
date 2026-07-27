@@ -32,8 +32,19 @@ applies EA before CR, and that EA+CR pipeline composes cleanly (~74%, on par wit
 the raw-space regime). The montage's left/right pairing comes from
 ``utils.montage.reflection_permutation``.
 
-Label swap is defined only for the 2-class (left/right) case; with any other
-class count the channels are still reflected but labels are kept unchanged.
+Two preconditions are checked at construction, and a failure is an error rather
+than a fallback — a silent fallback here produces mislabeled training data that
+still yields a plausible leaderboard number.
+
+* **The montage must be anatomical.** The mirror is derived from the 10-20
+  odd/even hemisphere rule, which says nothing about labels like ``EEG1 ...
+  EEG15`` (BNCI2014002 exposes exactly those). An earlier reverse-the-channel-
+  order fallback turned a missing montage into an arbitrary permutation.
+* **The two classes must be a left/right pair.** Only then is the reflected
+  trial an example of the *other* class. On right-hand-vs-feet data
+  (BNCI2014002, BNCI2015001) the reflected trial is still a right-hand trial, so
+  swapping its label would fabricate data. This — not the montage — is why the
+  CR row is reported on BNCI2014001 only.
 """
 # ---------------------------------------------------------------------------
 # Prior-art contrast: "channel symmetry" (reflect the montage but KEEP the label,
@@ -53,33 +64,40 @@ import torch
 
 from hustbciml.core.batch import UNLABELED, EEGBatch
 from hustbciml.core.stages import Augmenter
-from hustbciml.utils.montage import reflection_permutation
+from hustbciml.utils.montage import (check_montage, left_right_class_swap,
+                                     reflection_permutation)
 
 
 class ChannelReflection(Augmenter):
     train_only = True
 
-    def __init__(self, ch_names=None, n_classes: int = 2, **_):
+    def __init__(self, ch_names=None, n_classes: int = 2, classes=None, **_):
         self.n_classes = int(n_classes)
-        perm = reflection_permutation(list(ch_names) if ch_names else [])
-        # empty (no montage, e.g. synthetic data) -> reverse channel order so the
-        # reflection is still a non-trivial involution and the stage stays runnable.
-        self._perm = None if len(perm) == 0 else torch.from_numpy(perm).long()
+        names = list(ch_names) if ch_names else []
+        ok, why = check_montage(names)
+        if not ok:
+            raise ValueError(
+                f"ChannelReflection needs a left/right-symmetric electrode montage: {why}. "
+                f"Reflecting without one permutes sensors arbitrarily while still swapping "
+                f"the label, which fabricates training data."
+            )
+        ok, why = left_right_class_swap(list(classes or []))
+        if not ok:
+            raise ValueError(
+                f"ChannelReflection needs a left/right two-class task: {why}. "
+                f"A midline reflection of a non-lateral class (feet, tongue) is still the "
+                f"same class, so the label swap would mislabel every augmented trial."
+            )
+        self._perm = torch.from_numpy(reflection_permutation(names)).long()
 
     def __call__(self, batch: EEGBatch) -> EEGBatch:
         x = batch.x                               # (B, 1, C, T)
-        C = x.shape[2]
-        perm = self._perm
-        if perm is None:
-            perm = torch.arange(C - 1, -1, -1, device=x.device)   # reverse fallback
-        else:
-            perm = perm.to(x.device)
+        perm = self._perm.to(x.device)
 
         x_ref = x[:, :, perm, :]
         y_ref = batch.y.clone()
-        if self.n_classes == 2:                   # left <-> right label swap
-            known = y_ref != UNLABELED
-            y_ref[known] = 1 - y_ref[known]
+        known = y_ref != UNLABELED                # left <-> right label swap
+        y_ref[known] = 1 - y_ref[known]
 
         x_new = torch.cat([x, x_ref], dim=0)
         y_new = torch.cat([batch.y, y_ref], dim=0)

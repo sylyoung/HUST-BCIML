@@ -11,8 +11,8 @@ A dual-branch convolutional transformer. A temporal branch and a spatial branch 
 
 | Metric | Value |
 |---|--:|
-| Accuracy (mean ± std across seeds) | 76.03 ± 0.79 |
-| Δ vs baseline (EA-EEGNet, 72.07) | +3.96 |
+| Accuracy (mean ± std across seeds) | 76.26 ± 0.84 |
+| Δ vs baseline (EA-EEGNet, 72.07) | +4.19 |
 | Reference range (expected band) | 70–80 |
 
 Accuracy is the mean over seeds; ± is the standard deviation *across* seeds (a reproducibility figure, not the cross-subject spread). The reference range is the published / expected band on this dataset.

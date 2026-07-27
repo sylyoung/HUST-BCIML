@@ -18,7 +18,7 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-3776ab)
 ![PyTorch](https://img.shields.io/badge/PyTorch-1.12%2B-ee4c2c)
-![Approaches](https://img.shields.io/badge/approaches-56-4338ca)
+![Approaches](https://img.shields.io/badge/approaches-58-4338ca)
 ![Datasets](https://img.shields.io/badge/datasets-3%20MOABB%20MI-059669)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
@@ -60,6 +60,20 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-07-27 (v1.2.0).** Acted on a 176-finding external code review: fixed silent fallbacks and
+missing guards throughout the measurement path, corrected several method implementations
+(Channel Reflection, Fourier Surrogate, CSDA, RA, SML, LAA, PM, CTNet, backbone shape
+probing), recorded four defects inherited verbatim from the reference implementations rather than
+"fixing" them out of comparability, made the reproduction registry executable, added CI and a link
+checker, and corrected the claims that did not match the code. Those fixes change what the code
+computes, so **every leaderboard cell they touch was re-measured** — each on the machine that
+produced the published value, because the same code gives different numbers on different BLAS
+builds. [`RERUN.md`](RERUN.md) lists the cells and their provenance. The rows the release does not
+touch were re-run as controls and come back identical to v1.1.x for every subject. The ensemble
+table now carries mean ± std over three seeds, where before it was single-seed and mean-only. Also
+adds a **Classical Pipelines** table for the two network-free rows (**58** approaches), which were
+published in `RESULTS.md` but appeared on no leaderboard table and so were cross-checked by nothing.
+
 - **2026-07-24 (v1.1.3).** Rewrote all 22 lab methods' in-source docs to match their published papers (documentation only; benchmark numbers unchanged).
 
 - **2026-07-24 (v1.1.2).** Regrouped the transfer and ensemble families, renamed **privacy-preserving transfer**, and dropped Channel Symmetry as a benchmarked augmenter (**56** approaches).
@@ -79,9 +93,10 @@ This repository bundles two deliverables, **code first**.
 **1. The EEG-decoding benchmark**, in directory [`hustbciml/`](hustbciml/).
 
 A self-contained framework built around a single command-line entry point and an
-auto-scanning plug-in registry. On this one composable pipeline it re-implements **56
-EEG-decoding approaches** that span data alignment, data augmentation, network backbones,
-transfer learning, and ensemble aggregation. It compares them head-to-head under a **single
+auto-scanning plug-in registry. On this one composable pipeline it re-implements **58
+EEG-decoding approaches** spanning data alignment, data augmentation, network backbones and
+transfer learning, plus **14 ensemble combiners** counted separately (they aggregate several
+trained models rather than composing a pipeline). It compares them head-to-head under a **single
 controlled evaluation protocol**, with a per-method reproduction record for every reported
 number.
 
@@ -121,7 +136,15 @@ reporting rather than left to convention.
 
 2. **Controlled comparison.**
    Every comparison varies **one** pipeline stage while holding the rest at a fixed canonical
-   configuration. Two rows that differ in one component isolate the effect of that component.
+   configuration, so two rows that differ in one component isolate the effect of that component.
+   Where a row cannot be reduced to one axis — MVCNet changes the backbone, the objective and
+   the batch size; PAT changes the augmenter as well as the objective; MEKT, LSFT and MSDT are
+   network-free Riemannian methods that use no backbone at all — the row carries an explicit
+   "also varies" note on the leaderboard rather than being presented as a single-stage change.
+   Two further axes are shared across a whole table and stated once: the ERM baseline is the
+   best checkpoint on a held-out source split while the domain-adaptation rows are the last
+   iterate of a fixed schedule (as their reference implementations train them), and the Networks
+   table selects a learning rate per architecture.
 
 3. **Measurement integrity.**
    Every reported number is a **measured** mean over three random seeds. No number is ever
@@ -135,9 +158,13 @@ reporting rather than left to convention.
    is deliberately **not** presented.
 
 5. **Reproducibility.**
-   Runs fix their seeds and persist their resolved configuration, per-subject predictions, and
-   checkpoints. Hyperparameter selection, where used, is performed on **held-out source
-   subjects only** and never touches the target or test labels.
+   Runs fix their seeds and persist their **full resolved configuration** — every optimisation,
+   architecture and method-specific `hp` value — alongside per-subject predictions and scores, in
+   `metrics.json` and `predictions.npz` under `results/<setting>/`. Re-running a *different*
+   configuration into an existing result folder is refused rather than silently overwriting it.
+   Model checkpoints are not persisted; the artifacts above are what a number is audited from.
+   Hyperparameter selection, where used, is described in "Hyperparameter selection" below —
+   including the respect in which it is **not** purely source-only.
 
 6. **Self-containment and zero build.**
    The web app renders from a single file with no build step, and the benchmark runs end-to-end
@@ -242,8 +269,12 @@ architecture; only its learning rate is tuned, and only on held-out source subje
 EEGNet). The families differ in when the unlabeled target is used and whether the source data is
 still on hand:
 
-- **Source-only** (no target at all): **ERM** (the no-transfer baseline), **MDMAML (lab)**,
-  **ABAT (lab)**, **PAT (lab)**.
+- **Source-only training, with unlabelled target alignment**: **ERM** (the no-transfer
+  baseline), **MDMAML (lab)**, **ABAT (lab)**, **PAT (lab)**. No target *labels* are used, and
+  the target is not used during training — but all four compose `aligner: EA`, and Euclidean
+  Alignment estimates the held-out subject's whitening reference from that subject's own
+  unlabelled trials before prediction. That is the standard EA protocol and it is leakage-free,
+  but it is transductive rather than zero-shot, so "no target at all" was the wrong description.
 - **Unsupervised domain adaptation** (replaces ERM with a joint source-plus-target objective):
   **MCC**, **CDAN**, **JAN**, **DAN**, **DANN**, **MDD**, **DJP-MMD (lab)**, and the network-free
   **MEKT (lab)**.
@@ -365,16 +396,39 @@ a paper.
 Each number is recorded in
 [`hustbciml/tests/repro/repro_targets.yaml`](hustbciml/tests/repro/repro_targets.yaml), against
 the paper's own value where the protocol matches, or against an expected-behaviour band where it
-differs, together with a per-method note. The algorithm
-[cards](hustbciml/docs/cards/README.md) carry the reported-vs-reproduced table and a
-vendored-code license and provenance audit for each method.
+differs, together with a per-method note. `tests/repro/test_repro_targets.py` checks on every
+commit that every leaderboard key has an entry, that each recorded value sits inside its own
+reference range, and that the registry and the public leaderboard do not publish two different
+numbers for the same run. The algorithm [cards](hustbciml/docs/cards/README.md) carry the
+reported-vs-reproduced table and, for each method, the upstream source it was ported from.
+Upstream *license* terms are recorded where the source repository states one; where it does not,
+the card says so rather than implying an audit that was not performed.
 
-Where hyperparameters were selected, selection was performed on **held-out source subjects
-only**. A small grid over learning rate, training length, and each method's own loss trade-offs
-was scored on source-validation data that never includes the target or test labels. The winning
-configuration's three-seed test number replaced the previous one **only where it improved on
-it**. Selection never touches the reported cohort, so the guarantee that no number is tuned to
-hit a target still holds.
+#### Hyperparameter selection — what it does and does not guarantee
+
+A small grid over learning rate, training length, and each method's own loss trade-offs was
+scored, and the winning configuration's three-seed test number replaced the previous one **only
+where it improved on it**. Two different selection signals were used, and they do not carry the
+same guarantee:
+
+* **Source-validation selection** (`select="val"`, used for the source-model knobs: ABAT, CSDA,
+  the per-architecture learning rates in the Networks table). The score is accuracy on a
+  held-out split of the *source* subjects. No target data of any kind enters it. This is the
+  clean case.
+
+* **Dev-subject selection** (`select="dev"`, used for adaptation-phase knobs that do not move
+  the source-validation signal: ASFA, Tent, BFT, DJP-MMD, MDMAML, MSDT, LSFT, MVCNet). Three
+  subjects spread across the cohort are held out as pseudo-targets, each scored by its own
+  leave-one-subject-out accuracy — **against its true labels** — and one global configuration is
+  chosen from that. Those three subjects are then also part of the reported average. So for
+  these eight methods, three of the nine (or fourteen, or twelve) reported folds also served as
+  the selection signal. No target labels are used at *training* time, and the selected value is
+  a single global one rather than per-fold; but this is the common "one HP chosen on a subject
+  subset" practice, not a source-only signal, and it is stated here rather than implied
+  otherwise.
+
+A dev-subset run is not a reportable result and cannot be mistaken for one: the run identity
+carries a `dev<ids>` tag, so it lands in its own results folder.
 
 > **Disclaimer.**
 > This benchmark **re-implements** both external baselines and the laboratory's own methods

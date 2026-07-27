@@ -21,6 +21,16 @@ Feature-extractor only: block1 (temporal conv + depthwise spatial conv) +
 block2 (separable conv). ``out_features`` = F2 * (T // 32), so the Head can be
 sized generically. Defaults (F1=4, D=2, F2=8, kernLength = sfreq // 2,
 dropout=0.25) match ``tl/utils/network.backbone_net``.
+
+Known deviation from the paper, shared with the reference implementation: Lawhern
+et al. constrain the depthwise spatial filters to a max-norm of 1 and the dense
+classifier to a max-norm of 0.25. Neither constraint is applied here — the
+depthwise conv is a plain ``nn.Conv2d`` and the classifier is the shared
+``heads/Linear``. DeepTransferEEG's EEGNet omits them too, so this is inherited
+rather than introduced, but it matters more than a single row's worth: EEGNet is
+the backbone of the baseline and of nearly every alignment, augmentation and
+transfer row, so the whole leaderboard sits on the unconstrained variant. Adding
+the constraints means re-baselining, not just re-running one cell.
 """
 from __future__ import annotations
 

@@ -55,13 +55,23 @@ class PM(VoteCombiner):
             oh = onehot(preds, C)                              # {0,1}
             oh = np.where(oh == 1, 1, -1)                      # {-1,+1} as in PM.py
             weight = np.zeros(K)
-            wmax = 0.0
             for _ in range(self.n_iter):
                 for w in range(K):
                     dif = float(np.sum(preds[w, :] != truth)) or 1e-8   # disagreement with current truth
                     weight[w] = dif
-                    wmax = max(wmax, weight[w])
-                weight /= wmax
+                # Normalise by *this* round's largest disagreement. Carrying a
+                # running maximum across rounds (which only ever grew) meant that
+                # once the estimates improved, every later round was scaled against
+                # a stale denominator from an earlier one, making the truth-discovery
+                # update depend on the history rather than the current round.
+                wmax = weight.max() or 1e-8
+                weight = weight / wmax
                 weight = -np.log(weight + 1e-7) + 1e-7        # low disagreement -> high weight
-                truth = np.argmax(np.einsum("a,abc->bc", weight, oh), axis=1)
+                scores = np.einsum("a,abc->bc", weight, oh)
+                # Resolve ties the same way the initialisation does — uniformly at
+                # random among the tied classes — instead of ``argmax``'s
+                # first-maximum rule, which deterministically favours class 0 and
+                # shows up as a class-prior artifact on balanced binary MI tasks.
+                truth = np.array([
+                    rng.choice(np.flatnonzero(row == row.max())) for row in scores])
         return truth.astype(int)

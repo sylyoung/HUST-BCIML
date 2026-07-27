@@ -11,7 +11,15 @@
 # the std ACROSS seeds (reproducibility). This is the full 34-method internally
 # consistent benchmark — the 25 coverage methods, five earlier ports (EA-DBConformer,
 # CSDA-EEGNet, ABAT, BFT, MVCNet), and four lab-method ports (CSP-Net, DJP-MMD, LSFT,
-# MSDT).
+# MSDT). Rows added after that sweep are collected in the backfill section at the
+# end of this file; the registry now covers every key on the public leaderboard,
+# and `tests/repro/test_repro_targets.py` asserts that on every commit.
+#
+# The `reproduced` values here and the numbers in `gallery/data/benchmark.yml` are
+# two hand-maintained copies of the same measurements, so they are checked against
+# each other by that test — a re-run that updates one and not the other is exactly
+# how a reader ends up comparing a generated card against the website and finding
+# two different answers.
 #
 # Note on the base: the earlier single-seed (seed 1) EA-EEGNet value was 75.00; the
 # 3-seed mean is 72.07 ± 1.58 (seed 1 was a lucky draw). Because most methods are
@@ -71,8 +79,8 @@ EA-ShallowConvNet:
   dataset: BNCI2014001
   protocol: cross_subject
   metric: accuracy
-  reproduced: 72.17          # 3-seed mean, server, CUDA, 2026-07-13
-  reproduced_std: 0.89
+  reproduced: 71.12          # 3-seed mean, v1.2.0 re-measurement on 7002
+  reproduced_std: 1.05       # std across seeds 1,2,3
   reference_range: [68, 78]  # ShallowConvNet backbone with EA
   seeds: 3
   source: "Schirrmeister et al. 2017 (ShallowConvNet)"
@@ -82,8 +90,8 @@ EA-DeepConvNet:
   dataset: BNCI2014001
   protocol: cross_subject
   metric: accuracy
-  reproduced: 74.05          # 3-seed mean, server, CUDA, 2026-07-13
-  reproduced_std: 0.66
+  reproduced: 73.79          # 3-seed mean, v1.2.0 re-measurement on 7002
+  reproduced_std: 0.46       # std across seeds 1,2,3
   reference_range: [66, 78]  # DeepConvNet backbone with EA
   seeds: 3
   source: "Schirrmeister et al. 2017 (DeepConvNet)"
@@ -273,8 +281,8 @@ RA-EEGNet:
   dataset: BNCI2014001
   protocol: cross_subject
   metric: accuracy
-  reproduced: 73.97          # 3-seed mean, server, CUDA, 2026-07-13
-  reproduced_std: 1.27
+  reproduced: 73.69          # 3-seed mean, v1.2.0 re-measurement on 60022
+  reproduced_std: 1.09       # std across seeds 1,2,3
   reference_range: [70, 80]  # Riemannian Alignment, cross-subject; ~ EA
   seeds: 3
   source: "Zanini et al. IEEE TBME 2018 (Riemannian Alignment); from-scratch (no lab source in repo)"
@@ -295,12 +303,12 @@ EA-EEGConformer:
   dataset: BNCI2014001
   protocol: cross_subject
   metric: accuracy
-  reproduced: 70.14          # 3-seed mean, server, CUDA, 2026-07-13
-  reproduced_std: 4.45
+  reproduced: 72.84          # 3-seed mean, v1.2.0 re-measurement on 7002
+  reproduced_std: 0.76       # std across seeds 1,2,3
   reference_range: [64, 78]  # behavior band: transformer backbone on a small MI dataset
   seeds: 3
   source: "Song et al. IEEE TNSRE 2022 (EEG Conformer); from-scratch (no lab source in repo)"
-  note: "network axis. Conv tokenizer + transformer encoder. -1.93 below EEGNet and the highest across-seed variance in the sweep (std 4.45): transformers are data-hungry and BNCI2014001 has ~144 trials/subject. Faithful — compact CNNs win on small EEG datasets; a below-baseline result, not a bug."
+  note: "network axis. Conv tokenizer + transformer encoder. +1.98 above the EA-EEGNet baseline on the three-dataset production run (74.05 +/- 0.58). An earlier single-dataset sweep had recorded 70.14 +/- 4.45 and this note argued from it that transformers are data-hungry on ~144 trials/subject; the re-run reverses the sign of the delta and shrinks the across-seed spread by an order of magnitude, so that reading does not stand. The stale value survived here because nothing checked this registry against gallery/data/benchmark.yml; tests/repro/test_repro_targets.py now does."
 
 # --- Five new ports, integrated 2026-07-13 (3-seed). Citations from the ported
 # source docstrings. EA-DBConformer, CSDA-EEGNet, ABAT, BFT are single-axis rows;
@@ -310,8 +318,8 @@ EA-DBConformer:
   dataset: BNCI2014001
   protocol: cross_subject
   metric: accuracy
-  reproduced: 76.03          # 3-seed mean, server, CUDA, 2026-07-13
-  reproduced_std: 0.79
+  reproduced: 76.26          # 3-seed mean, v1.2.0 re-measurement on 7002
+  reproduced_std: 0.84       # std across seeds 1,2,3
   reference_range: [70, 80]  # dual-branch conv-transformer backbone with EA
   seeds: 3
   source: "Ziwei Wang et al. 2025 (DBConformer, dual-branch convolutional transformer for EEG decoding); github.com/wzwvv/DBConformer"
@@ -321,8 +329,8 @@ CSDA-EEGNet:
   dataset: BNCI2014001
   protocol: cross_subject
   metric: accuracy
-  reproduced: 72.25          # 3-seed mean, server, CUDA, 2026-07-13
-  reproduced_std: 2.20
+  reproduced: 72.45          # 3-seed mean, v1.2.0 re-measurement on 20022
+  reproduced_std: 1.87       # std across seeds 1,2,3
   reference_range: [68, 78]  # db4-wavelet cross-subject detail-swap augmentation over EA-EEGNet
   seeds: 3
   source: "Ziwei Wang et al. 2025, Knowledge-Based Systems (CSDA / DWTaug); github.com/wzwvv/CSDA"
@@ -348,14 +356,14 @@ BFT:
   reference_range: [68, 80]  # backprop-free test-time transform aggregation over EA-EEGNet
   seeds: 3
   source: "Li et al. 2026, arXiv:2601.07556 (BFT, Backpropagation-Free Transformations); BFT-A variant"
-  note: "strategy axis (test-time, no gradient step). K=12 label-preserving transforms per trial, aggregated by a temperature-sharpened (tau=0.5) weighted softmax; +1.72 over ERM. FAITHFUL-ADAPTATION DISCLOSURE: the paper's learned learning-to-rank weighting module is approximated here by a confidence-based reliability weight, because the synthetic-data ranker training is unspecified in the public text. The backprop-free multi-transform structure and the aggregation are faithful; the specific learned ranker is not — revisit against the paper's code when released."
+  note: "strategy axis (test-time, no gradient step). K=12 label-preserving transforms per trial, aggregated by a temperature-sharpened weighted softmax at tau=0.25 (the executable default, config bft_temp; the paper uses 0.5) — an earlier version of this note said 0.5, which the code never used. +1.72 over ERM. FAITHFUL-ADAPTATION DISCLOSURE: the paper's learning-to-rank module is a ranking network r(.) plus a mapping network m(.) pre-trained with SoDeep differentiable sorting, whose sorter weights are not released. Here r(.) is the authors' EEGNetLossPredictor trained on the source with a soft-rank Spearman surrogate, and the per-view weight is softmax(-predicted_loss) as a running mean over the stream; m(.) is not instantiated because its output does not enter the aggregation. The backprop-free multi-transform structure, the predictor architecture, its inputs and its rank target are the authors'; the rank objective is a surrogate."
 
 MVCNet:
   dataset: BNCI2014001
   protocol: cross_subject
   metric: accuracy
-  reproduced: 75.64          # 3-seed mean, server, CUDA, 2026-07-13
-  reproduced_std: 0.95
+  reproduced: 75.75          # 3-seed mean, v1.2.0 re-measurement on 60022
+  reproduced_std: 0.56       # std across seeds 1,2,3
   reference_range: [70, 82]  # IFNet + multi-view contrastive; composite, vs EA-EEGNet reference
   seeds: 3
   source: "Wang et al. 2025, Knowledge-Based Systems (MVCNet, Multi-View Contrastive Network); IFNet backbone: Wang et al. 2023 IEEE TNSRE; github.com/wzwvv/MVCNet"
@@ -370,8 +378,8 @@ CSP-Net:
   dataset: BNCI2014001
   protocol: cross_subject
   metric: accuracy
-  reproduced: 76.13          # 3-seed mean, server, CUDA, 2026-07-13
-  reproduced_std: 0.85
+  reproduced: 75.15  # refreshed 2026-07-26 from the v1.1.x three-dataset production run (gallery/data/benchmark.yml)
+  reproduced_std: 1.06
   reference_range: [72, 82]  # CSP-initialized EEGNet, cross-subject; the paper's CSP-Net-2 consistently beats its EEGNet backbone
   seeds: 3
   source: "Jiang, Meng, Chen, Xu & Wu, Knowledge-Based Systems 305:112668, 2024 (CSP-Net), doi 10.1016/j.knosys.2024.112668; github.com/jxgogo/CSP-Net — CSP-Net-2 (spatial-layer replacement), fixed CSP filters"
@@ -381,8 +389,8 @@ DJP-MMD:
   dataset: BNCI2014001
   protocol: cross_subject
   metric: accuracy
-  reproduced: 72.20          # 3-seed mean, server, CUDA, 2026-07-13
-  reproduced_std: 0.77
+  reproduced: 73.1  # refreshed 2026-07-26 from the v1.1.x three-dataset production run (gallery/data/benchmark.yml)
+  reproduced_std: 0.64
   reference_range: [68, 78]  # behavior band — no published EEG number (paper is image-domain); a gradient MMD strategy near the ERM baseline
   seeds: 3
   source: "Zhang & Wu, IJCNN 2020 (Discriminative Joint Probability MMD); github.com/chamwen/DaNN_DJP — image-domain paper (Office/Caltech), no EEG benchmark"
@@ -392,8 +400,8 @@ LSFT:
   dataset: BNCI2014001
   protocol: cross_subject
   metric: accuracy
-  reproduced: 74.23          # 3-seed mean (deterministic), server, CPU, 2026-07-13
-  reproduced_std: 0.00       # deterministic: identical across seeds
+  reproduced: 74.77  # refreshed 2026-07-26 from the v1.1.x three-dataset production run (gallery/data/benchmark.yml)
+  reproduced_std: 0.0
   reference_range: [70, 80]  # paper reports LSFT 75.15 on MI2-2 (2-class 2a, LOSO) — Zhang & Wu TCDS 2022, Table III
   seeds: 3
   source: "Zhang & Wu, IEEE Trans. Cognitive and Developmental Systems 2022 (Lightweight Source-Free Transfer, LSFT); github.com/chamwen/LSFT — CA+LSFT (LDA+LR voting) config"
@@ -403,8 +411,8 @@ MSDT:
   dataset: BNCI2014001
   protocol: cross_subject
   metric: accuracy
-  reproduced: 73.33          # 3-seed mean, server, CPU, 2026-07-13
-  reproduced_std: 0.80
+  reproduced: 73.84  # refreshed 2026-07-26 from the v1.1.x three-dataset production run (gallery/data/benchmark.yml)
+  reproduced_std: 0.23
   reference_range: [70, 80]  # paper reports MSDT-G 76.54 on MI2 (2-class 2a, LOSO) — Zhang, Wang & Wu TNSRE 2022, Table IV
   seeds: 3
   source: "Zhang, Wang & Wu, IEEE Trans. Neural Systems and Rehabilitation Engineering 2022 (Multi-Source Decentralized Transfer, MSDT); github.com/chamwen/MSDT — gray-box MSDT-G (target_adapt_msdt_mi), use_weight on"
@@ -422,8 +430,8 @@ EA-TIEEEGNet:
   dataset: BNCI2014001
   protocol: cross_subject
   metric: accuracy
-  reproduced: 72.51          # 3-seed mean, server, CUDA, 2026-07-18 (fixed HP: lr 1e-3, 100 epochs)
-  reproduced_std: 0.24
+  reproduced: 73.51  # refreshed 2026-07-26 from the v1.1.x three-dataset production run (gallery/data/benchmark.yml)
+  reproduced_std: 0.25
   reference_range: [66, 78]  # EEGNet-family backbone on 2014001; the paper targets seizure, so a behavior band
   seeds: 3
   source: "Peng et al., IEEE Trans. Neural Systems and Rehabilitation Engineering 2022 (TIE-EEGNet), doi 10.1109/TNSRE.2022.3204540 — the paper targets seizure subtype classification, so there is no motor-imagery number to target; the range is a behavior band"
@@ -483,3 +491,240 @@ PAT:
   seeds: 3
   source: "Chen, Jia, Tu & Wu, Fundamental Research 2026 (PAT, Privacy-Preserving Adversarial Transfer), doi 10.1016/j.fmre.2026.04.034; github.com/xqchen914/PAT"
   note: "strategy axis, lab method. Extends ABAT: after a clean warmup, each EA-aligned batch is amplitude-scaled (X·(1±0.05)) then perturbed by a global-ε L∞ PGD attack (noisy uniform init, eps 0.03, alpha 0.005, 10 steps, warmup 0.2); target never used, so source-only (privacy-preserving). +1.46 over ERM 72.07. Only the benign-accuracy training strategy is ported (on par with ABAT); the paper's federated/robustness protocol and 5-dataset/3-scenario evaluation are out of scope for this single-axis row (disclosed)."
+
+# --------------------------------------------------------------------------
+# Backfilled 2026-07-26 so every published leaderboard key has a provenance
+# entry, which is what gallery/BUILD.md tells readers the `key` field links to.
+# These rows were added to the benchmark after the original 2026-07-13 sweep
+# (the ten external backbones, the six added augmentation baselines, and the
+# federated/privacy methods). Their `reproduced` values come from the same
+# three-dataset production run that gallery/data/benchmark.yml reports.
+#
+# `reference_range` for these rows is a REGRESSION BAND around this benchmark's
+# own measurement (+/- 5 accuracy points), not a range quoted from the source
+# paper: none of these papers reports a cross-subject LOSO number on this exact
+# two-class BNCI2014001 protocol with a shared EEGNet-capacity backbone, so
+# there is no directly comparable published figure to check against. Each row
+# says so in its note. The `source` field still records the paper the method
+# comes from.
+# --------------------------------------------------------------------------
+
+EA-ADFCNN:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 72.17          # 3-seed mean, v1.2.0 re-measurement on 20022
+  reproduced_std: 1.53       # std across seeds 1,2,3
+  reference_range: [67, 77]
+  seeds: 3
+  source: "W. Tao et al., IEEE Trans. Neural Syst. Rehabil. Eng., 2024; doi:10.1109/TNSRE.2023.3342331"
+  note: "ADFCNN in the Networks table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+EA-CTNet:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 73.97          # 3-seed mean, v1.2.0 re-measurement on 20022
+  reproduced_std: 0.8        # std across seeds 1,2,3
+  reference_range: [65, 75]
+  seeds: 3
+  source: "W. Zhao et al., Sci. Rep., 2024; doi:10.1038/s41598-024-71118-7"
+  note: "CTNet in the Networks table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+EA-EEGDeformer:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 73.79          # 3-seed mean, v1.2.0 re-measurement on 20022
+  reproduced_std: 1.78       # std across seeds 1,2,3
+  reference_range: [68, 78]
+  seeds: 3
+  source: "Y. Ding et al., IEEE J. Biomed. Health Inform., 2025; doi:10.1109/JBHI.2024.3504604"
+  note: "EEG-Deformer in the Networks table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+EA-EEGNeX:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 74.61          # 3-seed mean, v1.2.0 re-measurement on 20022
+  reproduced_std: 0.92       # std across seeds 1,2,3
+  reference_range: [69, 79]
+  seeds: 3
+  source: "X. Chen et al., Biomed. Signal Process. Control, 2024; doi:10.1016/j.bspc.2023.105475"
+  note: "EEGNeX in the Networks table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+EA-EEGWaveNet:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 66.64          # 3-seed mean, three-dataset production run
+  reproduced_std: 1.44
+  reference_range: [62, 72]
+  seeds: 3
+  source: "P. Thuwajit et al., IEEE Trans. Ind. Inform., 2022; doi:10.1109/TII.2021.3133307"
+  note: "EEGWaveNet in the Networks table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+EA-FBMSNet:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 70.91          # 3-seed mean, v1.2.0 re-measurement on 20022
+  reproduced_std: 0.95       # std across seeds 1,2,3
+  reference_range: [65, 75]
+  seeds: 3
+  source: "K. Liu et al., IEEE Trans. Biomed. Eng., 2023; doi:10.1109/TBME.2022.3193277"
+  note: "FBMSNet in the Networks table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+EA-MSCFormer:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 75.67          # 3-seed mean, v1.2.0 re-measurement on 20022
+  reproduced_std: 0.26       # std across seeds 1,2,3
+  reference_range: [71, 81]
+  seeds: 3
+  source: "W. Zhao et al., Sci. Rep., 2025; doi:10.1038/s41598-025-96611-5"
+  note: "MSCFormer in the Networks table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+EA-MSVTNet:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 74.82          # 3-seed mean, v1.2.0 re-measurement on 20022
+  reproduced_std: 0.74       # std across seeds 1,2,3
+  reference_range: [71, 81]
+  seeds: 3
+  source: "K. Liu et al., IEEE J. Biomed. Health Inform., 2024; doi:10.1109/JBHI.2024.3450753"
+  note: "MSVTNet in the Networks table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+EA-SlimSeiz:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 69.65          # 3-seed mean, three-dataset production run
+  reproduced_std: 0.42
+  reference_range: [65, 75]
+  seeds: 3
+  source: "G. Lu et al., IEEE Int. Symp. Circuits Syst., 2025; doi:10.1109/ISCAS56072.2025.11043364"
+  note: "SlimSeiz in the Networks table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+EA-TMSANet:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 71.84          # 3-seed mean, v1.2.0 re-measurement on 20022
+  reproduced_std: 1.26       # std across seeds 1,2,3
+  reference_range: [69, 79]
+  seeds: 3
+  source: "Q. Zhao, W. Zhu, Biomed. Signal Process. Control, 2025; doi:10.1016/j.bspc.2024.107189"
+  note: "TMSA-Net in the Networks table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+FComb-EEGNet:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 72.3          # 3-seed mean, three-dataset production run
+  reproduced_std: 2.11
+  reference_range: [67, 77]
+  seeds: 3
+  source: "X. Zhao et al., J. Neural Eng., 2022; doi:10.1088/1741-2552/aca04f"
+  note: "Frequency Recombination in the Data Augmentation table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+FShift-EEGNet:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 73.28          # 3-seed mean, three-dataset production run
+  reproduced_std: 0.51
+  reference_range: [68, 78]
+  seeds: 3
+  source: "D. Freer, G.-Z. Yang, J. Neural Eng., 2020; doi:10.1088/1741-2552/ab57c0"
+  note: "Frequency Shift in the Data Augmentation table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+FSurr-EEGNet:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 73.28          # 3-seed mean, v1.2.0 re-measurement on 20022
+  reproduced_std: 1.25       # std across seeds 1,2,3
+  reference_range: [69, 79]
+  seeds: 3
+  source: "J. T. C. Schwabedal et al., arXiv:1806.08675, 2018"
+  note: "Fourier Surrogate in the Data Augmentation table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+FedAvg:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 74.54          # 3-seed mean, three-dataset production run
+  reproduced_std: 0.79
+  reference_range: [70, 80]
+  seeds: 3
+  source: "B. McMahan et al., AISTATS, 2017"
+  note: "FedAvg in the Transfer Learning table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+FedBS:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 72.69          # 3-seed mean, three-dataset production run
+  reproduced_std: 1.62
+  reference_range: [68, 78]
+  seeds: 3
+  source: "T. Jia, ..., D. Wu*, IEEE Trans. Neural Syst. Rehabil. Eng., 2024; doi:10.1109/TNSRE.2024.3457504"
+  note: "FedBS in the Transfer Learning table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+Flip-EEGNet:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 70.6          # 3-seed mean, three-dataset production run
+  reproduced_std: 0.77
+  reference_range: [66, 76]
+  seeds: 3
+  source: "D. Freer, G.-Z. Yang, J. Neural Eng., 2020; doi:10.1088/1741-2552/ab57c0"
+  note: "Amplitude Flip in the Data Augmentation table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+HS-EEGNet:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 64.99          # 3-seed mean, three-dataset production run
+  reproduced_std: 0.61
+  reference_range: [60, 70]
+  seeds: 3
+  source: "Y. Pei et al., Front. Hum. Neurosci., 2021; doi:10.3389/fnhum.2021.645952"
+  note: "Half-Sample Recombination in the Data Augmentation table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+Noise-EEGNet:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 71.94          # 3-seed mean, three-dataset production run
+  reproduced_std: 0.66
+  reference_range: [67, 77]
+  seeds: 3
+  source: "D. Freer, G.-Z. Yang, J. Neural Eng., 2020; doi:10.1088/1741-2552/ab57c0"
+  note: "Additive Noise in the Data Augmentation table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+SAFE:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 70.91          # 3-seed mean, three-dataset production run
+  reproduced_std: 1.15
+  reference_range: [66, 76]
+  seeds: 3
+  source: "T. Jia, ..., D. Wu*, arXiv:2601.05789, 2026; doi:10.48550/arXiv.2601.05789"
+  note: "SAFE in the Transfer Learning table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+
+Scale-EEGNet:
+  dataset: BNCI2014001
+  protocol: cross_subject
+  metric: accuracy
+  reproduced: 72.97          # 3-seed mean, three-dataset production run
+  reproduced_std: 0.83
+  reference_range: [68, 78]
+  seeds: 3
+  source: "X. Chen, ..., D. Wu*, Fundamental Research, 2026; doi:10.1016/j.fmre.2026.04.034"
+  note: "Amplitude Scaling in the Data Augmentation table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."

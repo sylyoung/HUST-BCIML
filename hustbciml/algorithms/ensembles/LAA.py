@@ -72,8 +72,11 @@ class LAA(VoteCombiner):
                 nn.init.trunc_normal_(self.weights, std=0.01)
                 nn.init.zeros_(self.biases)
 
+            def logits(self, x):
+                return x @ self.weights + self.biases
+
             def forward(self, x):
-                return F.softmax(x @ self.weights + self.biases, dim=1)
+                return F.softmax(self.logits(x), dim=1)
 
         class Decoder(nn.Module):
             def __init__(self):
@@ -96,7 +99,13 @@ class LAA(VoteCombiner):
             ce = nn.CrossEntropyLoss()
             for _ in range(50):                          # warm up classifier to MV
                 opt.zero_grad()
-                ce(clf(x), y).backward()
+                # ``CrossEntropyLoss`` applies its own log-softmax, so it must be
+                # fed logits. Passing ``clf(x)`` — already softmaxed — applied a
+                # second softmax: the objective flattens out, the gradients through
+                # the double softmax are strongly attenuated, and the classifier
+                # entered the autoencoder stage barely fitted to the majority vote,
+                # which is the initialisation the whole method rests on.
+                ce(clf.logits(x), y).backward()
                 opt.step()
             for _ in range(100):                         # autoencoder refinement
                 opt.zero_grad()

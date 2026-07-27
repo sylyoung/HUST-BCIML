@@ -534,7 +534,7 @@
   year: 2025
   venue: Journal of Neural Engineering
   doi: 10.1088/1741-2552/ADDD49
-  kind: preprint
+  kind: published
   topic: Transfer Learning & Alignment
   paradigm: []
   code_url: null
@@ -552,7 +552,7 @@
   year: 2025
   venue: IEEE Transactions on Biomedical Engineering
   doi: 10.1109/TBME.2025.3631604
-  kind: preprint
+  kind: published
   topic: Transfer Learning & Alignment
   paradigm: []
   code_url: https://github.com/Dingkun0817/SDDA
@@ -571,7 +571,7 @@
   year: 2025
   venue: IEEE Transactions on Biomedical Engineering
   doi: 10.1109/TBME.2026.3678858
-  kind: preprint
+  kind: published
   topic: Foundation & Self-Supervised Models
   paradigm:
   - Speech
@@ -611,7 +611,7 @@
   year: 2025
   venue: Journal of Neural Engineering
   doi: 10.1088/1741-2552/AE1EA2
-  kind: preprint
+  kind: published
   topic: General ML & Optimization
   paradigm:
   - Speech
@@ -630,7 +630,7 @@
   year: 2025
   venue: Science China Information Sciences
   doi: 10.1007/S11432-025-4736-2
-  kind: preprint
+  kind: published
   topic: Transfer Learning & Alignment
   paradigm:
   - P300
@@ -693,7 +693,7 @@
   kind: published
   topic: Robustness & Security
   paradigm: []
-  code_url: https://github.com/lbinmeng/adversarial_filter
+  code_url: https://github.com/lbinmeng/Filter_Attack
   code_source: paper
   tldr: Most EEG-based BCI research targets decoding accuracy while ignoring security, yet BCI machine-learning
     models are vulnerable to adversarial attacks. This paper proposes easy-to-implement evasion and backdoor
@@ -847,7 +847,7 @@
   year: 2024
   venue: IEEE Trans. Biomed. Eng.
   doi: 10.1109/TBME.2023.3303289
-  kind: preprint
+  kind: published
   topic: Transfer Learning & Alignment
   paradigm: []
   code_url: https://github.com/sylyoung/DeepTransferEEG
@@ -927,7 +927,7 @@
   topic: Foundation & Self-Supervised Models
   paradigm:
   - Seizure
-  code_url: https://github.com/rmpeng/MutualSHOT
+  code_url: null
   code_source: paper
   tldr: 'Addresses source-free semi-supervised domain adaptation (SF-SSDA) for privacy-preserving EEG-based
     seizure subtype classification, tackling how to fuse raw EEG data with expert knowledge in classifier
@@ -966,7 +966,7 @@
   year: 2024
   venue: Journal of Neural Engineering
   doi: 10.1088/1741-2552/AD88A5
-  kind: preprint
+  kind: published
   topic: Privacy-Preserving BCI
   paradigm:
   - Biometric
@@ -986,7 +986,7 @@
   year: 2024
   venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
   doi: 10.1109/TNSRE.2024.3457504
-  kind: preprint
+  kind: published
   topic: Privacy-Preserving BCI
   paradigm:
   - MI
@@ -1046,7 +1046,7 @@
   year: 2024
   venue: Fundamental Research
   doi: 10.1016/J.FMRE.2026.04.034
-  kind: preprint
+  kind: published
   topic: Privacy-Preserving BCI
   paradigm: []
   code_url: https://github.com/xqchen914/PAT
@@ -1087,7 +1087,7 @@
   year: 2024
   venue: National Science Review
   doi: 10.1093/NSR/NWAF086
-  kind: preprint
+  kind: published
   topic: Transfer Learning & Alignment
   paradigm:
   - Seizure
@@ -1108,7 +1108,7 @@
   year: 2024
   venue: Neurocomputing
   doi: 10.1016/J.NEUCOM.2026.134374
-  kind: preprint
+  kind: published
   topic: Data Augmentation & Generation
   paradigm:
   - iBCI
@@ -1128,7 +1128,7 @@
   year: 2023
   venue: IEEE Trans. Comput. Soc. Syst.
   doi: 10.1109/TCSS.2022.3184818
-  kind: preprint
+  kind: published
   topic: Privacy-Preserving BCI
   paradigm: []
   code_url: null
@@ -1627,7 +1627,7 @@
   year: 2022
   venue: Journal of Neural Engineering
   doi: 10.1088/1741-2552/AD8964
-  kind: preprint
+  kind: published
   topic: Privacy-Preserving BCI
   paradigm: []
   code_url: null
@@ -1928,7 +1928,7 @@
   year: 2021
   venue: National Science Open
   doi: 10.1360/NSO/20220023
-  kind: preprint
+  kind: published
   topic: Robustness & Security
   paradigm:
   - Affect
@@ -2318,7 +2318,7 @@
     same number of rules, and pruned rules are generally better than training that many rules from scratch,
     especially with Gaussian MFs.'
   source: summarized
-- id: Wu2020_TransferLearningEEGBrainComputerInterfaces
+- id: Wu2022_TransferLearningEEGBrainComputerInterfaces
   title: 'Transfer Learning for EEG-Based Brain-Computer Interfaces: A Review of Progress Made Since 2016'
   authors: Dongrui Wu et al.
   year: 2022
@@ -2357,7 +2357,7 @@
     downstream TL. Offline calibration experiments on two MI datasets confirm that integrating data alignment
     with sophisticated TL significantly improves classification and greatly reduces calibration effort.
   source: summarized
-- id: Zhang2020_OvercomingNegativeTransferSurvey
+- id: Zhang2023_OvercomingNegativeTransferSurvey
   title: 'A Survey on Negative Transfer'
   authors: Wen Zhang et al.
   year: 2023
@@ -2666,7 +2666,7 @@
   year: 2019
   venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
   doi: 10.1109/TNSRE.2019.2908955
-  kind: preprint
+  kind: published
   topic: Privacy-Preserving BCI
   paradigm: []
   code_url: null
@@ -2704,11 +2704,11 @@
   year: 2019
   venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
   doi: 10.1109/TNSRE.2019.2926965
-  kind: preprint
+  kind: published
   topic: Privacy-Preserving BCI
   paradigm:
   - Drowsy
-  code_url: https://bitbucket.org/uwtppml
+  code_url: null
   code_source: paper
   tldr: Enables machine learning over EEG data from many users while cryptographically protecting each
     individual's raw signals, motivated by how much sensitive information (PINs, passwords, etc.) leaks
@@ -2761,7 +2761,7 @@
   year: 2019
   venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
   doi: 10.1109/TNSRE.2020.3003342
-  kind: preprint
+  kind: published
   topic: Deep Architectures
   paradigm:
   - iBCI
@@ -2781,7 +2781,7 @@
   year: 2019
   venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
   doi: 10.1109/TNSRE.2019.2945794
-  kind: preprint
+  kind: published
   topic: Transfer Learning & Alignment
   paradigm:
   - Drowsy
@@ -2800,7 +2800,7 @@
   year: 2019
   venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
   doi: 10.1109/TNSRE.2020.2985996
-  kind: preprint
+  kind: published
   topic: Transfer Learning & Alignment
   paradigm:
   - P300
@@ -2815,7 +2815,7 @@
     across two paradigms (MI and ERP), MEKT outperformed several state-of-the-art transfer-learning methods,
     and DTE cut more than half the computational cost with little accuracy loss.'
   source: summarized
-- id: Zhang2019_TransferabilityVersusDiscriminabilityJointProbabilityDistribution
+- id: Zhang2020_TransferabilityVersusDiscriminabilityJointProbabilityDistribution
   title: 'Discriminative Joint Probability Maximum Mean Discrepancy (DJP-MMD) for Domain Adaptation'
   authors: Wen Zhang et al.
   year: 2020
@@ -2840,10 +2840,10 @@
   year: 2019
   venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
   doi: 10.1109/TNSRE.2020.2980299
-  kind: preprint
+  kind: published
   topic: Transfer Learning & Alignment
   paradigm: []
-  code_url: https://github.com/hehe91/LA
+  code_url: https://github.com/hehe03/LA
   code_source: paper
   tldr: Most domain adaptation for BCIs requires the source and target domains to share the same label
     space, so auxiliary data with a different set of classes cannot be used. This paper addresses different-set
@@ -2859,7 +2859,7 @@
   year: 2019
   venue: Journal of Neural Engineering
   doi: 10.1088/1741-2552/AC0F4C
-  kind: preprint
+  kind: published
   topic: Privacy-Preserving BCI
   paradigm: []
   code_url: https://github.com/ZihanLiu95/UAP_EEG
@@ -2935,7 +2935,7 @@
   topic: Privacy-Preserving BCI
   paradigm:
   - Drowsy
-  code_url: https://bitbucket.org/uwtppml/lynx
+  code_url: null
   code_source: paper
   tldr: EEG/BCI data is highly sensitive, and application developers can extract private information (e.g.,
     PINs) from unprotected signals, so the challenge is doing meaningful machine learning on EEG while
@@ -3024,7 +3024,7 @@
   year: 2018
   venue: 2018 First Asian Conference on Affective Computing and Intelligent Interaction (ACII Asia)
   doi: 10.1109/ACIIASIA.2018.8470329
-  kind: preprint
+  kind: published
   topic: General ML & Optimization
   paradigm:
   - Affect
@@ -3037,7 +3037,7 @@
     universally outperforms the others, and classifying with the raw features directly is not necessarily
     a bad choice.
   source: summarized
-- id: He2018_TransferLearningBrainComputerInterfacesEuclidean
+- id: He2020_TransferLearningBrainComputerInterfacesEuclidean
   title: 'Transfer Learning for Brain-Computer Interfaces: A Euclidean Space Data Alignment Approach'
   authors: He He et al.
   year: 2020
@@ -3120,7 +3120,7 @@
   year: 2017
   venue: ICONIP
   doi: 10.1007/978-3-319-70096-0_83
-  kind: preprint
+  kind: published
   topic: Transfer Learning & Alignment
   paradigm:
   - MI
@@ -3138,7 +3138,7 @@
   year: 2017
   venue: ICONIP
   doi: 10.1007/978-3-319-70096-0_84
-  kind: preprint
+  kind: published
   topic: Deep Architectures
   paradigm:
   - Drowsy
@@ -3191,7 +3191,7 @@
   year: 2017
   venue: IEEE Trans. Fuzzy Syst.
   doi: 10.1109/TFUZZ.2016.2633379
-  kind: preprint
+  kind: published
   topic: Robustness & Security
   paradigm:
   - Drowsy
@@ -3211,7 +3211,7 @@
   year: 2017
   venue: IEEE Trans. Hum. Mach. Syst.
   doi: 10.1109/THMS.2016.2608931
-  kind: preprint
+  kind: published
   topic: Transfer Learning & Alignment
   paradigm:
   - P300
@@ -3247,7 +3247,7 @@
   year: 2017
   venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
   doi: 10.1109/TNSRE.2016.2544108
-  kind: preprint
+  kind: published
   topic: Active Learning
   paradigm:
   - P300
@@ -3686,7 +3686,7 @@
   kind: published
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
-  code_url: http://www-scf.usc.edu/~dongruiw/files/EIA.zip
+  code_url: null
   code_source: paper
   tldr: Constructing interval type-2 (IT2) fuzzy set models of words from survey data intervals is the
     first step of the Perceptual Computer, and the Interval Approach (IA) had been the only systematic
@@ -3983,7 +3983,7 @@
   kind: published
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
-  code_url: http://sipi.usc.edu/~mendel/software
+  code_url: https://sipi.usc.edu/~mendel/software
   code_source: paper
   tldr: The Interval Approach (IA) synthesizes an interval type-2 fuzzy set (IT2 FS) model of a word from
     subjects' interval endpoint data, but assumes each person's interval is random and uniform, which
@@ -4152,7 +4152,7 @@
   kind: published
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
-  code_url: http://sipi.usc.edu/~mendel/software
+  code_url: https://sipi.usc.edu/~mendel/software
   code_source: paper
   tldr: For interval type-2 (IT2) fuzzy sets there was only one prior ranking method but many competing
     similarity and uncertainty measures, and it was unclear which are most suitable for computing with
@@ -4316,8 +4316,7 @@
   doi: 10.1109/FOCI.2007.371499
   kind: published
   topic: Fuzzy Systems & Computing-with-Words
-  paradigm:
-  - Affect
+  paradigm: []
   code_url: null
   code_source: none
   tldr: This is the conference version of the IT2 FS uncertainty-measures work. Using the Mendel-John
@@ -4398,7 +4397,7 @@
     better control using fewer fuzzy sets/rules, meaning a lower trade-off between modeling accuracy and
     interpretability.
   source: summarized
-- id: null
+- id: Song2026_CISPublicationSpotlightPublicationSpotlight
   title: CIS Publication Spotlight [Publication Spotlight]
   authors: Yongduan Song et al.
   year: 2026
@@ -4411,13 +4410,13 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Kan2026_CMCRDCrossModalContrastiveRepresentationDistillation
   title: 'CMCRD: Cross-Modal Contrastive Representation Distillation for Emotion Recognition'
   authors: Siyuan Kan et al.
   year: 2026
   venue: IEEE Trans. Affect. Comput.
   doi: 10.1109/TAFFC.2026.3664341
-  kind: preprint
+  kind: published
   topic: General ML & Optimization
   paradigm:
   - Affect
@@ -4425,12 +4424,18 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Deng2026_LMIDComprehensiveMultimodalDatasetFailurePrediction
   title: 'LMID: A Comprehensive Multimodal Dataset for Failure Prediction in Cloud Computing Systems'
   authors: Lingfei Deng et al.
   year: 2026
   venue: KDD
   doi: 10.1145/3770854.3785684
+  # Accepted, DOI pre-assigned, not yet registered: the article DOI 404s while its
+  # parent proceedings DOI (10.1145/3770854, "Proceedings of the 32nd ACM SIGKDD
+  # Conference") resolves, and KDD 2026 has not taken place yet. Marked in_press so
+  # the site does not link a reader to a 404 and check_links.py does not report it
+  # as rot. Drop this flag once the DOI goes live.
+  in_press: true
   kind: published
   topic: General ML & Optimization
   paradigm: []
@@ -4438,7 +4443,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Chen2025_DataAlignmentAdversarialDefenseBenchmarkEEG
   title: Data alignment based adversarial defense benchmark for EEG-based BCIs
   authors: Xiaoqing Chen et al.
   year: 2025
@@ -4451,7 +4456,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Chen2025_The1stInternationalWorkshopDisentangledRepresentation
   title: 'The 1st International Workshop on Disentangled Representation Learning for Controllable Generation
     (DRL4Real): Methods and Results'
   authors: Qiuyu Chen et al.
@@ -4465,7 +4470,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Li2024_FutureGenerationAttackDefenseNeuralNetworks
   title: Future-generation attack and defense in neural networks
   authors: Yang Li et al.
   year: 2024
@@ -4478,7 +4483,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Wu2024_TMMMTransformerMultimodalSentimentAnalysisMissing
   title: 'TMMM: Transformer in Multimodal Sentiment Analysis under Missing Modalities'
   authors: Huanyu Wu et al.
   year: 2024
@@ -4491,7 +4496,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Deng2024_TimeAwareAttentionTransformerTAATCloud
   title: Time-Aware Attention-Based Transformer (TAAT) for Cloud Computing System Failure Prediction
   authors: Lingfei Deng et al.
   year: 2024
@@ -4504,7 +4509,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Wu2023_Type1IntervalType2Fuzzy
   title: Type-1 and Interval Type-2 Fuzzy Systems [AI- eXplained]
   authors: Dongrui Wu et al.
   year: 2023
@@ -4517,20 +4522,20 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Zhao2023_BoostTreeBoostForestEnsembleLearning
   title: BoostTree and BoostForest for Ensemble Learning
   authors: Changming Zhao et al.
   year: 2023
   venue: IEEE Trans. Pattern Anal. Mach. Intell.
   doi: 10.1109/TPAMI.2022.3227370
-  kind: preprint
+  kind: published
   topic: General ML & Optimization
   paradigm: []
   code_url: null
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Wu2023_AffectiveBrainComputerInterfacesaBCIsTutorial
   title: 'Affective Brain-Computer Interfaces (aBCIs): A Tutorial'
   authors: Dongrui Wu et al.
   year: 2023
@@ -4544,7 +4549,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Zhang2023_LightweightSourceFreeTransferPrivacyPreserving
   title: Lightweight Source-Free Transfer for Privacy-Preserving Motor Imagery Classification
   authors: Wen Zhang et al.
   year: 2023
@@ -4565,7 +4570,7 @@
     datasets it outperformed 13 approaches, including transfer methods that use the
     source samples or model parameters directly.
   source: summarized
-- id: null
+- id: Zhang2022_MultiSourceDecentralizedTransferPrivacyPreserving
   title: Multi-Source Decentralized Transfer for Privacy-Preserving BCIs
   authors: Wen Zhang et al.
   year: 2022
@@ -4587,7 +4592,7 @@
     data. On motor-imagery and affective BCI datasets MSDT improved classification
     while, unlike the compared approaches, preserving privacy.
   source: summarized
-- id: null
+- id: Wu2023_ProgramChairMessage
   title: Program Chair Message
   authors: Dongrui Wu et al.
   year: 2023
@@ -4600,7 +4605,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Liu2023_23rdIEEEACISInternationalConferenceComputer
   title: 23rd IEEE/ACIS International Conference on Computer and Information Science, ICIS 2023, Wuxi,
     China, June 23-25, 2023
   authors: Yuan Liu et al.
@@ -4614,7 +4619,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Li2022_MetaLearningFastPrivacyPreservingSource
   title: Meta-Learning for Fast and Privacy-Preserving Source Knowledge Transfer of EEG-Based BCIs
   authors: Siyang Li et al.
   year: 2022
@@ -4627,7 +4632,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Wu2022_TransferLearningMotorImageryBrainComputer
   title: 'Transfer learning for motor imagery based brain-computer interfaces: A tutorial'
   authors: Dongrui Wu et al.
   year: 2022
@@ -4641,7 +4646,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Li2022_FacialExpressionRecognitionWildDeepPre
   title: Facial Expression Recognition In-the-Wild with Deep Pre-trained Models
   authors: Siyang Li et al.
   year: 2022
@@ -4654,7 +4659,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Fu2021_PersonalizedHumanActivityRecognitionIntegratedWearable
   title: Personalized Human Activity Recognition Based on Integrated Wearable Sensor and Transfer Learning
   authors: Zhongzheng Fu et al.
   year: 2021
@@ -4667,35 +4672,35 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Gu2021_EEGBrainComputerInterfacesBCIsSurvey
   title: 'EEG-Based Brain-Computer Interfaces (BCIs): A Survey of Recent Studies on Signal Sensing Technologies
     and Computational Intelligence Approaches and Their Applications'
   authors: Xiaotong Gu et al.
   year: 2021
   venue: IEEE ACM Trans. Comput. Biol. Bioinform.
   doi: 10.1109/TCBB.2021.3052811
-  kind: preprint
+  kind: published
   topic: General ML & Optimization
   paradigm: []
   code_url: null
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Wu2020_OnFunctionalEquivalenceTSKFuzzySystems
   title: On the Functional Equivalence of TSK Fuzzy Systems to Neural Networks, Mixture of Experts, CART,
     and Stacking Ensemble Regression
   authors: Dongrui Wu et al.
   year: 2020
   venue: IEEE Trans. Fuzzy Syst.
   doi: 10.1109/TFUZZ.2019.2941697
-  kind: preprint
+  kind: published
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
   code_url: null
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Deng2019_GuestEditorialSpecialIssueAdvancesDeep
   title: 'Guest Editorial: Special Issue on New Advances in Deep-Transfer Learning'
   authors: Zhaohong Deng et al.
   year: 2019
@@ -4708,33 +4713,33 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Wu2019_PoolSequentialActiveLearningRegression
   title: Pool-Based Sequential Active Learning for Regression
   authors: Dongrui Wu
   year: 2019
   venue: IEEE Trans. Neural Networks Learn. Syst.
   doi: 10.1109/TNNLS.2018.2868649
-  kind: preprint
+  kind: published
   topic: Active Learning
   paradigm: []
   code_url: null
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Wu2018_SpatialFilteringEEGRegressionProblemsBrain
   title: Spatial Filtering for EEG-Based Regression Problems in Brain-Computer Interface (BCI)
   authors: Dongrui Wu et al.
   year: 2018
   venue: IEEE Trans. Fuzzy Syst.
   doi: 10.1109/TFUZZ.2017.2688423
-  kind: preprint
+  kind: published
   topic: General ML & Optimization
   paradigm: []
   code_url: null
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Wu2017_GuestEditorialSpecialSectionBrainComputer
   title: Guest Editorial for the Special Section on Brain Computer Interface (BCI)
   authors: Dongrui Wu et al.
   year: 2017
@@ -4747,7 +4752,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Wu2016_SpectralMetaLearnerRegressionSMLRModel
   title: 'Spectral meta-learner for regression (SMLR) model aggregation: Towards calibrationless brain-computer
     interface (BCI)'
   authors: Dongrui Wu et al.
@@ -4761,7 +4766,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Wu2013_SpecialIssueComputationalIntelligenceAffectiveComputing
   title: Special Issue on Computational Intelligence and Affective Computing [Guest Editorial]
   authors: Dongrui Wu et al.
   year: 2013
@@ -4775,7 +4780,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Wu2008_CorrectionsAggregationLinguisticWeightedAverageInterval
   title: Corrections to "Aggregation Using the Linguistic Weighted Average and Interval Type-2 Fuzzy Sets"
   authors: Dongrui Wu et al.
   year: 2008
@@ -4788,7 +4793,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Mendel2007_PerceptualReasoningComputingWordsEngine
   title: 'Perceptual Reasoning: A New Computing with Words Engine'
   authors: Jerry M. Mendel et al.
   year: 2007
@@ -4801,7 +4806,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Wu2006_TheLinguisticWeightedAverage
   title: The Linguistic Weighted Average
   authors: Dongrui Wu et al.
   year: 2006
@@ -4814,7 +4819,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Wu2005_Type2FLSModelingCapabilityAnalysis
   title: Type-2 FLS Modeling Capability Analysis
   authors: Dongrui Wu et al.
   year: 2005
@@ -4827,7 +4832,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Wu2005_ComputationallyEfficientTypeReductionStrategiesType
   title: Computationally Efficient Type-Reduction Strategies for a Type-2 Fuzzy Logic Controller
   authors: Dongrui Wu et al.
   year: 2005
@@ -4840,7 +4845,7 @@
   code_source: null
   tldr: ''
   source: meta-only
-- id: null
+- id: Wu2004_AType2FuzzyLogicController
   title: A type-2 fuzzy logic controller for the liquid-level process
   authors: Dongrui Wu et al.
   year: 2004

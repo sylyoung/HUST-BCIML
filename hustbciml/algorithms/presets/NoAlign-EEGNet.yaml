@@ -1,0 +1,12 @@
+# No alignment + EEGNet + Linear head, trained with ERM.
+# The alignment-axis control: identical to EA-EEGNet in every stage except the
+# aligner, so the gap between the two rows is the contribution of Euclidean
+# Alignment alone. Same fixed hyperparameters as EA-EEGNet.
+aligner: Identity
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

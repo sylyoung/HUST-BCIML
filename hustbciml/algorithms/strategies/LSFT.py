@@ -137,6 +137,8 @@ def _virtual_source(feats: np.ndarray, votes: np.ndarray, n_classes: int,
 
 class LSFT(Strategy):
     mode = "fit"
+    transductive_predict = True   # predict() adapts features and relabels using the
+                                  # whole unlabeled target batch
 
     def __init__(self, dim: int = 20, mu: float = 0.1, n_iter: int = 10, **_):
         self.dim = dim         # p: feature-subspace dimensionality (paper default p = 20)

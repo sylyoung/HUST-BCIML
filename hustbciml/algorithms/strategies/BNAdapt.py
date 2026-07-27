@@ -47,6 +47,16 @@ class BNAdapt(Strategy):
         return supervised_train(model, source, ctx)
 
     def predict(self, model: nn.Module, target: EEGEpochs, ctx: RunContext) -> Tuple[np.ndarray, np.ndarray]:
+        # Note what this does and does not do. Putting the BN layers in train mode
+        # and forwarding the sliding batch makes PyTorch fold those batch
+        # statistics into the running estimates by its momentum EMA — it does not
+        # *replace* the source statistics with the target batch's. The adapted
+        # statistics therefore still depend on the source BN state, the momentum,
+        # the stream order, and how many forwards have happened. That is a
+        # streaming variant of BN-adaptation (Li et al., 2017), not the
+        # recompute-from-the-target-batch form; the card says so too. Setting each
+        # BN's momentum to 1.0 here would give the pure batch-statistic version and
+        # is a different measurement.
         def update(m, xb, opt, cfg):
             set_bn_train(m)                        # only BN layers track batch statistics
             with torch.no_grad():

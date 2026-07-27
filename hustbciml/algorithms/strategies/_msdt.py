@@ -91,9 +91,21 @@ def batch_entropy_loss(logits: torch.Tensor) -> torch.Tensor:
 
 
 def source_inconsistency_loss(logits: torch.Tensor) -> torch.Tensor:
-    """Source-consistency regularization L_sc (Eq. 7): the spread (std) of the
-    per-class predictions across the source models. Minimizing it pulls the M
-    adapted models into agreement on each target trial (Zhang et al., 2022)."""
+    """Source-consistency regularization L_sc (Eq. 7): the spread (std) across the
+    source models, averaged over classes and trials. Minimizing it pulls the M
+    adapted models into agreement on each target trial (Zhang et al., 2022).
+
+    Computed on **logits, not probabilities** — matching the reference
+    implementation, where ``source_inconsistency_loss.forward(prob)`` is called as
+    ``si_variance(outputs_all)`` with ``outputs_all`` the raw concatenated logits
+    (the ``prob`` parameter name notwithstanding; ``preds = softmax(outputs_all)``
+    is computed separately for the weighted prediction). Worth knowing when
+    reading the objective: logit scale is arbitrary across independently trained
+    source MLPs, so this penalises calibration/scale differences as well as
+    disagreement in class probabilities. Kept as the reference has it so the MSDT
+    row stays comparable; changing it to ``softmax(logits, dim=2)`` would be a
+    different objective and needs a re-run.
+    """
     return logits.std(dim=1).mean(dim=1).mean(dim=0)
 
 
@@ -110,7 +122,22 @@ def domain_weights(models: List[SourceMLP], Xt: torch.Tensor, eps: float = 1e-5)
         gentropy = torch.sum(-marg * torch.log(marg + eps))
         scores.append(im - gentropy)
     w = torch.stack(scores)
-    w = w / w.sum()
+    # These are used as mixture weights over the sources, so they have to be a
+    # valid distribution. The raw scores are a difference of entropies and can be
+    # negative or near-zero-sum: when every source predicts near-uniformly the
+    # denominator collapses and ``w / w.sum()`` returns inf/NaN, which then
+    # propagates into the ensemble scores and silently corrupts AUC and the MSDT
+    # ranking. Fail here instead, where the cause is visible.
+    total = w.sum()
+    if not torch.isfinite(total) or torch.abs(total) < eps:
+        raise FloatingPointError(
+            f"MSDT source-transferability scores sum to {float(total):.3g}; the "
+            f"per-source weights are not a valid distribution (all sources near "
+            f"uniform?)."
+        )
+    w = w / total
+    if not torch.all(torch.isfinite(w)):
+        raise FloatingPointError("MSDT produced non-finite source weights.")
     return w.reshape(1, len(models), 1)
 
 

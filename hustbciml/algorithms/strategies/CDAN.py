@@ -93,15 +93,24 @@ def _entropy_vec(softmax_out: torch.Tensor, eps: float = 1e-5) -> torch.Tensor:
 
 
 def _cdane(feature: torch.Tensor, softmax_out: torch.Tensor, entropy: torch.Tensor,
-           ad_net: nn.Module, coeff: float, device) -> torch.Tensor:
+           ad_net: nn.Module, coeff: float, device, n_source: int = None) -> torch.Tensor:
     """Entropy-conditioned adversarial loss over feature ⊗ softmax (multilinear
     conditioning). ``feature`` and ``entropy`` carry gradient; the softmax used
-    for the outer product is detached (vendored ``CDANE``)."""
+    for the outer product is detached (vendored ``CDANE``).
+
+    ``n_source`` is the number of leading rows that came from the source domain.
+    The vendored code inferred it as ``feature.size(0) // 2``, which is only the
+    same thing when the two batches are equal in size; with a short target batch
+    (which ``cycle_batches`` produces for a domain smaller than ``batch_size``)
+    the discriminator is trained against wrong domain labels and the adversarial
+    signal is corrupted while the run still reports a number.
+    """
     softmax_output = softmax_out.detach()
     op_out = torch.bmm(softmax_output.unsqueeze(2), feature.unsqueeze(1))
     ad_out = ad_net(op_out.view(-1, softmax_output.size(1) * feature.size(1)))
-    half = feature.size(0) // 2
-    dc_target = torch.tensor([[1.0]] * half + [[0.0]] * half, device=device)
+    total = feature.size(0)
+    half = total // 2 if n_source is None else int(n_source)
+    dc_target = torch.tensor([[1.0]] * half + [[0.0]] * (total - half), device=device)
 
     entropy.register_hook(_grl_hook(coeff))
     entropy = 1.0 + torch.exp(-entropy)
@@ -122,9 +131,18 @@ class CDAN(Strategy):
     def fit(self, model: nn.Module, source: EEGEpochs, ctx: RunContext) -> nn.Module:
         criterion = nn.CrossEntropyLoss()
 
+        # Length of the gradient-reversal ramp, in iterations. Kept at the
+        # reference implementation's fixed 10000 by default so the published
+        # numbers stand, but exposed so a run whose ``epochs * batches`` is far
+        # from 10000 can anneal over its own actual training length instead:
+        # ``--hp cdan_max_iter=<n>``. Both the discriminator's internal schedule
+        # and the entropy hook read the same value, so they cannot drift apart.
+        ramp = float(ctx.cfg.hp.get("cdan_max_iter", 10000.0))
+
         def setup(m, ctx):
             in_dim = m.backbone.out_features * ctx.cfg.n_classes    # multilinear conditioning
             ad_net = _AdversarialNetwork(in_dim).to(ctx.device)
+            ad_net.max_iter = ramp
             return ad_net, list(ad_net.parameters())
 
         def da_step(m, bs, bt, ad_net, it, max_iter, ctx):
@@ -134,7 +152,9 @@ class CDAN(Strategy):
             outputs = torch.cat((out_s, out_t), dim=0)
             softmax_out = torch.softmax(outputs, dim=1)
             entropy = _entropy_vec(softmax_out)
-            transfer = _cdane(features, softmax_out, entropy, ad_net, _calc_coeff(it), ctx.device)
+            transfer = _cdane(features, softmax_out, entropy, ad_net,
+                              _calc_coeff(it, max_iter=ramp), ctx.device,
+                              n_source=feat_s.size(0))
             return criterion(out_s, bs.y) + transfer
 
         return transductive_train(model, source, ctx, da_step, setup=setup)

@@ -243,7 +243,9 @@ def _mekt_kernel(Xs: np.ndarray, Xt: np.ndarray, ys: np.ndarray, *, d: int = 10,
 
 class MEKT(Strategy):
     mode = "fit"
-    uses_target = False        # transductive work happens in predict (target given there)
+    uses_target = False           # not during fit: no ctx.target_unlabeled is needed
+    transductive_predict = True   # but predict() does learn its projections from the
+                                  # whole unlabeled target batch it is handed
 
     def __init__(self, subspace_dim: int = 10, max_iter: int = 5, alpha: float = 0.01,
                  beta: float = 0.1, rho: float = 20.0, k: int = 10, t: float = 1.0,

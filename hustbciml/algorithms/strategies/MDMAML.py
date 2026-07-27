@@ -118,6 +118,21 @@ class MDMAML(Strategy):
                     pairs.append((si, sj))
 
                 saved = [p.detach().clone() for p in params]
+                # Only the PARAMETERS are reverted between pairs, never the
+                # BatchNorm buffers. An earlier revision of this file also
+                # snapshotted and restored ``model.buffers()`` here, reasoning that
+                # a pair inheriting the previous pair's running statistics makes the
+                # meta-gradient depend on the order the pairs were sampled in. That
+                # reasoning is wrong twice over. In train mode BatchNorm normalises
+                # with the *batch* statistics; the running buffers do not enter the
+                # forward pass at all, so they cannot influence any gradient. And
+                # because every pair restored them, the buffers never advanced past
+                # their initialisation (mean 0, var 1) for the whole run — while
+                # ``predict`` evaluates in eval mode against exactly those fixed
+                # statistics (§IV-F). The model was then scored under a
+                # normalisation it had never been trained with, costing ~16 accuracy
+                # points on BNCI2014001. Statistics accumulated across all source
+                # domains are what the paper's forward-only deployment needs.
                 meta_grads = [torch.zeros_like(p) for p in params]
                 n_used = 0
                 for si, sj in pairs:

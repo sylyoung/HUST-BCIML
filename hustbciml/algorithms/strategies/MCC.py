@@ -40,14 +40,33 @@ from ._common import forward_logits, transductive_train
 
 def _class_confusion(logits: torch.Tensor, t: float, eps: float = 1e-5) -> torch.Tensor:
     """Entropy-reweighted minimum-class-confusion loss on target logits.
-    Vendored from DeepTransferEEG ``tl/utils/loss.py`` (``ClassConfusionLoss``)."""
+    Vendored from DeepTransferEEG ``tl/utils/loss.py`` (``ClassConfusionLoss``).
+
+    KNOWN DEVIATION FROM THE PAPER — DO NOT "FIX" WITHOUT RE-MEASURING.
+    The normalisation below is written ``confusion / torch.sum(confusion, dim=1)``
+    with no ``keepdim=True``. The divisor therefore has shape ``(C,)`` and
+    broadcasts along the *last* axis, so entry ``[i][j]`` is divided by row-sum
+    ``j``, not by row-sum ``i``. Because the entropy weighting makes the confusion
+    matrix asymmetric, that is not the row normalisation Jin et al. (2020) define.
+
+    It is kept because it is what the reference implementation does: the line is
+    character-for-character identical in DeepTransferEEG ``tl/utils/loss.py``
+    (``ClassConfusionLoss``) and in the widely circulated official MCC code, so
+    every published MCC baseline — including this lab's own — was measured with
+    it. Adding ``keepdim=True`` would change this benchmark's MCC row, currently
+    the transfer-table leader, and make it non-comparable with all of them.
+
+    So: the port is faithful to the reference implementation, and the reference
+    implementation departs from the paper's equation. Both halves of that sentence
+    matter; see the MCC card, which records the same thing for readers.
+    """
     n_sample, n_class = logits.shape
     softmax_out = torch.softmax(logits / t, dim=1)
     entropy_weight = (-torch.sum(softmax_out * torch.log(softmax_out + eps), dim=1)).detach()
     entropy_weight = 1.0 + torch.exp(-entropy_weight)
     entropy_weight = (n_sample * entropy_weight / torch.sum(entropy_weight)).unsqueeze(1)
     confusion = torch.mm((softmax_out * entropy_weight).transpose(1, 0), softmax_out)
-    confusion = confusion / torch.sum(confusion, dim=1)
+    confusion = confusion / torch.sum(confusion, dim=1)   # see note above (no keepdim, as upstream)
     return (torch.sum(confusion) - torch.trace(confusion)) / n_class
 
 
@@ -57,7 +76,9 @@ class MCC(Strategy):
 
     def fit(self, model: nn.Module, source: EEGEpochs, ctx: RunContext) -> nn.Module:
         criterion = nn.CrossEntropyLoss()
-        t_mcc = 2.0            # temperature; loss_trade_off = 1.0 (DeepTransferEEG defaults)
+        # temperature; loss_trade_off = 1.0 (DeepTransferEEG defaults).
+        # Sweepable with ``--hp mcc_temp=<t>``.
+        t_mcc = float(ctx.cfg.hp.get("mcc_temp", 2.0))
 
         def da_step(m, bs, bt, aux, it, max_iter, ctx):
             _, out_s = m(bs.x)

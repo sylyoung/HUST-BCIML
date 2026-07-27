@@ -11,8 +11,8 @@ Cross-Subject Detail-swap Augmentation applies a db4 discrete wavelet transform 
 
 | Metric | Value |
 |---|--:|
-| Accuracy (mean ± std across seeds) | 72.25 ± 2.20 |
-| Δ vs baseline (EA-EEGNet, 72.07) | +0.18 |
+| Accuracy (mean ± std across seeds) | 72.45 ± 1.87 |
+| Δ vs baseline (EA-EEGNet, 72.07) | +0.38 |
 | Reference range (expected band) | 68–78 |
 
 Accuracy is the mean over seeds; ± is the standard deviation *across* seeds (a reproducibility figure, not the cross-subject spread). The reference range is the published / expected band on this dataset.

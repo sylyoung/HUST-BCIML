@@ -29,6 +29,17 @@ this, leaving the reversal inert; restored here). margin=4, bottleneck=50,
 trade-off=1.0 as in DeepTransferEEG.
 
 mode='gradient', uses_target=True.
+
+Structural note, verified against the reference. Source cross-entropy is computed
+on the *pipeline head's* logits, and ``MDDClassifier``'s own main head is trained
+only through the disparity term — it receives no label supervision, and its
+argmax is what defines the adversarial head's pseudo-targets. That is not an
+adaptation made here: DeepTransferEEG's ``tl/mdd.py`` has exactly this structure
+(``classifier_loss = criterion(outputs_source, labels_source)`` on the base
+network, then ``outputs, outputs_adv = mdd_classifier(x)`` for the transfer term
+alone). In the original tllib MDD the MDD classifier *is* the task classifier, so
+the two differ. Recorded so the row is read as "reproduces DeepTransferEEG's MDD",
+which is the claim this port can support.
 """
 from __future__ import annotations
 
@@ -51,7 +62,10 @@ class MDD(Strategy):
 
     def fit(self, model: nn.Module, source: EEGEpochs, ctx: RunContext) -> nn.Module:
         criterion = nn.CrossEntropyLoss()
-        mdd_loss = ClassificationMarginDisparityDiscrepancy(margin=4.0)
+        # margin=4.0 and trade_off=1.0 are the reference defaults the published
+        # row used; sweepable with ``--hp mdd_margin=`` / ``--hp mdd_trade_off=``.
+        mdd_loss = ClassificationMarginDisparityDiscrepancy(
+            margin=float(ctx.cfg.hp.get("mdd_margin", 4.0)))
 
         def setup(m, ctx):
             clf = MDDClassifier(backbone_dim=m.backbone.out_features,
@@ -59,15 +73,23 @@ class MDD(Strategy):
             clf.train()
             return clf, list(clf.parameters())
 
+        trade_off = float(ctx.cfg.hp.get("mdd_trade_off", 1.0))
+
         def da_step(m, bs, bt, clf, it, max_iter, ctx):
             feat_s, out_s = m(bs.x)
             feat_t, _ = m(bt.x)
             x = torch.cat((feat_s, feat_t), dim=0)
             outputs, outputs_adv = clf(x)
-            y_s, y_t = outputs.chunk(2, dim=0)
-            y_s_adv, y_t_adv = outputs_adv.chunk(2, dim=0)
+            # Split at the real source batch size, not with ``chunk(2)``. The two
+            # agree whenever the batches are equal, which they are for the shipped
+            # datasets — but ``cycle_batches`` falls back to a short final batch for
+            # a domain smaller than ``batch_size``, and an even split of an odd
+            # concatenation silently relabels source rows as target and vice versa.
+            ns = feat_s.size(0)
+            y_s, y_t = outputs[:ns], outputs[ns:]
+            y_s_adv, y_t_adv = outputs_adv[:ns], outputs_adv[ns:]
             transfer = -mdd_loss(y_s, y_s_adv, y_t, y_t_adv)
-            loss = criterion(out_s, bs.y) + transfer          # trade_off = 1.0
+            loss = criterion(out_s, bs.y) + trade_off * transfer
             clf.step()                                          # advance warm-start GRL (authors' reference)
             return loss
 

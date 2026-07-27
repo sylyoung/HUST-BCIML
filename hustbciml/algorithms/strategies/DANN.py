@@ -76,7 +76,8 @@ class DANN(Strategy):
         model.to(device)
         disc = weight_norm(nn.Linear(model.backbone.out_features, 2)).to(device)
         optimizer = torch.optim.Adam(
-            list(model.parameters()) + list(disc.parameters()), lr=cfg.lr)
+            list(model.parameters()) + list(disc.parameters()),
+            lr=cfg.lr, weight_decay=cfg.weight_decay)   # honour --weight_decay like ERM does
         criterion = nn.CrossEntropyLoss()
 
         bps = max(1, len(source) // cfg.batch_size)
