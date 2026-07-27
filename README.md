@@ -60,6 +60,10 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-07-27 (v1.2.3).** Completed the prose rewrite: twelve transfer and ensemble row
+descriptions the v1.2.2 pass missed, which kept British spelling and four sentences that judged a
+number rather than stating it.
+
 - **2026-07-27 (v1.2.2).** Rewrote the web app's explanatory prose in both languages: the English in
 the register of the lab's own papers, the Chinese in that of the lab's own 公众号 writing. Fixed the
 anchor card's stale approach count, and closed a gap in `check_i18n.py` that left the library card

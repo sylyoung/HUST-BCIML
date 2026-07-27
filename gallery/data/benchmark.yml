@@ -748,7 +748,7 @@ tables:
       code: hustbciml/algorithms/strategies/MEKT.py
       ref: W. Zhang, D. Wu*, IEEE Trans. Neural Syst. Rehabil. Eng., 2020
       doi: 10.1109/TNSRE.2020.2985996
-      desc: 'Network-free manifold transfer (not an EEGNet model): per-subject covariance centroid alignment and Riemannian tangent-space features, then a jointly learned source/target subspace that minimizes the joint-distribution shift while preserving source discriminability and target locality, refined by EM pseudo-labelling, into a shrinkage-LDA. Deterministic.'
+      desc: 'Network-free manifold transfer, i.e., not an EEGNet model: per-subject covariance centroid alignment and Riemannian tangent-space features, then a jointly learned source/target subspace that minimizes the joint distribution shift while preserving the source discriminability and the target locality, refined by EM pseudo-labeling, into a shrinkage LDA. Deterministic.'
       acc:
         BNCI2014001:
           mean: 76.54
@@ -988,7 +988,7 @@ tables:
       code: hustbciml/algorithms/strategies/ISFDA.py
       ref: X. Li et al., ACM MM, 2021
       doi: 10.1145/3474085.3475487
-      desc: Online test-time adaptation by information maximization, with intra-class tightening and inter-class separation on pseudo-labelled target features. It adapts the whole network over the target stream.
+      desc: Online test-time adaptation by information maximization, with intra-class tightening and inter-class separation on pseudo-labeled target features. The whole network is adapted over the target stream.
       acc:
         BNCI2014001:
           mean: 75.8
@@ -1110,7 +1110,7 @@ tables:
       code: hustbciml/algorithms/strategies/FedBS.py
       ref: T. Jia, ..., D. Wu*, IEEE Trans. Neural Syst. Rehabil. Eng., 2024
       doi: 10.1109/TNSRE.2024.3457504
-      desc: Federated learning with batch-specific BatchNorm and sharpness-aware minimization, aggregating per-subject model updates through a server without sharing raw EEG. Under the same optimizer and learning rate as Centralized Training it recovers essentially all of the centralized accuracy, so privacy is nearly free here.
+      desc: Federated learning with batch-specific BatchNorm and sharpness-aware minimization, aggregating the per-subject model updates through a server without sharing the raw EEG. Under the same optimizer and learning rate as Centralized Training, it recovers essentially all of the centralized accuracy, so the privacy mechanism costs almost nothing here.
       acc:
         BNCI2014001:
           mean: 72.69
@@ -1127,7 +1127,7 @@ tables:
       code: hustbciml/algorithms/strategies/SAFE.py
       ref: T. Jia, ..., D. Wu*, arXiv:2601.05789, 2026
       doi: 10.48550/arXiv.2601.05789
-      desc: Federated learning that adds single-step adversarial feature training and a one-step adversarial weight perturbation on top of batch-specific BatchNorm, hardening the shared model without pooling raw EEG. The adversarial regularization costs a little clean accuracy on BNCI2014001 but lifts the other two datasets clearly above centralized training.
+      desc: Federated learning that adds single-step adversarial feature training and a one-step adversarial weight perturbation on top of batch-specific BatchNorm, hardening the shared model without pooling the raw EEG. The adversarial regularization reduces the clean accuracy slightly on BNCI2014001, and raises the other two datasets above Centralized Training.
       acc:
         BNCI2014001:
           mean: 70.91
@@ -1142,7 +1142,7 @@ tables:
       key: FedAvg
       code: hustbciml/algorithms/strategies/FedAvg.py
       ref: B. McMahan et al., AISTATS, 2017
-      desc: 'Federated averaging: each subject trains locally and the server averages the model weights. It is the vanilla federated baseline that isolates FedBS''s two additions.'
+      desc: 'Federated averaging: each subject trains locally, and the server averages the model weights. The plain federated baseline, which isolates the two additions of FedBS.'
       acc:
         BNCI2014001:
           mean: 74.54
@@ -1164,7 +1164,7 @@ tables:
       code: hustbciml/algorithms/strategies/MSDT.py
       ref: W. Zhang, ..., D. Wu*, IEEE Trans. Neural Syst. Rehabil. Eng., 2022
       doi: 10.1109/TNSRE.2022.3207494
-      desc: 'Decentralized multi-source transfer on Riemannian tangent-space features (not an EEGNet model): each source subject trains its own classifier and the target adapts and fuses them at test time, with no source data pooled. It lands close to Centralized Training across the three datasets, a little above on BNCI2014001 and a little below on the other two, reflecting that Riemannian representation and test-time adaptation rather than the privacy mechanism.'
+      desc: 'Decentralized multi-source transfer on Riemannian tangent-space features, i.e., not an EEGNet model: each source subject trains its own classifier, and the target adapts and fuses them at the test time, with no source data pooled. It is close to Centralized Training on all three datasets, slightly above on BNCI2014001 and slightly below on the other two. The difference reflects the Riemannian representation and the test-time adaptation, rather than the privacy mechanism.'
       acc:
         BNCI2014001:
           mean: 73.84
@@ -1183,7 +1183,7 @@ tables:
     blurb: Decoding without any aggregation, to bound the ensemble approaches below. A single source learner applied to the target gives the lower reference. One model trained on all source subjects pooled together, i.e., Centralized Training, gives the non-private upper reference, which the privacy-preserving combiners approach without ever sharing the raw EEG.
     rows:
     - name: Centralized Training
-      desc: 'EA-aligned EEGNet trained on all source subjects pooled into a single model. The non-private, non-ensemble reference — it uses the very raw data the decentralized combiners are denied.'
+      desc: EA-aligned EEGNet trained on all source subjects pooled into a single model. The non-private, non-ensemble reference. It uses the raw data that the decentralized combiners are denied.
       # Same row, same numbers, as the transfer table's Centralized Training and every
       # other table's EA-EEGNet reference — including the std, which this copy alone had
       # dropped back when this table was single-seed and carried no std anywhere.
@@ -1198,7 +1198,7 @@ tables:
           mean: 73.19
           std: 0.81
     - name: single-source
-      desc: 'Mean accuracy of one source learner applied to the target, averaged over all (N−1)×5 individual learners. The floor, before any cross-subject aggregation.'
+      desc: Mean accuracy of one source learner applied to the target, averaged over all (N−1)×5 individual learners. The lower reference, before any cross-subject aggregation.
       acc:
         BNCI2014001:
           mean: 59.45
@@ -1218,7 +1218,7 @@ tables:
       code: hustbciml/algorithms/ensembles/DawidSkene.py
       ref: A. P. Dawid and A. M. Skene, J. R. Stat. Soc. C, 1979
       doi: 10.2307/2346806
-      desc: 'Classic EM crowd-labelling aggregator: jointly estimates each source model''s full confusion matrix and the consensus label from the models'' hard votes alone (no target labels).'
+      desc: 'Classic EM crowd-labeling aggregator: jointly estimates the full confusion matrix of each source model and the consensus label from the hard votes alone, without any target label.'
       acc:
         BNCI2014001:
           mean: 74.15
@@ -1250,7 +1250,7 @@ tables:
       code: hustbciml/algorithms/ensembles/SML.py
       ref: F. Parisi et al., Proc. Natl. Acad. Sci. USA, 2014
       doi: 10.1073/pnas.1219097111
-      desc: 'Binary spectral meta-learner: weights each source model by the principal eigenvector of the models'' ±1 vote-covariance, an unsupervised accuracy estimate valid for two classes. It is the binary base that the lab''s SML-OVR above generalizes to more classes. On these two-class tasks the two coincide, which is why they report the same accuracy and sit together.'
+      desc: 'Binary spectral meta-learner: weights each source model by the principal eigenvector of the ±1 vote covariance, which is an unsupervised estimate of the accuracy, valid for two classes. It is the binary form that the lab''s SML-OVR above generalizes to an arbitrary number of classes. The two coincide on these two-class tasks, which is why they report the same accuracy and are listed together.'
       acc:
         BNCI2014001:
           mean: 73.97
@@ -1298,7 +1298,7 @@ tables:
       key: MACE
       code: hustbciml/algorithms/ensembles/MACE.py
       ref: D. Hovy, ..., NAACL-HLT, 2013
-      desc: Variational aggregator that separates competent labelling from per-model spamming, to down-weight unreliable source models.
+      desc: Variational aggregator that separates competent labeling from per-model spamming, to down-weight unreliable source models.
       acc:
         BNCI2014001:
           mean: 73.77
@@ -1347,7 +1347,7 @@ tables:
       code: hustbciml/algorithms/ensembles/StackingNet.py
       ref: S. Li†, C. Liu†, D. Wu*, Advanced Science, 2026
       doi: 10.1002/advs.76488
-      desc: 'Unsupervised transductive meta-combiner over the source models'' hard labels: learns per-model weights on the unlabelled target by consensus agreement (no target labels), initialized from each model''s balanced accuracy against the majority vote.'
+      desc: 'Unsupervised transductive meta-combiner over the hard labels of the source models: it learns per-model weights on the unlabeled target by consensus agreement, without any target label, initialized from the balanced accuracy of each model against the majority vote.'
       acc:
         BNCI2014001:
           mean: 74.05

@@ -7,6 +7,17 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.2.3] - 2026-07-27
+
+### Changed
+- **The twelve row descriptions 1.2.2 missed.** The rewrite covered the alignment, augmentation,
+  network and classical tables; the transfer and ensemble rows kept British spelling
+  (unlabelled, labelled, pseudo-labelling), one em-dash, and four sentences that told the reader
+  what to think of a number rather than stating it: "so privacy is nearly free here", "lifts the
+  other two datasets clearly above centralized training", "The floor", "the vanilla federated
+  baseline". Same register as 1.2.2. No number changes; these strings render in English only and
+  have no i18n keys.
+
 ## [1.2.2] - 2026-07-27
 
 ### Changed
