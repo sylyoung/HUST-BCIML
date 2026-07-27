@@ -60,6 +60,11 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-07-27 (v1.2.1).** Bounded `scikit-learn` to `<1.8`: from 1.8 its `check_is_fitted` requires
+`__sklearn_tags__`, which crowd-kit's `Wawa` does not provide, so that combiner raised before
+aggregating and its leaderboard row could not be reproduced. Found by the CI added the same day, on
+its first run. The other four crowd-kit combiners are unaffected.
+
 - **2026-07-27 (v1.2.0).** Acted on a 176-finding external code review: fixed silent fallbacks and
 missing guards throughout the measurement path, corrected several method implementations
 (Channel Reflection, Fourier Surrogate, CSDA, RA, SML, LAA, PM, CTNet, backbone shape

@@ -7,6 +7,24 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.2.1] - 2026-07-27
+
+### Fixed
+- **`scikit-learn` is bounded to `<1.8`, because one published leaderboard row does not run above
+  it.** From scikit-learn 1.8, `check_is_fitted` consults `get_tags()`, which requires
+  `__sklearn_tags__` in the estimator's MRO. crowd-kit's `Wawa` does not inherit from
+  `BaseEstimator`, so the `check_is_fitted(self)` inside its own `_apply` raises `AttributeError`
+  before aggregating anything — the Wawa row of the Ensemble Learning table cannot be reproduced at
+  all. Found by the CI added in 1.2.0 on its first run: the Python 3.10 job resolved scikit-learn
+  1.7.2 and passed, the 3.12 job resolved 1.9.0 and failed, which is the version split the new
+  matrix exists to expose. The boundary was then measured rather than inferred — crowd-kit 1.4.2
+  held fixed, 1.7.2 aggregates and 1.8.0 raises — and the other four crowd-kit combiners
+  (Dawid-Skene, GLAD, MACE, M-MSR) are unaffected. crowd-kit 1.4.2 is the current release and
+  declares an unbounded `scikit-learn`, so there is no newer version to require instead. The bound
+  sits on the shared dependency because pip cannot express "only when the ensemble table is run";
+  it is a measured incompatibility ceiling, not a hand-written pin, and `requirements.txt` says so
+  and says when to remove it.
+
 ## [1.2.0] - 2026-07-27
 
 An external code review (GPT-5.5, ten scoped passes over the library and the web app, then a

@@ -4,7 +4,7 @@
 # --- core (needed to run any algorithm) ---
 numpy>=1.23
 scipy>=1.9
-scikit-learn>=1.2
+scikit-learn>=1.2,<1.8   # upper bound is a measured incompatibility, see the note at the bottom
 torch>=1.12
 pyriemann>=0.5          # Riemannian covariance / tangent-space features (EA, RA, MEKT, LSFT, MSDT, MDM)
 PyYAML>=6.0             # preset + card + web-app data files
@@ -24,6 +24,20 @@ PyWavelets>=1.4         # CSDA augmenter (discrete wavelet transform)
 # followed by the documented ensemble command failed on import.
 crowd-kit>=1.2          # Dawid-Skene, GLAD, MACE, M-MSR, Wawa
 pandas>=1.5             # long-format vote table for the crowd-kit wrappers
+
+# The `scikit-learn<1.8` bound above exists for exactly one of those five. From
+# 1.8, `check_is_fitted` consults `get_tags()`, which requires `__sklearn_tags__`
+# somewhere in the estimator's MRO; crowd-kit's `Wawa` does not inherit from
+# `BaseEstimator`, so the `check_is_fitted(self)` inside its own `_apply` raises
+# `AttributeError` before any aggregation happens. Measured, not assumed: with
+# crowd-kit 1.4.2 held fixed, scikit-learn 1.7.2 aggregates and 1.8.0 raises, and
+# the other four combiners are unaffected at 1.8. crowd-kit 1.4.2 is the current
+# release and declares an unbounded `scikit-learn`, so there is no newer version
+# to require instead. The bound is here, on the shared dependency, because pip
+# cannot express "only when the ensemble table is being run" — and dropping it
+# would leave `pip install -r requirements.txt` followed by the documented
+# ensemble command broken on a published leaderboard row. Remove it if crowd-kit
+# ships a fix.
 
 # The web app (docs/) has NO Python runtime dependency — it opens as a static
 # file. Regenerating its data files needs only PyYAML (see gallery/build_site.py).
