@@ -7,6 +7,45 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.2.4] - 2026-07-27
+
+### Fixed
+- **Three claims in `README.zh-CN.md` that the English text does not make.** The Chinese
+  "Reproducibility" principle stated that runs persist model checkpoints (nothing calls
+  `torch.save`; a run writes `metrics.json` and `predictions.npz` only) and that hyperparameter
+  selection happens **only on held-out source subjects, never touching target or test labels**.
+  That second claim is contradicted by the file's own "Hyperparameter selection" section further
+  down, which describes dev-subject selection scoring three subjects against their true labels
+  and then counting them in the reported average. It is the same measurement-integrity
+  regression `check_i18n.py` was written to prevent recurring: retracted in English, left
+  standing in Chinese. The heading-skeleton check cannot catch it, because the divergence is
+  inside a section both files have. The Chinese "Reproduction" section also claimed a
+  license/provenance *audit* of the ported code; the cards record what an upstream repository
+  states and say so when it states nothing, which the English is careful about and the Chinese
+  was not.
+- **The paper-with-code count, in both READMEs.** Stated as 76; `build_site.py` counts 72
+  non-empty `code_url` entries, which is what the web app has been rendering.
+- **A results file that no code writes, in both READMEs.** Quickstart promised a resolved
+  `config.yaml` per run. There is none: the resolved configuration is a field inside
+  `metrics.json`, which is what makes a leaderboard cell auditable from one artifact.
+- **Two sections missing from the Chinese "Design principles".** The "also varies" caveat for
+  rows that change more than one stage (MVCNet, PAT, MEKT, LSFT, MSDT) and the two axes shared
+  across a table (best-checkpoint baseline vs. last-iterate adaptation rows, per-architecture
+  learning rates) existed in English only.
+
+### Changed
+- **Both READMEs rewritten in the registers set in 1.2.2** — English in that of the lab's own
+  papers, Chinese in that of its own release writing. English: the remaining em-dashes and
+  British spellings (`unlabelled`, `pseudo-labelling`, `crowd-labelling`, `optimisation`,
+  `expected-behaviour`), "compares them head-to-head", "code first", and "before the backbone
+  sees them" — the same essay-voice phrasing 1.2.2 removed from the web app. Chinese: the
+  gratuitous English glosses on terms that need none, among them 生成器（Generator）,
+  卡片（cards）, 免责声明（Disclaimer）, 冒烟测试（smoke test）, 预设（preset）,
+  抽象基类（abstract base class）and 移植指南（porting guide）; and the vendor voice "我们用一个
+  小网格搜索了…" where the English is impersonal. The gloss-once forms that carry information
+  (脑电（EEG）, 经验风险最小化（ERM）) were kept. No headings were added or removed, so the
+  skeleton check still passes.
+
 ## [1.2.3] - 2026-07-27
 
 ### Changed
@@ -528,6 +567,10 @@ stop moving during training.
 - Consolidated the benchmark package as `hustbciml`; extended the privacy-preserving comparison to
   three MOABB datasets and refreshed the tables via held-out-source hyperparameter selection.
 
+[1.2.4]: https://github.com/sylyoung/HUST-BCIML/releases/tag/v1.2.4
+[1.2.3]: https://github.com/sylyoung/HUST-BCIML/releases/tag/v1.2.3
+[1.2.2]: https://github.com/sylyoung/HUST-BCIML/releases/tag/v1.2.2
+[1.2.1]: https://github.com/sylyoung/HUST-BCIML/releases/tag/v1.2.1
 [1.2.0]: https://github.com/sylyoung/HUST-BCIML/releases/tag/v1.2.0
 [1.1.3]: https://github.com/sylyoung/HUST-BCIML/releases/tag/v1.1.3
 [1.1.2]: https://github.com/sylyoung/HUST-BCIML/releases/tag/v1.1.2
