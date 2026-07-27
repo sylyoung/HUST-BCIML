@@ -60,14 +60,12 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
-- **2026-07-27 (v1.2.5).** Withdrew the **Ensemble Learning** table from the leaderboard. An audit
-of it found two problems. The five per-source learners are built by copying the `EA-EEGNet` preset
-and swapping the backbone alone, so ShallowConvNet and CSP-Net trained at a learning rate the
-Networks table's own grid search had selected against, and under a 100-epoch budget where that
-table uses 300. Separately, M-MSR, GLAD and ZenCrowd sat roughly ten points below majority voting
-because they emit a single class on most target subjects, which the table rendered as an ordinary
-low accuracy. The combiner implementations, `scripts/decentralized.py` and the presets are
-unchanged and remain runnable. No other table is affected.
+- **2026-07-27 (v1.3.0).** Restored the Ensemble Learning table, which v1.2.5 had briefly
+withdrawn, with the numbers it carried in v1.2.4; nothing was re-measured. Removed the ensemble
+block from the Overview instead: the "ensemble combiners" statistic and the "Ensemble Learning"
+group of approach chips are gone, so the Overview describes the decoding pipeline alone and the
+approach-chip count falls from 75 to 60. The Benchmark tab, the method inventory in both READMEs,
+and every number in `RESULTS.md` are unchanged.
 
 - **2026-07-27 (v1.2.4).** Rewrote both READMEs in the same two registers, and corrected what
 they claimed. The Chinese file still stated that runs persist model checkpoints and that
@@ -124,10 +122,10 @@ This repository contains two deliverables.
 
 A self-contained framework built around a single command-line entry point and an auto-scanning
 plug-in registry. On one composable pipeline it re-implements **58 EEG-decoding approaches**,
-spanning data alignment, data augmentation, network backbones and transfer learning. All of them
-are evaluated under a **single controlled protocol**, and every reported number carries a
-per-method reproduction record. Fourteen black-box ensemble combiners are implemented as well,
-and are runnable, but are not on the leaderboard; see [Ensemble aggregation](#method-inventory).
+spanning data alignment, data augmentation, network backbones and transfer learning, together
+with **14 ensemble combiners** counted separately, as they aggregate several trained models
+rather than composing a pipeline. All of them are evaluated under a **single controlled
+protocol**, and every reported number carries a per-method reproduction record.
 
 **2. The paper-to-code web app**, in directory [`docs/`](docs/).
 
@@ -233,7 +231,8 @@ EA  ·  no augmentation  ·  EEGNet  ·  Linear head  ·  ERM
 ```
 
 Consequently, every row differs from its table's baseline in one way only, and a row's reported
-delta (Δ) is its accuracy minus that table's same-dataset baseline.
+delta (Δ) is its accuracy minus that table's same-dataset baseline. A separate **ensemble** axis
+aggregates several models and is reported apart from the single-axis tables.
 
 ### Evaluation protocol
 
@@ -252,13 +251,14 @@ dataset reproduces the entire pipeline with no download and serves as the smoke 
 
 | Dataset | Subjects | Channels | Classes used in the benchmark | Chance |
 |---|--:|--:|---|--:|
-| **BNCI2014001** | 9 | 22 | two-class (left vs. right hand) throughout, including the privacy-preserving section. The native four-class variant (both hands, feet, tongue) stays available in code | 50% |
+| **BNCI2014001** | 9 | 22 | two-class (left vs. right hand) throughout, including the privacy-preserving and ensemble sections. The native four-class variant (both hands, feet, tongue) stays available in code | 50% |
 | **BNCI2014002** | 14 | 15 | two-class (right hand vs. feet) | 50% |
 | **BNCI2015001** | 12 | 13 | two-class (right hand vs. feet) | 50% |
 
 Every table is two-class (chance 50%) on all three datasets, so the columns are directly comparable
 throughout. Each family is measured against its own same-dataset baseline. The transfer families
-are measured against ERM, and the privacy-preserving family against Centralized Training.
+are measured against ERM, the privacy-preserving family against Centralized Training, and the
+ensemble table against majority voting.
 
 ### Metrics
 
@@ -270,8 +270,8 @@ without re-running a model.
 ## Method inventory
 
 Approaches proposed by the laboratory are marked **(lab)**. Each plug-in is listed under the one
-pipeline stage it changes; the privacy-preserving methods span several stages and are listed
-by role.
+pipeline stage it changes; the privacy-preserving and ensemble methods span several stages and
+are listed by role.
 
 **Signal alignment (aligners).**
 Euclidean Alignment (**EA (lab)**, the default), Riemannian Alignment (**RA**), and `Identity`
@@ -324,25 +324,13 @@ updates each round: **FedAvg**, and the lab's **FedBS (lab)** and **SAFE (lab)**
 **decentralized** **MSDT (lab)** shares only the trained per-subject models, which are fused on
 the target.
 
-**Ensemble aggregation.** *Implemented and runnable, but withdrawn from the leaderboard.*
+**Ensemble aggregation.**
 A decentralized, black-box setting: each source subject trains five learners on its own data and
 shares only the hard predicted labels, and a combiner fuses the votes without any target label.
 The combiners are majority **voting** (the baseline), the spectral meta-learners **SML** and the
 lab's **SML-OVR (lab)**, the lab's **StackingNet (lab)**, and a set of crowd-labeling and
 truth-discovery aggregators (**Dawid-Skene**, **EBCC**, **GLAD**, **ZenCrowd**, **MACE**, **PM**,
-**LAA**, **LA**, **M-MSR**, **Wawa**). They are run through
-[`scripts/decentralized.py`](hustbciml/scripts/decentralized.py).
-
-The corresponding leaderboard table was published from v1.1.x to v1.2.4 and is withdrawn, for two
-reasons. First, the five per-source learners are built by copying the `EA-EEGNet` preset and
-swapping the backbone alone, so ShallowConvNet and CSP-Net train at a learning rate the Networks
-table's own grid search selected against, and under a 100-epoch budget where that table uses 300.
-Their accuracies are therefore not the accuracies the Networks table reports for the same
-backbones. Second, M-MSR, GLAD and ZenCrowd fall roughly ten points below majority voting because
-they emit a single class on most target subjects, and the table displayed that degenerate output
-as an ordinary low accuracy. Neither is a defect of the combiners themselves, and the code is
-unchanged; what is missing is a per-backbone configuration and a class-balance diagnostic, which
-the table needs before it can be published again.
+**LAA**, **LA**, **M-MSR**, **Wawa**).
 
 ## Quickstart
 

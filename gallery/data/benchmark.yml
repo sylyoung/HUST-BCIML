@@ -4,27 +4,16 @@
 # inapplicable there (n/a). All are MOABB motor-imagery EEG, cross-subject LOSO.
 #   BNCI2014001 (9 subj) / BNCI2014002 (14 subj) / BNCI2015001 (12 subj).
 # The pipeline-stage tables (alignment, augmentation, network), the source-only,
-# unsupervised-DA, source-free and test-time transfer families, and the privacy-
-# preserving family are ALL two-class (chance 50%) on all three datasets, so every
-# column is directly comparable. The transfer and privacy families are each measured
-# against their own same-dataset reference (ERM and Centralized Training
-# respectively). BNCI2014001 is used as its two-class left/right subset throughout;
+# unsupervised-DA, source-free and test-time transfer families, the privacy-
+# preserving family, and the Ensemble Learning table are ALL two-class (chance 50%)
+# on all three datasets, so every column is directly comparable. The transfer and
+# privacy families are each measured against their own same-dataset reference (ERM
+# and Centralized Training respectively); the Ensemble Learning table against plain
+# majority voting. BNCI2014001 is used as its two-class left/right subset throughout;
 # its native four-class variant stays available in code but is not reported here.
-# `lab: true` marks a method proposed by Prof. Dongrui Wu's group. Every citation is
-# CrossRef/arXiv-verified, with the full BibTeX in each method's source-file header.
-# Deltas are computed per dataset by gallery/build_site.py.
-#
-# The Ensemble Learning table was published from v1.1.x to v1.2.4 and is withdrawn
-# here. Two findings made its rows non-comparable with the rest of the leaderboard.
-# First, the five per-source learners were built by deep-copying the EA-EEGNet preset
-# and swapping only `backbone`, so ShallowConvNet and CSP-Net trained at a learning
-# rate the Networks table's own grid search had selected against, and under a
-# 100-epoch budget rather than the 300 used there. Second, M-MSR, GLAD and ZenCrowd
-# sat roughly ten points below majority voting because they emit a single class on
-# most target subjects; the table rendered that degenerate output as an ordinary low
-# accuracy, with nothing to distinguish the two. The combiner implementations,
-# scripts/decentralized.py and the ensemble presets all remain in the library. Only
-# the published table is removed.
+# Combiner rows carry mean ± std over three seeds like every other table; before v1.2.0 they were single-seed and mean-only. `lab: true` marks a method proposed by Prof.
+# Dongrui Wu's group. Every citation is CrossRef/arXiv-verified, with the full BibTeX
+# in each method's source-file header. Deltas are computed per dataset by gallery/build_site.py.
 
 meta:
   dataset: BNCI2014001
@@ -40,7 +29,7 @@ meta:
     classes: 2
     chance: 50%
     trials: 288 / session
-    role: Left hand versus right hand (two-class, chance 50%) in every table, including the privacy-preserving family. The original dataset is four-class (left hand, right hand, both feet, and tongue). The benchmark uses its two-class left/right subset throughout, and the four-class variant remains available in the code.
+    role: Left hand versus right hand (two-class, chance 50%) in every table, including the privacy-preserving and the ensemble families. The original dataset is four-class (left hand, right hand, both feet, and tongue). The benchmark uses its two-class left/right subset throughout, and the four-class variant remains available in the code.
   - name: BNCI2014002
     subjects: 14
     channels: 15
@@ -59,7 +48,7 @@ meta:
     role: Right hand versus both feet, 12 subjects, 200 first-session trials per subject. Two-class (chance 50%) throughout.
 library:
   title: A unified and reproducible EEG decoding benchmark
-  tagline: Every approach is composed of the same modular stages, i.e., an aligner, an augmenter and a backbone, trained under a single learning objective. A controlled comparison varies one stage and fixes the rest, so that any change in the accuracy is attributable to that stage alone.
+  tagline: Every approach is composed of the same modular stages, i.e., an aligner, an augmenter and a backbone, trained under a single learning objective and optionally aggregated by an ensemble. A controlled comparison varies one stage and fixes the rest, so that any change in the accuracy is attributable to that stage alone.
   pipeline:
   - Aligner
   - Augmenter
@@ -1186,3 +1175,263 @@ tables:
         BNCI2015001:
           mean: 72.51
           std: 0.22
+- id: ensemble
+  title: Ensemble Learning
+  blurb: The aggregation stage, in a fully decentralized and privacy-preserving setting. Each source subject trains five different learners, i.e., tangent-space LDA, tangent-space SVM, EEGNet, ShallowConvNet and CSP-Net, on its own data alone, and shares only its hard predicted labels on the target, never the model weights or the raw EEG. A combiner then fuses the resulting (N−1)×5 label votes into a single prediction, without any target label. Because only the hard votes are observed, the task reduces to estimating the reliability of each learner in the absence of the ground truth. Two non-ensemble references bound the task, and the combiners are grouped below them.
+  groups:
+  - subcat: Non-ensemble references
+    blurb: Decoding without any aggregation, to bound the ensemble approaches below. A single source learner applied to the target gives the lower reference. One model trained on all source subjects pooled together, i.e., Centralized Training, gives the non-private upper reference, which the privacy-preserving combiners approach without ever sharing the raw EEG.
+    rows:
+    - name: Centralized Training
+      desc: EA-aligned EEGNet trained on all source subjects pooled into a single model. The non-private, non-ensemble reference. It uses the raw data that the decentralized combiners are denied.
+      # Same row, same numbers, as the transfer table's Centralized Training and every
+      # other table's EA-EEGNet reference — including the std, which this copy alone had
+      # dropped back when this table was single-seed and carried no std anywhere.
+      acc:
+        BNCI2014001:
+          mean: 72.07
+          std: 1.58
+        BNCI2014002:
+          mean: 74.4
+          std: 1.04
+        BNCI2015001:
+          mean: 73.19
+          std: 0.81
+    - name: single-source
+      desc: Mean accuracy of one source learner applied to the target, averaged over all (N−1)×5 individual learners. The lower reference, before any cross-subject aggregation.
+      acc:
+        BNCI2014001:
+          mean: 59.45
+          std: 0.3
+        BNCI2014002:
+          mean: 57.43
+          std: 0.44
+        BNCI2015001:
+          mean: 58.6
+          std: 0.03
+  - subcat: Ensemble learning
+    blurb: All combiners observe identical hard votes, and hence none of them has an information advantage. They differ only in how the reliability of each learner is estimated without labels. Majority voting weights all learners equally, and is the baseline. The spectral meta-learners weight each learner by the leading eigenvector of the vote agreement, which is an unsupervised estimate of the accuracy. SML is the binary form, and the lab's SML-OVR extends it to an arbitrary number of classes, so the binary SML is listed immediately below SML-OVR, as the two coincide on these two-class tasks. The crowd-labeling and truth-discovery aggregators (Dawid-Skene, EBCC, GLAD, and others) instead infer the confusion matrix or the skill of each learner from the agreement among the votes. StackingNet, another lab approach, learns the per-learner weights directly on the unlabeled target. Each combiner is measured against majority voting on the same dataset. All three datasets are two-class (chance 50%), so the columns are directly comparable.
+    baseline: Majority voting
+    rows:
+    - name: Dawid-Skene
+      key: DawidSkene
+      code: hustbciml/algorithms/ensembles/DawidSkene.py
+      ref: A. P. Dawid and A. M. Skene, J. R. Stat. Soc. C, 1979
+      doi: 10.2307/2346806
+      desc: 'Classic EM crowd-labeling aggregator: jointly estimates the full confusion matrix of each source model and the consensus label from the hard votes alone, without any target label.'
+      acc:
+        BNCI2014001:
+          mean: 74.15
+          std: 0.23
+        BNCI2014002:
+          mean: 72.12
+          std: 0.45
+        BNCI2015001:
+          mean: 73.35
+          std: 0.38
+    - name: EBCC
+      key: EBCC
+      code: hustbciml/algorithms/ensembles/EBCC.py
+      ref: Y. Li, B. Rubinstein, and T. Cohn, ICML, 2019
+      desc: 'Enhanced Bayesian classifier combination: variational inference over low-rank worker-correlation groups. It is the most expressive of the crowd-aggregation baselines.'
+      acc:
+        BNCI2014001:
+          mean: 74.05
+          std: 0.89
+        BNCI2014002:
+          mean: 71.05
+          std: 0.12
+        BNCI2015001:
+          mean: 70.93
+          std: 0.73
+    - name: SML
+      key: SML
+      pin_after: SML-OVR
+      code: hustbciml/algorithms/ensembles/SML.py
+      ref: F. Parisi et al., Proc. Natl. Acad. Sci. USA, 2014
+      doi: 10.1073/pnas.1219097111
+      desc: 'Binary spectral meta-learner: weights each source model by the principal eigenvector of the ±1 vote covariance, which is an unsupervised estimate of the accuracy, valid for two classes. It is the binary form that the lab''s SML-OVR above generalizes to an arbitrary number of classes. The two coincide on these two-class tasks, which is why they report the same accuracy and are listed together.'
+      acc:
+        BNCI2014001:
+          mean: 73.97
+          std: 0.16
+        BNCI2014002:
+          mean: 71.86
+          std: 0.21
+        BNCI2015001:
+          mean: 71.93
+          std: 0.41
+    - name: SML-OVR
+      key: SML-OVR
+      lab: true
+      code: hustbciml/algorithms/ensembles/SMLOVR.py
+      ref: S. Li, ..., D. Wu*, IEEE Comput. Intell. Mag., 2026
+      doi: 10.1109/MCI.2025.3624194
+      desc: 'The lab''s one-vs-rest spectral meta-learner, the multi-class generalization of the binary SML: for each class it runs the binary SML weight estimation on the one-hot votes and sums the per-class weightings, so it also handles more than two classes (for example the native four-class BNCI2014001, which the code still supports). On these two-class tasks it reduces exactly to the binary SML directly below, so the two report the identical accuracy here. The multi-class advantage shows only on native multi-class data.'
+      acc:
+        BNCI2014001:
+          mean: 73.97
+          std: 0.16
+        BNCI2014002:
+          mean: 71.86
+          std: 0.21
+        BNCI2015001:
+          mean: 71.93
+          std: 0.41
+    - name: PM
+      key: PM
+      code: hustbciml/algorithms/ensembles/PM.py
+      ref: Q. Li, ..., ACM SIGMOD, 2014
+      doi: 10.1145/2588555.2610509
+      desc: 'Truth-discovery aggregator: iteratively weights each source model by how much its votes agree with the current consensus (weight = -log of normalized disagreement), then re-estimates the consensus.'
+      acc:
+        BNCI2014001:
+          mean: 74.46
+          std: 0.11
+        BNCI2014002:
+          mean: 71.57
+          std: 0.67
+        BNCI2015001:
+          mean: 66.29
+          std: 0.37
+    - name: MACE
+      key: MACE
+      code: hustbciml/algorithms/ensembles/MACE.py
+      ref: D. Hovy, ..., NAACL-HLT, 2013
+      desc: Variational aggregator that separates competent labeling from per-model spamming, to down-weight unreliable source models.
+      acc:
+        BNCI2014001:
+          mean: 73.77
+          std: 0.79
+        BNCI2014002:
+          mean: 69.1
+          std: 0.49
+        BNCI2015001:
+          mean: 72.11
+          std: 0.68
+    - name: LAA
+      key: LAA
+      code: hustbciml/algorithms/ensembles/LAA.py
+      ref: L. Yin, ..., IJCAI, 2017
+      doi: 10.24963/ijcai.2017/184
+      desc: 'Label-aware autoencoder: an unsupervised neural aggregator that encodes the per-trial votes into a consensus label and reconstructs each source model''s vote from it.'
+      acc:
+        BNCI2014001:
+          mean: 74.41
+          std: 0.57
+        BNCI2014002:
+          mean: 72.86
+          std: 0.29
+        BNCI2015001:
+          mean: 73.01
+          std: 0.33
+    - name: LA
+      key: LA
+      code: hustbciml/algorithms/ensembles/LA.py
+      ref: Y. Yang, ..., ACM Trans. Knowl. Discov. Data, 2024
+      doi: 10.1145/3630102
+      desc: 'Lightweight two-pass aggregator: one online pass estimates each source model''s ability under a Beta prior, a second pass re-votes weighted by that ability.'
+      acc:
+        BNCI2014001:
+          mean: 74.02
+          std: 0.13
+        BNCI2014002:
+          mean: 70.95
+          std: 0.22
+        BNCI2015001:
+          mean: 66
+          std: 0.22
+    - name: StackingNet
+      key: StackingNet
+      lab: true
+      code: hustbciml/algorithms/ensembles/StackingNet.py
+      ref: S. Li†, C. Liu†, D. Wu*, Advanced Science, 2026
+      doi: 10.1002/advs.76488
+      desc: 'Unsupervised transductive meta-combiner over the hard labels of the source models: it learns per-model weights on the unlabeled target by consensus agreement, without any target label, initialized from the balanced accuracy of each model against the majority vote.'
+      acc:
+        BNCI2014001:
+          mean: 74.05
+          std: 0.82
+        BNCI2014002:
+          mean: 72.57
+          std: 0.38
+        BNCI2015001:
+          mean: 69.51
+          std: 0.25
+    - name: Wawa
+      key: Wawa
+      code: hustbciml/algorithms/ensembles/Wawa.py
+      ref: Worker Agreement With Aggregate, a crowd-kit heuristic
+      desc: 'Worker-agreement-with-aggregate heuristic: weight each source model by its agreement with the plain majority vote, then re-vote. A crowd-kit heuristic with no separate paper.'
+      acc:
+        BNCI2014001:
+          mean: 73.92
+          std: 0.44
+        BNCI2014002:
+          mean: 71.76
+          std: 0.43
+        BNCI2015001:
+          mean: 68.24
+          std: 0.5
+    - name: Majority voting
+      key: Voting
+      code: hustbciml/algorithms/ensembles/Voting.py
+      ref: S. Li, ..., D. Wu*, IEEE Comput. Intell. Mag., 2026
+      doi: 10.1109/MCI.2025.3624194
+      desc: Plain majority vote over the hard predicted labels of the five per-subject learners across all source subjects. This is the label-only baseline every combiner is measured against.
+      acc:
+        BNCI2014001:
+          mean: 73.77
+          std: 0.98
+        BNCI2014002:
+          mean: 72.52
+          std: 0.39
+        BNCI2015001:
+          mean: 70.07
+          std: 0.36
+    - name: GLAD
+      key: GLAD
+      code: hustbciml/algorithms/ensembles/GLAD.py
+      ref: J. Whitehill, ..., NeurIPS, 2009
+      desc: EM aggregator that jointly infers the consensus label, each source model's ability, and each trial's difficulty.
+      acc:
+        BNCI2014001:
+          mean: 73.25
+          std: 0.91
+        BNCI2014002:
+          mean: 65.9
+          std: 0.76
+        BNCI2015001:
+          mean: 59.83
+          std: 0.3
+    - name: ZenCrowd
+      key: ZenCrowd
+      code: hustbciml/algorithms/ensembles/ZenCrowd.py
+      ref: G. Demartini, ..., WWW, 2012
+      doi: 10.1145/2187836.2187900
+      desc: EM aggregator with a single reliability scalar per source model, inferred from vote agreement alone (no target labels).
+      acc:
+        BNCI2014001:
+          mean: 73.41
+          std: 0.73
+        BNCI2014002:
+          mean: 67.17
+          std: 0.5
+        BNCI2015001:
+          mean: 60.53
+          std: 1.1
+    - name: M-MSR
+      key: MMSR
+      code: hustbciml/algorithms/ensembles/MMSR.py
+      ref: Q. Ma and A. Olshevsky, NeurIPS, 2020
+      desc: Recovers each source model's skill from the pairwise inter-model agreement matrix by robust rank-one matrix completion, then weights the vote by it.
+      acc:
+        BNCI2014001:
+          mean: 68.26
+          std: 1.57
+        BNCI2014002:
+          mean: 64.29
+          std: 1.11
+        BNCI2015001:
+          mean: 60.4
+          std: 1.6

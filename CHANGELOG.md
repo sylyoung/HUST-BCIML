@@ -7,6 +7,42 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.3.0] - 2026-07-27
+
+### Added
+- **The Ensemble Learning table is on the leaderboard again**, reversing the withdrawal of 1.2.5.
+  The 14 combiners and the reference rows they are read against — majority voting, the
+  single-source five-learner mean, and Centralized Training — carry the numbers they carried in
+  1.2.4. Nothing was re-measured, and nothing in `hustbciml/` changed. The two findings 1.2.5
+  recorded remain true of these numbers and are stated here so that withdrawing the table is not
+  the only place they are written down: the five per-source learners are built by deep-copying
+  the `EA-EEGNet` preset and swapping `backbone` alone, so ShallowConvNet and CSP-Net train at
+  `lr = 1e-3` under a 100-epoch ceiling rather than at the per-backbone values
+  `scripts/tune_networks.py` selects under a 300-epoch one; and M-MSR, GLAD and ZenCrowd fall
+  five to ten points below majority voting by emitting a single class on most target subjects
+  (8 of the 12 on BNCI2015001, seed 1), which an accuracy column does not distinguish from an
+  ordinary low score.
+
+### Removed
+- **The ensemble block on the Overview.** Two things go: the "ensemble combiners" statistic
+  beside the approach counts, and the "Ensemble Learning" group of approach chips below them.
+  The Overview now describes the decoding pipeline and nothing else. The combiners are post-hoc,
+  in that they fuse the predictions of models the other tables train, so listing them as a sixth
+  stage of that pipeline overstated what they are, and a second headline count beside the first
+  asked a reader of the landing page to hold two populations at once. The Benchmark tab is
+  untouched: the table, its blurb and the reading guide that names it are all as they were.
+- `n_approaches`, the count stated in the heading directly above those chips, falls from 75 to
+  60 to match the chips it introduces. `approach_names()` in `build_site.py` and
+  `benchApproaches()` in `app.js` now skip the same table, and each says so, because a count and
+  a list computed over different populations is the defect that made the page disagree with
+  itself by 18 once already.
+
+### Unchanged
+- The leaderboard, the Benchmark tab, both READMEs apart from the digest bullet, and every test:
+  identical to 1.2.4. `n_ensemble_methods` is still emitted by the build, because both READMEs
+  state the combiner count and `tests/repro/test_readme_counts.py` checks it against the build.
+  **58** approaches and **20** lab approaches are unchanged.
+
 ## [1.2.5] - 2026-07-27
 
 ### Removed
@@ -604,6 +640,7 @@ stop moving during training.
 - Consolidated the benchmark package as `hustbciml`; extended the privacy-preserving comparison to
   three MOABB datasets and refreshed the tables via held-out-source hyperparameter selection.
 
+[1.3.0]: https://github.com/sylyoung/HUST-BCIML/releases/tag/v1.3.0
 [1.2.5]: https://github.com/sylyoung/HUST-BCIML/releases/tag/v1.2.5
 [1.2.4]: https://github.com/sylyoung/HUST-BCIML/releases/tag/v1.2.4
 [1.2.3]: https://github.com/sylyoung/HUST-BCIML/releases/tag/v1.2.3

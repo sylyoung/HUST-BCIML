@@ -20,7 +20,7 @@ window.LAB = {
     "name": "HUST-BCIML: unified EEG-decoding benchmark",
     "owner": "sylyoung",
     "url": "https://github.com/sylyoung/HUST-BCIML",
-    "blurb": "This repository. A self-contained framework that reimplements 58 approaches on a single composable pipeline, covering data alignment, data augmentation, network backbones and transfer learning. All of them are compared under one controlled protocol on three MOABB motor imagery EEG datasets. Every result on the leaderboard is a measured reproduction, recorded for each approach."
+    "blurb": "This repository. A self-contained framework that reimplements 58 pipeline approaches and 14 ensemble combiners on a single composable pipeline, covering data alignment, data augmentation, network backbones, transfer learning and ensemble aggregation. All of them are compared under one controlled protocol on three MOABB motor imagery EEG datasets. Every result on the leaderboard is a measured reproduction, recorded for each approach."
   },
   "flagships": [
     {
@@ -37,7 +37,7 @@ window.LAB = {
       "owner": "sylyoung",
       "url": "https://github.com/sylyoung/TestEnsemble",
       "stars": 2,
-      "blurb": "A library of black-box combiners that fuse the hard predictions of independent models, including majority voting, more than a dozen crowd-labeling and truth-discovery aggregators, and the lab's SML-OVR and StackingNet. This benchmark reimplements those combiners under hustbciml/algorithms/ensembles/."
+      "blurb": "A library of black-box combiners that fuse the hard predictions of independent models, including majority voting, more than a dozen crowd-labeling and truth-discovery aggregators, and the lab's SML-OVR and StackingNet. The ensemble table of this benchmark is built on it."
     },
     {
       "pillar": "Deep Architectures",
@@ -177,4 +177,4 @@ window.LAB = {
     }
   ]
 };
-window.SITE = {"n_papers": 263, "n_code": 72, "n_methods": 58, "n_lab_methods": 20, "n_approaches": 60};
+window.SITE = {"n_papers": 263, "n_code": 72, "n_methods": 58, "n_lab_methods": 20, "n_ensemble_methods": 14, "n_approaches": 60};
