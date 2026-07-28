@@ -40,13 +40,27 @@ alone, with no labels. Faithful to the authors' ``StackingNet_classification``
   code's disagreement term is NOT the "PM" (Participant-Mine voting) baseline of
   Table 2. It enters the combined objective (Eq. 31) scaled by
   lambda_1 = ``unsupervised_weight`` (0.001);
-* a strong sum-to-one regularizer L_reg = (1 - sum_j w_j)^2 (Eq. 30), scaled by
+* a strong sum-to-one regularizer L_reg = (1 - ||w||_1)^2 (Eq. 30), scaled by
   lambda_2 = ``reg_weight`` (100), keeps the weights a convex combination; each
   step clamps w_j >= 0 (the non-negativity constraint, Eq. 29).
+
+The regularizer is written on the L1 NORM because that is what the authors'
+``l1_regularization(net, 1)`` returns. For w >= 0 it equals ``1 - sum_j w_j`` in
+value but not in gradient: ``d||w||_1/dw_j`` is ``sgn(w_j)``, which is 0 at
+exactly zero, so a weight the clamp drives to 0 receives no restoring pull and
+stays there, while ``sum_j w_j`` would revive it. The two constraints together
+are therefore a sparsifier, and that is the released method's behaviour.
 
 The small L_unsup weight + strong regularizer + informed init keep the weights a
 sensible convex combination instead of collapsing to zero (an earlier uniform-
 init / weak-regularizer port collapsed to the constant class, i.e. chance).
+
+Two notes for anyone sweeping the hyperparameters, since the constructor exposes
+them. Adam normalizes each coordinate's step by that coordinate's own gradient
+RMS, so (a) only the RATIO lambda_1 / lambda_2 changes the trajectory, not the
+two values separately, and (b) once L_unsup dominates, every weight decreases by
+about ``lr`` per step regardless of its disagreement count, which makes ``lr``
+and ``epochs`` one knob -- their product -- rather than two.
 """
 from __future__ import annotations
 
@@ -102,7 +116,10 @@ class StackingNet(Combiner):
             # consensus pseudo-label `ens` (yhat, Eq. 27). StackingNet's own term,
             # NOT the "PM" (Participant-Mine voting) baseline of Table 2.
             l_unsup = sum(((X[:, i, :] != ens).any(dim=1).float().sum()) * w[i] for i in range(K))
-            loss = self.unsupervised_weight * l_unsup + self.reg_weight * (1 - w.sum()) ** 2
+            # L_reg on the L1 norm, as in the authors' ``l1_regularization(net, 1)``:
+            # sgn(0) = 0 leaves a clamped-to-zero weight with no restoring pull.
+            loss = (self.unsupervised_weight * l_unsup
+                    + self.reg_weight * (1 - torch.norm(w, 1)) ** 2)
             opt.zero_grad()
             loss.backward()
             opt.step()

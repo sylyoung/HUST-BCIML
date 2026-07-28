@@ -60,6 +60,14 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-07-28 (v1.3.1).** Corrected StackingNet's sum-to-one regularizer to the L1-norm form the
+authors' released code uses. For non-negative weights the two agree in value but not in gradient,
+so a weight the non-negativity clamp drives to zero now stays there instead of being revived, which
+is the published method's own behaviour. No measured number changes: the two forms have identical
+gradients while every weight stays positive, which is the case at the shipped hyperparameters, and
+on cached decentralized votes over three datasets and three seeds they agree on 100.00% of trials.
+`RESULTS.md`, the leaderboard and the web app are unchanged.
+
 - **2026-07-27 (v1.3.0).** Restored the Ensemble Learning table, which v1.2.5 had briefly
 withdrawn, with the numbers it carried in v1.2.4; nothing was re-measured. Removed the ensemble
 block from the Overview instead: the "ensemble combiners" statistic and the "Ensemble Learning"

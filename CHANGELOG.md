@@ -7,6 +7,40 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.3.1] - 2026-07-28
+
+### Fixed
+- **StackingNet's sum-to-one regularizer is now written on the L1 norm, as in the authors'
+  released code.** The combiner used `(1 - sum_j w_j)^2`; `StackingNet_classification` in
+  [TestEnsemble](https://github.com/sylyoung/TestEnsemble) uses
+  `(1 - l1_regularization(net, 1))^2`, and `l1_regularization` returns `torch.norm(weights, 1)`.
+  For non-negative weights the two agree in value but not in gradient: `d||w||_1/dw_j` is
+  `sgn(w_j)`, which is 0 at exactly zero, so a weight the non-negativity clamp drives to 0
+  receives no restoring pull and stays dead, whereas the sum form revives it. The published
+  objective and its clamp are together a sparsifier, and the benchmark now reproduces that
+  rather than a more forgiving variant of it.
+
+  **No measured number changes, and none were re-measured.** The two forms have identical
+  gradients as long as every weight stays strictly positive, which is what happens at the
+  shipped defaults (`lr = 1e-3`, `lambda_1 = 1e-3`, `lambda_2 = 100`, 200 epochs): no weight
+  reaches the clamp. Checked on cached decentralized votes from the same five per-source
+  learners the leaderboard uses — TangentLDA, TangentSVM, EEGNet, ShallowConvNet, CSP-Net over
+  three datasets and three seeds, 105 target runs — the two forms give identical predictions on
+  100.00% of trials, 71.81 balanced accuracy either way. `RESULTS.md`, the leaderboard and the
+  web app are untouched.
+
+  The forms diverge only once the hyperparameters are swept far enough for a weight to reach the
+  clamp. At `lr = 0.1` every weight is clamped to zero and the faithful form returns chance
+  (50.00) where the previous one returned 70.52 — the released method really does collapse
+  there, and a benchmark that claims to implement it should show that.
+
+### Added
+- **Two sweeping notes in `StackingNet.py`**, since the constructor exposes the hyperparameters.
+  Adam normalizes each coordinate's step by that coordinate's own gradient RMS, so only the
+  ratio `lambda_1 / lambda_2` changes the trajectory rather than the two values separately; and
+  once the unsupervised term dominates, every weight decreases by about `lr` per step regardless
+  of its disagreement count, which makes `lr` and `epochs` one knob — their product — not two.
+
 ## [1.3.0] - 2026-07-27
 
 ### Added
