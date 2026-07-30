@@ -20,8 +20,8 @@ N*(N-1)), and for each target the other N-1 models are aggregated. Reports each
 combiner's accuracy mean +/- std across seeds, plus the mean single-source model
 accuracy (one local model alone, averaged over all source->target pairs) as context.
 
-    python -m hustbciml.scripts.decentralized --dataset BNCI2014001-4 \
-        --seeds 1,2,3 --device cuda
+    python -m hustbciml.scripts.decentralized --dataset BNCI2014001 \
+        --base hetero3 --seeds 1,2,3 --device cuda
 """
 from __future__ import annotations
 
@@ -127,31 +127,40 @@ def _base_tangent_lda(cfg, epochs_a, subjects, C):
     return ytrue, scores
 
 
-def _base_hetero(cfg, dev, epochs_a, subjects, C):
-    """Heterogeneous single-source ensemble: FIVE diverse learners per source
-    subject — Tangent+LDA, Tangent+SVM, EEGNet, ShallowConvNet, CSPNet — so each
-    source contributes five conditionally-diverse HARD votes and target t is
-    decided by (N-1)*5 predictions.
+def _base_hetero3(cfg, dev, epochs_a, subjects, C):
+    """Heterogeneous single-source ensemble with THREE learners per source subject —
+    Tangent+LR, CSPNet, EEGConformer — so target t is decided by (N-1)*3 HARD votes.
 
     Motivation: the homogeneous bases (all EEGNet, or all tangent+LDA) share one
     inductive bias, so their errors are strongly correlated and the spectral/crowd
     combiners — which need base models above chance AND roughly conditionally
-    independent — have little to exploit (they collapse onto majority voting). A
-    Riemannian-classical pair plus three different CNN priors raises the base
-    diversity, giving the aggregators more to work with. Every learner emits a HARD
-    one-hot vote, so only predicted labels ever leave a source (privacy-preserving).
+    independent — have little to exploit (they collapse onto majority voting). This
+    pool draws ONE learner from each of three families instead: a Riemannian
+    tangent-space linear model, a CSP-initialized convolutional net, and a
+    self-attention net. One member per family is what keeps the voters mutually
+    decorrelated; adding a second member of a family raises the pool size but
+    correlates it, which is the trade-off a wider pool loses on. Every learner emits
+    a HARD one-hot vote, so only predicted labels ever leave a source
+    (privacy-preserving).
+
+    Caveat, stated because it bounds what the published table means: the two neural
+    members are built by deep-copying the ``--algorithm`` preset and swapping
+    ``backbone`` alone, so they train at that preset's learning rate and epoch
+    ceiling rather than at the per-backbone values ``scripts/tune_networks.py``
+    selects. Under the shipped ``EA-EEGNet`` preset (lr 1e-3, 100 epochs) that
+    matters most for EEGConformer, whose tuning record selects 3e-4 on BNCI2014001
+    and 1e-4 on the other two. These voters are therefore not the configuration
+    published for the same names in the Networks table.
     """
     import copy
-    from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
-    from sklearn.svm import SVC
+    from sklearn.linear_model import LogisticRegression
 
-    backbones = ["EEGNet", "ShallowConvNet", "CSPNet"]
-    tang, lda, svm, neural = {}, {}, {}, {}
-    for s in subjects:                                       # fit the 5 learners on each source
+    backbones = ["CSPNet", "EEGConformer"]
+    tang, lr, neural = {}, {}, {}
+    for s in subjects:                                       # fit the 3 learners on each source
         e = epochs_a.select(epochs_a.domain == s)
         tang[s] = _tangent_at_identity(e.X)
-        lda[s] = LDA(solver="lsqr", shrinkage="auto").fit(tang[s], e.y)
-        svm[s] = SVC(kernel="rbf", C=1.0, gamma="scale").fit(tang[s], e.y)
+        lr[s] = LogisticRegression(penalty="l2", max_iter=500).fit(tang[s], e.y)
         for bb in backbones:
             cfg_bb = copy.deepcopy(cfg)
             cfg_bb.backbone = bb                            # same EA-aligned data, different net
@@ -163,15 +172,14 @@ def _base_hetero(cfg, dev, epochs_a, subjects, C):
             neural[(s, bb)] = model
 
     ytrue, scores = {}, {t: {} for t in subjects}
-    for t in subjects:                                      # (N-1)*5 HARD votes decide target t
+    for t in subjects:                                      # (N-1)*3 HARD votes decide target t
         tgt = epochs_a.select(epochs_a.domain == t)
         ytrue[t] = tgt.y
         tf = _tangent_at_identity(tgt.X)
         for s in subjects:
             if s == t:
                 continue
-            scores[t][f"{s}::TangentLDA"] = _onehot(lda[s].predict(tf), C)
-            scores[t][f"{s}::TangentSVM"] = _onehot(svm[s].predict(tf), C)
+            scores[t][f"{s}::TangentLR"] = _onehot(lr[s].predict(tf), C)
             for bb in backbones:
                 pred = forward_logits(neural[(s, bb)], tgt, dev).argmax(1)
                 scores[t][f"{s}::{bb}"] = _onehot(pred, C)
@@ -190,13 +198,13 @@ def _seed_run(dataset, seed, device, data_dir, results_dir, algorithm, combiners
 
     if base == "tangent_lda":
         ytrue, scores = _base_tangent_lda(cfg, epochs_a, subjects, C)
-    elif base == "hetero":
-        ytrue, scores = _base_hetero(cfg, dev, epochs_a, subjects, C)
+    elif base == "hetero3":
+        ytrue, scores = _base_hetero3(cfg, dev, epochs_a, subjects, C)
     else:
         ytrue, scores = _base_eegnet(cfg, dev, epochs_a, subjects)
 
     # generic over the per-target learners: {s} for the homogeneous bases,
-    # {s}::{learner} for hetero — so (N-1) or (N-1)*5 votes per target.
+    # {s}::{learner} for hetero3 — so (N-1) or (N-1)*3 votes per target.
     single = [accuracy_score(ytrue[t], v.argmax(1))
               for t in subjects for v in scores[t].values()]
 
@@ -227,11 +235,13 @@ def main(argv=None):
                                 description="decentralized single-source black-box ensemble")
     p.add_argument("--dataset", default="Toy")
     p.add_argument("--algorithm", default="EA-EEGNet", help="single-source base preset (EEGNet base)")
-    p.add_argument("--base", default="eegnet", choices=["eegnet", "tangent_lda", "hetero"],
+    p.add_argument("--base", default="eegnet",
+                   choices=["eegnet", "tangent_lda", "hetero3"],
                    help="per-source learner: 'eegnet' (softmax scores), 'tangent_lda' "
-                        "(Wen Zhang EA+tangent-space features + shrinkage LDA, HARD votes), or "
-                        "'hetero' (5 diverse learners per source — Tangent+LDA, Tangent+SVM, "
-                        "EEGNet, ShallowConvNet, CSPNet — giving (N-1)*5 HARD votes per target)")
+                        "(Wen Zhang EA+tangent-space features + shrinkage LDA, HARD votes), "
+                        "or 'hetero3' (3 learners, one per family — Tangent+LR, CSPNet, "
+                        "EEGConformer — giving (N-1)*3 HARD votes per target; the "
+                        "configuration the published ensemble table reports)")
     p.add_argument("--seeds", default="1,2,3", help="comma-separated seeds")
     p.add_argument("--device", default="auto")
     p.add_argument("--results_dir", default="./results")
@@ -287,8 +297,8 @@ def main(argv=None):
         return arr.mean(), arr.std()
 
     base_desc = {"tangent_lda": "tangent-space + sLDA (Wen Zhang)",
-                 "hetero": "heterogeneous 5-learner/source (Tangent+LDA, Tangent+SVM, "
-                           "EEGNet, ShallowConvNet, CSPNet)"}.get(a.base, a.algorithm)
+                 "hetero3": "heterogeneous 3-learner/source (Tangent+LR, CSPNet, "
+                            "EEGConformer)"}.get(a.base, a.algorithm)
     print(f"\n=== decentralized single-source ensemble: {base_desc} on {a.dataset} "
           f"— {len(seeds)} seeds {seeds} ===")
     m, s = ms(single_all)

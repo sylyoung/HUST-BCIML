@@ -68,7 +68,7 @@ ALIAS = {
     "EA-EEGNet (deep reference)":                 ("EA (Euclidean)", "alignment"),
     "EA-EEGNet (reference)":                      ("EA (Euclidean)", "alignment"),
     "majority voting (baseline)":                 ("Majority voting", "ensemble"),
-    "single-source (5-learner mean)":             ("single-source", "ensemble"),
+    "single-source (3-learner mean)":             ("single-source", "ensemble"),
     "Centralized Training (reference)":           ("Centralized Training", "ensemble"),
     "Centralized Training (EA-EEGNet, reference)": ("Centralized Training", "transfer"),
 }

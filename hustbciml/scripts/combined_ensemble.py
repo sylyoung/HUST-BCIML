@@ -2,8 +2,8 @@
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.
 """Source-combined heterogeneous ensemble (the NON-decentralized paradigm).
 
-The counterpart to ``decentralized.py --base hetero``, which trains five models per
-source subject and aggregates (N-1)*5 hard votes per target. This paradigm instead
+The counterpart to ``decentralized.py --base hetero3``, which trains three models per
+source subject and aggregates (N-1)*3 hard votes per target. This paradigm instead
 trains FIVE architectures — EEGNet, ShallowConvNet, DeepConvNet, EEGConformer,
 CSPNet — each ONCE on the POOLED source (all subjects except the target, Euclidean-
 aligned), giving five per-trial predictions on the target. The diversity the

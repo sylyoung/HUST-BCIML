@@ -7,6 +7,34 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.4.0] - 2026-07-30
+
+### Changed
+- **The Ensemble Learning table is re-measured on a three-learner-per-source pool** — one
+  learner per model family: tangent-space logistic regression, CSP-Net, EEGConformer — so each
+  target collects (N−1)×3 hard votes. All 45 combiner and reference cells are new (3 datasets ×
+  3 seeds, hust-gpu-7002); Centralized Training is unchanged. Members are individually stronger
+  (single-source 61.32 / 57.94 / 58.45) and the combiners separate further from majority voting:
+  **SML-OVR (lab)** and binary **SML** go from a mean +0.47 over the three datasets to **+1.61**,
+  positive on all three for the first time, and **StackingNet (lab)** from −0.08 to **+0.31**.
+  Dawid-Skene leads at +1.70.
+- `--base hetero` is gone; `--base hetero3` is the only heterogeneous option, so an old script
+  naming `hetero` fails with an invalid-choice error instead of measuring a different pool.
+
+### Removed
+- `scripts/rerun_v12_ensemble.sh`, which existed only to reproduce the five-learner table.
+
+### Added
+- The 45 ensemble cells in `scripts/cell_origin.tsv` — the one published family whose machine
+  had never been written down.
+
+### Known limitation
+- The two neural members train at the `EA-EEGNet` preset's `lr = 1e-3` / 100 epochs, not the
+  per-backbone values `tune_networks.py` selects (EEGConformer: `3e-4` on BNCI2014001, `1e-4`
+  on the other two), so they are not the configuration published under those names in the
+  Networks table. Recorded in `RESULTS.md` and the `_base_hetero3` docstring. It does not affect
+  what the table compares: every combiner fuses identical votes.
+
 ## [1.3.2] - 2026-07-29
 
 ### Removed

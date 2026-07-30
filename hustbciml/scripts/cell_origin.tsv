@@ -211,3 +211,56 @@ T-TIME	BNCI2015001	7002	exact	3-seed mean reproduces the published value
 Tent	BNCI2014001	60022	exact	3-seed mean reproduces the published value
 Tent	BNCI2014002	7002	exact	3-seed mean reproduces the published value
 Tent	BNCI2015001	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
+#
+# The Ensemble Learning table (decentralized-heterogeneous, --base hetero3) had no entry
+# here until its three-learner re-measurement: the combiner cells were the one published
+# family whose machine was not written down. All 45 come from one artifact on 7002, so the
+# whole table is internally consistent and a future re-measurement has a machine to match.
+# Centralized Training is not repeated below; the ensemble table shares that row, and its
+# number, with the transfer table above.
+#
+Dawid-Skene	BNCI2014001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014001_hetero3_EA-EEGNet.json
+Dawid-Skene	BNCI2014002	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014002_hetero3_EA-EEGNet.json
+Dawid-Skene	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2015001_hetero3_EA-EEGNet.json
+EBCC	BNCI2014001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014001_hetero3_EA-EEGNet.json
+EBCC	BNCI2014002	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014002_hetero3_EA-EEGNet.json
+EBCC	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2015001_hetero3_EA-EEGNet.json
+SML	BNCI2014001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014001_hetero3_EA-EEGNet.json
+SML	BNCI2014002	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014002_hetero3_EA-EEGNet.json
+SML	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2015001_hetero3_EA-EEGNet.json
+SML-OVR	BNCI2014001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014001_hetero3_EA-EEGNet.json
+SML-OVR	BNCI2014002	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014002_hetero3_EA-EEGNet.json
+SML-OVR	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2015001_hetero3_EA-EEGNet.json
+PM	BNCI2014001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014001_hetero3_EA-EEGNet.json
+PM	BNCI2014002	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014002_hetero3_EA-EEGNet.json
+PM	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2015001_hetero3_EA-EEGNet.json
+MACE	BNCI2014001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014001_hetero3_EA-EEGNet.json
+MACE	BNCI2014002	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014002_hetero3_EA-EEGNet.json
+MACE	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2015001_hetero3_EA-EEGNet.json
+LAA	BNCI2014001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014001_hetero3_EA-EEGNet.json
+LAA	BNCI2014002	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014002_hetero3_EA-EEGNet.json
+LAA	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2015001_hetero3_EA-EEGNet.json
+LA	BNCI2014001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014001_hetero3_EA-EEGNet.json
+LA	BNCI2014002	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014002_hetero3_EA-EEGNet.json
+LA	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2015001_hetero3_EA-EEGNet.json
+StackingNet	BNCI2014001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014001_hetero3_EA-EEGNet.json
+StackingNet	BNCI2014002	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014002_hetero3_EA-EEGNet.json
+StackingNet	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2015001_hetero3_EA-EEGNet.json
+Wawa	BNCI2014001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014001_hetero3_EA-EEGNet.json
+Wawa	BNCI2014002	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014002_hetero3_EA-EEGNet.json
+Wawa	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2015001_hetero3_EA-EEGNet.json
+Majority voting	BNCI2014001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014001_hetero3_EA-EEGNet.json
+Majority voting	BNCI2014002	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014002_hetero3_EA-EEGNet.json
+Majority voting	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2015001_hetero3_EA-EEGNet.json
+GLAD	BNCI2014001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014001_hetero3_EA-EEGNet.json
+GLAD	BNCI2014002	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014002_hetero3_EA-EEGNet.json
+GLAD	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2015001_hetero3_EA-EEGNet.json
+ZenCrowd	BNCI2014001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014001_hetero3_EA-EEGNet.json
+ZenCrowd	BNCI2014002	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014002_hetero3_EA-EEGNet.json
+ZenCrowd	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2015001_hetero3_EA-EEGNet.json
+M-MSR	BNCI2014001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014001_hetero3_EA-EEGNet.json
+M-MSR	BNCI2014002	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014002_hetero3_EA-EEGNet.json
+M-MSR	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2015001_hetero3_EA-EEGNet.json
+single-source	BNCI2014001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014001_hetero3_EA-EEGNet.json
+single-source	BNCI2014002	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014002_hetero3_EA-EEGNet.json
+single-source	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2015001_hetero3_EA-EEGNet.json

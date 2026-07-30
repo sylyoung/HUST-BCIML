@@ -371,65 +371,83 @@ decentralized ensemble, where weak per-subject base models spread the combiners 
 
 ## Decentralized-heterogeneous ensemble
 
-_A fully decentralized, privacy-preserving ensemble. Five heterogeneous learners (tangent-space
-LDA, tangent-space SVM, EEGNet, ShallowConvNet, and CSPNet) are trained on each source subject's
-EA-aligned data alone, and the subjects share only their **hard predicted labels** on the target,
-never model weights or raw EEG. Each target trial therefore collects (N−1)×5 hard votes, which a
+_A fully decentralized, privacy-preserving ensemble. Three heterogeneous learners — tangent-space
+logistic regression, CSPNet, and EEGConformer — are trained on each source subject's EA-aligned data
+alone, and the subjects share only their **hard predicted labels** on the target, never model weights
+or raw EEG. Each target trial therefore collects (N−1)×3 hard votes, which a
 post-hoc black-box combiner fuses into one consensus label. There are no target labels, no model internals,
 and no soft scores, so no combiner has an information advantage. They differ only in how they weight
 and combine the votes. Two combiners are lab-proposed (**StackingNet**, and the multi-class
 **SML-OVR**), and the rest are established crowd-labelling / truth-discovery aggregators. All three
 datasets are two-class (chance 50%), cross-subject LOSO, three seeds (mean ± std), and each combiner
 is measured against plain majority **voting**. Reproduce with
-`python -m hustbciml.scripts.decentralized --dataset <D> --base hetero`._
+`python -m hustbciml.scripts.decentralized --dataset <D> --base hetero3`._
 
-_Two things changed here in v1.2.0, and they are worth separating. Three combiners changed their own
-maths (SML's global-sign repair instead of an element-wise absolute value, LAA's logits instead of
-double-softmaxed probabilities, PM's current-round normalisation and random tie-breaking), and every
-other row's input moved too, because ShallowConvNet is one of the five per-subject learners and
-starts from a different initialization once the construction-time shape probe stops advancing the
-RNG — so the hard votes every combiner consumes are different, including the ones majority voting
-counts. Independently of both, this table was previously reported at a single seed while every other
-table in this file is a mean over three; it is now three seeds, mean ± std, like the rest. A row's
-shift from the v1.1.x table is therefore not attributable to the code change alone._
+_The pool takes **one learner per model family** — a Riemannian linear model, a convolutional net,
+and a self-attention net — rather than several members of fewer families. That is the design
+variable this table is sensitive to, because the combiners need base voters that are above chance
+**and** roughly conditionally independent, and those two properties trade off: adding a second
+member of a family raises the number of votes but correlates them. Measured on hust-gpu-7002,
+seeds 1–3, and recorded per cell in `scripts/cell_origin.tsv`._
+
+_One caveat bounds what the member accuracies mean. The two neural learners are built by
+deep-copying the `EA-EEGNet` preset and swapping `backbone` alone, so they train at that preset's
+`lr = 1e-3` under a 100-epoch ceiling rather than at the per-backbone values
+`scripts/tune_networks.py` selects — which for EEGConformer are `3e-4` on BNCI2014001 and `1e-4` on
+the other two. These voters are therefore **not** the configuration published under the same names in
+the Networks table, and the single-source row below should not be read as that table's number. It
+does not affect the comparison the table is for: every combiner fuses exactly the same votes._
 
 | Combiner | BNCI2014001 | BNCI2014002 | BNCI2015001 |
 |---|--:|--:|--:|
-| PM | 74.46 ± 0.11 (+0.69) | 71.57 ± 0.67 (−0.95) | 66.29 ± 0.37 (−3.78) |
-| LAA | 74.41 ± 0.57 (+0.64) | 72.86 ± 0.29 (+0.34) | 73.01 ± 0.33 (+2.94) |
-| Dawid-Skene | 74.15 ± 0.23 (+0.38) | 72.12 ± 0.45 (−0.40) | 73.35 ± 0.38 (+3.28) |
-| EBCC | 74.05 ± 0.89 (+0.28) | 71.05 ± 0.12 (−1.47) | 70.93 ± 0.73 (+0.86) |
-| StackingNet **(lab)** | 74.05 ± 0.82 (+0.28) | 72.57 ± 0.38 (+0.05) | 69.51 ± 0.25 (−0.56) |
-| LA | 74.02 ± 0.13 (+0.25) | 70.95 ± 0.22 (−1.57) | 66.00 ± 0.22 (−4.07) |
-| SML-OVR **(lab)** | 73.97 ± 0.16 (+0.20) | 71.86 ± 0.21 (−0.66) | 71.93 ± 0.41 (+1.86) |
-| SML | 73.97 ± 0.16 (+0.20) | 71.86 ± 0.21 (−0.66) | 71.93 ± 0.41 (+1.86) |
-| Wawa | 73.92 ± 0.44 (+0.15) | 71.76 ± 0.43 (−0.76) | 68.24 ± 0.50 (−1.83) |
-| MACE | 73.77 ± 0.79 (+0.00) | 69.10 ± 0.49 (−3.42) | 72.11 ± 0.68 (+2.04) |
-| ZenCrowd | 73.41 ± 0.73 (−0.36) | 67.17 ± 0.50 (−5.35) | 60.53 ± 1.10 (−9.54) |
-| GLAD | 73.25 ± 0.91 (−0.52) | 65.90 ± 0.76 (−6.62) | 59.83 ± 0.30 (−10.24) |
-| M-MSR | 68.26 ± 1.57 (−5.51) | 64.29 ± 1.11 (−8.23) | 60.40 ± 1.60 (−9.67) |
-| _majority voting (baseline)_ | 73.77 ± 0.98 | 72.52 ± 0.39 | 70.07 ± 0.36 |
-| _single-source (5-learner mean)_ | 59.45 ± 0.30 | 57.43 ± 0.44 | 58.60 ± 0.03 |
+| LAA | 74.97 ± 0.85 (+1.41) | 73.36 ± 0.38 (+1.40) | 72.62 ± 0.71 (+2.01) |
+| SML-OVR **(lab)** | 74.95 ± 0.41 (+1.39) | 73.38 ± 0.64 (+1.43) | 72.62 ± 0.15 (+2.01) |
+| SML | 74.95 ± 0.41 (+1.39) | 73.38 ± 0.64 (+1.43) | 72.62 ± 0.15 (+2.01) |
+| Dawid-Skene | 74.92 ± 0.60 (+1.36) | 73.48 ± 1.30 (+1.52) | 72.82 ± 0.43 (+2.21) |
+| StackingNet **(lab)** | 74.61 ± 0.71 (+1.05) | 72.55 ± 1.16 (+0.60) | 69.90 ± 0.74 (−0.71) |
+| LA | 74.51 ± 0.62 (+0.95) | 66.26 ± 2.06 (−5.69) | 61.10 ± 1.76 (−9.51) |
+| PM | 74.43 ± 0.63 (+0.87) | 67.88 ± 1.84 (−4.07) | 64.24 ± 1.13 (−6.38) |
+| EBCC | 74.33 ± 0.74 (+0.77) | 71.17 ± 0.98 (−0.79) | 71.32 ± 0.56 (+0.71) |
+| Wawa | 74.31 ± 0.82 (+0.75) | 71.26 ± 1.98 (−0.69) | 68.60 ± 1.25 (−2.01) |
+| M-MSR | 71.71 ± 0.86 (−1.85) | 60.02 ± 1.61 (−11.93) | 55.96 ± 0.24 (−14.65) |
+| ZenCrowd | 71.50 ± 1.96 (−2.06) | 62.29 ± 1.34 (−9.67) | 56.39 ± 0.22 (−14.22) |
+| GLAD | 70.78 ± 3.23 (−2.78) | 59.50 ± 1.07 (−12.45) | 55.44 ± 1.29 (−15.17) |
+| MACE | 70.76 ± 3.42 (−2.80) | 65.33 ± 2.49 (−6.62) | 68.82 ± 0.43 (−1.79) |
+| _majority voting (baseline)_ | 73.56 ± 1.03 | 71.95 ± 1.48 | 70.61 ± 0.73 |
+| _single-source (3-learner mean)_ | 61.32 ± 0.35 | 57.94 ± 0.77 | 58.45 ± 0.23 |
 | _Centralized Training (reference)_ | 72.07 ± 1.58 | 74.40 ± 1.04 | 73.19 ± 0.81 |
 
-Each per-subject learner is individually weak. The five-learner single-source mean sits between 57
-and 60% on every dataset, since each learner sees one subject's data only. Yet plain majority voting
-over the (N−1)×5 votes already recovers most of the accuracy, and on BNCI2014001 it clears
-Centralized Training, the non-private reference that pools all raw EEG (73.77 vs 72.07). On these
-weak, only-loosely-independent votes the combiners spread out, and they do not agree on a winner
-across datasets. **LAA** is the only one positive on all three (+0.64 / +0.34 / +2.94).
-**Dawid-Skene** gains most where the votes are weakest, +3.28 on BNCI2015001, whose majority vote is
-the lowest of the three, but gives up 0.40 on BNCI2014002; the lab's **StackingNet** is the steadier
-of the two on the first two datasets (+0.28 / +0.05) and loses 0.56 on the third. At the other end,
-the EM-heavy **M-MSR**, **GLAD** and **ZenCrowd** collapse on the weakest learners, down to about
-−10 on BNCI2015001, the honest failure mode of confusion-matrix aggregators when the base votes are
-noisy and correlated. **SML-OVR**, the lab's multi-class generalization of SML, reduces exactly to
+Each per-subject learner is individually weak. The three-learner single-source mean sits between 58
+and 62% on every dataset, since each learner sees one subject's data only. Yet plain majority voting
+over the (N−1)×3 votes already recovers most of the accuracy, and on BNCI2014001 it clears
+Centralized Training, the non-private reference that pools all raw EEG (73.56 vs 72.07).
+
+Above that baseline the combiners separate into two groups rather than trading places by dataset.
+**Three distinct estimators gain on every dataset** — four rows, since SML-OVR and SML coincide
+here: Dawid-Skene (+1.36 / +1.52 / +2.21), LAA (+1.41 / +1.40 / +2.01), and the lab's **SML-OVR**
+with binary **SML** (+1.39 / +1.43 / +2.01). None of the nine cells falls below +1.36, and the best
+is +2.21. The lab's **StackingNet** gains on the first two datasets (+1.05 / +0.60) and loses 0.71 on
+the third. At the other end the EM-heavy aggregators fall furthest: averaged over the three datasets
+**GLAD** is −10.13, **M-MSR** −9.48 and **ZenCrowd** −8.65, reaching −15.17, −14.65 and −14.22 on
+BNCI2015001. **LA** (−4.75), **MACE** (−3.74) and **PM** (−3.19) fail less severely, and **Wawa**
+sits just below the baseline (−0.65).
+
+That the spectral estimators are positive on all three datasets is a property of this pool rather
+than of the datasets. **SML** weights voters by the leading eigenvector of the M×M vote covariance,
+which must itself be estimated from the target's n trials; one member per family keeps M at
+24 / 39 / 33 here, so each covariance entry is estimated from more trials per parameter than a wider
+pool of the same subjects would give. The likeliest reading of the other group's collapse is the same
+quantity cutting the other way: a confusion-matrix aggregator estimates a per-voter reliability from
+vote agreement alone, and a narrow pool offers fewer agreeing voters to estimate it from. That is an
+explanation consistent with the numbers, not something this table measures.
+
+**SML-OVR**, the lab's multi-class generalization of SML, reduces exactly to
 binary SML on these two-class tasks, so it reports the same numbers as **SML** and sits beside it
 (identical to two decimals on all three datasets, std included). Its one-vs-rest form does something
 only on multi-class data, which this benchmark does not report. Against Centralized Training the
-best combiner is ahead on BNCI2014001 (+2.39),
-level on BNCI2015001 (+0.16), and behind only on BNCI2014002 (−1.54): the accuracy cost of never
-pooling raw data is smaller than the single-seed table implied, but it is not zero.
+best combiner is ahead on BNCI2014001 (+2.90) and behind on BNCI2014002 (−0.92) and BNCI2015001
+(−0.37): the accuracy cost of never pooling raw data is under one point on the two datasets where it
+is a cost at all, but it is not zero.
 
 The ten crowd-labelling / truth-discovery aggregators are ported from
 `github.com/sylyoung/TestEnsemble`: Dawid-Skene (Dawid & Skene, _J. R. Stat. Soc. C_ 1979), PM
@@ -496,7 +514,7 @@ multi-source, lab) are now measured on both datasets. The decentralized **SML-OV
 dropped here, because its multi-class one-vs-rest averaging is the wrong estimator for two classes,
 where binary SML applies. Measured on hust-gpu-7002 (seeds 1–3), with combiners shown mean-only
 per the leaderboard convention. These decentralized rows use the single-architecture
-EA-EEGNet-per-subject voters. The stronger five-learner heterogeneous version is the reported
+EA-EEGNet-per-subject voters. The stronger three-learner heterogeneous version is the reported
 ensemble, in the Decentralized-heterogeneous ensemble table above, which is what the web
 leaderboard shows.
 

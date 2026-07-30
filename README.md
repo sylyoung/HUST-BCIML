@@ -60,6 +60,12 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-07-30 (v1.4.0).** Re-measured the Ensemble Learning table on a three-learner-per-source pool,
+one per model family: tangent-space logistic regression, CSP-Net and EEGConformer, so each target
+collects (N−1)×3 hard votes. All 45 combiner and reference cells are new. SML-OVR (lab) and binary
+SML rise from a mean +0.47 over the three datasets to +1.61, positive on all three for the first
+time; StackingNet (lab) from −0.08 to +0.31. `--base hetero` is removed.
+
 - **2026-07-29 (v1.3.2).** Deleted both four-class BNCI2014001 appendices from `RESULTS.md`. The benchmark is
 two-class throughout, as its header states, but two supplementary appendices still reported native
 four-class results (chance 25%), and two four-class figures had leaked into the two-class per-dataset
@@ -341,7 +347,8 @@ updates each round: **FedAvg**, and the lab's **FedBS (lab)** and **SAFE (lab)**
 the target.
 
 **Ensemble aggregation.**
-A decentralized, black-box setting: each source subject trains five learners on its own data and
+A decentralized, black-box setting: each source subject trains three learners on its own data — one
+per model family, namely tangent-space logistic regression, CSP-Net and EEGConformer — and
 shares only the hard predicted labels, and a combiner fuses the votes without any target label.
 The combiners are majority **voting** (the baseline), the spectral meta-learners **SML** and the
 lab's **SML-OVR (lab)**, the lab's **StackingNet (lab)**, and a set of crowd-labeling and

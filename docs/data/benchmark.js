@@ -2268,7 +2268,7 @@ window.BENCHMARK = {
     {
       "id": "ensemble",
       "title": "Ensemble Learning",
-      "blurb": "The aggregation stage, in a fully decentralized and privacy-preserving setting. Each source subject trains five different learners, i.e., tangent-space LDA, tangent-space SVM, EEGNet, ShallowConvNet and CSP-Net, on its own data alone, and shares only its hard predicted labels on the target, never the model weights or the raw EEG. A combiner then fuses the resulting (N−1)×5 label votes into a single prediction, without any target label. Because only the hard votes are observed, the task reduces to estimating the reliability of each learner in the absence of the ground truth. Two non-ensemble references bound the task, and the combiners are grouped below them.",
+      "blurb": "The aggregation stage, in a fully decentralized and privacy-preserving setting. Each source subject trains three different learners, i.e., tangent-space logistic regression, CSP-Net and EEGConformer, on its own data alone, and shares only its hard predicted labels on the target, never the model weights or the raw EEG. A combiner then fuses the resulting (N−1)×3 label votes into a single prediction, without any target label. One learner is taken from each of three model families, i.e., a Riemannian linear model, a convolutional network and a self-attention network, so that the votes a single subject contributes are as mutually decorrelated as this menu allows. Because only the hard votes are observed, the task reduces to estimating the reliability of each learner in the absence of the ground truth. Two non-ensemble references bound the task, and the combiners are grouped below them.",
       "groups": [
         {
           "subcat": "Non-ensemble references",
@@ -2313,16 +2313,16 @@ window.BENCHMARK = {
               "name": "single-source",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 59.45,
-                  "std": 0.3
+                  "mean": 61.32,
+                  "std": 0.35
                 },
                 "BNCI2014002": {
-                  "mean": 57.43,
-                  "std": 0.44
+                  "mean": 57.94,
+                  "std": 0.77
                 },
                 "BNCI2015001": {
-                  "mean": 58.6,
-                  "std": 0.03
+                  "mean": 58.45,
+                  "std": 0.23
                 }
               },
               "delta": {
@@ -2335,7 +2335,7 @@ window.BENCHMARK = {
               "key": null,
               "lab": false,
               "code": null,
-              "desc": "Mean accuracy of one source learner applied to the target, averaged over all (N−1)×5 individual learners. The lower reference, before any cross-subject aggregation.",
+              "desc": "Mean accuracy of one source learner applied to the target, averaged over all (N−1)×3 individual learners. The lower reference, before any cross-subject aggregation.",
               "ref": null,
               "doi": null,
               "naReason": null,
@@ -2354,22 +2354,22 @@ window.BENCHMARK = {
               "name": "SML-OVR",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 73.97,
-                  "std": 0.16
+                  "mean": 74.95,
+                  "std": 0.41
                 },
                 "BNCI2014002": {
-                  "mean": 71.86,
-                  "std": 0.21
+                  "mean": 73.38,
+                  "std": 0.64
                 },
                 "BNCI2015001": {
-                  "mean": 71.93,
-                  "std": 0.41
+                  "mean": 72.62,
+                  "std": 0.15
                 }
               },
               "delta": {
-                "BNCI2014001": 0.2,
-                "BNCI2014002": -0.66,
-                "BNCI2015001": 1.86
+                "BNCI2014001": 1.39,
+                "BNCI2014002": 1.43,
+                "BNCI2015001": 2.01
               },
               "isBaseline": false,
               "isReference": false,
@@ -2387,22 +2387,22 @@ window.BENCHMARK = {
               "name": "SML",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 73.97,
-                  "std": 0.16
+                  "mean": 74.95,
+                  "std": 0.41
                 },
                 "BNCI2014002": {
-                  "mean": 71.86,
-                  "std": 0.21
+                  "mean": 73.38,
+                  "std": 0.64
                 },
                 "BNCI2015001": {
-                  "mean": 71.93,
-                  "std": 0.41
+                  "mean": 72.62,
+                  "std": 0.15
                 }
               },
               "delta": {
-                "BNCI2014001": 0.2,
-                "BNCI2014002": -0.66,
-                "BNCI2015001": 1.86
+                "BNCI2014001": 1.39,
+                "BNCI2014002": 1.43,
+                "BNCI2015001": 2.01
               },
               "isBaseline": false,
               "isReference": false,
@@ -2420,22 +2420,22 @@ window.BENCHMARK = {
               "name": "StackingNet",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 74.05,
-                  "std": 0.82
+                  "mean": 74.61,
+                  "std": 0.71
                 },
                 "BNCI2014002": {
-                  "mean": 72.57,
-                  "std": 0.38
+                  "mean": 72.55,
+                  "std": 1.16
                 },
                 "BNCI2015001": {
-                  "mean": 69.51,
-                  "std": 0.25
+                  "mean": 69.9,
+                  "std": 0.74
                 }
               },
               "delta": {
-                "BNCI2014001": 0.28,
-                "BNCI2014002": 0.05,
-                "BNCI2015001": -0.56
+                "BNCI2014001": 1.05,
+                "BNCI2014002": 0.6,
+                "BNCI2015001": -0.71
               },
               "isBaseline": false,
               "isReference": false,
@@ -2450,58 +2450,25 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "LAA",
-              "acc": {
-                "BNCI2014001": {
-                  "mean": 74.41,
-                  "std": 0.57
-                },
-                "BNCI2014002": {
-                  "mean": 72.86,
-                  "std": 0.29
-                },
-                "BNCI2015001": {
-                  "mean": 73.01,
-                  "std": 0.33
-                }
-              },
-              "delta": {
-                "BNCI2014001": 0.64,
-                "BNCI2014002": 0.34,
-                "BNCI2015001": 2.94
-              },
-              "isBaseline": false,
-              "isReference": false,
-              "key": "LAA",
-              "lab": false,
-              "code": "hustbciml/algorithms/ensembles/LAA.py",
-              "desc": "Label-aware autoencoder: an unsupervised neural aggregator that encodes the per-trial votes into a consensus label and reconstructs each source model's vote from it.",
-              "ref": "L. Yin, ..., IJCAI, 2017",
-              "doi": "10.24963/ijcai.2017/184",
-              "naReason": null,
-              "alsoVaries": null,
-              "pinAfter": null
-            },
-            {
               "name": "Dawid-Skene",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 74.15,
-                  "std": 0.23
+                  "mean": 74.92,
+                  "std": 0.6
                 },
                 "BNCI2014002": {
-                  "mean": 72.12,
-                  "std": 0.45
+                  "mean": 73.48,
+                  "std": 1.3
                 },
                 "BNCI2015001": {
-                  "mean": 73.35,
-                  "std": 0.38
+                  "mean": 72.82,
+                  "std": 0.43
                 }
               },
               "delta": {
-                "BNCI2014001": 0.38,
-                "BNCI2014002": -0.4,
-                "BNCI2015001": 3.28
+                "BNCI2014001": 1.36,
+                "BNCI2014002": 1.53,
+                "BNCI2015001": 2.21
               },
               "isBaseline": false,
               "isReference": false,
@@ -2516,25 +2483,58 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "EBCC",
+              "name": "LAA",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 74.05,
-                  "std": 0.89
+                  "mean": 74.97,
+                  "std": 0.85
                 },
                 "BNCI2014002": {
-                  "mean": 71.05,
-                  "std": 0.12
+                  "mean": 73.36,
+                  "std": 0.38
                 },
                 "BNCI2015001": {
-                  "mean": 70.93,
-                  "std": 0.73
+                  "mean": 72.62,
+                  "std": 0.71
                 }
               },
               "delta": {
-                "BNCI2014001": 0.28,
-                "BNCI2014002": -1.47,
-                "BNCI2015001": 0.86
+                "BNCI2014001": 1.41,
+                "BNCI2014002": 1.41,
+                "BNCI2015001": 2.01
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "LAA",
+              "lab": false,
+              "code": "hustbciml/algorithms/ensembles/LAA.py",
+              "desc": "Label-aware autoencoder: an unsupervised neural aggregator that encodes the per-trial votes into a consensus label and reconstructs each source model's vote from it.",
+              "ref": "L. Yin, ..., IJCAI, 2017",
+              "doi": "10.24963/ijcai.2017/184",
+              "naReason": null,
+              "alsoVaries": null,
+              "pinAfter": null
+            },
+            {
+              "name": "EBCC",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 74.33,
+                  "std": 0.74
+                },
+                "BNCI2014002": {
+                  "mean": 71.17,
+                  "std": 0.98
+                },
+                "BNCI2015001": {
+                  "mean": 71.32,
+                  "std": 0.56
+                }
+              },
+              "delta": {
+                "BNCI2014001": 0.77,
+                "BNCI2014002": -0.78,
+                "BNCI2015001": 0.71
               },
               "isBaseline": false,
               "isReference": false,
@@ -2549,58 +2549,25 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "MACE",
-              "acc": {
-                "BNCI2014001": {
-                  "mean": 73.77,
-                  "std": 0.79
-                },
-                "BNCI2014002": {
-                  "mean": 69.1,
-                  "std": 0.49
-                },
-                "BNCI2015001": {
-                  "mean": 72.11,
-                  "std": 0.68
-                }
-              },
-              "delta": {
-                "BNCI2014001": 0.0,
-                "BNCI2014002": -3.42,
-                "BNCI2015001": 2.04
-              },
-              "isBaseline": false,
-              "isReference": false,
-              "key": "MACE",
-              "lab": false,
-              "code": "hustbciml/algorithms/ensembles/MACE.py",
-              "desc": "Variational aggregator that separates competent labeling from per-model spamming, to down-weight unreliable source models.",
-              "ref": "D. Hovy, ..., NAACL-HLT, 2013",
-              "doi": null,
-              "naReason": null,
-              "alsoVaries": null,
-              "pinAfter": null
-            },
-            {
               "name": "Wawa",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 73.92,
-                  "std": 0.44
+                  "mean": 74.31,
+                  "std": 0.82
                 },
                 "BNCI2014002": {
-                  "mean": 71.76,
-                  "std": 0.43
+                  "mean": 71.26,
+                  "std": 1.98
                 },
                 "BNCI2015001": {
-                  "mean": 68.24,
-                  "std": 0.5
+                  "mean": 68.6,
+                  "std": 1.25
                 }
               },
               "delta": {
-                "BNCI2014001": 0.15,
-                "BNCI2014002": -0.76,
-                "BNCI2015001": -1.83
+                "BNCI2014001": 0.75,
+                "BNCI2014002": -0.69,
+                "BNCI2015001": -2.01
               },
               "isBaseline": false,
               "isReference": false,
@@ -2618,22 +2585,22 @@ window.BENCHMARK = {
               "name": "PM",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 74.46,
-                  "std": 0.11
+                  "mean": 74.43,
+                  "std": 0.63
                 },
                 "BNCI2014002": {
-                  "mean": 71.57,
-                  "std": 0.67
+                  "mean": 67.88,
+                  "std": 1.84
                 },
                 "BNCI2015001": {
-                  "mean": 66.29,
-                  "std": 0.37
+                  "mean": 64.24,
+                  "std": 1.13
                 }
               },
               "delta": {
-                "BNCI2014001": 0.69,
-                "BNCI2014002": -0.95,
-                "BNCI2015001": -3.78
+                "BNCI2014001": 0.87,
+                "BNCI2014002": -4.07,
+                "BNCI2015001": -6.37
               },
               "isBaseline": false,
               "isReference": false,
@@ -2648,25 +2615,58 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "LA",
+              "name": "MACE",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 74.02,
-                  "std": 0.13
+                  "mean": 70.76,
+                  "std": 3.42
                 },
                 "BNCI2014002": {
-                  "mean": 70.95,
-                  "std": 0.22
+                  "mean": 65.33,
+                  "std": 2.49
                 },
                 "BNCI2015001": {
-                  "mean": 66,
-                  "std": 0.22
+                  "mean": 68.82,
+                  "std": 0.43
                 }
               },
               "delta": {
-                "BNCI2014001": 0.25,
-                "BNCI2014002": -1.57,
-                "BNCI2015001": -4.07
+                "BNCI2014001": -2.8,
+                "BNCI2014002": -6.62,
+                "BNCI2015001": -1.79
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "MACE",
+              "lab": false,
+              "code": "hustbciml/algorithms/ensembles/MACE.py",
+              "desc": "Variational aggregator that separates competent labeling from per-model spamming, to down-weight unreliable source models.",
+              "ref": "D. Hovy, ..., NAACL-HLT, 2013",
+              "doi": null,
+              "naReason": null,
+              "alsoVaries": null,
+              "pinAfter": null
+            },
+            {
+              "name": "LA",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 74.51,
+                  "std": 0.62
+                },
+                "BNCI2014002": {
+                  "mean": 66.26,
+                  "std": 2.06
+                },
+                "BNCI2015001": {
+                  "mean": 61.1,
+                  "std": 1.76
+                }
+              },
+              "delta": {
+                "BNCI2014001": 0.95,
+                "BNCI2014002": -5.69,
+                "BNCI2015001": -9.51
               },
               "isBaseline": false,
               "isReference": false,
@@ -2684,22 +2684,22 @@ window.BENCHMARK = {
               "name": "ZenCrowd",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 73.41,
-                  "std": 0.73
+                  "mean": 71.5,
+                  "std": 1.96
                 },
                 "BNCI2014002": {
-                  "mean": 67.17,
-                  "std": 0.5
+                  "mean": 62.29,
+                  "std": 1.34
                 },
                 "BNCI2015001": {
-                  "mean": 60.53,
-                  "std": 1.1
+                  "mean": 56.39,
+                  "std": 0.22
                 }
               },
               "delta": {
-                "BNCI2014001": -0.36,
-                "BNCI2014002": -5.35,
-                "BNCI2015001": -9.54
+                "BNCI2014001": -2.06,
+                "BNCI2014002": -9.66,
+                "BNCI2015001": -14.22
               },
               "isBaseline": false,
               "isReference": false,
@@ -2714,58 +2714,25 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "GLAD",
-              "acc": {
-                "BNCI2014001": {
-                  "mean": 73.25,
-                  "std": 0.91
-                },
-                "BNCI2014002": {
-                  "mean": 65.9,
-                  "std": 0.76
-                },
-                "BNCI2015001": {
-                  "mean": 59.83,
-                  "std": 0.3
-                }
-              },
-              "delta": {
-                "BNCI2014001": -0.52,
-                "BNCI2014002": -6.62,
-                "BNCI2015001": -10.24
-              },
-              "isBaseline": false,
-              "isReference": false,
-              "key": "GLAD",
-              "lab": false,
-              "code": "hustbciml/algorithms/ensembles/GLAD.py",
-              "desc": "EM aggregator that jointly infers the consensus label, each source model's ability, and each trial's difficulty.",
-              "ref": "J. Whitehill, ..., NeurIPS, 2009",
-              "doi": null,
-              "naReason": null,
-              "alsoVaries": null,
-              "pinAfter": null
-            },
-            {
               "name": "M-MSR",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 68.26,
-                  "std": 1.57
+                  "mean": 71.71,
+                  "std": 0.86
                 },
                 "BNCI2014002": {
-                  "mean": 64.29,
-                  "std": 1.11
+                  "mean": 60.02,
+                  "std": 1.61
                 },
                 "BNCI2015001": {
-                  "mean": 60.4,
-                  "std": 1.6
+                  "mean": 55.96,
+                  "std": 0.24
                 }
               },
               "delta": {
-                "BNCI2014001": -5.51,
-                "BNCI2014002": -8.23,
-                "BNCI2015001": -9.67
+                "BNCI2014001": -1.85,
+                "BNCI2014002": -11.93,
+                "BNCI2015001": -14.65
               },
               "isBaseline": false,
               "isReference": false,
@@ -2780,19 +2747,52 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
+              "name": "GLAD",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 70.78,
+                  "std": 3.23
+                },
+                "BNCI2014002": {
+                  "mean": 59.5,
+                  "std": 1.07
+                },
+                "BNCI2015001": {
+                  "mean": 55.44,
+                  "std": 1.29
+                }
+              },
+              "delta": {
+                "BNCI2014001": -2.78,
+                "BNCI2014002": -12.45,
+                "BNCI2015001": -15.17
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "GLAD",
+              "lab": false,
+              "code": "hustbciml/algorithms/ensembles/GLAD.py",
+              "desc": "EM aggregator that jointly infers the consensus label, each source model's ability, and each trial's difficulty.",
+              "ref": "J. Whitehill, ..., NeurIPS, 2009",
+              "doi": null,
+              "naReason": null,
+              "alsoVaries": null,
+              "pinAfter": null
+            },
+            {
               "name": "Majority voting",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 73.77,
-                  "std": 0.98
+                  "mean": 73.56,
+                  "std": 1.03
                 },
                 "BNCI2014002": {
-                  "mean": 72.52,
-                  "std": 0.39
+                  "mean": 71.95,
+                  "std": 1.48
                 },
                 "BNCI2015001": {
-                  "mean": 70.07,
-                  "std": 0.36
+                  "mean": 70.61,
+                  "std": 0.73
                 }
               },
               "delta": {
@@ -2805,7 +2805,7 @@ window.BENCHMARK = {
               "key": "Voting",
               "lab": false,
               "code": "hustbciml/algorithms/ensembles/Voting.py",
-              "desc": "Plain majority vote over the hard predicted labels of the five per-subject learners across all source subjects. This is the label-only baseline every combiner is measured against.",
+              "desc": "Plain majority vote over the hard predicted labels of the three per-subject learners across all source subjects. This is the label-only baseline every combiner is measured against.",
               "ref": "S. Li, ..., D. Wu*, IEEE Comput. Intell. Mag., 2026",
               "doi": "10.1109/MCI.2025.3624194",
               "naReason": null,
