@@ -60,6 +60,14 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-07-29.** Deleted both four-class BNCI2014001 appendices from `RESULTS.md`. The benchmark is
+two-class throughout, as its header states, but two supplementary appendices still reported native
+four-class results (chance 25%), and two four-class figures had leaked into the two-class per-dataset
+discussion as the third entry of a triple. All of it is removed and the affected sentences restated
+against the two-class evidence. No two-class number changes; the web leaderboard never carried
+four-class content, and the `BNCI2014001-4` code path stays, since it is what SML-OVR's one-vs-rest
+form exists for.
+
 - **2026-07-28 (v1.3.1).** Corrected StackingNet's sum-to-one regularizer to the L1-norm form the
 authors' released code uses. For non-negative weights the two agree in value but not in gradient,
 so a weight the non-negativity clamp drives to zero now stays there instead of being revived, which

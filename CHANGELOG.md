@@ -7,6 +7,27 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [Unreleased]
+
+### Removed
+- **Both four-class BNCI2014001 appendices are deleted from `RESULTS.md`.** The benchmark is
+  two-class throughout, as its own header has always stated, but two supplementary appendices
+  at the end of the file still reported native four-class results (left/right hand, feet,
+  tongue; chance 25%): the privacy-preserving appendix and the heterogeneous
+  decentralized-ensemble appendix, 22 table rows in total. They are gone, along with the two
+  cross-references that pointed at them.
+
+  Two four-class numbers had also leaked into the two-class narrative: the per-dataset
+  discussion cited Dawid-Skene as `64.86 / 57.55 / 41.51` and EBCC as `64.53 / 58.38 / 40.34`,
+  where the third entry of each triple was the four-class figure. Those triples are now pairs
+  with their datasets named explicitly, and the sentence they supported has been restated
+  against the two-class evidence that remains.
+
+  The `BNCI2014001-4` code path is deliberately kept: it is what `SML-OVR`'s one-vs-rest form
+  exists for, and removing it would be a functional change. **No two-class number changes.**
+  The web leaderboard never carried four-class content — rebuilding `docs/data/*.js` after the
+  edit produces a byte-identical result — and `repro_targets.yaml` has no four-class entries.
+
 ## [1.3.1] - 2026-07-28
 
 ### Fixed

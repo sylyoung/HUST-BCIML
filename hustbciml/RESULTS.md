@@ -426,8 +426,8 @@ the EM-heavy **M-MSR**, **GLAD** and **ZenCrowd** collapse on the weakest learne
 noisy and correlated. **SML-OVR**, the lab's multi-class generalization of SML, reduces exactly to
 binary SML on these two-class tasks, so it reports the same numbers as **SML** and sits beside it
 (identical to two decimals on all three datasets, std included). Its one-vs-rest form does something
-only on multi-class data — BNCI2014001's four-class variant, which the code supports but this file
-does not report. Against Centralized Training the best combiner is ahead on BNCI2014001 (+2.39),
+only on multi-class data, which this benchmark does not report. Against Centralized Training the
+best combiner is ahead on BNCI2014001 (+2.39),
 level on BNCI2015001 (+0.16), and behind only on BNCI2014002 (−1.54): the accuracy cost of never
 pooling raw data is smaller than the single-seed table implied, but it is not zero.
 
@@ -453,9 +453,7 @@ full-size EEGNet, Adam optimizer and learning rate 0.001 as Centralized Training
 only the privacy mechanism differs. Each single-source model trains on one subject's
 trials only, with no augmentation (CSDA is a cross-subject transform and would breach the
 privacy premise). MSDT is a Riemannian tangent-space pipeline, exempt from the
-EEGNet-config unification. Measured on hust-gpu-60022 / -7002 (seeds 1–3). The native
-four-class BNCI2014001 exploration is kept as a supplementary appendix at the end of this
-section and is **not** part of this binary benchmark._
+EEGNet-config unification. Measured on hust-gpu-60022 / -7002 (seeds 1–3)._
 
 | Method | BNCI2014001 | BNCI2014002 | BNCI2015001 |
 |---|--:|--:|--:|
@@ -481,7 +479,7 @@ server, none tuned to hit a target.
 The fully decentralized alternative, where each subject shares only hard predicted labels and
 never model updates, is the **Decentralized-heterogeneous ensemble** table earlier in
 this file, which is what the web leaderboard reports. Two-class per-dataset detail for
-BNCI2014002 and BNCI2015001 follows, and the four-class appendix closes the section.
+BNCI2014002 and BNCI2015001 closes the section.
 
 ### Per-dataset detail: BNCI2014002 and BNCI2015001 (two-class)
 
@@ -558,122 +556,10 @@ SML / SML-OVR sit mid-pack. But on BNCI2015001, where the
 single-source models are stronger (54.16) and more nearly independent, the spectral
 meta-learner comes into its own: **binary SML (64.18) ranks third** among the combiners,
 clearly above majority voting (60.60) *and* the lab's own StackingNet (61.31), the regime
-the SML estimator was designed for. **Dawid-Skene** (64.86 / 57.55 / 41.51) and
-**EBCC** (64.53 / 58.38 / 40.34) remain the most consistent combiners across all three
-datasets. The takeaway: spectral crowd-aggregation needs base models comfortably above chance and roughly conditionally
-independent, which two-class single-subject EEG supplies and four-class does not.
-
-### Supplementary: privacy-preserving on native four-class BNCI2014001
-
-_Kept for the record only. This appendix is **not part of the binary benchmark** and is **not shown on the web leaderboard**. Every headline table above is two-class. The tables in this appendix are the earlier native four-class BNCI2014001 exploration (left/right hand, feet, tongue), chance 25%._
-
-_Every method here keeps each subject's raw EEG local. It is never pooled across
-subjects. This is the privacy-preserving counterpart to **Centralized Training** (EA-EEGNet
-pooling all sources), which is the reference. These are four-class results on native BNCI2014001 (left/right hand, feet, tongue), chance 25%,
-cross-subject LOSO, 3 seeds. Every EEGNet method uses the identical full-size EEGNet
-(F1 4 / D 2 / F2 8, dropout 0.25), Adam optimizer, and learning rate 0.001 as
-Centralized Training, so that only the privacy mechanism differs. Each
-single-source model trains on one subject's ~288 trials only, with no augmentation
-(CSDA is a cross-subject transform and would breach the privacy premise). Measured
-on hust-gpu-60022: FedBS / FedAvg in `hustbciml_results_privacy3` and MSDT (a Riemannian
-pipeline, exempt from the EEGNet-config unification) in `hustbciml_results_privacy`
-(2026-07-14), Centralized Training from `hustbciml_results_ens4` (seeds 1–3), and SAFE from
-`hustbciml_results_3ds` (2026-07-18). Δacc is vs Centralized Training. The fully decentralized
-ensemble that shares only hard predicted labels is a separate two-class comparison, in the
-Decentralized-heterogeneous ensemble section above._
-
-| Method | Acc ± std | Δacc vs Centralized Training |
-|---|--:|--:|
-| MSDT **(lab)** | 55.29 ± 0.58 | +4.83 |
-| FedBS **(lab)** | 50.90 ± 0.29 | +0.44 |
-| _Centralized Training (EA-EEGNet, reference)_ | 50.46 ± 0.86 | (ref) |
-| SAFE **(lab)** *(new)* | 50.15 ± 0.55 | −0.31 |
-| FedAvg | 47.65 ± 2.24 | −2.81 |
-
-Keeping each subject's data local costs accuracy, and the cost scales with how strictly
-the data is siloed. **Federated learning** aggregates per-subject (client) updates
-through a server without moving raw EEG. With the same Adam optimizer and learning rate
-as Centralized Training, **FedBS** (Jia et al., IEEE TNSRE 2024, batch-specific
-BatchNorm + sharpness-aware minimization on top of FedAvg) reaches 50.90, essentially
-matching the 50.46 reference (privacy is nearly free here), while plain **FedAvg**
-(McMahan et al., AISTATS 2017) trails at 47.65, the accuracy cost of plain weight
-averaging. **SAFE** (Jia et al., 2026, FedBS plus single-step adversarial feature training
-and a one-step adversarial weight perturbation) matches the reference here too (50.15,
-−0.31): its adversarial regularization is a wash on this four-class task, but it pays off on
-the two-class datasets in the headline table, where SAFE is the strongest federated method. (With FedBS's own SGD at the paper's larger learning rate it
-reproduces ~53.4, matching its published ~53.31. The benchmark instead holds it to the
-shared Adam / 0.001 setting, so that only the privacy mechanism, not the optimizer,
-separates it from Centralized Training.)
-
-The one method above Centralized Training is **MSDT** (Zhang et al., IEEE TNSRE 2022,
-55.29), and it is the exception that proves the rule: MSDT is **not an EEGNet model at
-all**. It decodes Riemannian tangent-space features with a per-source MLP each, then
-adapts and fuses them at test time by entropy-weighted information maximization. Its
-lead therefore reflects that different feature representation and its test-time
-adaptation, not the privacy mechanism, which it shares with the methods that trail.
-Read together, the table says privacy costs accuracy in proportion to how little is
-shared. The cost is near-zero when model *updates* are federated, and largest when only *labels* are,
-and the apparent counterexample is a different model class, not a free lunch from
-privacy.
-
-The single-model rows (Centralized Training, FedBS, SAFE, FedAvg, MSDT) carry the across-seed
-std. The decentralized combiners do vary across seeds, since their base models are
-re-initialized per seed, but that spread is omitted from the table for readability, as
-noted above. Every number is measured on the server, none tuned to hit a target.
-
-#### Supplementary: heterogeneous decentralized ensemble on four-class BNCI2014001
-
-_This is the native four-class BNCI2014001 counterpart to the two-class Decentralized-heterogeneous
-ensemble table above. A single EA-EEGNet per source subject, all the same architecture, each near
-chance (~31.5%) on four-class single-subject data, makes weak and correlated voters, the regime
-where crowd aggregation has least to work with. This variant keeps the identical privacy premise
-(each subject's raw EEG stays local, and only hard predicted labels are shared) but replaces
-the single per-subject EEGNet with **five heterogeneous learners per source subject**
-(Tangent-space + LDA, Tangent-space + SVM (RBF), EEGNet, ShallowConvNet, and CSPNet), so
-each of the 8 source subjects casts 5 votes and every target is decided by 8 × 5 = 40
-label votes. The learners span two feature families (Riemannian tangent space and
-end-to-end CNNs) and three network architectures, making the voters both individually
-stronger and more conditionally independent, the two properties crowd aggregation
-actually needs. Same four-class BNCI2014001, cross-subject LOSO, 3 seeds, measured in
-`hustbciml_results_hetero`. Reproduce with `python -m hustbciml.scripts.decentralized
---dataset BNCI2014001-4 --base hetero`. Δacc is vs Centralized Training (50.46)._
-
-| Combiner | Acc | Δacc vs Centralized Training |
-|---|--:|--:|
-| LAA | 55.49 | +5.03 |
-| StackingNet **(lab)** | 55.11 | +4.65 |
-| Dawid-Skene | 55.03 | +4.57 |
-| SML-OVR **(lab)** | 54.68 | +4.22 |
-| Wawa | 54.35 | +3.89 |
-| GLAD | 53.94 | +3.48 |
-| LA | 53.91 | +3.45 |
-| PM | 53.77 | +3.31 |
-| majority voting | 53.67 | +3.21 |
-| EBCC | 53.67 | +3.21 |
-| ZenCrowd | 53.42 | +2.96 |
-| MACE | 53.42 | +2.96 |
-| M-MSR | 53.13 | +2.67 |
-
-_Single heterogeneous learner (mean over all source learners and targets): 37.56,
-already above the homogeneous single-subject EEGNet's 31.54, because the Riemannian
-tangent-space classifiers decode four-class single-subject data better than a
-from-scratch EEGNet._
-
-The heterogeneous base flips the privacy-preserving story. Every combiner now **exceeds
-Centralized Training** (50.46): even plain majority voting reaches 53.67 (+3.21), and the
-best aggregators, **LAA** (55.49), the lab's **StackingNet** (55.11) and **Dawid-Skene**
-(55.03), reach the level of **MSDT** (55.29), the previous top privacy method, while
-sharing strictly less (only hard labels, no Riemannian test-time feature adaptation).
-Two effects compound: the voters are individually stronger (37.56 vs 31.54 single-voter)
-and, spanning Riemannian and CNN feature spaces, far less correlated, so their errors
-cancel under aggregation instead of reinforcing. The same combiners that trailed by ~10
-points on homogeneous EEGNet voters (best 41.51) now lead by ~5, a +14 swing from
-base-learner heterogeneity alone, with the combiner code unchanged. **SML-OVR** (54.68)
-recovers in particular: given above-chance, roughly independent voters it finally does
-what spectral aggregation is designed to do, in contrast to the homogeneous case where
-near-chance voters left it below plain voting (37.40). The winning combiner is not
-selected on the test set. The whole combiner set is reported, and the gain holds across
-all thirteen.
+the SML estimator was designed for. **Dawid-Skene** (BNCI2015001 / BNCI2014002: 64.86 / 57.55)
+and **EBCC** (64.53 / 58.38) remain the most consistent combiners across both datasets.
+The takeaway: spectral crowd-aggregation needs base models comfortably above chance and
+roughly conditionally independent — supplied on BNCI2015001, not on BNCI2014002.
 
 ---
 
