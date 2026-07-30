@@ -60,7 +60,7 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
-- **2026-07-29.** Deleted both four-class BNCI2014001 appendices from `RESULTS.md`. The benchmark is
+- **2026-07-29 (v1.3.2).** Deleted both four-class BNCI2014001 appendices from `RESULTS.md`. The benchmark is
 two-class throughout, as its header states, but two supplementary appendices still reported native
 four-class results (chance 25%), and two four-class figures had leaked into the two-class per-dataset
 discussion as the third entry of a triple. All of it is removed and the affected sentences restated

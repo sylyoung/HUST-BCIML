@@ -7,7 +7,7 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
-## [Unreleased]
+## [1.3.2] - 2026-07-29
 
 ### Removed
 - **Both four-class BNCI2014001 appendices are deleted from `RESULTS.md`.** The benchmark is
