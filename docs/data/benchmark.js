@@ -2298,7 +2298,7 @@ window.BENCHMARK = {
                 "BNCI2015001": null
               },
               "isBaseline": false,
-              "isReference": false,
+              "isReference": true,
               "key": null,
               "lab": false,
               "code": null,
@@ -2331,7 +2331,7 @@ window.BENCHMARK = {
                 "BNCI2015001": null
               },
               "isBaseline": false,
-              "isReference": false,
+              "isReference": true,
               "key": null,
               "lab": false,
               "code": null,

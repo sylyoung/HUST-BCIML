@@ -188,28 +188,31 @@
     });
     return table;
   }
-  // Every approach that varies a stage of the decoding pipeline, grouped by
-  // leaderboard table, for the Overview. The lab's own methods (Prof. Wu's group)
-  // are highlighted; the external baselines they are compared against are shown
-  // muted alongside.
+  // Every approach the benchmark measures, grouped by leaderboard table, for the
+  // Overview. The lab's own methods (Prof. Wu's group) are highlighted; the
+  // external baselines they are compared against are shown muted alongside.
   //
-  // The ensemble table is skipped here, so the Overview stays about the pipeline.
-  // Its combiners are post-hoc: they fuse the predictions of models already
-  // trained by the rows above, so they are not a sixth stage of the same pipeline
-  // and reading them as one flattered the list. They remain on the Benchmark tab
-  // under their own table. `n_approaches` in build_site.py skips it for the same
-  // reason and must keep doing so — the section heading states that count directly
-  // above these chips, and the two disagreeing by 15 is the exact defect the
-  // count was centralised to fix.
+  // The ensemble table is included. Its combiners are post-hoc — they fuse the
+  // predictions of models the other tables train, rather than varying a stage of
+  // the same pipeline — so they get their own group here, headed by the table's
+  // own title, instead of being dropped: they are approaches the benchmark
+  // measures, and two of them, SML-OVR and StackingNet, are the lab's own, so
+  // omitting the table hid them from the one place the site lists the lab's
+  // methods. `approach_names()` in build_site.py counts the same population and
+  // must keep doing so — the section heading states that count directly above
+  // these chips, and a count and a list computed over different populations is
+  // the exact defect the count was centralised to fix.
   function benchApproaches() {
     var wrap = el("div", { class: "lab-methods" }), any = false;
     (BENCH.tables || []).forEach(function (t) {
-      if (t.id === "ensemble") return;
       // all rows for this table, deduped by method name. A method can appear in
       // several sub-categories — the privacy family, for instance, is measured on
       // three datasets — but it should still show as a single chip. The no-op
       // baseline placeholder ("none", i.e. no alignment / no augmentation) is not
-      // an approach, so it is skipped.
+      // an approach, so it is skipped, and neither is a row the data marks as a
+      // reference: the ensemble table's single-source and Centralized Training
+      // rows bound its combiners rather than competing with them, and its own
+      // sub-category heading calls them non-ensemble references.
       // Object.create(null), not {}: these are indexed by method names from a data
       // file, and on a plain object an inherited key such as "constructor" or
       // "toString" is truthy, so a method named after one would be silently
@@ -217,7 +220,7 @@
       var order = [], byName = Object.create(null);
       (t.groups || []).forEach(function (g) {
         (g.rows || []).forEach(function (r) {
-          if (!r.name || r.name.toLowerCase() === "none") return;
+          if (!r.name || r.name.toLowerCase() === "none" || r.isReference) return;
           // remember the method's implementation path so the chip can link to its
           // exact code file; the same method may recur across sub-categories.
           if (byName[r.name]) { byName[r.name].count++; if (!byName[r.name].code && r.code) byName[r.name].code = r.code; }
@@ -276,12 +279,13 @@
     // "N of M are the lab's" when they did not describe the same M.
     stat(stats, SITE.n_lab_methods, tr("lab approaches"));
     stat(stats, SITE.n_methods, tr("pipeline approaches benchmarked"));
-    // The ensemble combiners are deliberately absent from the Overview: they are
-    // not a pipeline stage, and a second headline count beside this one asked the
-    // reader to hold two populations at once on the landing page. They keep their
-    // own leaderboard table on the Benchmark tab, and build_site.py still emits
-    // `n_ensemble_methods` because the READMEs state the figure and a test checks
-    // it against the build. Do not re-add a stat for it here.
+    // Both of the above count pipeline compositions only, which is what "pipeline"
+    // says; the ensemble combiners are counted separately, in `n_ensemble_methods`,
+    // because they aggregate trained models rather than composing stages. They are
+    // listed in the approach chips below and keep their own leaderboard table, but
+    // deliberately get no headline stat here: a third count beside these two asks
+    // the reader to hold two populations at once on the landing page. Both READMEs
+    // state the combiner figure instead, and a test checks it against the build.
     stat(stats, SITE.n_code, tr("papers with code"));
     stat(stats, SITE.n_papers || PUBS.length, tr("papers indexed"));
     stat(stats, topicList.length, tr("research areas"));
@@ -295,7 +299,7 @@
       o.appendChild(el("div", { class: "section-title" },
         fmt(tr("Approaches in the benchmark ({n})"), { n: SITE.n_approaches || 0 })));
       o.appendChild(el("p", { class: "area-note" },
-        tr("Every approach that varies a stage of the decoding pipeline, grouped by that stage. The lab's own approaches, i.e., those proposed by Prof. Wu's group, are highlighted, and the external baselines they are compared with are listed alongside.")));
+        tr("Every approach evaluated in the benchmark, grouped by the stage of the decoding pipeline that it varies. The ensemble combiners form a group of their own, as they fuse the predictions of the models that the other groups train. The lab's own approaches, i.e., those proposed by Prof. Wu's group, are highlighted, and the external baselines they are compared with are listed alongside.")));
       var legend = el("div", { class: "approach-legend" });
       legend.appendChild(el("span", { class: "lgd lgd-lab" }, tr("lab-proposed")));
       legend.appendChild(el("span", { class: "lgd lgd-ext" }, tr("external baseline")));

@@ -1182,7 +1182,15 @@ tables:
   - subcat: Non-ensemble references
     blurb: Decoding without any aggregation, to bound the ensemble approaches below. A single source learner applied to the target gives the lower reference. One model trained on all source subjects pooled together, i.e., Centralized Training, gives the non-private upper reference, which the privacy-preserving combiners approach without ever sharing the raw EEG.
     rows:
+    # `reference: true` on both rows of this sub-category, because both are what its
+    # heading says they are: bounds on the combiners below, not entries competing with
+    # them. It changes no published number — neither row has a Δ, this group declares no
+    # baseline — and keeps them out of the Overview's approach list, where "single-source"
+    # would otherwise read as the name of a benchmarked method. Every other table's
+    # references sit in a group-level `reference:` block and are already excluded; these
+    # two are rows because they carry a full three-dataset result of their own.
     - name: Centralized Training
+      reference: true
       desc: EA-aligned EEGNet trained on all source subjects pooled into a single model. The non-private, non-ensemble reference. It uses the raw data that the decentralized combiners are denied.
       # Same row, same numbers, as the transfer table's Centralized Training and every
       # other table's EA-EEGNet reference — including the std, which this copy alone had
@@ -1198,6 +1206,7 @@ tables:
           mean: 73.19
           std: 0.81
     - name: single-source
+      reference: true
       desc: Mean accuracy of one source learner applied to the target, averaged over all (N−1)×3 individual learners. The lower reference, before any cross-subject aggregation.
       acc:
         BNCI2014001:

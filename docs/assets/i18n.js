@@ -56,8 +56,8 @@
       "papers indexed": "已收录论文",
       "research areas": "研究方向",
       "Approaches in the benchmark": "基准中的全部方法",
-      "Every approach that varies a stage of the decoding pipeline, grouped by that stage. The lab's own approaches, i.e., those proposed by Prof. Wu's group, are highlighted, and the external baselines they are compared with are listed alongside.":
-        "改变解码流水线某一模块的全部方法，按所改变的模块分组。实验室自研方法，即伍冬睿教授课题组提出的方法，以高亮显示，与之对比的外部基线一并列出。",
+      "Every approach evaluated in the benchmark, grouped by the stage of the decoding pipeline that it varies. The ensemble combiners form a group of their own, as they fuse the predictions of the models that the other groups train. The lab's own approaches, i.e., those proposed by Prof. Wu's group, are highlighted, and the external baselines they are compared with are listed alongside.":
+        "基准测试所评测的全部方法，按各自所改变的解码流水线模块分组。集成聚合方法自成一组，因为它们融合的是其他各组所训练模型的预测结果。实验室自研方法，即伍冬睿教授课题组提出的方法，以高亮显示，与之对比的外部基线一并列出。",
       "lab-proposed": "实验室提出",
       "external baseline": "外部基线",
       "Anchor project": "核心项目",

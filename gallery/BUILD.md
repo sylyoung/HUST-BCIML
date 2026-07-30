@@ -30,6 +30,13 @@ in `gallery/data/` into JavaScript data files in `docs/data/` by `build_site.py`
   yet") and `also_varies` (what else the row changes besides its table's axis, so
   a Δ is not read as a single-stage effect).
 
+  `reference: true` marks a row that bounds the others rather than competing with
+  them. It suppresses that row's Δ and keeps it out of the Overview's approach
+  list and counts, while leaving the leaderboard table itself unchanged. Most
+  references are declared once per group, in a group-level `reference:` block; use
+  the row flag for a reference that carries a full per-dataset result of its own,
+  as the ensemble table's `single-source` and `Centralized Training` rows do.
+
 ## Generate
 
 ```bash

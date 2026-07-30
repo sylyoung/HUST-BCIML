@@ -60,6 +60,12 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-07-30 (v1.4.1).** Restored the "Ensemble Learning" group of approach chips on the
+Overview, which v1.3.0 had dropped, so all 14 combiners are listed and the lab's SML-OVR and
+StackingNet are visible there; the chip count rises from 60 to 74. The ensemble table's two
+non-ensemble reference rows stay out of that list. No measured number changes and the leaderboard
+renders identically.
+
 - **2026-07-30 (v1.4.0).** Re-measured the Ensemble Learning table on a three-learner-per-source pool,
 one per model family: tangent-space logistic regression, CSP-Net and EEGConformer, so each target
 collects (N−1)×3 hard votes. All 45 combiner and reference cells are new. SML-OVR (lab) and binary

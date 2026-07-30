@@ -209,16 +209,18 @@ def approach_names(benchmark):
     Python over non-ensemble keyed rows, the chips in JavaScript over every named
     row — so the page disagreed with itself by 18. Both now come from here.
 
-    The ensemble table is excluded because the Overview no longer lists it: its
-    combiners fuse the predictions of models the other tables train, rather than
-    varying a stage of the same pipeline. ``benchApproaches()`` in app.js skips
-    the same table, and the two must stay in step or the heading and the chips it
-    introduces disagree again, this time by 15.
+    Every leaderboard table counts, the ensemble table included: its combiners are
+    approaches the benchmark measures, two of them the lab's own, so leaving them
+    out hid SML-OVR and StackingNet from the one place the site lists the lab's
+    methods. What is excluded is a row the data marks ``reference: true`` — the
+    ensemble table's single-source and Centralized Training rows, which its own
+    sub-category calls non-ensemble references and which bound the combiners
+    rather than competing with them. ``benchApproaches()`` in app.js applies the
+    same two rules and the two must stay in step, or the heading and the chips it
+    introduces disagree again.
     """
     names = set()
     for t in benchmark["tables"]:
-        if t["id"] == "ensemble":
-            continue
         for g in t["groups"]:
             for r in g["rows"]:
                 if not r.get("isReference") and r.get("name") and r["name"] != "none":

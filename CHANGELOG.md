@@ -7,6 +7,21 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.4.1] - 2026-07-30
+
+### Changed
+- **The Overview lists the ensemble combiners again.** v1.3.0 dropped the "Ensemble Learning"
+  group of approach chips; it is back, so all 14 combiners appear under their own heading and
+  the lab's **SML-OVR** and **StackingNet** are visible where the site lists the lab's methods.
+  The approach-chip count rises from 60 to 74.
+- The two rows of the ensemble table's *Non-ensemble references* sub-category, `single-source`
+  and `Centralized Training`, are marked `reference: true` and stay out of that list, as every
+  other table's references already do.
+- **No measured number changes** and the leaderboard renders identically: rebuilding
+  `docs/data/*.js` moves only those two flags and the count. The "ensemble combiners" statistic
+  v1.3.0 also removed is deliberately not restored — the chips list them, and both READMEs
+  state the figure.
+
 ## [1.4.0] - 2026-07-30
 
 ### Changed

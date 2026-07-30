@@ -177,4 +177,4 @@ window.LAB = {
     }
   ]
 };
-window.SITE = {"n_papers": 263, "n_code": 72, "n_methods": 58, "n_lab_methods": 20, "n_ensemble_methods": 14, "n_approaches": 60};
+window.SITE = {"n_papers": 263, "n_code": 72, "n_methods": 58, "n_lab_methods": 20, "n_ensemble_methods": 14, "n_approaches": 74};
