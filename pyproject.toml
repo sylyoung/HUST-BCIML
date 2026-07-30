@@ -1,0 +1,82 @@
+# HUST-BCIML — packaging and tool configuration.
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.
+
+[build-system]
+requires = ["setuptools>=77"]   # 77 is the first release to accept an SPDX `license` string
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hustbciml"
+description = "A unified EEG-decoding benchmark: many algorithms on one stage architecture, evaluated on MOABB public data."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Siyang Li", email = "lsyyoungll@gmail.com" }]
+keywords = ["EEG", "brain-computer interface", "transfer learning", "benchmark"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dynamic = ["version"]
+
+# The floors below are the ones needed to import and run an algorithm. They are the
+# core block of requirements.txt, which stays the documented install path because it
+# also installs the optional groups and records why each bound is where it is —
+# in particular the measured scikit-learn upper bound. `tests/test_packaging.py`
+# fails if the two files ever specify a different version range for a package.
+dependencies = [
+    "numpy>=1.23",
+    "scipy>=1.9",
+    "scikit-learn>=1.2,<1.8",
+    "torch>=1.12",
+    "pyriemann>=0.5",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+# The real motor-imagery datasets. Without these the Toy dataset and every test
+# still run; with them, so do BNCI2014001 / BNCI2014002 / BNCI2015001.
+data = ["moabb>=1.0", "mne>=1.5"]
+# The five crowd-kit combiners in the Ensemble Learning table, and the wavelet
+# transform the CSDA augmenter is built on.
+ensembles = ["crowd-kit>=1.2", "pandas>=1.5"]
+augmenters = ["PyWavelets>=1.4"]
+dev = ["pytest>=7.0"]
+
+[project.urls]
+Homepage = "https://sylyoung.github.io/HUST-BCIML/"
+Source = "https://github.com/sylyoung/HUST-BCIML"
+
+[tool.setuptools.dynamic]
+# One source of truth for the version: the package's own __version__.
+version = { attr = "hustbciml.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+# The presets are the named algorithms themselves, and the leaderboard's published
+# values and their provenance are read from files rather than from code, so an
+# installed copy has to carry them or half the library has nothing to resolve.
+hustbciml = [
+    "RESULTS.md",
+    "algorithms/presets/*.yaml",
+    "tests/repro/*.yaml",
+    "scripts/*.tsv",
+    "docs/*.md",
+    "docs/cards/*.md",
+    "docs/cards/*.yaml",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["src/hustbciml/tests"]
+# ``repro`` marks the slow reproduction tests that run real datasets end to end
+# and check each method against its published reference range. They are excluded
+# from the default run and are meant for a nightly job:
+#     HUSTBCIML_DATA_DIR=/path/to/data pytest -m repro
+markers = [
+    "repro: full reproduction run against repro_targets.yaml (slow, needs datasets)",
+]
+addopts = "-m 'not repro'"

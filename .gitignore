@@ -3,6 +3,11 @@ __pycache__/
 .DS_Store
 .pytest_cache/
 
+# packaging artifacts left behind by `pip install .` and `pip install -e .`
+build/
+dist/
+*.egg-info/
+
 # local-only run artifacts and private launch scripts (not for the public repo)
 results/
 relaunch_strat_priv.sh

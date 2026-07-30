@@ -8,7 +8,7 @@
   var PUBS = window.PUBLICATIONS || [], BENCH = window.BENCHMARK || {};
   var VIEWS = ["overview", "benchmark", "papers"];
   var REPO_URL = "https://github.com/sylyoung/HUST-BCIML";
-  var PKG = "hustbciml";   // the benchmark package directory in the repo
+  var PKG = "src/hustbciml";   // the benchmark package directory in the repo
 
   // ---------------- i18n ----------------
   // LANG is 'en' or 'zh'. tr(s) returns the Chinese translation of the EXACT

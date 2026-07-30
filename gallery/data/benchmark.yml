@@ -62,7 +62,7 @@ tables:
   rows:
   - name: RA (Riemannian)
     key: RA-EEGNet
-    code: hustbciml/algorithms/aligners/RA.py
+    code: src/hustbciml/algorithms/aligners/RA.py
     ref: P. Zanini et al., IEEE Trans. Biomed. Eng., 2018
     doi: 10.1109/TBME.2017.2742541
     desc: Normalizes the trials of each subject by the affine-invariant Riemannian (Fréchet) mean of their spatial covariances. The recentering is performed in the curved covariance geometry instead of the Euclidean one.
@@ -79,7 +79,7 @@ tables:
   - name: EA (Euclidean)
     key: EA-EEGNet
     lab: true
-    code: hustbciml/algorithms/aligners/EA.py
+    code: src/hustbciml/algorithms/aligners/EA.py
     ref: H. He, D. Wu*, IEEE Trans. Biomed. Eng., 2020
     doi: 10.1109/TBME.2019.2913914
     desc: Whitens the trials of each subject by the inverse square root of their mean spatial covariance, so that the average covariance of every subject becomes the identity matrix. The default aligner of the benchmark.
@@ -95,7 +95,7 @@ tables:
         std: 0.81
   - name: none
     key: NoAlign-EEGNet
-    code: hustbciml/algorithms/aligners/Identity.py
+    code: src/hustbciml/algorithms/aligners/Identity.py
     desc: No alignment. The trials are passed to the backbone as recorded.
     acc:
       BNCI2014001:
@@ -125,7 +125,7 @@ tables:
       Channel Reflection requires a two-class left/right task. BNCI2014002 and
       BNCI2015001 are right hand versus both feet, and BNCI2014002 provides no
       anatomical montage.
-    code: hustbciml/algorithms/augmenters/ChannelReflection.py
+    code: src/hustbciml/algorithms/augmenters/ChannelReflection.py
     ref: Z. Wang†, S. Li†, ..., D. Wu*, Neural Networks, 2024
     doi: 10.1016/j.neunet.2024.106351
     desc: Mirrors each trial across the sagittal midline and swaps its left/right label, generating anatomically valid copies that double the training set in two-class left/right motor imagery.
@@ -138,7 +138,7 @@ tables:
   - name: CSDA
     key: CSDA-EEGNet
     lab: true
-    code: hustbciml/algorithms/augmenters/CSDA.py
+    code: src/hustbciml/algorithms/augmenters/CSDA.py
     ref: Z. Wang, ..., D. Wu*, Knowl.-Based Syst., 2025
     doi: 10.1016/j.knosys.2025.113074
     desc: Cross-subject wavelet detail swap. It mixes the high-frequency wavelet details of same-class trials from different subjects, to synthesize new trials.
@@ -158,7 +158,7 @@ tables:
       BNCI2015001: 73.19
   - name: Amplitude Scaling
     key: Scale-EEGNet
-    code: hustbciml/algorithms/augmenters/Scaling.py
+    code: src/hustbciml/algorithms/augmenters/Scaling.py
     ref: X. Chen, ..., D. Wu*, Fundamental Research, 2026
     doi: 10.1016/j.fmre.2026.04.034
     desc: Copies each trial with its amplitude multiplied by a coefficient close to one. It is the augmentation component of the PAT pipeline.
@@ -174,7 +174,7 @@ tables:
         std: 1.53
   - name: Additive Noise
     key: Noise-EEGNet
-    code: hustbciml/algorithms/augmenters/Noise.py
+    code: src/hustbciml/algorithms/augmenters/Noise.py
     ref: D. Freer, G.-Z. Yang, J. Neural Eng., 2020
     doi: 10.1088/1741-2552/ab57c0
     desc: Copies each trial once, with zero-mean Gaussian noise added and scaled to the amplitude of the trial itself. The simplest label-preserving augmentation.
@@ -190,7 +190,7 @@ tables:
         std: 1.02
   - name: Amplitude Flip
     key: Flip-EEGNet
-    code: hustbciml/algorithms/augmenters/Flip.py
+    code: src/hustbciml/algorithms/augmenters/Flip.py
     ref: D. Freer, G.-Z. Yang, J. Neural Eng., 2020
     doi: 10.1088/1741-2552/ab57c0
     desc: Mirrors each channel vertically about its own maximum, adding one label-preserving copy per trial.
@@ -206,7 +206,7 @@ tables:
         std: 0.93
   - name: Frequency Shift
     key: FShift-EEGNet
-    code: hustbciml/algorithms/augmenters/FShift.py
+    code: src/hustbciml/algorithms/augmenters/FShift.py
     ref: D. Freer, G.-Z. Yang, J. Neural Eng., 2020
     doi: 10.1088/1741-2552/ab57c0
     desc: Translates a trial's whole spectrum by a small frequency offset using the analytic (Hilbert) signal.
@@ -222,7 +222,7 @@ tables:
         std: 0.31
   - name: Fourier Surrogate
     key: FSurr-EEGNet
-    code: hustbciml/algorithms/augmenters/FSurr.py
+    code: src/hustbciml/algorithms/augmenters/FSurr.py
     ref: J. T. C. Schwabedal et al., arXiv:1806.08675, 2018
     desc: Draws a surrogate trial with the same power spectrum as the original but randomized Fourier phase.
     acc:
@@ -237,7 +237,7 @@ tables:
         std: 0.74
   - name: Frequency Recombination
     key: FComb-EEGNet
-    code: hustbciml/algorithms/augmenters/FComb.py
+    code: src/hustbciml/algorithms/augmenters/FComb.py
     ref: X. Zhao et al., J. Neural Eng., 2022
     doi: 10.1088/1741-2552/aca04f
     desc: Splits each trial's cosine spectrum into contiguous bands and rebuilds a new trial by taking each band from a different same-class trial.
@@ -253,7 +253,7 @@ tables:
         std: 0.88
   - name: Half-Sample Recombination
     key: HS-EEGNet
-    code: hustbciml/algorithms/augmenters/HS.py
+    code: src/hustbciml/algorithms/augmenters/HS.py
     ref: Y. Pei et al., Front. Hum. Neurosci., 2021
     doi: 10.3389/fnhum.2021.645952
     desc: Splices the left-hemisphere and right-hemisphere channels of two same-class trials into a new trial, exploiting the lateralization of motor imagery. An electrode-space transform, applied to unaligned trials.
@@ -292,7 +292,7 @@ tables:
   - name: CSP-Net
     key: CSP-Net
     lab: true
-    code: hustbciml/algorithms/models/CSPNet.py
+    code: src/hustbciml/algorithms/models/CSPNet.py
     ref: X. Jiang, ..., D. Wu*, Knowl.-Based Syst., 2024
     doi: 10.1016/j.knosys.2024.112668
     desc: EEGNet whose depthwise spatial convolution is initialized with Common Spatial Pattern filters and then frozen.
@@ -309,7 +309,7 @@ tables:
   - name: DBConformer
     key: EA-DBConformer
     lab: true
-    code: hustbciml/algorithms/models/DBConformer.py
+    code: src/hustbciml/algorithms/models/DBConformer.py
     ref: Z. Wang, ..., D. Wu*, IEEE J. Biomed. Health Inform., 2026
     doi: 10.1109/JBHI.2025.3622725
     desc: Dual-branch convolutional transformer with parallel temporal and spatial branches whose features are fused before classification.
@@ -329,7 +329,7 @@ tables:
     also_varies: >-
       strategy (multi-view contrastive objective) and batch size 64, not the
       backbone alone.
-    code: hustbciml/algorithms/strategies/MVCNet.py
+    code: src/hustbciml/algorithms/strategies/MVCNet.py
     ref: Z. Wang, ..., D. Wu*, Knowl.-Based Syst., 2025
     doi: 10.1016/j.knosys.2025.114205
     desc: Multi-View Contrastive Network. An IFNet convolutional backbone trained with a multi-view contrastive objective. At the inference time, only the backbone and the linear head are used.
@@ -346,7 +346,7 @@ tables:
   - name: TIE-EEGNet
     key: EA-TIEEEGNet
     lab: true
-    code: hustbciml/algorithms/models/TIEEEGNet.py
+    code: src/hustbciml/algorithms/models/TIEEEGNet.py
     ref: R. Peng, ..., D. Wu*, IEEE Trans. Neural Syst. Rehabil. Eng., 2022
     doi: 10.1109/TNSRE.2022.3204540
     desc: 'EEGNet whose first temporal convolution is replaced by a time-information-enhanced convolution, which injects a fixed sinusoidal positional embedding into the signal. ⚠ Note: it was originally developed for seizure detection (Peng et al. 2022). This time-positional design targets seizure EEG, and may not be well suited to motor imagery.'
@@ -363,7 +363,7 @@ tables:
   - name: KDFNet
     key: EA-KDFNet
     lab: true
-    code: hustbciml/algorithms/models/KDFNet.py
+    code: src/hustbciml/algorithms/models/KDFNet.py
     ref: X. Jiang, ..., D. Wu*, Inf. Sci., 2026
     doi: 10.1016/j.ins.2025.123001
     desc: Knowledge-data fusion CNN mirroring FBCSP. A windowed-sinc FIR filter bank and per-band CSP spatial filters are knowledge-initialized on the aligned source, then fine-tuned end-to-end.
@@ -379,7 +379,7 @@ tables:
         std: 1.05
   - name: DeepConvNet
     key: EA-DeepConvNet
-    code: hustbciml/algorithms/models/DeepConvNet.py
+    code: src/hustbciml/algorithms/models/DeepConvNet.py
     ref: R. T. Schirrmeister et al., Hum. Brain Mapp., 2017
     doi: 10.1002/hbm.23730
     desc: Deeper four-block convolutional network for EEG decoding.
@@ -395,7 +395,7 @@ tables:
         std: 0.47
   - name: ShallowConvNet
     key: EA-ShallowConvNet
-    code: hustbciml/algorithms/models/ShallowConvNet.py
+    code: src/hustbciml/algorithms/models/ShallowConvNet.py
     ref: R. T. Schirrmeister et al., Hum. Brain Mapp., 2017
     doi: 10.1002/hbm.23730
     desc: Shallow convolution-and-pooling network modeled on band-power features.
@@ -411,7 +411,7 @@ tables:
         std: 0.65
   - name: EEGNet
     key: EA-EEGNet
-    code: hustbciml/algorithms/models/EEGNet.py
+    code: src/hustbciml/algorithms/models/EEGNet.py
     ref: V. J. Lawhern et al., J. Neural Eng., 2018
     doi: 10.1088/1741-2552/aace8c
     desc: Compact convolutional network, consisting of a temporal convolution, a depthwise spatial convolution and a separable convolution. The default backbone of the benchmark.
@@ -427,7 +427,7 @@ tables:
         std: 0.69
   - name: EEGConformer
     key: EA-EEGConformer
-    code: hustbciml/algorithms/models/EEGConformer.py
+    code: src/hustbciml/algorithms/models/EEGConformer.py
     ref: Y. Song et al., IEEE Trans. Neural Syst. Rehabil. Eng., 2023
     doi: 10.1109/TNSRE.2022.3230250
     desc: Convolutional tokenizer followed by a transformer encoder.
@@ -443,7 +443,7 @@ tables:
         std: 0.79
   - name: ADFCNN
     key: EA-ADFCNN
-    code: hustbciml/algorithms/models/ADFCNN.py
+    code: src/hustbciml/algorithms/models/ADFCNN.py
     ref: W. Tao et al., IEEE Trans. Neural Syst. Rehabil. Eng., 2024
     doi: 10.1109/TNSRE.2023.3342331
     desc: Two parallel spectral-spatial pathways at different temporal scales, fused by a self-attention module.
@@ -459,7 +459,7 @@ tables:
         std: 0.27
   - name: CTNet
     key: EA-CTNet
-    code: hustbciml/algorithms/models/CTNet.py
+    code: src/hustbciml/algorithms/models/CTNet.py
     ref: W. Zhao et al., Sci. Rep., 2024
     doi: 10.1038/s41598-024-71118-7
     desc: An EEGNet-style convolutional patch embedding feeding a transformer encoder.
@@ -475,7 +475,7 @@ tables:
         std: 0.37
   - name: MSCFormer
     key: EA-MSCFormer
-    code: hustbciml/algorithms/models/MSCFormer.py
+    code: src/hustbciml/algorithms/models/MSCFormer.py
     ref: W. Zhao et al., Sci. Rep., 2025
     doi: 10.1038/s41598-025-96611-5
     desc: Three parallel multi-scale temporal-convolution branches whose features are fused and passed to a transformer encoder.
@@ -491,7 +491,7 @@ tables:
         std: 1
   - name: MSVTNet
     key: EA-MSVTNet
-    code: hustbciml/algorithms/models/MSVTNet.py
+    code: src/hustbciml/algorithms/models/MSVTNet.py
     ref: K. Liu et al., IEEE J. Biomed. Health Inform., 2024
     doi: 10.1109/JBHI.2024.3450753
     desc: Several parallel multi-scale EEGNet-style convolution branches followed by a transformer that mixes their tokens.
@@ -507,7 +507,7 @@ tables:
         std: 1.04
   - name: TMSA-Net
     key: EA-TMSANet
-    code: hustbciml/algorithms/models/TMSANet.py
+    code: src/hustbciml/algorithms/models/TMSANet.py
     ref: Q. Zhao, W. Zhu, Biomed. Signal Process. Control, 2025
     doi: 10.1016/j.bspc.2024.107189
     desc: Sums two parallel multi-scale temporal convolutions, then applies a temporal multi-scale self-attention module.
@@ -523,7 +523,7 @@ tables:
         std: 0.78
   - name: EEGWaveNet
     key: EA-EEGWaveNet
-    code: hustbciml/algorithms/models/EEGWaveNet.py
+    code: src/hustbciml/algorithms/models/EEGWaveNet.py
     ref: P. Thuwajit et al., IEEE Trans. Ind. Inform., 2022
     doi: 10.1109/TII.2021.3133307
     desc: A cascade of depthwise Conv1d layers repeatedly halves the sampling rate, to extract multi-scale temporal features. It was originally a seizure detector.
@@ -539,7 +539,7 @@ tables:
         std: 1.3
   - name: SlimSeiz
     key: EA-SlimSeiz
-    code: hustbciml/algorithms/models/SlimSeiz.py
+    code: src/hustbciml/algorithms/models/SlimSeiz.py
     ref: G. Lu et al., IEEE Int. Symp. Circuits Syst., 2025
     doi: 10.1109/ISCAS56072.2025.11043364
     desc: A lightweight multi-branch 1D convolution feature extractor, paired with a single Mamba selective state space mixer. It was originally a seizure prediction network.
@@ -555,7 +555,7 @@ tables:
         std: 1.04
   - name: FBMSNet
     key: EA-FBMSNet
-    code: hustbciml/algorithms/models/FBMSNet.py
+    code: src/hustbciml/algorithms/models/FBMSNet.py
     ref: K. Liu et al., IEEE Trans. Biomed. Eng., 2023
     doi: 10.1109/TBME.2022.3193277
     desc: Decomposes the signal into a filter bank of narrow sub-bands, then applies mixed-scale depthwise temporal convolutions.
@@ -571,7 +571,7 @@ tables:
         std: 0.96
   - name: EEGNeX
     key: EA-EEGNeX
-    code: hustbciml/algorithms/models/EEGNeX.py
+    code: src/hustbciml/algorithms/models/EEGNeX.py
     ref: X. Chen et al., Biomed. Signal Process. Control, 2024
     doi: 10.1016/j.bspc.2023.105475
     desc: A purely convolutional EEGNet variant that replaces the separable temporal convolutions with a stack of dilated convolutions for a wider receptive field.
@@ -587,7 +587,7 @@ tables:
         std: 0.64
   - name: EEG-Deformer
     key: EA-EEGDeformer
-    code: hustbciml/algorithms/models/EEGDeformer.py
+    code: src/hustbciml/algorithms/models/EEGDeformer.py
     ref: Y. Ding et al., IEEE J. Biomed. Health Inform., 2025
     doi: 10.1109/JBHI.2024.3504604
     desc: A dense convolutional transformer that interleaves shallow CNN encoders with coarse-to-fine transformer stages.
@@ -602,7 +602,7 @@ tables:
         mean: 73.26
         std: 0.09
 # The network-free counterpart to the table above: same aligned input, no deep network
-# at all. Reported in hustbciml/RESULTS.md since the classical track was added, but
+# at all. Reported in src/hustbciml/RESULTS.md since the classical track was added, but
 # absent from this file until v1.2.0 — which left its six cells with no source of truth
 # and made them the only rows in the benchmark that no test cross-checked.
 - id: classical
@@ -626,7 +626,7 @@ tables:
     also_varies: >-
       the backbone and the head are both gone, and training is a direct fit with no
       gradient loop.
-    code: hustbciml/algorithms/strategies/CSP_LDA.py
+    code: src/hustbciml/algorithms/strategies/CSP_LDA.py
     ref: H. Ramoser et al., IEEE Trans. Rehabil. Eng., 2000
     doi: 10.1109/86.895946
     desc: Common Spatial Pattern filters (10 components) followed by Linear Discriminant Analysis. The classical motor imagery baseline, which remains competitive with a deep network in cross-subject decoding.
@@ -645,7 +645,7 @@ tables:
     also_varies: >-
       the backbone and the head are both gone, and the trial is represented by its
       covariance matrix rather than by the time series.
-    code: hustbciml/algorithms/strategies/RiemannMDM.py
+    code: src/hustbciml/algorithms/strategies/RiemannMDM.py
     ref: A. Barachant et al., IEEE Trans. Biomed. Eng., 2012
     doi: 10.1109/TBME.2011.2172210
     desc: Each trial is represented by its spatial covariance matrix, and assigned to the nearest class mean under the affine-invariant Riemannian metric. No filter and no feature beyond the covariance is used.
@@ -670,7 +670,7 @@ tables:
     - name: MDMAML
       key: MDMAML
       lab: true
-      code: hustbciml/algorithms/strategies/MDMAML.py
+      code: src/hustbciml/algorithms/strategies/MDMAML.py
       ref: S. Li, ..., D. Wu*, IEEE Comput. Intell. Mag., 2022
       doi: 10.1109/MCI.2022.3199622
       desc: Domain-paired first-order MAML across the source subjects. It meta-learns an initialization so that one adaptation step on any source subject lowers the loss on the others, then applies the meta-learned EEGNet to the target with no target fine-tuning.
@@ -687,7 +687,7 @@ tables:
     - name: ABAT
       key: ABAT
       lab: true
-      code: hustbciml/algorithms/strategies/ABAT.py
+      code: src/hustbciml/algorithms/strategies/ABAT.py
       ref: X. Chen, ..., D. Wu*, IEEE Trans. Neural Syst. Rehabil. Eng., 2024
       doi: 10.1109/TNSRE.2024.3391936
       desc: Replaces each training batch with a channel-scaled adversarial batch after a short clean warm-up, hardening the source-trained EEGNet against distribution shift. The target is not used during training.
@@ -706,7 +706,7 @@ tables:
       lab: true
       also_varies: >-
         augmenter (amplitude Scaling) as well as the training objective.
-      code: hustbciml/algorithms/strategies/PAT.py
+      code: src/hustbciml/algorithms/strategies/PAT.py
       ref: X. Chen, ..., D. Wu*, Fundamental Research, 2026
       doi: 10.1016/j.fmre.2026.04.034
       desc: 'Extends adversarial training for privacy-preserving (source-only) transfer: after a clean warm-up each Euclidean-aligned batch is amplitude-scaled (×(1±0.05)) then perturbed by a global-ε L∞ PGD attack (noisy-initialized, eps 0.03, 10 steps), hardening the source-trained EEGNet against distribution shift. The target is never used in training.'
@@ -722,7 +722,7 @@ tables:
           std: 0.42
     - name: ERM
       key: EA-EEGNet
-      code: hustbciml/algorithms/strategies/ERM.py
+      code: src/hustbciml/algorithms/strategies/ERM.py
       desc: Standard supervised training on the source subjects with no adaptation. This is the no-transfer baseline every transfer family is measured against.
       acc:
         BNCI2014001:
@@ -745,7 +745,7 @@ tables:
         tangent-space approach, so the aligner is Identity, and the EEGNet backbone
         and the Linear head are unused. It is a context row rather than a one-stage
         change to the EA-EEGNet baseline.
-      code: hustbciml/algorithms/strategies/MEKT.py
+      code: src/hustbciml/algorithms/strategies/MEKT.py
       ref: W. Zhang, D. Wu*, IEEE Trans. Neural Syst. Rehabil. Eng., 2020
       doi: 10.1109/TNSRE.2020.2985996
       desc: 'Network-free manifold transfer, i.e., not an EEGNet model: per-subject covariance centroid alignment and Riemannian tangent-space features, then a jointly learned source/target subspace that minimizes the joint distribution shift while preserving the source discriminability and the target locality, refined by EM pseudo-labeling, into a shrinkage LDA. Deterministic.'
@@ -761,7 +761,7 @@ tables:
           std: 0.0
     - name: MCC
       key: MCC
-      code: hustbciml/algorithms/strategies/MCC.py
+      code: src/hustbciml/algorithms/strategies/MCC.py
       ref: Y. Jin et al., ECCV, 2020
       doi: 10.1007/978-3-030-58589-1_28
       desc: Minimizes class confusion in the target predictions during source training.
@@ -777,7 +777,7 @@ tables:
           std: 0.61
     - name: CDAN
       key: CDAN
-      code: hustbciml/algorithms/strategies/CDAN.py
+      code: src/hustbciml/algorithms/strategies/CDAN.py
       ref: M. Long et al., NeurIPS, 2018
       desc: Domain-adversarial training conditioned on the classifier's predictions.
       acc:
@@ -792,7 +792,7 @@ tables:
           std: 0.76
     - name: JAN
       key: JAN
-      code: hustbciml/algorithms/strategies/JAN.py
+      code: src/hustbciml/algorithms/strategies/JAN.py
       ref: M. Long et al., ICML, 2017
       desc: Matches the joint distribution of features and predictions across domains (joint maximum mean discrepancy).
       acc:
@@ -807,7 +807,7 @@ tables:
           std: 0.57
     - name: DAN
       key: DAN
-      code: hustbciml/algorithms/strategies/DAN.py
+      code: src/hustbciml/algorithms/strategies/DAN.py
       ref: M. Long et al., ICML, 2015
       desc: Matches feature distributions across domains with a multi-kernel maximum mean discrepancy.
       acc:
@@ -822,7 +822,7 @@ tables:
           std: 1.2
     - name: DANN
       key: EA-DANN
-      code: hustbciml/algorithms/strategies/DANN.py
+      code: src/hustbciml/algorithms/strategies/DANN.py
       ref: Y. Ganin et al., J. Mach. Learn. Res., 2016
       desc: Adversarial feature learning through a gradient-reversal domain discriminator.
       acc:
@@ -837,7 +837,7 @@ tables:
           std: 1.11
     - name: MDD
       key: MDD
-      code: hustbciml/algorithms/strategies/MDD.py
+      code: src/hustbciml/algorithms/strategies/MDD.py
       ref: Y. Zhang et al., ICML, 2019
       desc: Bounds the domain gap with a margin disparity discrepancy between source and target.
       acc:
@@ -853,7 +853,7 @@ tables:
     - name: DJP-MMD
       key: DJP-MMD
       lab: true
-      code: hustbciml/algorithms/strategies/DJPMMD.py
+      code: src/hustbciml/algorithms/strategies/DJPMMD.py
       ref: W. Zhang, D. Wu*, IJCNN, 2020
       doi: 10.1109/IJCNN48605.2020.9207365
       desc: Matches the joint probability across domains with a discriminative joint-probability maximum mean discrepancy.
@@ -885,7 +885,7 @@ tables:
     - name: ASFA
       key: ASFA
       lab: true
-      code: hustbciml/algorithms/strategies/ASFA.py
+      code: src/hustbciml/algorithms/strategies/ASFA.py
       ref: K. Xia, ..., D. Wu*, IEEE Trans. Biomed. Eng., 2022
       doi: 10.1109/TBME.2022.3168570
       desc: Freezes the source classifier head and adapts the feature extractor by minimizing a Tsallis-entropy prediction-uncertainty objective with a consistency-regularized auxiliary head. No source data at transfer time.
@@ -907,7 +907,7 @@ tables:
         tangent-space approach, so the aligner is Identity, and the EEGNet backbone
         and the Linear head are unused. It is a context row rather than a one-stage
         change to the EA-EEGNet baseline.
-      code: hustbciml/algorithms/strategies/LSFT.py
+      code: src/hustbciml/algorithms/strategies/LSFT.py
       ref: W. Zhang, D. Wu*, IEEE Trans. Cogn. Devel. Syst., 2023
       doi: 10.1109/TCDS.2022.3193731
       desc: 'Classical source-free transfer on Riemannian tangent-space features: source classifiers vote to pseudo-label the target, then an iterative subspace adaptation relabels it. No raw source data at transfer time.'
@@ -923,7 +923,7 @@ tables:
           std: 0.0
     - name: SHOT
       key: SHOT
-      code: hustbciml/algorithms/strategies/SHOT.py
+      code: src/hustbciml/algorithms/strategies/SHOT.py
       ref: J. Liang, D. Hu, and J. Feng, ICML, 2020
       desc: Freezes the source classifier and adapts the feature extractor by information maximization with pseudo-labels.
       acc:
@@ -954,7 +954,7 @@ tables:
     - name: T-TIME
       key: T-TIME
       lab: true
-      code: hustbciml/algorithms/strategies/TTIME.py
+      code: src/hustbciml/algorithms/strategies/TTIME.py
       ref: S. Li, ..., D. Wu*, IEEE Trans. Biomed. Eng., 2024
       doi: 10.1109/TBME.2023.3303289
       desc: Online test-time adaptation. For each incoming target batch it updates an incremental Euclidean-Alignment reference and minimizes an information-maximization loss (conditional-entropy minimization with a marginal-diversity regularizer), then predicts. Plug-and-play, no target labels.
@@ -970,7 +970,7 @@ tables:
           std: 0.68
     - name: DELTA
       key: DELTA
-      code: hustbciml/algorithms/strategies/DELTA.py
+      code: src/hustbciml/algorithms/strategies/DELTA.py
       ref: B. Zhao, C. Chen, and S.-T. Xia, ICLR, 2023
       desc: Test-time entropy minimization with class-imbalance-corrected prediction diversity.
       acc:
@@ -985,7 +985,7 @@ tables:
           std: 0.64
     - name: ISFDA
       key: ISFDA
-      code: hustbciml/algorithms/strategies/ISFDA.py
+      code: src/hustbciml/algorithms/strategies/ISFDA.py
       ref: X. Li et al., ACM MM, 2021
       doi: 10.1145/3474085.3475487
       desc: Online test-time adaptation by information maximization, with intra-class tightening and inter-class separation on pseudo-labeled target features. The whole network is adapted over the target stream.
@@ -1001,7 +1001,7 @@ tables:
           std: 0.53
     - name: SAR
       key: SAR
-      code: hustbciml/algorithms/strategies/SAR.py
+      code: src/hustbciml/algorithms/strategies/SAR.py
       ref: S. Niu et al., ICLR, 2023
       desc: Sharpness-aware, reliable test-time entropy minimization.
       acc:
@@ -1016,7 +1016,7 @@ tables:
           std: 1.95
     - name: PL
       key: PL
-      code: hustbciml/algorithms/strategies/PL.py
+      code: src/hustbciml/algorithms/strategies/PL.py
       ref: D.-H. Lee, ICML Workshop Challenges Represent. Learn., 2013
       desc: Online self-training on the model's own pseudo-labels.
       acc:
@@ -1031,7 +1031,7 @@ tables:
           std: 1.01
     - name: BN-adapt
       key: BN-adapt
-      code: hustbciml/algorithms/strategies/BNAdapt.py
+      code: src/hustbciml/algorithms/strategies/BNAdapt.py
       ref: S. Schneider et al., NeurIPS, 2020
       desc: Re-estimates BatchNorm statistics on the target, with no gradient step.
       acc:
@@ -1047,7 +1047,7 @@ tables:
     - name: BFT
       key: BFT
       lab: true
-      code: hustbciml/algorithms/strategies/BFT.py
+      code: src/hustbciml/algorithms/strategies/BFT.py
       ref: S. Li†, J. Ouyang†, Z. Cui†, ..., D. Wu*, arXiv:2601.07556, 2026
       doi: 10.48550/arXiv.2601.07556
       desc: 'Backpropagation-free test-time adaptation: averages the model''s predictions over label-preserving augmentations of each target trial, gaining robustness with no gradient updates. It is aimed at lightweight, low-power BCI hardware.'
@@ -1063,7 +1063,7 @@ tables:
           std: 0.31
     - name: Tent
       key: Tent
-      code: hustbciml/algorithms/strategies/Tent.py
+      code: src/hustbciml/algorithms/strategies/Tent.py
       ref: D. Wang et al., ICLR, 2021
       desc: Test-time entropy minimization over the BatchNorm affine parameters.
       acc:
@@ -1107,7 +1107,7 @@ tables:
     - name: FedBS
       key: FedBS
       lab: true
-      code: hustbciml/algorithms/strategies/FedBS.py
+      code: src/hustbciml/algorithms/strategies/FedBS.py
       ref: T. Jia, ..., D. Wu*, IEEE Trans. Neural Syst. Rehabil. Eng., 2024
       doi: 10.1109/TNSRE.2024.3457504
       desc: Federated learning with batch-specific BatchNorm and sharpness-aware minimization, aggregating the per-subject model updates through a server without sharing the raw EEG. Under the same optimizer and learning rate as Centralized Training, it recovers essentially all of the centralized accuracy, so the privacy mechanism costs almost nothing here.
@@ -1124,7 +1124,7 @@ tables:
     - name: SAFE
       key: SAFE
       lab: true
-      code: hustbciml/algorithms/strategies/SAFE.py
+      code: src/hustbciml/algorithms/strategies/SAFE.py
       ref: T. Jia, ..., D. Wu*, arXiv:2601.05789, 2026
       doi: 10.48550/arXiv.2601.05789
       desc: Federated learning that adds single-step adversarial feature training and a one-step adversarial weight perturbation on top of batch-specific BatchNorm, hardening the shared model without pooling the raw EEG. The adversarial regularization reduces the clean accuracy slightly on BNCI2014001, and raises the other two datasets above Centralized Training.
@@ -1140,7 +1140,7 @@ tables:
           std: 0.53
     - name: FedAvg
       key: FedAvg
-      code: hustbciml/algorithms/strategies/FedAvg.py
+      code: src/hustbciml/algorithms/strategies/FedAvg.py
       ref: B. McMahan et al., AISTATS, 2017
       desc: 'Federated averaging: each subject trains locally, and the server averages the model weights. The plain federated baseline, which isolates the two additions of FedBS.'
       acc:
@@ -1161,7 +1161,7 @@ tables:
         tangent-space approach, so the aligner is Identity, and the EEGNet backbone
         and the Linear head are unused. It is a context row rather than a one-stage
         change to the EA-EEGNet baseline.
-      code: hustbciml/algorithms/strategies/MSDT.py
+      code: src/hustbciml/algorithms/strategies/MSDT.py
       ref: W. Zhang, ..., D. Wu*, IEEE Trans. Neural Syst. Rehabil. Eng., 2022
       doi: 10.1109/TNSRE.2022.3207494
       desc: 'Decentralized multi-source transfer on Riemannian tangent-space features, i.e., not an EEGNet model: each source subject trains its own classifier, and the target adapts and fuses them at the test time, with no source data pooled. It is close to Centralized Training on all three datasets, slightly above on BNCI2014001 and slightly below on the other two. The difference reflects the Riemannian representation and the test-time adaptation, rather than the privacy mechanism.'
@@ -1224,7 +1224,7 @@ tables:
     rows:
     - name: Dawid-Skene
       key: DawidSkene
-      code: hustbciml/algorithms/ensembles/DawidSkene.py
+      code: src/hustbciml/algorithms/ensembles/DawidSkene.py
       ref: A. P. Dawid and A. M. Skene, J. R. Stat. Soc. C, 1979
       doi: 10.2307/2346806
       desc: 'Classic EM crowd-labeling aggregator: jointly estimates the full confusion matrix of each source model and the consensus label from the hard votes alone, without any target label.'
@@ -1240,7 +1240,7 @@ tables:
           std: 0.43
     - name: EBCC
       key: EBCC
-      code: hustbciml/algorithms/ensembles/EBCC.py
+      code: src/hustbciml/algorithms/ensembles/EBCC.py
       ref: Y. Li, B. Rubinstein, and T. Cohn, ICML, 2019
       desc: 'Enhanced Bayesian classifier combination: variational inference over low-rank worker-correlation groups. It is the most expressive of the crowd-aggregation baselines.'
       acc:
@@ -1256,7 +1256,7 @@ tables:
     - name: SML
       key: SML
       pin_after: SML-OVR
-      code: hustbciml/algorithms/ensembles/SML.py
+      code: src/hustbciml/algorithms/ensembles/SML.py
       ref: F. Parisi et al., Proc. Natl. Acad. Sci. USA, 2014
       doi: 10.1073/pnas.1219097111
       desc: 'Binary spectral meta-learner: weights each source model by the principal eigenvector of the ±1 vote covariance, which is an unsupervised estimate of the accuracy, valid for two classes. It is the binary form that the lab''s SML-OVR above generalizes to an arbitrary number of classes. The two coincide on these two-class tasks, which is why they report the same accuracy and are listed together.'
@@ -1273,7 +1273,7 @@ tables:
     - name: SML-OVR
       key: SML-OVR
       lab: true
-      code: hustbciml/algorithms/ensembles/SMLOVR.py
+      code: src/hustbciml/algorithms/ensembles/SMLOVR.py
       ref: S. Li, ..., D. Wu*, IEEE Comput. Intell. Mag., 2026
       doi: 10.1109/MCI.2025.3624194
       desc: 'The lab''s one-vs-rest spectral meta-learner, the multi-class generalization of the binary SML: for each class it runs the binary SML weight estimation on the one-hot votes and sums the per-class weightings, so it also handles more than two classes (for example the native four-class BNCI2014001, which the code still supports). On these two-class tasks it reduces exactly to the binary SML directly below, so the two report the identical accuracy here. The multi-class advantage shows only on native multi-class data.'
@@ -1289,7 +1289,7 @@ tables:
           std: 0.15
     - name: PM
       key: PM
-      code: hustbciml/algorithms/ensembles/PM.py
+      code: src/hustbciml/algorithms/ensembles/PM.py
       ref: Q. Li, ..., ACM SIGMOD, 2014
       doi: 10.1145/2588555.2610509
       desc: 'Truth-discovery aggregator: iteratively weights each source model by how much its votes agree with the current consensus (weight = -log of normalized disagreement), then re-estimates the consensus.'
@@ -1305,7 +1305,7 @@ tables:
           std: 1.13
     - name: MACE
       key: MACE
-      code: hustbciml/algorithms/ensembles/MACE.py
+      code: src/hustbciml/algorithms/ensembles/MACE.py
       ref: D. Hovy, ..., NAACL-HLT, 2013
       desc: Variational aggregator that separates competent labeling from per-model spamming, to down-weight unreliable source models.
       acc:
@@ -1320,7 +1320,7 @@ tables:
           std: 0.43
     - name: LAA
       key: LAA
-      code: hustbciml/algorithms/ensembles/LAA.py
+      code: src/hustbciml/algorithms/ensembles/LAA.py
       ref: L. Yin, ..., IJCAI, 2017
       doi: 10.24963/ijcai.2017/184
       desc: 'Label-aware autoencoder: an unsupervised neural aggregator that encodes the per-trial votes into a consensus label and reconstructs each source model''s vote from it.'
@@ -1336,7 +1336,7 @@ tables:
           std: 0.71
     - name: LA
       key: LA
-      code: hustbciml/algorithms/ensembles/LA.py
+      code: src/hustbciml/algorithms/ensembles/LA.py
       ref: Y. Yang, ..., ACM Trans. Knowl. Discov. Data, 2024
       doi: 10.1145/3630102
       desc: 'Lightweight two-pass aggregator: one online pass estimates each source model''s ability under a Beta prior, a second pass re-votes weighted by that ability.'
@@ -1353,7 +1353,7 @@ tables:
     - name: StackingNet
       key: StackingNet
       lab: true
-      code: hustbciml/algorithms/ensembles/StackingNet.py
+      code: src/hustbciml/algorithms/ensembles/StackingNet.py
       ref: S. Li†, C. Liu†, D. Wu*, Advanced Science, 2026
       doi: 10.1002/advs.76488
       desc: 'Unsupervised transductive meta-combiner over the hard labels of the source models: it learns per-model weights on the unlabeled target by consensus agreement, without any target label, initialized from the balanced accuracy of each model against the majority vote.'
@@ -1369,7 +1369,7 @@ tables:
           std: 0.74
     - name: Wawa
       key: Wawa
-      code: hustbciml/algorithms/ensembles/Wawa.py
+      code: src/hustbciml/algorithms/ensembles/Wawa.py
       ref: Worker Agreement With Aggregate, a crowd-kit heuristic
       desc: 'Worker-agreement-with-aggregate heuristic: weight each source model by its agreement with the plain majority vote, then re-vote. A crowd-kit heuristic with no separate paper.'
       acc:
@@ -1384,7 +1384,7 @@ tables:
           std: 1.25
     - name: Majority voting
       key: Voting
-      code: hustbciml/algorithms/ensembles/Voting.py
+      code: src/hustbciml/algorithms/ensembles/Voting.py
       ref: S. Li, ..., D. Wu*, IEEE Comput. Intell. Mag., 2026
       doi: 10.1109/MCI.2025.3624194
       desc: Plain majority vote over the hard predicted labels of the three per-subject learners across all source subjects. This is the label-only baseline every combiner is measured against.
@@ -1400,7 +1400,7 @@ tables:
           std: 0.73
     - name: GLAD
       key: GLAD
-      code: hustbciml/algorithms/ensembles/GLAD.py
+      code: src/hustbciml/algorithms/ensembles/GLAD.py
       ref: J. Whitehill, ..., NeurIPS, 2009
       desc: EM aggregator that jointly infers the consensus label, each source model's ability, and each trial's difficulty.
       acc:
@@ -1415,7 +1415,7 @@ tables:
           std: 1.29
     - name: ZenCrowd
       key: ZenCrowd
-      code: hustbciml/algorithms/ensembles/ZenCrowd.py
+      code: src/hustbciml/algorithms/ensembles/ZenCrowd.py
       ref: G. Demartini, ..., WWW, 2012
       doi: 10.1145/2187836.2187900
       desc: EM aggregator with a single reliability scalar per source model, inferred from vote agreement alone (no target labels).
@@ -1431,7 +1431,7 @@ tables:
           std: 0.22
     - name: M-MSR
       key: MMSR
-      code: hustbciml/algorithms/ensembles/MMSR.py
+      code: src/hustbciml/algorithms/ensembles/MMSR.py
       ref: Q. Ma and A. Olshevsky, NeurIPS, 2020
       desc: Recovers each source model's skill from the pairwise inter-model agreement matrix by robust rank-one matrix completion, then weights the vote by it.
       acc:

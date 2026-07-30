@@ -57,6 +57,11 @@
 
 完整版本历史见 [`CHANGELOG.md`](CHANGELOG.md)。近期要点：
 
+- **2026-07-30（v1.5.0）** 只调整仓库结构。代码包移入 `src/hustbciml/`，仓库根目录下每一项的用途一目了然。
+导入名仍是 `hustbciml`，文档中的所有命令都不变，只是现在需要用 `pip install -e .` 安装本包。新增
+`pyproject.toml`（同时接管原先的 `pytest.ini`），并删除 33 个内部文件：`RERUN.md` 及执行那次已完成的
+v1.2.0 重测的七个脚本，以及 25 个写死了某位贡献者主目录路径的批量运行与启动脚本。测量结果没有任何变化。
+
 - **2026-07-30（v1.4.1）** 恢复概览页上被 v1.3.0 移除的集成学习方法组，14 种集成聚合方法重新列出，
 实验室自研的 SML-OVR 和 StackingNet 也重新出现在这份方法清单中，方法标签数由 60 增至 74。集成学习表中
 两行非集成参照不计入该清单。测量结果没有任何变化，排行榜的渲染结果完全一致。
@@ -108,7 +113,7 @@
 让复现登记表变成可执行的测试，补上了持续集成与链接检查，并订正了与代码不符的表述。
 这些修改改变了代码算出的结果，因此**凡是受影响的排行榜单元格都重新测量了一遍**，
 而且每个单元格都在当初产出已发表数值的那台机器上重测，因为同一份代码在不同的 BLAS 实现上会给出不同的数字。
-具体单元格及其来源机器列在 [`RERUN.md`](RERUN.md)。
+每个已发表单元格由哪台机器产出，记录在 [`cell_origin.tsv`](src/hustbciml/scripts/cell_origin.tsv)。
 本次不涉及的方法作为对照组一并重跑，结果与 v1.1.x 逐被试完全一致。
 集成学习表改为三个随机种子的均值加标准差，此前只有单个种子、且不给标准差。
 另外新增**经典流程**表，收录两行不含网络的方法，方法数变为 58。
@@ -130,7 +135,7 @@
 
 本仓库包含两项内容。
 
-**1. 脑电解码基准**，位于目录 [`hustbciml/`](hustbciml/)。
+**1. 脑电解码基准**，位于目录 [`src/hustbciml/`](src/hustbciml/)。
 
 一个自包含的框架，围绕单一命令行入口和自动扫描的插件注册表构建。在同一条可组合流水线上重新实现了 **58 种脑电解码方法**，覆盖数据对齐、数据增强、网络骨干与迁移学习，另有 **14 种集成聚合方法**单独计数，它们聚合多个已训练模型，而不构成一条流水线。全部方法在**单一受控协议**下评估，每个报告数值都附有逐方法的复现记录。
 
@@ -268,9 +273,9 @@ open docs/index.html          # macOS, or simply double-click the file
 ### 运行基准
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt   # 依赖
+pip install -e .                  # 安装位于 src/ 下的本包
 
-# from the repository root, so that `hustbciml` is importable
 python -m hustbciml.run --list                                                # every plug-in
 python -m hustbciml.run --algorithm EA-EEGNet --dataset Toy --device cpu       # synthetic, no download
 python -m hustbciml.run --algorithm EA-EEGNet --dataset BNCI2014001 --itr 3    # real data, via MOABB
@@ -283,7 +288,7 @@ python -m hustbciml.run --aligner EA --augmenter CSDA --backbone DBConformer \
                         --strategy ERM --head Linear --dataset BNCI2014001 --itr 3
 ```
 
-每次运行在 `results/<setting>/` 下写入两个文件。`metrics.json` 记录逐被试准确率、均值与标准差，以及解析后的完整配置，因此仅凭这一个文件，就能把排行榜上的一个单元格追溯到产出它的确切设置。`predictions.npz` 记录逐被试的预测与得分。当前数值见 [`hustbciml/RESULTS.md`](hustbciml/RESULTS.md)，术语表、算法卡片与移植指南见 [`hustbciml/docs/`](hustbciml/docs/index.md)。
+每次运行在 `results/<setting>/` 下写入两个文件。`metrics.json` 记录逐被试准确率、均值与标准差，以及解析后的完整配置，因此仅凭这一个文件，就能把排行榜上的一个单元格追溯到产出它的确切设置。`predictions.npz` 记录逐被试的预测与得分。当前数值见 [`src/hustbciml/RESULTS.md`](src/hustbciml/RESULTS.md)，术语表、算法卡片与移植指南见 [`src/hustbciml/docs/`](src/hustbciml/docs/index.md)。
 
 ## 论文到代码总览
 
@@ -303,7 +308,18 @@ python3 gallery/build_site.py     # requires only PyYAML
 
 ```
 HUST-BCIML/
-├── docs/                       # THE WEB APP (GitHub Pages source)
+├── src/hustbciml/              # THE BENCHMARK  (可导入的 Python 包)
+│   ├── run.py                  # python -m hustbciml.run --algorithm EA-EEGNet --dataset BNCI2014001
+│   ├── core/                   # batch, stages (ABCs), registry, pipeline, config, context
+│   ├── exp/                    # exp_basic + one Exp class per protocol
+│   ├── algorithms/             # aligners / augmenters / models / heads / strategies / presets
+│   ├── data_provider/          # datasets, data_factory, splitters, collate
+│   ├── utils/                  # metrics, seed, tools
+│   ├── scripts/                # ensemble, leaderboard, compare, tuning, card generation
+│   ├── tests/repro/            # repro_targets.yaml, measured vs. published, per method
+│   ├── docs/                   # glossary, porting guide, per-algorithm cards
+│   └── RESULTS.md              # the full leaderboard, in Markdown
+├── docs/                       # THE WEB APP (GitHub Pages 按此目录名发布站点)
 │   ├── index.html
 │   ├── assets/                 # style.css, app.js  (vanilla JS, no framework)
 │   └── data/                   # generated: lab.js, publications.js, benchmark.js
@@ -313,25 +329,18 @@ HUST-BCIML/
 │   │   ├── lab.yml              # lab bio, anchor project, featured repos
 │   │   └── benchmark.yml        # controlled-comparison leaderboard
 │   └── build_site.py           # YAML → docs/data/*.js   (requires only PyYAML)
-├── hustbciml/                  # THE BENCHMARK
-│   ├── run.py                  # python -m hustbciml.run --algorithm EA-EEGNet --dataset BNCI2014001
-│   ├── core/                   # batch, stages (ABCs), registry, pipeline, config, context
-│   ├── exp/                    # exp_basic + one Exp class per protocol
-│   ├── algorithms/             # aligners / augmenters / models / heads / strategies / presets
-│   ├── data_provider/          # datasets, data_factory, splitters, collate
-│   ├── utils/                  # metrics, seed, tools
-│   ├── scripts/                # ensemble, leaderboard, compare, tuning
-│   ├── tests/repro/            # repro_targets.yaml, measured vs. published, per method
-│   ├── docs/                   # glossary, porting guide, per-algorithm cards
-│   └── RESULTS.md              # the full leaderboard, in Markdown
+├── pyproject.toml              # 打包与 pytest 配置
 └── requirements.txt
 ```
+
+代码包放在 `src/` 之下，而不是直接放在仓库根目录，这样根目录的每个条目一眼就能看出用途。
+导入名仍然是 `hustbciml`，本文档中的所有命令都不变，`pip install -e .` 负责把它装到路径上。
 
 ## 复现与测量完整性
 
 基准中的每一个数值都是**实测**的三种子均值。没有任何数值是为了对上某篇论文而手工设定的。
 
-每一个数值都记录在 [`hustbciml/tests/repro/repro_targets.yaml`](hustbciml/tests/repro/repro_targets.yaml) 里，协议匹配时对照论文自身的数值，协议不同时对照一个预期行为区间，并附有逐方法的注记。`tests/repro/test_repro_targets.py` 在每次提交时检查三件事：每个排行榜条目都有对应记录，每个记录值都落在自己的参照区间内，登记表与公开排行榜不会对同一次运行给出两个不同的数值。算法[卡片](hustbciml/docs/cards/README.md)给出报告值与复现值的对照表，以及每种方法移植自哪个上游实现。上游仓库声明了许可条款的，卡片如实记录，未作声明的则照实写明，而不去暗示做过一次并未进行的审计。
+每一个数值都记录在 [`src/hustbciml/tests/repro/repro_targets.yaml`](src/hustbciml/tests/repro/repro_targets.yaml) 里，协议匹配时对照论文自身的数值，协议不同时对照一个预期行为区间，并附有逐方法的注记。`tests/repro/test_repro_targets.py` 在每次提交时检查三件事：每个排行榜条目都有对应记录，每个记录值都落在自己的参照区间内，登记表与公开排行榜不会对同一次运行给出两个不同的数值。算法[卡片](src/hustbciml/docs/cards/README.md)给出报告值与复现值的对照表，以及每种方法移植自哪个上游实现。上游仓库声明了许可条款的，卡片如实记录，未作声明的则照实写明，而不去暗示做过一次并未进行的审计。
 
 #### 超参数选择，以及它没有保证什么
 
@@ -352,11 +361,11 @@ HUST-BCIML/
 
 ## 扩展基准
 
-添加 `hustbciml/algorithms/<group>/<Name>.py`，在其中定义一个符合相应阶段抽象基类的类，它会**按文件名自动注册**。
+添加 `src/hustbciml/algorithms/<group>/<Name>.py`，在其中定义一个符合相应阶段抽象基类的类，它会**按文件名自动注册**。
 
 随后用一个预设 YAML 把它组合进来，在有了真实数值之后添加一个复现目标，并撰写一张算法卡片。每个新文件都带有一个标准文件头，包含作者、日期、确切的 IEEE 引用，以及在有原作者代码时指向该代码的链接。
 
-完整工作流见[移植指南](hustbciml/docs/porting_guide.md)。
+完整工作流见[移植指南](src/hustbciml/docs/porting_guide.md)。
 
 ## 精选仓库
 
@@ -394,13 +403,13 @@ HUST-BCIML/
 
 数据集通过 [MOABB](https://moabb.neurotechx.com/)（Mother of All BCI Benchmarks）提供。
 
-移植的方法在各自的文件头以及对应的算法卡片中标注其原作者。集成与隐私保护部分所用的群体聚合基线，连同其参考文献，在 [`hustbciml/RESULTS.md`](hustbciml/RESULTS.md) 中致谢。
+移植的方法在各自的文件头以及对应的算法卡片中标注其原作者。集成与隐私保护部分所用的群体聚合基线，连同其参考文献，在 [`src/hustbciml/RESULTS.md`](src/hustbciml/RESULTS.md) 中致谢。
 
 ## 许可证
 
 本项目以 **MIT 许可证** 发布，完整条款见 [`LICENSE`](LICENSE)。
 
-本基准重新实现或改编了若干先前已发表的方法。每张[算法卡片](hustbciml/docs/cards/README.md)记录了对应方法的代码来源。从零重新实现的部分受本仓库的 MIT 许可证覆盖，改编自某个特定上游仓库的实现则保留该项目原有的许可证条款。数据集依各自提供方的使用条款获取。
+本基准重新实现或改编了若干先前已发表的方法。每张[算法卡片](src/hustbciml/docs/cards/README.md)记录了对应方法的代码来源。从零重新实现的部分受本仓库的 MIT 许可证覆盖，改编自某个特定上游仓库的实现则保留该项目原有的许可证条款。数据集依各自提供方的使用条款获取。
 
 ---
 

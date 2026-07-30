@@ -60,6 +60,13 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-07-30 (v1.5.0).** Repository structure only. The library moved to `src/hustbciml/`, so the
+root names what each directory holds; `hustbciml` is still the import name and every documented
+command is unchanged, but the package is now installed with `pip install -e .`. Added
+`pyproject.toml` (which absorbs `pytest.ini`) and removed 33 internal files — `RERUN.md` with the
+seven scripts that carried out the finished v1.2.0 re-measurement, and 25 sweep and launch scripts
+that hard-coded one contributor's home directory. No measured number changes.
+
 - **2026-07-30 (v1.4.1).** Restored the "Ensemble Learning" group of approach chips on the
 Overview, which v1.3.0 had dropped, so all 14 combiners are listed and the lab's SML-OVR and
 StackingNet are visible there; the chip count rises from 60 to 74. The ensemble table's two
@@ -124,7 +131,8 @@ probing), recorded four defects inherited verbatim from the reference implementa
 checker, and corrected the claims that did not match the code. Those fixes change what the code
 computes, so **every leaderboard cell they touch was re-measured**, each on the machine that
 produced the published value, because the same code gives different numbers on different BLAS
-builds. [`RERUN.md`](RERUN.md) lists the cells and their provenance. The rows the release does not
+builds. Which machine produced each published cell is recorded in
+[`cell_origin.tsv`](src/hustbciml/scripts/cell_origin.tsv). The rows the release does not
 touch were re-run as controls and come back identical to v1.1.x for every subject. The ensemble
 table now carries mean ± std over three seeds, where before it was single-seed and mean-only. Also
 adds a **Classical Pipelines** table for the two network-free rows (**58** approaches), which were
@@ -146,7 +154,7 @@ published in `RESULTS.md` but appeared on no leaderboard table and so were cross
 
 This repository contains two deliverables.
 
-**1. The EEG-decoding benchmark**, in directory [`hustbciml/`](hustbciml/).
+**1. The EEG-decoding benchmark**, in directory [`src/hustbciml/`](src/hustbciml/).
 
 A self-contained framework built around a single command-line entry point and an auto-scanning
 plug-in registry. On one composable pipeline it re-implements **58 EEG-decoding approaches**,
@@ -382,9 +390,9 @@ when served by GitHub Pages. The application has three tabs:
 ### Run the benchmark
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt   # dependencies
+pip install -e .                  # the package itself, from src/
 
-# from the repository root, so that `hustbciml` is importable
 python -m hustbciml.run --list                                                # every plug-in
 python -m hustbciml.run --algorithm EA-EEGNet --dataset Toy --device cpu       # synthetic, no download
 python -m hustbciml.run --algorithm EA-EEGNet --dataset BNCI2014001 --itr 3    # real data, via MOABB
@@ -401,8 +409,8 @@ Each run writes two files under `results/<setting>/`. `metrics.json` holds the p
 accuracies, the mean and the standard deviation, together with the entire resolved
 configuration, so that a leaderboard cell is auditable back to the exact settings that produced
 it from that file alone. `predictions.npz` holds the per-subject predictions and scores. See
-[`hustbciml/RESULTS.md`](hustbciml/RESULTS.md) for the current numbers and
-[`hustbciml/docs/`](hustbciml/docs/index.md) for the glossary, algorithm cards, and porting guide.
+[`src/hustbciml/RESULTS.md`](src/hustbciml/RESULTS.md) for the current numbers and
+[`src/hustbciml/docs/`](src/hustbciml/docs/index.md) for the glossary, algorithm cards, and porting guide.
 
 ## The paper-to-code gallery
 
@@ -426,7 +434,18 @@ python3 gallery/build_site.py     # requires only PyYAML
 
 ```
 HUST-BCIML/
-├── docs/                       # THE WEB APP (GitHub Pages source)
+├── src/hustbciml/              # THE BENCHMARK  (the importable package)
+│   ├── run.py                  # python -m hustbciml.run --algorithm EA-EEGNet --dataset BNCI2014001
+│   ├── core/                   # batch, stages (ABCs), registry, pipeline, config, context
+│   ├── exp/                    # exp_basic + one Exp class per protocol
+│   ├── algorithms/             # aligners / augmenters / models / heads / strategies / presets
+│   ├── data_provider/          # datasets, data_factory, splitters, collate
+│   ├── utils/                  # metrics, seed, tools
+│   ├── scripts/                # ensemble, leaderboard, compare, tuning, card generation
+│   ├── tests/repro/            # repro_targets.yaml: measured vs. published, per method
+│   ├── docs/                   # glossary, porting guide, per-algorithm cards
+│   └── RESULTS.md              # the full leaderboard, in Markdown
+├── docs/                       # THE WEB APP (GitHub Pages serves this folder by name)
 │   ├── index.html
 │   ├── assets/                 # style.css, app.js  (vanilla JS, no framework)
 │   └── data/                   # generated: lab.js, publications.js, benchmark.js
@@ -436,19 +455,13 @@ HUST-BCIML/
 │   │   ├── lab.yml              # lab bio, anchor project, featured repos
 │   │   └── benchmark.yml        # controlled-comparison leaderboard
 │   └── build_site.py           # YAML → docs/data/*.js   (requires only PyYAML)
-├── hustbciml/                  # THE BENCHMARK
-│   ├── run.py                  # python -m hustbciml.run --algorithm EA-EEGNet --dataset BNCI2014001
-│   ├── core/                   # batch, stages (ABCs), registry, pipeline, config, context
-│   ├── exp/                    # exp_basic + one Exp class per protocol
-│   ├── algorithms/             # aligners / augmenters / models / heads / strategies / presets
-│   ├── data_provider/          # datasets, data_factory, splitters, collate
-│   ├── utils/                  # metrics, seed, tools
-│   ├── scripts/                # ensemble, leaderboard, compare, tuning
-│   ├── tests/repro/            # repro_targets.yaml: measured vs. published, per method
-│   ├── docs/                   # glossary, porting guide, per-algorithm cards
-│   └── RESULTS.md              # the full leaderboard, in Markdown
+├── pyproject.toml              # packaging + pytest configuration
 └── requirements.txt
 ```
+
+The package sits under `src/` rather than at the top level so that the repository root
+names what each directory is for. `hustbciml` remains the import name, so every command
+in this file is unchanged; `pip install -e .` is what puts it on the path.
 
 ## Reproduction and measurement integrity
 
@@ -456,12 +469,12 @@ Every number in the benchmark is a **measured** three-seed mean. None is ever ha
 a paper.
 
 Each number is recorded in
-[`hustbciml/tests/repro/repro_targets.yaml`](hustbciml/tests/repro/repro_targets.yaml), against
+[`src/hustbciml/tests/repro/repro_targets.yaml`](src/hustbciml/tests/repro/repro_targets.yaml), against
 the paper's own value where the protocol matches, or against an expected-behavior band where it
 differs, together with a per-method note. `tests/repro/test_repro_targets.py` checks on every
 commit that every leaderboard key has an entry, that each recorded value sits inside its own
 reference range, and that the registry and the public leaderboard do not publish two different
-numbers for the same run. The algorithm [cards](hustbciml/docs/cards/README.md) carry the
+numbers for the same run. The algorithm [cards](src/hustbciml/docs/cards/README.md) carry the
 reported-vs-reproduced table and, for each method, the upstream source it was ported from.
 Upstream *license* terms are recorded where the source repository states one; where it does not,
 the card says so rather than implying an audit that was not performed.
@@ -505,7 +518,7 @@ carries a `dev<ids>` tag, so it lands in its own results folder.
 
 ## Extending the benchmark
 
-Add `hustbciml/algorithms/<group>/<Name>.py` defining a class that conforms to the stage
+Add `src/hustbciml/algorithms/<group>/<Name>.py` defining a class that conforms to the stage
 abstract base class. It **auto-registers by filename**.
 
 Then compose it with a preset YAML, add a reproduction target once real numbers exist, and write
@@ -513,7 +526,7 @@ an algorithm card. Each new file carries a standard header with the author, date
 citation, and a link to the original authors' code where one exists.
 
 The full workflow is in the
-[porting guide](hustbciml/docs/porting_guide.md).
+[porting guide](src/hustbciml/docs/porting_guide.md).
 
 ## Featured repositories
 
@@ -561,7 +574,7 @@ Benchmarks).
 Ported methods credit their original authors in each file header and in the corresponding
 algorithm card. The crowd-aggregation baselines used in the ensemble and privacy-preserving
 sections are credited, with their references, in
-[`hustbciml/RESULTS.md`](hustbciml/RESULTS.md).
+[`src/hustbciml/RESULTS.md`](src/hustbciml/RESULTS.md).
 
 ## License
 
@@ -569,7 +582,7 @@ This project is released under the **MIT License**. See [`LICENSE`](LICENSE) for
 full text.
 
 The benchmark reimplements or adapts a number of previously published methods. Each
-[algorithm card](hustbciml/docs/cards/README.md) documents that method's code provenance:
+[algorithm card](src/hustbciml/docs/cards/README.md) documents that method's code provenance:
 from-scratch reimplementations are covered by this repository's MIT license, while
 implementations adapted from a specific upstream repository retain that project's original
 license terms. Datasets are obtained through their respective providers under their own

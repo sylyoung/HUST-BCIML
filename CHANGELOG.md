@@ -7,6 +7,68 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.5.0] - 2026-07-30
+
+Repository structure only. **No measured number changes**, no algorithm changes, and the
+leaderboard and the website render identically: the only edit to a generated file is the
+`code:` path each leaderboard row links to.
+
+### Changed
+- **The library moved to `src/hustbciml/`.** The repository root now names what each
+  directory is for — `src/` the code, `docs/` the site, `gallery/` the site's source.
+  `hustbciml` remains the import name, so `python -m hustbciml.run …` is unchanged; what
+  changes is that the package has to be installed to be importable, which is one added
+  line in the documented setup:
+  ```bash
+  pip install -r requirements.txt   # dependencies
+  pip install -e .                  # the package itself, from src/
+  ```
+- **Added `pyproject.toml`**, which makes that install possible, declares the core
+  dependencies and four optional groups (`data`, `ensembles`, `augmenters`, `dev`), and
+  absorbs the root `pytest.ini`. It reads the version from `hustbciml.__version__` rather
+  than restating it.
+- The four tests that located the repository by counting `..` segments now look for a
+  marker file instead. That count was one level short after the move, and it is the kind
+  of breakage that would recur at every layout change.
+- On the website, the "Benchmark code" buttons and the `RESULTS.md` button follow the
+  package to its new path — one constant in `app.js`. Every in-repo link the leaderboard
+  renders is checked against the working tree by `tests/repro/test_leaderboard_links.py`,
+  so a path that moved without its link would fail rather than 404 in a reader's browser.
+- The `--data_dir` defaults of `tune_algorithm.py` and `tune_networks.py`, and the
+  `compare` invocation documented in `RESULTS.md`, pointed at one contributor's home
+  directory. They use `./data` and `./results` now, matching `Config.data_dir`.
+
+### Removed
+- **33 internal files**, none of which a reader of this repository could use.
+  - `RERUN.md` and the seven scripts that executed it (`rerun_v12*.sh`, `rerun_fix.sh`,
+    `extract_v12.py`, `compare_v12.py`, `apply_v12.py`). They planned and carried out the
+    v1.2.0 re-measurement; that migration finished, its results are published in
+    `benchmark.yml` and `RESULTS.md`, and nothing but those files referenced them.
+  - Twenty-five launchers, sweeps and extractors (`sweep_*.sh`, `launch_*.sh`,
+    `prod_sweep*.sh`, `server_launch.sh`, `fullrun_newmethods.sh`, `smoke_new_methods.sh`,
+    `extract_augbb_3ds.py`, `extract_newmethods_3ds.py`). Each hard-coded a home
+    directory, a personal conda environment or a personal log path, so none of them ran
+    anywhere but on the machine that wrote them. The interface they wrapped —
+    `python -m hustbciml.run --algorithm <name> --dataset <name>` — is what the README
+    documents, and which machine produced each published cell is still recorded in
+    `scripts/cell_origin.tsv`.
+
+  Every script the repository's published claims depend on stayed: `build_cards.py`,
+  `compare.py`, `leaderboard.py`, `ensemble.py`, `decentralized.py`, `combined_ensemble.py`,
+  `tune_networks.py`, `tune_algorithm.py`, `sync_results_md.py`, `cell_origin.tsv`.
+
+### Added
+- `tests/test_packaging.py`. `pyproject.toml` restates two things written down elsewhere,
+  and both now have a check: `__version__` must match the newest CHANGELOG heading — it had
+  been left at `1.2.0` through four tagged releases — and where `pyproject.toml` and
+  `requirements.txt` name the same package, the version range must be identical, so the
+  measured `scikit-learn<1.8` bound cannot be relaxed in one file only.
+
+### Fixed
+- CI installs the package (`pip install -e .`) before running the tests and the card
+  generator, which the `src/` layout requires. Its comments describe what each job checks
+  rather than which past defect prompted it.
+
 ## [1.4.1] - 2026-07-30
 
 ### Changed

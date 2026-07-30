@@ -1,8 +1,7 @@
 name: CI
 
-# Nothing previously ran on push or pull request: the smoke suite executed only
-# when a developer remembered to invoke pytest, and the generated web data could
-# drift from its YAML source with no gate. Both are checked here.
+# Three gates, in order of how quickly a break in them would otherwise reach a
+# reader: the test suite, the generated files, and the gallery's outbound links.
 
 on:
   push:
@@ -10,9 +9,8 @@ on:
   pull_request:
   workflow_dispatch:
   schedule:
-    # The link check below is the only weekly job. Without this trigger it was
-    # reachable by hand only, so the "run weekly" it promises never happened and
-    # link rot would have gone unnoticed for as long as nobody clicked the button.
+    # Monday 04:17 UTC, for the link check only — it is the one job that depends on
+    # the outside world rather than on this repository.
     - cron: "17 4 * * 1"
 
 jobs:
@@ -33,24 +31,25 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          # requirements.txt is installed whole, which is also the install path
-          # both READMEs document, so a break in it surfaces here rather than on a
-          # reader's machine. That pulls MOABB and MNE in as well, even though no
-          # job here downloads a dataset: every test runs on the bundled toy data.
+          # Both commands are what the READMEs document, run whole, so a break in
+          # either surfaces here rather than on a reader's machine. requirements.txt
+          # pulls MOABB and MNE in as well, even though no job here downloads a
+          # dataset: every test runs on the bundled toy data.
           pip install -r requirements.txt
+          pip install -e .
           pip install pytest
 
       - name: Plug-in and guard coverage (fast)
-        run: pytest hustbciml/tests/test_plugins.py hustbciml/tests/repro -q
+        run: pytest src/hustbciml/tests/test_plugins.py src/hustbciml/tests/repro -q
 
       - name: Integration smoke on bundled toy data
-        run: pytest hustbciml/tests/test_smoke.py -q
+        run: pytest src/hustbciml/tests/test_smoke.py -q
 
   generated-artifacts:
-    # The site data under docs/data/ and the cards under hustbciml/docs/cards/ are
-    # generated. If a YAML source changes and the generator is not re-run, the
-    # public page and the committed source disagree — which is exactly how ten
-    # stale card values reached the repository unnoticed.
+    # The site data under docs/data/ and the cards under src/hustbciml/docs/cards/
+    # are generated from YAML. This job regenerates both and fails if the result
+    # differs from what is committed, so the public page cannot disagree with the
+    # source it is built from.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -58,7 +57,11 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-      - run: pip install pyyaml
+      # The card generator needs nothing but PyYAML; --no-deps installs the package
+      # for its import path alone and keeps this job seconds rather than minutes.
+      - run: |
+          pip install pyyaml
+          pip install -e . --no-deps
 
       - name: Regenerate the site data and the cards
         run: |
@@ -79,14 +82,13 @@ jobs:
       - name: Chinese layer resolves
         # A tr() string whose English was edited without updating its i18n key
         # falls back to English and renders exactly like a translation, so only a
-        # reader of the Chinese page ever notices. Cheap to check, invisible
-        # otherwise.
+        # reader of the Chinese page would ever notice.
         run: python gallery/check_i18n.py
 
   links:
     # Link rot on a paper-to-code gallery is silent: the page keeps rendering.
-    # Run weekly rather than on every commit so a publisher outage does not block
-    # a merge, and warn rather than fail on redirects.
+    # Weekly rather than per-commit, so a publisher outage does not block a merge,
+    # and redirects warn rather than fail.
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
     steps:
