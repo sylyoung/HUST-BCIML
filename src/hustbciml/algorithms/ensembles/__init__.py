@@ -1,35 +1,52 @@
 # __init__.py  —  hustbciml.algorithms.ensembles
-"""Ensemble combiners: post-hoc black-box aggregators of base-model predictions.
-
-Each combiner lives in its own file (filename == class name), exactly like the
-pipeline-stage plug-ins under ``models/``, ``aligners/`` and so on. Unlike a stage,
-a combiner is applied *after* training by the ensemble runner scripts
-(``scripts/ensemble.py``, ``decentralized.py``, ``combined_ensemble.py``), not by
-``build_pipeline``. Because a combiner's public name may contain characters a file
-name cannot (``SML-OVR``, ``M-MSR``, ``Dawid-Skene``), the display name is a class
-attribute and ``build_combiners`` maps it to an instance.
-
-Keeping this module's top level import-free preserves the registry's contract that
-listing a group never imports its plug-ins: ``build_combiners`` pulls in the
-combiner modules only when a runner actually asks to build the table.
-"""
+"""Discovery and configured construction of post-hoc ensemble combiners."""
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping
 
-def build_combiners():
-    """Return the ``name -> combiner-instance`` table the ensemble runners consume.
 
-    Uses the same auto-scan registry as the pipeline stages: every non-underscore
-    module in this package defines one ``Combiner`` subclass whose class name
-    equals the file name. Each instance's ``name`` attribute (which may contain
-    hyphens or spaces, e.g. ``SML-OVR``) becomes the key a runner selects it by via
-    ``COMBINERS[name](scores)``. Adding a combiner is just dropping in a new file;
-    there is no list here to keep in sync.
-    """
+def _classes_by_display_name():
     from hustbciml.core import registry
 
-    out = {}
+    classes = {}
     for stem in registry.available("ensembles"):
         cls = registry.resolve("ensembles", stem)
-        out[cls.name] = cls()
+        if cls.name in classes:
+            raise RuntimeError(f"duplicate combiner display name {cls.name!r}")
+        classes[cls.name] = cls
+    return classes
+
+
+def build_combiners(names: Iterable[str] | None = None,
+                    settings: Mapping[str, Mapping] | None = None):
+    """Build a validated ``display-name -> instance`` mapping.
+
+    ``settings`` is keyed by display name and forwarded to that class constructor.
+    Unknown names/settings and invalid constructor keys fail before measurement.
+    """
+    classes = _classes_by_display_name()
+    requested = list(classes) if names is None else list(names)
+    if len(set(requested)) != len(requested):
+        raise ValueError(f"duplicate combiner names requested: {requested}")
+    unknown = sorted(set(requested) - set(classes))
+    settings = dict(settings or {})
+    unknown_settings = sorted(set(settings) - set(classes))
+    if unknown or unknown_settings:
+        raise KeyError(
+            f"unknown combiners: requested={unknown}, configured={unknown_settings}; "
+            f"available={sorted(classes)}"
+        )
+
+    out = {}
+    for name in requested:
+        kwargs = dict(settings.get(name) or {})
+        try:
+            out[name] = classes[name](**kwargs)
+        except TypeError as exc:
+            raise TypeError(f"invalid settings for combiner {name!r}: {kwargs}") from exc
     return out
+
+
+def combiner_manifest(combiners: Mapping[str, object]) -> dict:
+    """Serializable effective configurations, including backend versions."""
+    return {name: combiner.configuration() for name, combiner in combiners.items()}

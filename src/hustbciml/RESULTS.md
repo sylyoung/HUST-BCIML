@@ -44,29 +44,36 @@ last decimal means matching the BLAS, not just the package versions. Reproducing
 decimals reported here does not. `src/hustbciml/scripts/cell_origin.tsv` records which machine produced
 each published cell, so a re-measurement can be run where its baseline was made.
 
-Each stage table varies exactly ONE axis and holds the rest at the canonical configuration
-(EA aligner, no augmentation, EEGNet backbone, Linear head, ERM strategy). A row's Δ
-(discussed in prose) is its accuracy minus that table's same-dataset baseline. Rows are
-comparable because every row differs from its baseline in exactly one way. Columns are
-directly comparable within every table: all three datasets are two-class (chance 50%)
-throughout, including the privacy-preserving and ensemble sections. Each family is measured
-against its own same-dataset baseline. The transfer families are measured against ERM, the
-privacy-preserving family against Centralized Training, and the ensemble table against
-majority voting. A single flat ranking across all methods is deliberately NOT presented.
+Most stage tables are designed to vary one axis while holding the canonical configuration
+(EA aligner, no augmentation, EEGNet backbone, Linear head, ERM strategy). Rows that necessarily
+change more than one component, including MVCNet, PAT, MEKT, LSFT and MSDT, are identified in the
+leaderboard notes rather than treated as single-stage ablations. A row's Δ (discussed in prose) is
+its accuracy minus that table's same-dataset baseline. Columns are directly comparable within every
+table: all three datasets are two-class (chance 50%) throughout, including the privacy-preserving
+and ensemble sections. Each family is measured against its own same-dataset baseline. The transfer
+families are measured against ERM, the privacy-preserving family against Centralized Training, and
+the ensemble table against majority voting. A single flat ranking across all methods is
+deliberately NOT presented.
 
 > **Base note (why 3 seeds matter).** The earlier single-seed (seed 1) EA-EEGNet
 > value was 75.00. The 3-seed mean is **72.07 ± 1.58**, because seed 1 was a lucky draw.
-> Because most methods are measured as a delta against this base, the honest 3-seed
-> base widened nearly every delta below. Every number is a measured 3-seed mean,
-> none tuned to hit a target.
+> Because most methods are measured as a delta against this base, the 3-seed base widened
+> nearly every delta below.
 >
-> **HP selection (2026-07-19).** Cells in the Network, Transfer, Augmentation, Composite and
-> classical-transfer tables were refreshed from a held-out-source hyperparameter campaign: for
-> each flagged method a small grid (learning rate, epochs/batch, and the method's own loss
-> trade-offs) was scored on held-out SOURCE subjects (never the target/test labels), and the
-> winning config's 3-seed test number replaced the earlier one ONLY where it beat it, otherwise
-> the original stands. This extends the per-architecture backbone tuning to the other stages.
-> Selection never touches the reported cohort, so none tuned to hit a target still holds.
+> **Audit correction (2026-07-31; no numeric cells changed).** The published tables are legacy
+> measurements. The old tuning campaign held out random source trials and pooled validation
+> scores across overlapping LOSO folds; it did not perform nested held-out-source-subject
+> selection. Every reported subject could therefore influence the global choice while serving as
+> labeled source validation in other folds. Candidate runs also evaluated the outer target, and a
+> newly tuned value was published only when its test score improved on the prior value. The
+> `select="dev"` campaign directly used three reported subjects' labels for selection. These facts
+> invalidate the former claim that selection never touched the reported cohort.
+>
+> The corrected network tuner selects separately inside each outer fold, holds out whole source
+> subjects, and cannot align, predict, score or print the outer target during selection. New
+> caches/results also record source, dependencies, preprocessing, data digest and method
+> parameters, and fail on mismatched or incomplete inputs. No table value below is presented as a
+> result of that corrected procedure until it is remeasured.
 
 **Lab methods** (marked **(lab)** throughout) are proposed by Prof. Dongrui Wu's group.
 They are the backbones **CSP-Net**, **DBConformer**, **TIE-EEGNet** and **KDFNet**, the augmenters
@@ -88,12 +95,19 @@ Regenerate live (on the server, where the raw results are), per dataset:
 
 ---
 
-## Network (backbone)
-_EA + ERM, no aug. Vary the deep architecture. Unlike the other stage tables, each
-backbone uses its own learning rate and training length, selected on held-out
-source-validation data (per-architecture tuning). The EEGNet baseline here (tuned) is
-therefore slightly different from the canonical fixed-HP EEGNet used as the baseline in
-every other table. Baseline = EEGNet._
+## Network (backbone) — legacy, pending clean remeasurement
+_Archived EA + ERM measurements with no augmentation. The table mixed fixed schedules with
+per-backbone schedules chosen by the non-nested global procedure documented above; it is not the
+output of the corrected target-isolated tuner. The EEGNet row used the legacy tuned schedule and
+therefore differs from the canonical fixed-HP EEGNet baseline in the other tables. No value has
+been altered during the audit. Baseline = EEGNet._
+
+_These rows compare adapted architectures under this benchmark protocol, not paper protocols.
+DeepConvNet is an archived width-5/pool-2 adaptation rather than the cited Deep4Net. FBMSNet uses a
+non-equivalent finite zero-phase approximation after the global 8–32 Hz preprocessing, plus an
+adapted head/loss. EEGWaveNet follows the released code where it conflicts with the paper prose.
+ADFCNN preserves the upstream reshape behavior but replaces its classifier, window and training
+protocol._
 
 | Backbone | BNCI2014001 | BNCI2014002 | BNCI2015001 |
 |---|--:|--:|--:|
@@ -116,22 +130,14 @@ every other table. Baseline = EEGNet._
 | SlimSeiz | 69.65 ± 0.42 | 74.79 ± 1.61 | 72.94 ± 1.04 |
 | EEGWaveNet | 66.64 ± 1.44 | 68.93 ± 1.49 | 68.94 ± 1.30 |
 
-The backbone ranking is dataset-dependent, and the table reports it as measured. On BNCI2014001 the
-lab's dual-branch DBConformer leads (76.26), ahead of MSCFormer (75.67), the lab's CSP-Net (75.15,
-an EEGNet whose depthwise spatial convolution is initialized with frozen CSP filters) and MSVTNet
-(74.82). On BNCI2014002 DBConformer leads again and more clearly (77.19), ahead of MSCFormer
-(76.14) and MSVTNet (75.90). On BNCI2015001 the field is tightly bunched around the EEGNet baseline
-(73.39): TIE-EEGNet edges ahead (73.83), with MSCFormer (73.44), EEGConformer (73.43), EEG-Deformer
-(73.26) and MSVTNet (73.17) close behind, a faithful narrow spread — a spread smaller than several
-of these rows' own across-seed std, so the order within it should not be read as a ranking. No
-single backbone dominates all three datasets, and rankings shift across them: the seizure-oriented
-EEGWaveNet (66.64) sits lowest on BNCI2014001, while SlimSeiz climbs from 69.65 there to 74.79 on
-BNCI2014002. KDFNet (an FBCSP-mirroring CNN) and the compact FBMSNet land below the baseline on all
-three, honest below-baseline results for architectures built for other tasks or tighter parameter
-budgets. CTNet was in that group until this release: sizing its temporal kernel from the sampling
-rate rather than at a fixed 64 samples — a quarter-second at 250 Hz but an eighth at 512 Hz — moves
-it to **+1.44 / +0.39 / −1.06**, above the baseline on two of the three. It is the one case here
-where a fix changed a conclusion rather than a digit.
+The archived ranking is dataset-dependent. On BNCI2014001 the lab's DBConformer has 76.26,
+followed by MSCFormer (75.67), CSP-Net (75.15) and MSVTNet (74.82). On BNCI2014002 DBConformer has
+77.19, MSCFormer 76.14 and MSVTNet 75.90. On BNCI2015001 several means lie within the rows' own
+across-seed standard deviations, so their order should not be read as a stable ranking. EEGWaveNet
+has 66.64 on BNCI2014001, while SlimSeiz has 74.79 on BNCI2014002. KDFNet and the archived FBMSNet
+port lie below the EEGNet row in all three columns. CTNet's sampling-rate-sized temporal kernel
+produced **+1.44 / +0.39 / −1.06** relative to the baseline in this legacy run. These observations
+describe the archived implementations and selection procedure only.
 
 ## Alignment
 _EEGNet + ERM, no aug. Vary the aligner. Baseline = no alignment._
@@ -249,9 +255,9 @@ MVCNet changes two stages at once, an IFNet CNN backbone **and** a multi-view co
 training strategy (cross-view + cross-modal supervised-contrastive losses), so it cannot
 sit in any one-axis table. At inference it is just IFNet + the linear head. It is above the
 reference on all three: BNCI2014001 (75.75, +3.68), BNCI2014002 (77.86, +3.46) and
-BNCI2015001 (74.75, +1.56). Its learning rate is selected on held-out source data, which
-picks 3e-4 rather than the preset 1e-3; its two contrastive loss weights are set to 1.0 (the
-source has no hardcoded default).
+BNCI2015001 (74.75, +1.56). The legacy global source-validation campaign selected learning rate
+3e-4 rather than the preset 1e-3; this was not the corrected nested procedure. Its two contrastive
+loss weights are set to 1.0 (the source has no hardcoded default).
 
 _The BNCI2015001 cell moved in v1.2.0, from 72.21 ± 0.50 to 74.75 ± 0.10, at the same
 selected learning rate — the re-run picked 3e-4 again. What changed is that MVCNet no longer
@@ -312,9 +318,16 @@ privacy section below. Measured on BNCI2014001, cross-subject LOSO (9 subjects, 
 chance 50%), K = 5 seeds {1–5}, and each combiner accuracy is the mean over subjects. There is no
 std here because the five seeds are the ensemble's *members*: they are consumed by one fusion, so
 nothing is repeated across seeds for a std to be taken over. (That is specific to this table. The
-decentralized ensemble below does report mean ± std over three seeds.) Reproduce with
+decentralized ensemble below does report mean ± std over three seeds.) For a fresh,
+provenance-complete remeasurement in a new results directory, run
 `python -m hustbciml.scripts.ensemble
---algorithm T-TIME --dataset BNCI2014001 --seeds 1,2,3,4,5`._
+--algorithm T-TIME --dataset BNCI2014001 --seeds 1,2,3,4,5`; the strict runner does not reuse
+legacy base artifacts._
+
+_The row named ZenCrowd is the simplified single-coin EM implementation inherited from
+TestEnsemble, not the full model described by Demartini et al. The archived HUST runners used 20
+ZenCrowd passes and three PM/CRH reweighting rounds. Those values are part of method identity;
+the legacy artifacts did not serialize them, whereas new manifests do._
 
 | Combiner | Acc | Δ vs single-seed base |
 |---|--:|--:|
@@ -379,8 +392,13 @@ and no soft scores, so no combiner has an information advantage. They differ onl
 and combine the votes. Two combiners are lab-proposed (**StackingNet**, and the multi-class
 **SML-OVR**), and the rest are established crowd-labelling / truth-discovery aggregators. All three
 datasets are two-class (chance 50%), cross-subject LOSO, three seeds (mean ± std), and each combiner
-is measured against plain majority **voting**. Reproduce with
-`python -m hustbciml.scripts.decentralized --dataset <D> --base hetero3`._
+is measured against plain majority **voting**. A fresh provenance-complete remeasurement uses
+`python -m hustbciml.scripts.decentralized --dataset <D> --base hetero3` in a new results directory;
+the strict runner does not treat the legacy archive as resumable evidence._
+
+_As above, “ZenCrowd” denotes the simplified TestEnsemble EM implementation (20 passes), and PM
+denotes the three-round PM/CRH implementation. The displayed artifacts predate explicit combiner
+manifests and are retained as legacy measurements._
 
 _The pool takes **one learner per model family** — a Riemannian linear model, a convolutional net,
 and a self-attention net — rather than several members of fewer families. That is the design
@@ -490,8 +508,8 @@ method overall. Its adversarial hardening pays off once the single-source models
 strong enough. **MSDT** (Zhang et al., IEEE TNSRE 2022), the Riemannian decentralized
 method, lands close to Centralized across the board (+1.77 / −1.04 / −0.68). Plain
 **FedAvg** (McMahan et al., AISTATS 2017) stays competitive (+2.47 / −0.28 / −1.57), the
-two-class task being forgiving of plain weight averaging. Every number is measured on the
-server, none tuned to hit a target.
+two-class task being forgiving of plain weight averaging. These are server-measured legacy values;
+the selection caveat at the top of this file applies.
 
 The fully decentralized alternative, where each subject shares only hard predicted labels and
 never model updates, is the **Decentralized-heterogeneous ensemble** table earlier in

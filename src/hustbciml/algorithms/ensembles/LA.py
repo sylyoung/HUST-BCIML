@@ -42,11 +42,11 @@ class LA(VoteCombiner):
         self.alpha = alpha                               # Beta prior pseudo-counts for model ability
         self.beta = beta
 
-    def aggregate(self, votes: np.ndarray) -> np.ndarray:
+    def aggregate(self, votes: np.ndarray, n_classes: int) -> np.ndarray:
         preds = votes                                    # (K, N) integer hard votes
         alpha, beta = self.alpha, self.beta
         K, N = preds.shape
-        C = int(preds.max()) + 1
+        C = int(n_classes)
         labels = list(range(C))
         e2wl = {t: [(w, int(preds[w, t])) for w in range(K)] for t in range(N)}
         with fixed_seed(0):

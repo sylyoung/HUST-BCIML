@@ -38,9 +38,15 @@ class DawidSkene(VoteCombiner):
     """Dawid-Skene EM confusion-matrix aggregator (crowdkit, ``n_iter=10``)."""
 
     name = "Dawid-Skene"
+    backend = "crowdkit.aggregation.DawidSkene"
+    backend_distribution = "crowd-kit"
 
-    def aggregate(self, votes: np.ndarray) -> np.ndarray:
+    def __init__(self, n_iter: int = 10):
+        if int(n_iter) < 1:
+            raise ValueError("Dawid-Skene n_iter must be at least one")
+        self.n_iter = int(n_iter)
+
+    def aggregate(self, votes: np.ndarray, n_classes: int) -> np.ndarray:
         from crowdkit.aggregation import DawidSkene as _DawidSkene
 
-        # n_iter=10 matches the lab's TestEnsemble/ensemble.py call.
-        return crowdkit_predict(votes, _DawidSkene(n_iter=10))
+        return crowdkit_predict(votes, _DawidSkene(n_iter=self.n_iter))

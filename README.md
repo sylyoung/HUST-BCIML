@@ -60,6 +60,15 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-07-31 (unreleased audit correction).** The Network table is now identified as a legacy
+measurement pending clean remeasurement: its rows mixed fixed and per-backbone schedules, and the
+old global learning-rate sweep reused reported subjects as source-validation data in other LOSO
+folds. The new tuner performs target-isolated nested selection and never evaluates the outer target
+during selection. Result/cache/ensemble artifacts now record source, software, preprocessing and
+method parameters and fail closed on stale, partial or mismatched inputs. DeepConvNet and FBMSNet
+are documented as legacy adaptations rather than paper-faithful ports. No leaderboard number was
+changed in this correction.
+
 - **2026-07-30 (v1.5.0).** Repository structure only. The library moved to `src/hustbciml/`, so the
 root names what each directory holds; `hustbciml` is still the import name and every documented
 command is unchanged, but the package is now installed with `pip install -e .`. Added
@@ -200,19 +209,21 @@ reporting rather than left to convention.
    by filename.
 
 2. **Controlled comparison.**
-   Every comparison varies **one** pipeline stage while holding the rest at a fixed canonical
-   configuration, so that two rows differing in one component isolate the effect of that
+   The default comparison design varies **one** pipeline stage while holding the rest at a fixed
+   canonical configuration, so that two rows differing in one component isolate the effect of that
    component. Some rows cannot be reduced to a single axis: MVCNet changes the backbone, the
    objective and the batch size; PAT changes the augmenter as well as the objective; and MEKT,
    LSFT and MSDT are network-free Riemannian approaches that use no backbone at all. Each such
    row carries an explicit "also varies" note on the leaderboard rather than being presented as
-   a single-stage change. Two further axes are shared across a whole table and are stated once:
-   the ERM baseline is the best checkpoint on a held-out source split, whereas the domain
-   adaptation rows are the last iterate of a fixed schedule, as in their reference
-   implementations, and the Networks table selects a learning rate per architecture.
+   a single-stage change. The ERM baseline takes the best checkpoint on a held-out source split,
+   whereas the domain-adaptation rows take the last iterate of their fixed reference schedules.
+   The published Network table predates the corrected nested tuner: it mixes fixed and tuned
+   schedules, and its old sweep selected one dataset-wide learning rate from validation scores
+   pooled across overlapping LOSO folds. Its numbers are retained as legacy evidence pending
+   clean remeasurement.
 
 3. **Measurement integrity.**
-   Every reported number is a **measured** mean over three random seeds. No number is ever
+   Every leaderboard number is a **measured** mean over three random seeds. No number is ever
    hand-set to match a paper. Each is recorded in a machine-readable reproduction file, against
    the paper's own value where the protocol matches, or against an expected-behavior band where
    it differs.
@@ -223,13 +234,12 @@ reporting rather than left to convention.
    is deliberately **not** presented.
 
 5. **Reproducibility.**
-   Runs fix their seeds and persist their **full resolved configuration**, i.e., every
-   optimization, architecture and method-specific `hp` value, alongside the per-subject
-   predictions and scores, in `metrics.json` and `predictions.npz` under `results/<setting>/`.
-   Re-running a *different* configuration into an existing result folder is refused rather than
-   silently overwriting it. Model checkpoints are not persisted; those two artifacts are what a
-   number is audited from. Hyperparameter selection, where used, is described in "Hyperparameter
-   selection" below, including the respect in which it is **not** purely source-only.
+   New runs persist the full resolved configuration, source-tree and data digests, dependency and
+   BLAS/LAPACK runtime identity, explicit preprocessing, method parameters, and per-subject
+   predictions/scores. Reuse requires the complete measurement identity to match; partial,
+   unreadable, legacy, or differently configured artifacts fail closed. Model checkpoints are not
+   persisted. The current public numbers predate this artifact schema and remain labeled legacy
+   until remeasured through it.
 
 6. **Self-containment and zero build.**
    The web app renders from a single file with no build step, and the benchmark runs end-to-end
@@ -259,16 +269,16 @@ Aligner  →  Augmenter  →  Backbone  →  Head        (trained under a Strate
 
 ### Controlled comparison
 
-Each stage table **varies exactly one axis** and holds the remaining stages at the canonical
-configuration:
+Most stage tables vary one axis and hold the remaining stages at the canonical configuration:
 
 ```
 EA  ·  no augmentation  ·  EEGNet  ·  Linear head  ·  ERM
 ```
 
-Consequently, every row differs from its table's baseline in one way only, and a row's reported
-delta (Δ) is its accuracy minus that table's same-dataset baseline. A separate **ensemble** axis
-aggregates several models and is reported apart from the single-axis tables.
+A row's delta (Δ) is its accuracy minus that table's same-dataset baseline. Rows that necessarily
+change more than one stage state the extra changes under their names, and the legacy Network table
+has the tuning caveat above. A separate **ensemble** axis aggregates several models and is reported
+apart from the pipeline-stage tables.
 
 ### Evaluation protocol
 
@@ -327,8 +337,12 @@ On a fixed EA-aligned, ERM-trained setup, only the network changes. **EEGNet** i
 baseline, alongside **ShallowConvNet**, **DeepConvNet**, **EEG Conformer**, **CSP-Net (lab)**,
 **TIE-EEGNet (lab)**, **KDFNet (lab)**, **DBConformer (lab)**, **MVCNet (lab)**, and a set of
 recent networks (**ADFCNN**, **CTNet**, **MSCFormer**, **MSVTNet**, **TMSA-Net**, **EEGWaveNet**,
-**SlimSeiz**, **FBMSNet**, **EEGNeX**, **EEG-Deformer**). Each backbone keeps its own paper's
-architecture; only its learning rate is tuned, and only on held-out source subjects.
+**SlimSeiz**, **FBMSNet**, **EEGNeX**, **EEG-Deformer**). These are architecture-transfer rows under
+a shared MI/LOSO pipeline, not paper-protocol reproductions. In particular, the archived
+DeepConvNet and FBMSNet implementations materially differ from their cited methods; EEGWaveNet
+follows the released code where it conflicts with the paper prose; and ADFCNN preserves the
+released reshape behavior while replacing its classifier and training protocol. The displayed
+numbers are legacy values pending clean nested remeasurement.
 
 **Transfer and adaptation strategies** (vary the learning objective on a fixed EA-aligned
 EEGNet). The families differ in when the unlabeled target is used and whether the source data is
@@ -366,8 +380,9 @@ per model family, namely tangent-space logistic regression, CSP-Net and EEGConfo
 shares only the hard predicted labels, and a combiner fuses the votes without any target label.
 The combiners are majority **voting** (the baseline), the spectral meta-learners **SML** and the
 lab's **SML-OVR (lab)**, the lab's **StackingNet (lab)**, and a set of crowd-labeling and
-truth-discovery aggregators (**Dawid-Skene**, **EBCC**, **GLAD**, **ZenCrowd**, **MACE**, **PM**,
-**LAA**, **LA**, **M-MSR**, **Wawa**).
+truth-discovery aggregators (**Dawid-Skene**, **EBCC**, **GLAD**, the simplified TestEnsemble
+**ZenCrowd** EM baseline, **MACE**, three-round **PM/CRH**, **LAA**, **LA**, **M-MSR**, **Wawa**).
+The ZenCrowd and PM iteration counts are method identity, not hidden runner defaults.
 
 ## Quickstart
 
@@ -479,31 +494,30 @@ reported-vs-reproduced table and, for each method, the upstream source it was po
 Upstream *license* terms are recorded where the source repository states one; where it does not,
 the card says so rather than implying an audit that was not performed.
 
-#### Hyperparameter selection, and what it does not guarantee
+#### Hyperparameter selection: legacy results and corrected procedure
 
-A small grid over the learning rate, the training length and the loss trade-offs of each
-approach was scored, and the three-seed test number of the winning configuration replaced the
-previous one **only where it improved on it**. Two selection signals were used, and they do not
-carry the same guarantee.
+The displayed values predate the corrected tuner. The historical sweep used two selection signals:
 
-* **Source-validation selection** (`select="val"`, used for the source-model hyperparameters,
-  i.e., ABAT, CSDA and the per-architecture learning rates in the Networks table). The score is
-  the accuracy on a held-out split of the *source* subjects. No target data of any kind enters
-  it. This is the clean case.
+* **Global source-validation selection** (`select="val"`, including the old Network-table tuning).
+  Despite the earlier documentation, this held out random source **trials**, not whole source
+  subjects. It then pooled validation scores across overlapping LOSO folds to choose one
+  dataset-wide value. A subject excluded as the outer target in one fold appeared with labels in
+  source validation for the other folds, so every reported subject influenced the selected value.
+  Candidate runs also computed and printed outer-target accuracy. This was not nested or blinded.
+* **Dev-subject selection** (`select="dev"`, used for ASFA, Tent, BFT, DJP-MMD, MDMAML, MSDT,
+  LSFT and MVCNet). Three cohort subjects were scored as pseudo-targets against their true labels
+  and then remained in the reported average. This is target-label model selection, although no
+  target label enters the training loss.
 
-* **Dev-subject selection** (`select="dev"`, used for the adaptation-phase hyperparameters that
-  do not move the source-validation signal, i.e., ASFA, Tent, BFT, DJP-MMD, MDMAML, MSDT, LSFT
-  and MVCNet). Three subjects spread across the cohort are held out as pseudo-targets, each
-  scored by its own leave-one-subject-out accuracy, **against its true labels**, and one global
-  configuration is chosen from that. Those three subjects are then also part of the reported
-  average, so for these eight approaches, three of the nine, fourteen or twelve reported folds
-  also served as the selection signal. No target label is used at *training* time, and the
-  selected value is a single global one rather than one per fold. This is nonetheless the common
-  practice of choosing one hyperparameter on a subject subset, and not a source-only signal, so
-  it is stated here rather than left implied.
+The historical publication process also retained a newly tuned value only when its test result
+improved on the previous value. That adoption rule directly uses test performance and is not a
+valid model-selection firewall. These values are retained only as legacy evidence.
 
-A dev-subset run is not a reportable result and cannot be mistaken for one: the run identity
-carries a `dev<ids>` tag, so it lands in its own results folder.
+The corrected `tune_networks.py` performs nested selection separately for each outer target. It
+holds out whole source subjects, never aligns/predicts/scores the outer target during selection,
+then evaluates that target once with a fresh model at the selected learning rate. It also refuses
+partial seeds, stale identities and legacy caches. No corrected leaderboard value is claimed until
+that procedure is run.
 
 > **Disclaimer.**
 > This benchmark **re-implements** both external baselines and the laboratory's own methods

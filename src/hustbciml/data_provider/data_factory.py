@@ -34,5 +34,8 @@ def get_epochs(cfg: Config) -> EEGEpochs:
     if cfg.dataset not in DATA_DICT:
         raise KeyError(f"unknown dataset {cfg.dataset!r}; known: {sorted(DATA_DICT)}")
     entry = DATA_DICT[cfg.dataset]
-    loader = entry["loader"](name=cfg.dataset, data_dir=cfg.data_dir, seed=cfg.seed)
+    loader = entry["loader"](
+        name=cfg.dataset, data_dir=cfg.data_dir, seed=cfg.seed,
+        allow_legacy_cache=cfg.allow_legacy_cache,
+    )
     return loader.load()

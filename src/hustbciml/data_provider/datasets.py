@@ -23,6 +23,7 @@ Three loaders:
 """
 from __future__ import annotations
 
+import json
 import os
 from typing import List
 
@@ -30,6 +31,8 @@ import numpy as np
 from sklearn import preprocessing
 
 from hustbciml.core.batch import EEGEpochs
+from hustbciml.utils.io import atomic_savez
+from hustbciml.utils.provenance import arrays_digest, dependency_versions
 
 
 # ---------------------------------------------------------------- Toy ---------
@@ -39,6 +42,27 @@ from hustbciml.core.batch import EEGEpochs
 # requested channel count, which is why the first eight already form a closed
 # mirror set.
 _TOY_CH = ["C5", "C3", "C1", "Cz", "C2", "C4", "C6", "CPz", "FC1", "FC2"]
+
+
+def _epochs_digest(ep: EEGEpochs) -> str:
+    """Stable identity of the arrays and dataset-wide metadata behind a run."""
+    return arrays_digest(
+        {"X": ep.X, "y": ep.y, "domain": ep.domain},
+        metadata={
+            "sfreq": float(ep.sfreq),
+            "n_classes": int(ep.n_classes),
+            "ch_names": list(ep.ch_names),
+            "classes": list(ep.classes),
+            "paradigm": ep.paradigm,
+        },
+    )
+
+
+def _attach_provenance(ep: EEGEpochs, provenance: dict) -> EEGEpochs:
+    provenance = dict(provenance)
+    provenance["content_sha256"] = _epochs_digest(ep)
+    ep.provenance = provenance
+    return ep
 
 
 class ToyDataset:
@@ -93,11 +117,23 @@ class ToyDataset:
         # are exercisable on the bundled data. Note the two class topographies are
         # independent random vectors, not mirror images, so a reflection test on
         # Toy checks the plumbing, not the augmentation's validity.
-        return EEGEpochs(
+        ep = EEGEpochs(
             X=X, y=np.array(y), domain=np.array(dom), sfreq=self.sfreq,
             n_classes=2, ch_names=_TOY_CH[:self.n_chans],
             paradigm="MI", classes=["left_hand", "right_hand"],
         )
+        return _attach_provenance(ep, {
+            "schema_version": 1,
+            "is_measurement": True,
+            "loader": "ToyDataset",
+            "dataset": "Toy",
+            "generator": {
+                "n_subjects": self.n_subjects, "n_per_class": self.n_per_class,
+                "n_chans": self.n_chans, "n_times": self.n_times,
+                "sfreq": self.sfreq, "freq": self.freq, "amp": self.amp,
+                "noise": self.noise, "gain_std": self.gain_std, "seed": self.seed,
+            },
+        })
 
 
 # --------------------------------------------------------- DeepTransferEEG npy -
@@ -171,11 +207,24 @@ class NumpyDataset:
         # sorted order, so the numeric class index is stable across runs.
         classes = sorted(np.unique(y).tolist())
         y_enc = preprocessing.LabelEncoder().fit_transform(y)
-        return EEGEpochs(
+        ep = EEGEpochs(
             X=X, y=y_enc, domain=domain, sfreq=spec["sfreq"], n_classes=len(classes),
             ch_names=[f"ch{i}" for i in range(spec["ch_num"])],
             paradigm="MI", classes=[str(c) for c in classes],
         )
+        return _attach_provenance(ep, {
+            "schema_version": 1,
+            "is_measurement": False,
+            "loader": "NumpyDataset",
+            "dataset": self.name,
+            "status": "preprocessing_unknown",
+            "reason": "pre-exported arrays do not record their preprocessing environment",
+            "preprocessing": "pre-exported arrays; preprocessing not performed by HUST-BCIML",
+            "selection": {
+                "session_slice": spec["session_slice"],
+                "two_class": spec["two_class"] if self.name != "BNCI2014001-4" else None,
+            },
+        })
 
 
 # ---------------------------------------------------------------- MOABB --------
@@ -200,6 +249,10 @@ _BNCI2015001_CH = ["FC3", "FCz", "FC4", "C5", "C3", "C1", "Cz", "C2", "C4", "C6"
 # runs whose label contains 'train' reproduces DeepTransferEEG's first-100/subject
 # selection. Selections are per moabb 1.5 output, since the .npz cache is built
 # once with that version and shipped to the (offline) GPU server.
+# These values used to be inherited from MOABB defaults. They are part of the
+# benchmark definition, so they are explicit in both the call and cache identity.
+_MI_PARADIGM = dict(fmin=8.0, fmax=32.0, tmin=0.0, tmax=None)
+
 _MOABB_SPEC = {
     "BNCI2014001":   dict(cls=["BNCI2014_001", "BNCI2014001"], n_classes=4, sfreq=250.0,
                           session_first=True, two_class=["left_hand", "right_hand"],
@@ -220,11 +273,13 @@ class MOABBAdapter:
     session/class selection via the ``meta`` DataFrame. Version-robust across
     moabb 1.0/1.5. MOABB is imported lazily so it's only needed when this runs."""
 
-    def __init__(self, name: str, data_dir: str = "./data", **_):
+    def __init__(self, name: str, data_dir: str = "./data",
+                 allow_legacy_cache: bool = False, **_):
         if name not in _MOABB_SPEC:
             raise KeyError(f"MOABBAdapter has no spec for {name!r}; known: {sorted(_MOABB_SPEC)}")
         self.name = name
         self.data_dir = data_dir
+        self.allow_legacy_cache = bool(allow_legacy_cache)
         self.spec = _MOABB_SPEC[name]
         self.paradigm = "MI"
 
@@ -241,47 +296,59 @@ class MOABBAdapter:
         # server, where the cache is shipped in and moabb itself is never called.
         cache = os.path.join(self.data_dir, f"{self.name}_epochs.npz")
         if os.path.exists(cache):
-            # The .npz stores exactly the seven fields ``EEGEpochs`` needs, one
-            # per archive key. ``X``/``y``/``domain`` come back as arrays as
-            # saved. The scalars ``sfreq`` and ``n_classes`` were stored as 0-d
-            # arrays, so they are cast back to float/int. ``ch_names`` and
-            # ``classes`` were stored as fixed-width unicode string arrays (see
-            # the savez comment below) and are turned back into plain str lists.
-            # ``allow_pickle=False``: a .npz that unpickles is arbitrary code
-            # execution at load time, and ``--data_dir`` routinely points at a
-            # cache copied in from elsewhere (that is the whole point of the fast
-            # path on the offline GPU server). Since the writer below stores only
-            # plain arrays and unicode string arrays, nothing here needs pickle.
-            # An older object-array cache now fails loudly instead of executing.
-            # The guard has to wrap the field *reads*, not the ``np.load``: for a
-            # .npz that call only opens the archive, and each member is decoded
-            # lazily on ``d[key]``, so an object array raises there and a try
-            # around ``np.load`` alone would never fire.
-            d = np.load(cache, allow_pickle=False)
+            # ``allow_pickle=False`` prevents a copied cache from executing an
+            # object-array pickle. Provenance is a scalar Unicode JSON string.
             try:
-                ep = EEGEpochs(
-                    X=d["X"], y=d["y"], domain=d["domain"], sfreq=float(d["sfreq"]),
-                    n_classes=int(d["n_classes"]), ch_names=[str(c) for c in d["ch_names"]],
-                    paradigm="MI", classes=[str(c) for c in d["classes"]])
+                with np.load(cache, allow_pickle=False) as d:
+                    ep = EEGEpochs(
+                        X=d["X"], y=d["y"], domain=d["domain"], sfreq=float(d["sfreq"]),
+                        n_classes=int(d["n_classes"]), ch_names=[str(c) for c in d["ch_names"]],
+                        paradigm="MI", classes=[str(c) for c in d["classes"]],
+                    )
+                    provenance_raw = d["provenance_json"].item() \
+                        if "provenance_json" in d.files else None
             except ValueError as exc:
                 if "allow_pickle" not in str(exc):
                     raise
-                # Do NOT tell the caller to delete the cache. On the offline
-                # server it is the only copy of the exact trials a published
-                # number was measured on, and regenerating it through moabb is
-                # neither possible there nor guaranteed to reproduce it byte for
-                # byte. Converting keeps the payload and only restates the two
-                # string fields in a dtype that loads without pickle.
+                # Preserve the exact legacy arrays. Converting their two string
+                # fields is safe, but it does not invent preprocessing provenance.
                 raise ValueError(
-                    f"{cache} was written by an older version that stored 'ch_names' and "
-                    f"'classes' as pickled object arrays, which this loader refuses to "
-                    f"unpickle. Convert it in place, keeping X/y/domain untouched:\n"
-                    f"    z = np.load({cache!r}, allow_pickle=True)\n"
-                    f"    out = dict(z)\n"
-                    f"    out['ch_names'] = np.asarray([str(c) for c in z['ch_names']])\n"
-                    f"    out['classes']  = np.asarray([str(c) for c in z['classes']])\n"
-                    f"    np.savez({cache!r}, **out)"
+                    f"{cache} stores ch_names/classes as pickled object arrays, which "
+                    "measurement code will not execute. Convert only those two fields "
+                    "to Unicode arrays, then inspect/mark the cache with "
+                    "`python -m hustbciml.scripts.cache_provenance`."
                 ) from exc
+
+            if provenance_raw is None:
+                if not self.allow_legacy_cache:
+                    raise ValueError(
+                        f"{cache} has no preprocessing provenance. Its arrays are preserved, "
+                        "but using them as a reportable measurement would make the MOABB/MNE "
+                        "versions and filter parameters unknowable. Regenerate the cache, or "
+                        "pass --allow_legacy_cache for an exploratory run that will be marked "
+                        "is_measurement=false."
+                    )
+                ep = _attach_provenance(ep, {
+                    "schema_version": 1,
+                    "is_measurement": False,
+                    "loader": "MOABBAdapter",
+                    "dataset": self.name,
+                    "status": "legacy_unknown",
+                    "reason": "cache contains no preprocessing provenance",
+                })
+            else:
+                try:
+                    provenance = json.loads(str(provenance_raw))
+                except (TypeError, json.JSONDecodeError) as exc:
+                    raise ValueError(f"{cache} contains invalid provenance_json") from exc
+                expected_digest = provenance.get("content_sha256")
+                actual_digest = _epochs_digest(ep)
+                if not expected_digest or expected_digest != actual_digest:
+                    raise ValueError(
+                        f"{cache} content digest does not match its provenance: "
+                        f"stored={expected_digest!r}, actual={actual_digest!r}."
+                    )
+                ep.provenance = provenance
             self._check_cache(ep, cache)
             return ep
 
@@ -296,8 +363,8 @@ class MOABBAdapter:
         # whose ``subject``/``session``/``run`` columns say where each trial came
         # from. Selection below is expressed as a boolean mask over those rows.
         ds = self._resolve_class(D)()
-        X, labels, meta = MotorImagery(n_classes=self.spec["n_classes"]).get_data(
-            dataset=ds, subjects=ds.subject_list)
+        paradigm = MotorImagery(n_classes=self.spec["n_classes"], **_MI_PARADIGM)
+        X, labels, meta = paradigm.get_data(dataset=ds, subjects=ds.subject_list)
         labels = np.asarray([str(v) for v in labels])
         subj = meta["subject"].to_numpy()
         sess = meta["session"].to_numpy().astype(str)
@@ -332,21 +399,36 @@ class MOABBAdapter:
             X=X, y=y, domain=domain, sfreq=self.spec["sfreq"], n_classes=len(classes),
             ch_names=self.spec["ch_names"], paradigm="MI", classes=classes,
         )
-        os.makedirs(self.data_dir, exist_ok=True)
-        # Store ch_names/classes as unicode string arrays (dtype="U"), not object
-        # arrays: object arrays are pickled, and a pickle written by numpy 2.x
-        # (``numpy._core``) cannot be read by numpy 1.x. Plain string arrays use
-        # the version-stable .npy format, so the cache loads across numpy versions.
+        versions = dependency_versions()
+        ep = _attach_provenance(ep, {
+            "schema_version": 1,
+            "is_measurement": True,
+            "loader": "MOABBAdapter",
+            "dataset": self.name,
+            "dataset_class": f"{type(ds).__module__}.{type(ds).__name__}",
+            "preprocessing": {
+                "paradigm": "MotorImagery",
+                "n_classes_requested": self.spec["n_classes"],
+                **_MI_PARADIGM,
+            },
+            "selection": {
+                "session_first": bool(self.spec.get("session_first")),
+                "run_contains": self.spec.get("run_contains"),
+                "two_class": self.spec.get("two_class"),
+            },
+            "software": {name: versions[name] for name in ("numpy", "moabb", "mne")},
+        })
         self._check_cache(ep, "<freshly built>")
-        # Write to a temporary file and rename into place. ``MOABBAdapter.load``
-        # used to write the .npz before its caller (``scripts/_gen_cache``) ran its
-        # assertions, so a failed generation left an invalid cache on disk for the
-        # next benchmark run to load through the fast path above.
-        tmp = cache + ".tmp.npz"
-        np.savez(tmp, X=ep.X, y=ep.y, domain=ep.domain, sfreq=ep.sfreq,
-                 n_classes=ep.n_classes, ch_names=np.asarray(ep.ch_names, dtype="U"),
-                 classes=np.asarray(ep.classes, dtype="U"))
-        os.replace(tmp, cache)
+        atomic_savez(
+            cache,
+            X=ep.X, y=ep.y, domain=ep.domain, sfreq=ep.sfreq,
+            n_classes=ep.n_classes,
+            ch_names=np.asarray(ep.ch_names, dtype="U"),
+            classes=np.asarray(ep.classes, dtype="U"),
+            provenance_json=np.asarray(
+                json.dumps(ep.provenance, sort_keys=True, ensure_ascii=False), dtype="U"
+            ),
+        )
         return ep
 
     def _check_cache(self, ep: EEGEpochs, where: str) -> None:
@@ -372,7 +454,46 @@ class MOABBAdapter:
             problems.append(f"{ep.n_classes} classes, expected {expected_classes}")
         if len(ep.X) == 0 or ep.X.ndim != 3:
             problems.append(f"X has shape {ep.X.shape}")
+        provenance = ep.provenance or {}
+        if not provenance:
+            problems.append("provenance is missing")
+        elif provenance.get("is_measurement", True):
+            if provenance.get("schema_version") != 1:
+                problems.append(
+                    f"unsupported provenance schema {provenance.get('schema_version')!r}"
+                )
+            if provenance.get("loader") != "MOABBAdapter":
+                problems.append(f"provenance loader {provenance.get('loader')!r} != 'MOABBAdapter'")
+            if provenance.get("dataset") != self.name:
+                problems.append(f"provenance dataset {provenance.get('dataset')!r} != {self.name!r}")
+            if not provenance.get("dataset_class"):
+                problems.append("dataset_class is missing")
+            preprocessing = provenance.get("preprocessing") or {}
+            expected_preprocessing = {
+                "paradigm": "MotorImagery",
+                "n_classes_requested": spec["n_classes"],
+                **_MI_PARADIGM,
+            }
+            if preprocessing != expected_preprocessing:
+                problems.append(
+                    f"preprocessing {preprocessing!r} != {expected_preprocessing!r}"
+                )
+            selection = provenance.get("selection") or {}
+            expected_selection = {
+                "session_first": bool(spec.get("session_first")),
+                "run_contains": spec.get("run_contains"),
+                "two_class": spec.get("two_class"),
+            }
+            if selection != expected_selection:
+                problems.append(f"selection {selection!r} != {expected_selection!r}")
+            software = provenance.get("software") or {}
+            missing_software = sorted({"numpy", "moabb", "mne"} - set(software))
+            if missing_software:
+                problems.append(f"software versions are missing {missing_software}")
+            if not provenance.get("content_sha256"):
+                problems.append("content_sha256 is missing")
         if problems:
             raise ValueError(
                 f"cached epochs for {self.name} at {where} do not match its spec: "
-                + "; ".join(problems) + ". Delete the cache and regenerate it.")
+                + "; ".join(problems) + ". Preserve the cache for forensic comparison and "
+                  "regenerate a separately named cache with explicit provenance.")

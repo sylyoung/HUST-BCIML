@@ -5,7 +5,7 @@ machine WITH internet (the GPU servers are offline). The resulting
 ``<name>_epochs.npz`` files are rsynced to the server's data dir, where
 MOABBAdapter reads them directly and never touches moabb.
 
-    python -m hustbciml.scripts._gen_cache --data_dir /tmp/hustbciml_newdata
+    python -m hustbciml.scripts._gen_cache --data_dir ./data-cache-build
 """
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ EXPECT = {
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--data_dir", default="/tmp/hustbciml_newdata")
+    p.add_argument("--data_dir", default="./data-cache-build")
     a = p.parse_args()
     os.makedirs(a.data_dir, exist_ok=True)
 
@@ -36,10 +36,14 @@ def main():
     print(f"[toy] X {toy.X.shape} classes={toy.classes} OK")
 
     for name, exp in EXPECT.items():
-        # force a rebuild so we test the real MOABB path (not a stale cache)
+        # Never replace an existing cache: its arrays may be the only surviving
+        # evidence behind an older measurement. Build into a fresh directory and
+        # compare the two artifacts explicitly.
         cache = os.path.join(a.data_dir, f"{name}_epochs.npz")
         if os.path.exists(cache):
-            os.remove(cache)
+            raise FileExistsError(
+                f"{cache} already exists; preserve it and choose a new --data_dir"
+            )
         ep = MOABBAdapter(name=name, data_dir=a.data_dir).load()
         subs = np.unique(ep.domain)
         counts = np.bincount(ep.domain.astype(int))
@@ -53,6 +57,12 @@ def main():
         assert ep.n_classes == exp["n_classes"], f"classes {ep.n_classes} != {exp['n_classes']}"
         assert all(c == exp["per_subject"] for c in counts), \
             f"per-subject counts {counts.tolist()} != {exp['per_subject']}"
+        assert ep.provenance.get("is_measurement") is True
+        assert ep.provenance.get("content_sha256"), "cache provenance has no content digest"
+        assert ep.provenance.get("preprocessing") == {
+            "paradigm": "MotorImagery", "n_classes_requested": exp["n_classes"],
+            "fmin": 8.0, "fmax": 32.0, "tmin": 0.0, "tmax": None,
+        }
         assert os.path.exists(cache), "cache not written"
         print(f"  cache -> {cache} ({os.path.getsize(cache)/1e6:.1f} MB)  ✓ all checks pass")
 

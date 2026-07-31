@@ -50,7 +50,7 @@ class EBCC(VoteCombiner):
         self.max_iter = max_iter
         self.empirical_prior = empirical_prior
 
-    def aggregate(self, votes: np.ndarray) -> np.ndarray:
+    def aggregate(self, votes: np.ndarray, n_classes: int) -> np.ndarray:
         import scipy.sparse as ssp
         from scipy.special import digamma
 
@@ -60,7 +60,7 @@ class EBCC(VoteCombiner):
         a_v, b_v, max_iter, empirical_prior = self.a_v, self.b_v, self.max_iter, self.empirical_prior
 
         K, N = preds.shape
-        num_classes = int(preds.max()) + 1
+        num_classes = int(n_classes)
         with fixed_seed(0):
             first = np.repeat(np.arange(N), K)
             second = np.tile(np.arange(K), N)
@@ -82,12 +82,9 @@ class EBCC(VoteCombiner):
                 z_ik[:, [l]] += y_lij[l].sum(axis=-1)
             z_ik /= z_ik.sum(axis=-1, keepdims=True)            # init responsibilities = vote fractions
             if empirical_prior:
-                # A class no base model ever votes for gets an empirical count of
-                # exactly 0, and ``digamma(nu_k)`` on a zero concentration returns
-                # -inf, which then poisons every responsibility. The class exists —
-                # ``num_classes`` comes from ``preds.max() + 1`` — it just has no
-                # votes in this target batch, which is normal on a hard subject.
-                # Floor the Dirichlet concentration instead of letting it hit zero.
+                # A declared class can legitimately receive zero hard votes in a
+                # target batch. Its empirical concentration is therefore floored
+                # rather than passed as zero to ``digamma``.
                 alpha = np.maximum(z_ik.sum(axis=0), 1e-6)
 
             zg_ikm = np.random.dirichlet(np.ones(num_groups), z_ik.shape) * z_ik[:, :, None]

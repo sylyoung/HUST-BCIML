@@ -26,8 +26,13 @@ accuracy (one local model alone, averaged over all source->target pairs) as cont
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import json
 import os
+import uuid
+os.environ.setdefault("OMP_NUM_THREADS", "4")
+os.environ.setdefault("MKL_NUM_THREADS", "4")
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "4")
 
 import numpy as np
 from sklearn.metrics import accuracy_score
@@ -38,11 +43,10 @@ from hustbciml.core.context import RunContext
 from hustbciml.core.pipeline import build_pipeline
 from hustbciml.data_provider.data_factory import get_epochs
 from hustbciml.algorithms.strategies._common import forward_logits, supervised_train
-from hustbciml.algorithms.ensembles import build_combiners
+from hustbciml.algorithms.ensembles import build_combiners, combiner_manifest
+from hustbciml.utils.io import atomic_json_dump, atomic_savez
+from hustbciml.utils.provenance import runtime_provenance
 from hustbciml.utils.seed import fix_random_seed, resolve_device
-
-# name -> combiner instance, auto-discovered from algorithms/ensembles/ (one file per method).
-COMBINERS = build_combiners()
 
 
 def _load_aligned(cfg):
@@ -54,6 +58,8 @@ def _load_aligned(cfg):
     cfg.n_classes = epochs.n_classes
     cfg.sfreq = epochs.sfreq
     cfg.ch_names = list(epochs.ch_names)
+    cfg.classes = list(epochs.classes)
+    cfg.data_provenance = dict(epochs.provenance or {})
     aligner = registry.build("aligners", cfg.aligner)
     aligner.fit(epochs)
     return aligner.transform(epochs), epochs.n_classes
@@ -186,62 +192,63 @@ def _base_hetero3(cfg, dev, epochs_a, subjects, C):
     return ytrue, scores
 
 
-def _seed_run(dataset, seed, device, data_dir, results_dir, algorithm, combiners, base):
-    """Train one single-source learner per subject, then fuse per target."""
-    cfg, _ = resolve_config(["--algorithm", algorithm, "--dataset", dataset,
-                             "--seed", str(seed), "--device", device,
-                             "--data_dir", data_dir, "--results_dir", results_dir])
+def _seed_run(cfg, device, epochs_a, C, combiner_map, base):
+    """Train one single-source learner per subject and fail on any combiner error."""
     fix_random_seed(cfg.seed)
-    dev = resolve_device(cfg.device)
-    epochs_a, C = _load_aligned(cfg)
     subjects = [int(s) for s in np.unique(epochs_a.domain)]
 
     if base == "tangent_lda":
         ytrue, scores = _base_tangent_lda(cfg, epochs_a, subjects, C)
     elif base == "hetero3":
-        ytrue, scores = _base_hetero3(cfg, dev, epochs_a, subjects, C)
+        ytrue, scores = _base_hetero3(cfg, device, epochs_a, subjects, C)
     else:
-        ytrue, scores = _base_eegnet(cfg, dev, epochs_a, subjects)
+        ytrue, scores = _base_eegnet(cfg, device, epochs_a, subjects)
 
-    # generic over the per-target learners: {s} for the homogeneous bases,
-    # {s}::{learner} for hetero3 — so (N-1) or (N-1)*3 votes per target.
-    single = [accuracy_score(ytrue[t], v.argmax(1))
-              for t in subjects for v in scores[t].values()]
+    single = [accuracy_score(ytrue[target], values.argmax(1))
+              for target in subjects for values in scores[target].values()]
+    per_target = {name: {} for name in combiner_map}
+    predictions = {name: {} for name in combiner_map}
+    hard_votes = {}
+    worker_ids = {}
 
-    out = {}
-    for c in combiners:
-        if c == "SML" and C != 2:                # binary SML undefined for >2 classes
-            continue
-        fn = COMBINERS[c]
-        if c == "SML-OVR" and C == 2:            # SML-OVR is the multi-class (K>2) one-vs-rest
-            fn = COMBINERS["SML"]                 # extension of SML; on 2 classes it reduces exactly
-                                                  # to binary SML, so report that number (identical to
-                                                  # the SML row) instead of skipping. The native multi-
-                                                  # class path (C>2, e.g. BNCI2014001-4) still runs
-                                                  # sml_ovr — the multi-class option is kept in code.
-        try:
-            accs = []
-            for t in subjects:
-                stack = np.stack(list(scores[t].values()))   # (n_learners, N, C)
-                accs.append(accuracy_score(ytrue[t], fn(stack)))
-            out[c] = float(np.mean(accs) * 100)
-        except Exception as e:                   # a degenerate combiner must not kill the run;
-            print(f"[warn] combiner {c!r} failed, skipping it — {type(e).__name__}: {e}")
-    return float(np.mean(single) * 100), out
+    for target in subjects:
+        worker_ids[target] = [str(name) for name in scores[target]]
+        stack = np.stack(list(scores[target].values()))      # (learners, trials, classes)
+        hard_votes[target] = stack.argmax(axis=2)
+        for name, combiner in combiner_map.items():
+            if combiner.binary_only and C != 2:
+                raise ValueError(
+                    f"requested combiner {name!r} is binary-only but dataset has {C} classes; "
+                    "remove it explicitly rather than silently skipping a reported method"
+                )
+            prediction = combiner(stack)
+            predictions[name][target] = prediction
+            per_target[name][target] = float(
+                accuracy_score(ytrue[target], prediction) * 100
+            )
+
+    means = {
+        name: float(np.mean([per_target[name][target] for target in subjects]))
+        for name in combiner_map
+    }
+    return {
+        "single_source": float(np.mean(single) * 100),
+        "combiners": means,
+        "per_target": per_target,
+        "subjects": subjects,
+        "worker_ids": worker_ids,
+        "y_true": ytrue,
+        "hard_votes": hard_votes,
+        "predictions": predictions,
+    }
 
 
 def main(argv=None):
     p = argparse.ArgumentParser(prog="hustbciml.scripts.decentralized",
                                 description="decentralized single-source black-box ensemble")
     p.add_argument("--dataset", default="Toy")
-    p.add_argument("--algorithm", default="EA-EEGNet", help="single-source base preset (EEGNet base)")
-    p.add_argument("--base", default="eegnet",
-                   choices=["eegnet", "tangent_lda", "hetero3"],
-                   help="per-source learner: 'eegnet' (softmax scores), 'tangent_lda' "
-                        "(Wen Zhang EA+tangent-space features + shrinkage LDA, HARD votes), "
-                        "or 'hetero3' (3 learners, one per family — Tangent+LR, CSPNet, "
-                        "EEGConformer — giving (N-1)*3 HARD votes per target; the "
-                        "configuration the published ensemble table reports)")
+    p.add_argument("--algorithm", default="EA-EEGNet", help="single-source base preset")
+    p.add_argument("--base", default="eegnet", choices=["eegnet", "tangent_lda", "hetero3"])
     p.add_argument("--seeds", default="1,2,3", help="comma-separated seeds")
     p.add_argument("--device", default="auto")
     p.add_argument("--results_dir", default="./results")
@@ -249,68 +256,229 @@ def main(argv=None):
     p.add_argument("--combiners",
                    default="voting,Dawid-Skene,Wawa,M-MSR,MACE,GLAD,ZenCrowd,PM,"
                            "LA,LAA,EBCC,SML,SML-OVR,StackingNet")
+    p.add_argument("--zencrowd_iters", type=int, default=20)
+    p.add_argument("--pm_iters", type=int, default=3)
+    p.add_argument("--allow_legacy_cache", action="store_true",
+                   help="exploratory only: permit an unprovenanced cache and mark the "
+                        "entire artifact is_measurement=false")
     p.add_argument("--overwrite", action="store_true",
-                   help="replace an existing result file even when it covers seeds "
-                        "this run does not (off by default: that silently discards "
-                        "the run a published number came from)")
+                   help="deliberately replace an existing artifact with a different identity")
     a = p.parse_args(argv)
 
-    seeds = [int(s) for s in a.seeds.split(",")]
-    combiners = [c for c in a.combiners.split(",") if c]
-    single_all, comb_all = [], {c: [] for c in combiners}
-    os.makedirs(a.results_dir, exist_ok=True)
-    out_path = os.path.join(a.results_dir, f"decentralized_{a.dataset}_{a.base}_{a.algorithm}.json")
+    seeds = [int(value) for value in a.seeds.split(",")]
+    names = [value for value in a.combiners.split(",") if value]
+    if not seeds or len(set(seeds)) != len(seeds):
+        raise ValueError("--seeds must be non-empty and contain no duplicates")
+    if not names:
+        raise ValueError("--combiners must request at least one combiner")
+    settings = {
+        "ZenCrowd": {"n_iter": a.zencrowd_iters},
+        "PM": {"n_iter": a.pm_iters},
+    }
+    combiners = build_combiners(names, settings=settings)
+    combiner_config = combiner_manifest(combiners)
 
-    # The filename encodes dataset, base and preset but NOT the seed set, so a
-    # narrower re-run silently replaces a wider one and the published table loses
-    # the artefact it came from. This is not hypothetical: the v1.1.x ensemble
-    # table was measured over three seeds and the surviving JSON records
-    # ``seeds_done: [1]``, so the numbers can no longer be traced to a run. Refuse
-    # to shrink an existing result; ``--overwrite`` is the deliberate way past.
+    cli = [
+        "--algorithm", a.algorithm, "--dataset", a.dataset,
+        "--seed", str(seeds[0]), "--device", a.device,
+        "--data_dir", a.data_dir, "--results_dir", a.results_dir,
+    ]
+    if a.allow_legacy_cache:
+        cli.append("--allow_legacy_cache")
+    base_cfg, _ = resolve_config(cli)
+    epochs_a, class_count = _load_aligned(base_cfg)
+    data_is_measurement = base_cfg.data_provenance.get("is_measurement") is True
+    if not data_is_measurement and not a.allow_legacy_cache:
+        raise RuntimeError(
+            "reportable ensemble measurements require a cache with explicit preprocessing "
+            "provenance; pass --allow_legacy_cache only for an exploratory artifact"
+        )
+    data_reason = base_cfg.data_provenance.get(
+        "reason", "dataset provenance is explicitly non-measurement"
+    )
+    runtime = runtime_provenance()
+    device = resolve_device(base_cfg.device)
+    base_cfg.resolved_device = str(device)
+
+    base_learners = {
+        "eegnet": ["EEGNet"],
+        "tangent_lda": ["TangentSpace+shrinkage-LDA"],
+        "hetero3": ["TangentSpace+LogisticRegression", "CSPNet", "EEGConformer"],
+    }[a.base]
+    base_config = dataclasses.asdict(base_cfg)
+    base_config["seed"] = None
+    identity = {
+        "schema_version": 3,
+        "dataset": a.dataset,
+        "algorithm": a.algorithm,
+        "base": a.base,
+        "base_learners": base_learners,
+        "requested_seeds": seeds,
+        "combiners": combiner_config,
+        "base_config": base_config,
+        "data_sha256": base_cfg.data_provenance.get("content_sha256"),
+        "source_sha256": runtime.get("source_sha256"),
+        "python": runtime.get("python"),
+        "platform": runtime.get("platform"),
+        "machine": runtime.get("machine"),
+        "dependencies": runtime.get("dependencies"),
+        "numpy_build": runtime.get("numpy_build"),
+        "numerical_libraries": runtime.get("numerical_libraries"),
+        "torch_runtime": runtime.get("torch_runtime"),
+    }
+
+    os.makedirs(a.results_dir, exist_ok=True)
+    out_path = os.path.join(
+        a.results_dir, f"decentralized_{a.dataset}_{a.base}_{a.algorithm}.json"
+    )
+    archive = None
     if os.path.exists(out_path) and not a.overwrite:
-        with open(out_path) as fh:
-            prev = json.load(fh)
-        prev_seeds = prev.get("seeds_done") or []
-        if not set(prev_seeds).issubset(seeds):
+        try:
+            with open(out_path, encoding="utf-8") as handle:
+                archive = json.load(handle)
+        except Exception as exc:
+            raise FileExistsError(f"{out_path} exists but is not readable strict JSON") from exc
+        if archive.get("identity") != identity:
             raise FileExistsError(
-                f"{out_path} already holds a run over seeds {prev_seeds}, and this run covers "
-                f"{seeds} — writing would discard seeds {sorted(set(prev_seeds) - set(seeds))}. "
-                f"Move the old file aside, point --results_dir somewhere else, or pass "
-                f"--overwrite if replacing it is what you mean."
+                f"{out_path} belongs to a different or legacy measurement identity; "
+                "preserve it and use another results directory"
             )
+        if not isinstance(archive.get("seed_results"), dict):
+            raise RuntimeError(f"{out_path} has no valid seed_results mapping")
+        unexpected = sorted(set(archive["seed_results"]) - {str(seed) for seed in seeds})
+        if unexpected:
+            raise RuntimeError(f"{out_path} contains unrequested seed records {unexpected}")
+    if archive is None or a.overwrite:
+        archive = {
+            "identity": identity,
+            "is_measurement": False,
+            "non_measurement_reason": (
+                data_reason if not data_is_measurement else "requested seed set is incomplete"
+            ),
+            "provenance": {"runtime": runtime, "data": base_cfg.data_provenance},
+            "seed_results": {},
+            "summary": None,
+        }
+
+    def safe_key(value):
+        return "".join(character if character.isalnum() else "_" for character in str(value))
 
     for seed in seeds:
-        single, out = _seed_run(a.dataset, seed, a.device, a.data_dir,
-                                a.results_dir, a.algorithm, combiners, a.base)
-        single_all.append(single)
-        for c in out:
-            comb_all[c].append(out[c])
-        json.dump({"dataset": a.dataset, "algorithm": a.algorithm,
-                   "seeds_done": seeds[:len(single_all)],
-                   "single_source": single_all, "combiners": comb_all},
-                  open(out_path, "w"), indent=2)     # incremental save (flaky-link safe)
-        print(f"[seed {seed}] single-source {single:.2f} | "
-              + " ".join(f"{c} {out[c]:.2f}" for c in out))
-
-    def ms(v):
-        arr = np.array(v)
-        return arr.mean(), arr.std()
-
-    base_desc = {"tangent_lda": "tangent-space + sLDA (Wen Zhang)",
-                 "hetero3": "heterogeneous 3-learner/source (Tangent+LR, CSPNet, "
-                            "EEGConformer)"}.get(a.base, a.algorithm)
-    print(f"\n=== decentralized single-source ensemble: {base_desc} on {a.dataset} "
-          f"— {len(seeds)} seeds {seeds} ===")
-    m, s = ms(single_all)
-    print(f"single-source model (mean over source->target pairs): {m:.2f} +/- {s:.2f}")
-    print(f"{'combiner':14s} {'acc':>8s} {'std':>7s}   delta-vs-single")
-    for c in combiners:
-        if not comb_all[c]:
-            reason = "binary only" if c == "SML" else "failed — see [warn] above"
-            print(f"{c:14s}   (skipped: {reason})")
+        key = str(seed)
+        prediction_name = (
+            f"decentralized_{a.dataset}_{a.base}_{a.algorithm}_seed{seed}_predictions.npz"
+        )
+        prediction_path = os.path.join(a.results_dir, prediction_name)
+        prediction_identity = {"archive_identity": identity, "seed": seed}
+        if key in archive["seed_results"]:
+            recorded_file = archive["seed_results"][key].get("predictions_file")
+            if recorded_file != prediction_name or not os.path.exists(prediction_path):
+                raise FileNotFoundError(
+                    f"seed {seed} manifest does not identify an existing expected archive"
+                )
+            try:
+                with np.load(prediction_path, allow_pickle=False) as stored:
+                    stored_identity = json.loads(str(stored["identity_json"].item()))
+                    stored_artifact_id = str(stored["artifact_id"].item())
+            except Exception as exc:
+                raise RuntimeError(
+                    f"seed {seed} prediction archive has no readable identity"
+                ) from exc
+            if stored_identity != prediction_identity:
+                raise RuntimeError(f"seed {seed} prediction archive identity is mismatched")
+            if (
+                not archive["seed_results"][key].get("artifact_id")
+                or stored_artifact_id != archive["seed_results"][key]["artifact_id"]
+            ):
+                raise RuntimeError(
+                    f"seed {seed} manifest and prediction archive come from different writes"
+                )
             continue
-        m2, s2 = ms(comb_all[c])
-        print(f"{c:14s} {m2:8.2f} {s2:7.2f}   {m2 - m:+.2f}")
+        if os.path.exists(prediction_path) and not a.overwrite:
+            raise FileExistsError(
+                f"{prediction_path} exists without a matching seed manifest; preserve the "
+                "partial artifact or pass --overwrite for deliberate replacement"
+            )
+
+        cfg = dataclasses.replace(base_cfg, seed=seed)
+        result = _seed_run(cfg, device, epochs_a, class_count, combiners, a.base)
+        artifact_id = uuid.uuid4().hex
+        arrays = {
+            "artifact_id": np.asarray(artifact_id, dtype="U"),
+            "identity_json": np.asarray(
+                json.dumps(prediction_identity, sort_keys=True), dtype="U"
+            )
+        }
+        for target in result["subjects"]:
+            arrays[f"target_{target}_y_true"] = np.asarray(result["y_true"][target])
+            arrays[f"target_{target}_hard_votes"] = np.asarray(result["hard_votes"][target])
+            for name in names:
+                arrays[f"target_{target}_{safe_key(name)}_prediction"] = np.asarray(
+                    result["predictions"][name][target]
+                )
+        atomic_savez(prediction_path, **arrays)
+        archive["seed_results"][key] = {
+            "artifact_id": artifact_id,
+            "seed": seed,
+            "single_source": result["single_source"],
+            "combiners": result["combiners"],
+            "per_target": {
+                name: {str(target): value for target, value in values.items()}
+                for name, values in result["per_target"].items()
+            },
+            "worker_ids": {
+                str(target): values for target, values in result["worker_ids"].items()
+            },
+            "predictions_file": prediction_name,
+        }
+        completed = [value for value in seeds if str(value) in archive["seed_results"]]
+        archive["completed_seeds"] = completed
+        archive["is_measurement"] = False
+        archive["non_measurement_reason"] = (
+            data_reason if not data_is_measurement else
+            ("summary not finalized" if completed == seeds
+             else "requested seed set is incomplete")
+        )
+        atomic_json_dump(archive, out_path)
+        print(
+            f"[seed {seed}] single-source {result['single_source']:.2f} | "
+            + " ".join(f"{name} {result['combiners'][name]:.2f}" for name in names)
+        )
+
+    if [int(value) for value in archive.get("completed_seeds", [])] != seeds:
+        raise RuntimeError("not every requested seed completed; refusing to aggregate")
+    single_all = [archive["seed_results"][str(seed)]["single_source"] for seed in seeds]
+    combiner_all = {
+        name: [archive["seed_results"][str(seed)]["combiners"][name] for seed in seeds]
+        for name in names
+    }
+    if any(len(values) != len(seeds) for values in combiner_all.values()):
+        raise RuntimeError("combiner seed coverage differs from the requested seed set")
+
+    archive["summary"] = {
+        "single_source": {"mean": float(np.mean(single_all)), "std": float(np.std(single_all))},
+        "combiners": {
+            name: {"mean": float(np.mean(values)), "std": float(np.std(values))}
+            for name, values in combiner_all.items()
+        },
+    }
+    archive["is_measurement"] = data_is_measurement
+    archive["non_measurement_reason"] = None if data_is_measurement else data_reason
+    atomic_json_dump(archive, out_path)
+
+    base_desc = {
+        "tangent_lda": "tangent-space + sLDA",
+        "hetero3": "heterogeneous 3-learner/source",
+    }.get(a.base, a.algorithm)
+    print(f"\n=== decentralized ensemble: {base_desc} on {a.dataset}; seeds {seeds} ===")
+    baseline = archive["summary"]["single_source"]
+    print(f"single-source {baseline['mean']:.2f} +/- {baseline['std']:.2f}")
+    for name in names:
+        result = archive["summary"]["combiners"][name]
+        print(
+            f"{name:14s} {result['mean']:8.2f} {result['std']:7.2f}   "
+            f"{result['mean'] - baseline['mean']:+.2f}"
+        )
 
 
 if __name__ == "__main__":

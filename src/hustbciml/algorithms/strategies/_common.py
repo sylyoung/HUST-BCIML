@@ -42,18 +42,26 @@ def split_train_val(n: int, val_ratio: float, seed: int, domain: np.ndarray = No
         default would change every number on the leaderboard.
 
     ``domain`` is required for ``subject`` mode. If there are fewer than two
-    source domains the subject split is impossible and it falls back to ``trial``.
+    source domains, or the requested ratio cannot leave both train and validation
+    subjects, the split fails instead of silently becoming a trial split under a
+    misleading configuration label.
     """
     rng = np.random.RandomState(seed)
-    if mode == "subject" and domain is not None:
+    if mode == "subject":
+        if domain is None:
+            raise ValueError("val_split='subject' requires a domain array")
         doms = np.unique(domain)
         n_val_dom = int(round(len(doms) * val_ratio))
-        if 1 <= n_val_dom < len(doms):
-            val_doms = rng.choice(doms, size=n_val_dom, replace=False)
-            mask = np.isin(domain, val_doms)
-            return np.where(~mask)[0], np.where(mask)[0]
-        # too few source subjects to hold one out — fall through to trial split
-    elif mode not in ("trial", "subject"):
+        if len(doms) < 2 or not (1 <= n_val_dom < len(doms)):
+            raise ValueError(
+                f"val_split='subject' cannot split {len(doms)} source domains at "
+                f"val_ratio={val_ratio}; at least one train and one validation domain "
+                "are required"
+            )
+        val_doms = rng.choice(doms, size=n_val_dom, replace=False)
+        mask = np.isin(domain, val_doms)
+        return np.where(~mask)[0], np.where(mask)[0]
+    if mode != "trial":
         raise ValueError(f"val_split must be 'trial' or 'subject', got {mode!r}")
 
     idx = np.arange(n)

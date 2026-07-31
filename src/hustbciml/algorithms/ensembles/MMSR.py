@@ -29,8 +29,20 @@ class MMSR(VoteCombiner):
     """Matrix mean-subsequence-reduced worker-skill aggregator (crowdkit)."""
 
     name = "M-MSR"
+    backend = "crowdkit.aggregation.MMSR"
+    backend_distribution = "crowd-kit"
 
-    def aggregate(self, votes: np.ndarray) -> np.ndarray:
+    def __init__(self, n_iter: int = 10000, tol: float = 1e-10,
+                 random_state: int | None = 0):
+        if int(n_iter) < 1 or float(tol) <= 0:
+            raise ValueError("M-MSR requires n_iter >= 1 and tol > 0")
+        self.n_iter = int(n_iter)
+        self.tol = float(tol)
+        self.random_state = random_state
+
+    def aggregate(self, votes: np.ndarray, n_classes: int) -> np.ndarray:
         from crowdkit.aggregation import MMSR as _MMSR
 
-        return crowdkit_predict(votes, _MMSR())
+        return crowdkit_predict(votes, _MMSR(
+            n_iter=self.n_iter, tol=self.tol, random_state=self.random_state,
+        ))

@@ -84,7 +84,7 @@ EA-ShallowConvNet:
   reference_range: [68, 78]  # ShallowConvNet backbone with EA
   seeds: 3
   source: "Schirrmeister et al. 2017 (ShallowConvNet)"
-  note: "network axis. Essentially ties EEGNet here (+0.10)."
+  note: "Legacy ShallowConvNet port and non-nested globally tuned row. The architecture is structurally close to ShallowFBCSPNet, but uses adapted initialization/head details; this range checks regression to the archived port, not paper reproduction. Pending clean nested remeasurement."
 
 EA-DeepConvNet:
   dataset: BNCI2014001
@@ -95,7 +95,7 @@ EA-DeepConvNet:
   reference_range: [66, 78]  # DeepConvNet backbone with EA
   seeds: 3
   source: "Schirrmeister et al. 2017 (DeepConvNet)"
-  note: "network axis. +1.98 over EEGNet — 2nd-best backbone, behind DBConformer."
+  note: "Legacy HUST width-5/pool-2 adaptation, not the cited Deep4Net architecture. This range checks regression to the archived non-nested globally tuned row only; pending paper-faithful replacement and clean nested remeasurement."
 
 # Test-time-adaptation family (Tent, PL, BN-adapt) ported over the shared
 # online_tta_loop skeleton. They are the baselines T-TIME is measured against, and
@@ -518,7 +518,7 @@ EA-ADFCNN:
   reference_range: [67, 77]
   seeds: 3
   source: "W. Tao et al., IEEE Trans. Neural Syst. Rehabil. Eng., 2024; doi:10.1109/TNSRE.2023.3342331"
-  note: "ADFCNN in the Networks table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+  note: "Legacy ADFCNN architecture transfer from the v1.2 artifacts on server 20022. It preserves the released feature extractor and upstream reshape behavior but adapts the classifier, window, preprocessing and training. This is a regression band for the archived port, not a paper reproduction; pending clean nested remeasurement."
 
 EA-CTNet:
   dataset: BNCI2014001
@@ -557,12 +557,12 @@ EA-EEGWaveNet:
   dataset: BNCI2014001
   protocol: cross_subject
   metric: accuracy
-  reproduced: 66.64          # 3-seed mean, three-dataset production run
+  reproduced: 66.64          # 3-seed mean, v1.2 artifacts on 20022
   reproduced_std: 1.44
   reference_range: [62, 72]
   seeds: 3
   source: "P. Thuwajit et al., IEEE Trans. Ind. Inform., 2022; doi:10.1109/TII.2021.3133307"
-  note: "EEGWaveNet in the Networks table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+  note: "Legacy EEGWaveNet MI architecture transfer from the v1.2 artifacts on server 20022. The feature extractor follows released code where it conflicts with the paper prose and requires at least 448 samples; the head and protocol are adapted. This is a regression band for that port; pending clean nested remeasurement."
 
 EA-FBMSNet:
   dataset: BNCI2014001
@@ -573,7 +573,7 @@ EA-FBMSNet:
   reference_range: [65, 75]
   seeds: 3
   source: "K. Liu et al., IEEE Trans. Biomed. Eng., 2023; doi:10.1109/TBME.2022.3193277"
-  note: "FBMSNet in the Networks table. Regression band around this benchmark's own three-seed measurement; no directly comparable published cross-subject LOSO number exists for this protocol."
+  note: "Legacy non-equivalent FBMSNet adaptation from the v1.2 artifacts on server 20022: finite zero-phase filter approximation after global 8-32 Hz preprocessing, adapted classifier/loss and effective dropout 0.25. This range checks the archived port, not paper reproduction; pending a separately named compliant implementation and clean remeasurement."
 
 EA-MSCFormer:
   dataset: BNCI2014001

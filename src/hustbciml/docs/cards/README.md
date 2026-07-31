@@ -21,17 +21,17 @@ See [../../RESULTS.md](../../RESULTS.md) for the controlled-comparison tables, [
 | [EA-MSVTNet](EA-MSVTNet.md) | 74.82 ± 0.74 | +2.75 | Several parallel multi-scale EEGNet-style convolution branches followed by a transformer that mixes their tokens. |
 | [EA-EEGNeX](EA-EEGNeX.md) | 74.61 ± 0.92 | +2.54 | A purely convolutional EEGNet variant that replaces the separable temporal convolutions with a stack of dilated convolutions for… |
 | [EA-CTNet](EA-CTNet.md) | 73.97 ± 0.80 | +1.90 | An EEGNet-style convolutional patch embedding feeding a transformer encoder. |
-| [EA-DeepConvNet](EA-DeepConvNet.md) | 73.79 ± 0.46 | +1.72 | DeepConvNet stacks four temporal/spatial convolution-plus-pooling blocks — deeper and higher-capacity than EEGNet — trained end-t… |
+| [EA-DeepConvNet](EA-DeepConvNet.md) | 73.79 ± 0.46 | +1.72 | Four temporal/spatial convolution-and-pooling blocks feed the shared Linear head. |
 | [EA-EEGDeformer](EA-EEGDeformer.md) | 73.79 ± 1.78 | +1.72 | A dense convolutional transformer that interleaves shallow CNN encoders with coarse-to-fine transformer stages. |
 | [EA-TIEEEGNet](EA-TIEEEGNet.md) | 73.51 ± 0.25 | +1.44 | TIE-EEGNet is EEGNet with its first temporal convolution replaced by a time-information-enhanced (TIE) convolution: a fixed sinus… |
 | [EA-EEGConformer](EA-EEGConformer.md) | 72.84 ± 0.76 | +0.77 | EEG Conformer is a convolutional tokenizer (temporal then spatial convolution producing patch tokens) feeding a transformer self-… |
-| [EA-ADFCNN](EA-ADFCNN.md) | 72.17 ± 1.53 | +0.10 | Two parallel spectral-spatial pathways at different temporal scales, fused by a self-attention module. |
+| [EA-ADFCNN](EA-ADFCNN.md) | 72.17 ± 1.53 | +0.10 | Two parallel spectral-spatial pathways at different temporal scales are fused by self-attention. |
 | [EA-TMSANet](EA-TMSANet.md) | 71.84 ± 1.26 | -0.23 | Sums two parallel multi-scale temporal convolutions, then applies a temporal multi-scale self-attention module. |
 | [EA-ShallowConvNet](EA-ShallowConvNet.md) | 71.12 ± 1.05 | -0.95 | ShallowConvNet is a single temporal convolution followed by a spatial convolution, a square activation, mean pooling and a log —… |
-| [EA-FBMSNet](EA-FBMSNet.md) | 70.91 ± 0.95 | -1.16 | Decomposes the signal into a filter bank of narrow sub-bands, then applies mixed-scale depthwise temporal convolutions. |
+| [EA-FBMSNet](EA-FBMSNet.md) | 70.91 ± 0.95 | -1.16 | The archived port applies fixed sub-band kernels, mixed-scale temporal convolution, depthwise spatial filtering and segmented log… |
 | [EA-KDFNet](EA-KDFNet.md) | 70.88 ± 0.32 | -1.19 | KDFNet (knowledge-data fusion network) mirrors the FBCSP pipeline inside a CNN: a windowed-sinc FIR filter bank supplies fixed, d… |
 | [EA-SlimSeiz](EA-SlimSeiz.md) | 69.65 ± 0.42 | -2.42 | A lightweight multi-branch 1D-convolution feature extractor paired with a single Mamba selective-state-space mixer; originally a… |
-| [EA-EEGWaveNet](EA-EEGWaveNet.md) | 66.64 ± 1.44 | -5.43 | A cascade of depthwise Conv1d layers repeatedly halves the sampling rate to extract multiscale temporal features; originally a se… |
+| [EA-EEGWaveNet](EA-EEGWaveNet.md) | 66.64 ± 1.44 | -5.43 | Five retained scales from a depthwise temporal downsampling cascade are each processed by a two-convolution feature block, pooled… |
 
 ## Alignment
 

@@ -510,7 +510,7 @@ window.BENCHMARK = {
     {
       "id": "network",
       "title": "Networks",
-      "blurb": "The backbone stage. Only the deep network varies. The input remains Euclidean-aligned, and the objective remains supervised empirical risk minimization (ERM). All backbones share one training configuration, i.e., Adam with batch size 32 for at most 100 epochs, early-stopped on a 20% held-out split of the source subjects, and each network retains the architecture hyperparameters of its original paper. The learning rate is the only tuned hyperparameter. It is grid-searched for each backbone and selected by that held-out source validation accuracy, never on the target, so that no configuration is fitted to the test data. The baseline is EEGNet.",
+      "blurb": "Legacy measurements pending clean remeasurement. The input is Euclidean-aligned and the objective is ERM, but the archived rows mixed fixed and per-backbone schedules. The old learning-rate sweep held out random source trials and selected one dataset-wide value from validation scores pooled across overlapping LOSO folds; it was not target-isolated nested selection. These are adapted architecture comparisons under this benchmark protocol, not paper-protocol reproductions. DeepConvNet and FBMSNet materially differ from the cited methods, EEGWaveNet follows released code where it conflicts with the paper prose, and ADFCNN preserves the upstream reshape behavior while using an adapted head and training protocol. No displayed value has been changed by the audit. The baseline is EEGNet.",
       "groups": [
         {
           "subcat": null,
@@ -973,7 +973,7 @@ window.BENCHMARK = {
               "key": "EA-ADFCNN",
               "lab": false,
               "code": "src/hustbciml/algorithms/models/ADFCNN.py",
-              "desc": "Two parallel spectral-spatial pathways at different temporal scales, fused by a self-attention module.",
+              "desc": "Legacy architecture transfer. It preserves the released feature extractor and its upstream reshape behavior, but replaces the classifier, input window, preprocessing and training protocol. It is not a paper-protocol reproduction.",
               "ref": "W. Tao et al., IEEE Trans. Neural Syst. Rehabil. Eng., 2024",
               "doi": "10.1109/TNSRE.2023.3342331",
               "naReason": null,
@@ -1039,7 +1039,7 @@ window.BENCHMARK = {
               "key": "EA-FBMSNet",
               "lab": false,
               "code": "src/hustbciml/algorithms/models/FBMSNet.py",
-              "desc": "Decomposes the signal into a filter bank of narrow sub-bands, then applies mixed-scale depthwise temporal convolutions.",
+              "desc": "Legacy non-equivalent adaptation. It applies a finite zero-phase filter approximation after the benchmark-wide 8–32 Hz prefilter, replaces the constrained classifier and center-loss training, and uses effective dropout 0.25. Pending a separately named compliant implementation and remeasurement.",
               "ref": "K. Liu et al., IEEE Trans. Biomed. Eng., 2023",
               "doi": "10.1109/TBME.2022.3193277",
               "naReason": null,
@@ -1072,7 +1072,7 @@ window.BENCHMARK = {
               "key": "EA-DeepConvNet",
               "lab": false,
               "code": "src/hustbciml/algorithms/models/DeepConvNet.py",
-              "desc": "Deeper four-block convolutional network for EEG decoding.",
+              "desc": "Legacy HUST adaptation: four width-5 convolution blocks with width-2 pooling, rather than the cited Deep4Net width-10 kernels and width-3 pooling. Pending paper-faithful replacement and remeasurement.",
               "ref": "R. T. Schirrmeister et al., Hum. Brain Mapp., 2017",
               "doi": "10.1002/hbm.23730",
               "naReason": null,
@@ -1105,7 +1105,7 @@ window.BENCHMARK = {
               "key": "EA-EEGWaveNet",
               "lab": false,
               "code": "src/hustbciml/algorithms/models/EEGWaveNet.py",
-              "desc": "A cascade of depthwise Conv1d layers repeatedly halves the sampling rate, to extract multi-scale temporal features. It was originally a seizure detector.",
+              "desc": "Released-code-faithful feature extractor: six depthwise downsampling layers and five retained scales. The paper prose describes a different stride pattern, so this row claims code fidelity only. The shared benchmark head and MI protocol are adaptations.",
               "ref": "P. Thuwajit et al., IEEE Trans. Ind. Inform., 2022",
               "doi": "10.1109/TII.2021.3133307",
               "naReason": null,
@@ -2268,7 +2268,7 @@ window.BENCHMARK = {
     {
       "id": "ensemble",
       "title": "Ensemble Learning",
-      "blurb": "The aggregation stage, in a fully decentralized and privacy-preserving setting. Each source subject trains three different learners, i.e., tangent-space logistic regression, CSP-Net and EEGConformer, on its own data alone, and shares only its hard predicted labels on the target, never the model weights or the raw EEG. A combiner then fuses the resulting (N−1)×3 label votes into a single prediction, without any target label. One learner is taken from each of three model families, i.e., a Riemannian linear model, a convolutional network and a self-attention network, so that the votes a single subject contributes are as mutually decorrelated as this menu allows. Because only the hard votes are observed, the task reduces to estimating the reliability of each learner in the absence of the ground truth. Two non-ensemble references bound the task, and the combiners are grouped below them.",
+      "blurb": "The aggregation stage, in a fully decentralized and privacy-preserving setting. Each source subject trains three different learners, i.e., tangent-space logistic regression, CSP-Net and EEGConformer, on its own data alone, and shares only its hard predicted labels on the target, never the model weights or the raw EEG. A combiner then fuses the resulting (N−1)×3 label votes into a single prediction, without any target label. One learner is taken from each of three model families: a Riemannian linear model, a convolutional network and a self-attention network. The displayed values are legacy measurements whose artifacts did not serialize combiner parameters or backend versions. The audited generating code used the simplified TestEnsemble ZenCrowd EM implementation for 20 passes and PM/CRH for three rounds; these settings are part of method identity. New runners record them and fail if any requested seed or combiner is incomplete.",
       "groups": [
         {
           "subcat": "Non-ensemble references",
@@ -2607,7 +2607,7 @@ window.BENCHMARK = {
               "key": "PM",
               "lab": false,
               "code": "src/hustbciml/algorithms/ensembles/PM.py",
-              "desc": "Truth-discovery aggregator: iteratively weights each source model by how much its votes agree with the current consensus (weight = -log of normalized disagreement), then re-estimates the consensus.",
+              "desc": "Archived three-round PM/CRH truth-discovery implementation: each round weights a source model by the negative logarithm of its maximum-normalized disagreement with the current consensus, then re-estimates that consensus. The round count is part of the method identity.",
               "ref": "Q. Li, ..., ACM SIGMOD, 2014",
               "doi": "10.1145/2588555.2610509",
               "naReason": null,
@@ -2706,7 +2706,7 @@ window.BENCHMARK = {
               "key": "ZenCrowd",
               "lab": false,
               "code": "src/hustbciml/algorithms/ensembles/ZenCrowd.py",
-              "desc": "EM aggregator with a single reliability scalar per source model, inferred from vote agreement alone (no target labels).",
+              "desc": "Simplified TestEnsemble single-coin EM baseline with one reliability scalar per source model, run for 20 passes. It is not the full ZenCrowd model described by Demartini et al.; the iteration count is part of the method identity.",
               "ref": "G. Demartini, ..., WWW, 2012",
               "doi": "10.1145/2187836.2187900",
               "naReason": null,

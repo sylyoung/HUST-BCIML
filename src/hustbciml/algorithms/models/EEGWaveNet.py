@@ -18,30 +18,17 @@
 """EEGWaveNet backbone (Punnawish Thuwajit et al., 2022) is a multiscale
 CNN for spatiotemporal EEG feature extraction.
 
-The network has two stages that mirror the paper's Figure 2 and Section III-B.
+The implementation follows the authors' released ``architecture.py``: six
+kernel-2/stride-2 depthwise convolutions and, on each retained scale, two
+kernel-4/stride-1 regular convolutions. The paper prose instead describes three
+regular ``(1, 4)`` convolutions with stride 2 and no padding. This file therefore
+claims released-code fidelity, not agreement between code and prose.
 
-  * Multiscale temporal decomposition. A cascade of six depthwise (per-channel)
-    Conv1d layers with kernel 2 and stride 2 repeatedly halves the sampling rate,
-    so each successive layer looks at a coarser time scale. Following the paper,
-    the first layer output is treated as a preliminary transform and the five
-    coarser levels feed the next stage, giving a wavelet-like multiscale pyramid.
-  * Per-scale spatial-temporal pooling. Each of the five retained scales is passed
-    through its own two-layer pointwise-over-channels convolution block (the
-    paper's spatial feature extractor) of the form Conv1d -> BatchNorm ->
-    LeakyReLU -> Conv1d -> BatchNorm -> LeakyReLU, then averaged over time to a
-    32-dimensional descriptor. The five 32-dimensional descriptors are
-    concatenated into a 160-dimensional multiscale feature vector.
-
-The paper closes with a classifier MLP Linear(160, 64) -> LeakyReLU ->
-Linear(64, 32) -> Sigmoid -> Linear(32, n_classes). As in the DBConformer port,
-the final Linear that maps to n_classes is removed and the rest of that MLP is
-folded into forward_features, so out_features is 32 and the shared hustbciml
-Linear head produces the logits.
-
-Source: github.com/IoBT-VISTEC/EEGWaveNet (also carried in DBConformer's
-models/EEGWaveNet.py). The only deviation is behaviour-preserving: out_features
-is confirmed by a dummy forward in __init__ rather than hardcoded, so any
-(C, T) shape works.
+The released feature MLP is kept through ``Linear(64, 32) -> Sigmoid`` and its
+final class layer is replaced by the benchmark's shared Linear head. The repeated
+valid convolutions require at least 448 input samples; construction fails loudly
+for shorter epochs (including the 128-sample Toy dataset) instead of promising
+arbitrary ``(C, T)`` support.
 """
 from __future__ import annotations
 
@@ -59,6 +46,11 @@ class EEGWaveNet(Backbone):
         super().__init__()
         self.n_chans = n_chans
         self.n_times = n_times
+        if n_times < 448:
+            raise ValueError(
+                f"EEGWaveNet's released valid-convolution architecture requires at "
+                f"least 448 samples, got n_times={n_times}"
+            )
 
         # --- Stage 1: multiscale temporal decomposition (paper Section III-B). ---
         # Six depthwise Conv1d(kernel=2, stride=2) layers, one filter per channel

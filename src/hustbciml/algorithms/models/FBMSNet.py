@@ -47,25 +47,26 @@ produces the logits. ``out_features`` (num_Feat * dilatability * strideFactor,
 i.e. 36 * 8 * 4 = 1152 at the default config) is inferred by a dummy forward so
 the backbone is dataset-agnostic.
 
-Source: github.com/Want2Vanish/FBMSNet (the authors' ``FBMSNet`` network, whose
-default config is nBands=9, num_Feat=36, dilatability=8, strideFactor=4,
-temporalLayer='LogVarLayer', dropoutP=0.5). Deviations, all self-contained and
-behaviour-preserving:
+Source: github.com/Want2Vanish/FBMSNet. This benchmark row is an adapted
+architecture, not a paper-protocol reproduction:
 
-* The authors precompute the filter bank offline (an external transforms module
-  that Chebyshev-filters each trial with ``scipy.signal.filtfilt``) and feed the
-  9-band tensor in. Here the same 9 Chebyshev type II bands are precomputed at
-  init with scipy (already a repo dependency) and applied inside the model as a
-  fixed, non-trainable depthwise convolution with SAME padding, so any (C, T)
-  input works and no external filter-bank code is needed. Each band conv weight
-  is the finite impulse response of that band's zero-phase Chebyshev filter, so
-  it reproduces the paper's band decomposition while staying a single conv. This
-  mirrors the KDFNet port's data-free filter-bank-as-conv pattern.
-* The MixConv multi-scale temporal convolution and the log-variance aggregation
-  are kept identical to the reference (same kernels, same num_Feat, same swish,
-  same LogVarLayer, same strideFactor). Only the trailing classifier Linear is
-  dropped, and the feature width is inferred by a dummy forward instead of the
-  reference's hardcoded ``get_size``.
+* The authors' multiview generator selects ``filtType='filter'`` and applies the
+  Chebyshev-II bank with causal ``scipy.signal.lfilter`` before the network. This
+  file instead turns a centered ``filtfilt`` impulse response into a finite fixed
+  convolution. Numerical checks show that it is equivalent to neither the
+  official causal filter nor direct ``filtfilt``.
+* All benchmark input has already passed MOABB's global 8--32 Hz filter. The
+  nominal 4--8 and 32--40 Hz branches therefore cannot recover the raw-band
+  content used by the original method. The 4--8 Hz branch is retained only to
+  describe the archived implementation and must not be used in a corrected MI
+  configuration.
+* The authors' ``dropoutP=0.5`` argument is unused. HUST adds a real dropout after
+  log variance, and the generic pipeline currently supplies 0.25. The official
+  max-norm classifier and center-loss training are also replaced by the shared
+  unconstrained Linear head and cross-entropy loop.
+
+The published numbers must consequently be read as regression values for this
+legacy adaptation, pending remeasurement of a separately named compliant method.
 """
 from __future__ import annotations
 
@@ -220,17 +221,13 @@ class FBMSNet(Backbone):
 
     @torch.no_grad()
     def _init_filter_bank(self) -> None:
-        """Precompute the 9 Chebyshev type II band-pass filters (paper's FBCNet
-        filter bank) and store each band's finite impulse response as a fixed
-        conv kernel.
+        """Build the legacy port's finite zero-phase filter kernels.
 
-        The authors design each band with ``scipy.signal.cheb2ord`` +
-        ``scipy.signal.cheby2`` (passband 3 dB, stopband 30 dB, 2 Hz transition)
-        and apply it with zero-phase ``filtfilt``. A zero-phase IIR filter is not
-        a single causal conv, so we take the truncated impulse response of the
-        band's ``filtfilt`` and use it as a symmetric FIR kernel. Convolving with
-        this kernel reproduces that band's magnitude response, giving the same
-        band decomposition the paper feeds into MixConv."""
+        The coefficient design follows the official Chebyshev-II settings, but
+        the official data generator applies those IIR coefficients with causal
+        ``lfilter``. The centered ``filtfilt`` impulse below is the archived HUST
+        adaptation and is intentionally documented as non-equivalent.
+        """
         from scipy.signal import cheb2ord, cheby2, filtfilt
 
         nyq = self.sfreq / 2.0

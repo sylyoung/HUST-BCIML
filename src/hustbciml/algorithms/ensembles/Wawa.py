@@ -26,8 +26,10 @@ class Wawa(VoteCombiner):
     """Reweight base models by their agreement with the majority vote, then re-vote."""
 
     name = "Wawa"
+    backend = "crowdkit.aggregation.Wawa"
+    backend_distribution = "crowd-kit"
 
-    def aggregate(self, votes: np.ndarray) -> np.ndarray:
+    def aggregate(self, votes: np.ndarray, n_classes: int) -> np.ndarray:
         from crowdkit.aggregation import Wawa as _Wawa
 
         return crowdkit_predict(votes, _Wawa())

@@ -7,6 +7,32 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [Unreleased]
+
+### Corrected
+- **Measurement identity now fails closed.** New result and cache artifacts record source and data
+  digests, Git state, dependency/runtime versions, machine and NumPy BLAS/LAPACK identity, explicit
+  MOABB preprocessing, dimensions, channels/classes, and method parameters. Unreadable, incomplete,
+  legacy, or mismatched artifacts cannot be reused for reportable measurements. JSON and NPZ writes
+  are atomic. Legacy caches may be inspected or explicitly loaded only as `is_measurement=false`.
+- **Network selection is target-isolated.** The rewritten tuner selects a learning rate separately
+  for each outer target from validation on whole source subjects. Selection mode does not align,
+  predict, score, save, or print the outer target; final evaluation starts from a fresh model and
+  requires complete target-by-seed coverage. The former procedure held out random source trials and
+  pooled overlapping LOSO folds, so every reported subject could influence the dataset-wide choice.
+- **Ensemble method identity is explicit.** Vote combiners receive the declared class count;
+  Crowd-Kit parameters, backend versions, ZenCrowd iterations and PM rounds are serialized; and a
+  requested combiner failure or missing seed aborts aggregation. New artifacts contain per-target
+  hard votes and predictions.
+- Public documentation now identifies the Network table as legacy pending clean remeasurement,
+  describes the old selection leakage and test-score adoption rule, and distinguishes the archived
+  DeepConvNet, FBMSNet, EEGWaveNet and ADFCNN ports from paper-protocol reproductions. ZenCrowd is
+  identified as the simplified TestEnsemble EM baseline and PM as the three-round PM/CRH port.
+
+This audit correction changes **no published result number** and does not alter model or combiner
+mathematics. Corrected DeepConvNet/FBMSNet implementations and all long remeasurement runs remain a
+separate future pass.
+
 ## [1.5.0] - 2026-07-30
 
 Repository structure only. **No measured number changes**, no algorithm changes, and the

@@ -246,12 +246,33 @@ class Combiner(ABC):
                       kept separate from the class name the registry keys on.
       lab_proposed  — True for the lab's own combiners (SML-OVR, StackingNet).
       binary_only   — True if the method is defined only for two classes (binary
-                      SML); the runner skips it on multi-class tasks.
+                      SML); a multi-class runner fails unless it is removed from
+                      the requested combiner set.
     """
 
     name: str = ""
     lab_proposed: bool = False   # True for the lab's own combiners
     binary_only: bool = False    # True if valid only for 2-class tasks (binary SML)
+    backend: str | None = None
+    backend_distribution: str | None = None
+
+    def configuration(self) -> dict:
+        """JSON-safe method identity written into ensemble artifacts."""
+        backend_version = None
+        if self.backend_distribution:
+            import importlib.metadata
+            try:
+                backend_version = importlib.metadata.version(self.backend_distribution)
+            except importlib.metadata.PackageNotFoundError:
+                backend_version = None
+        return {
+            "name": self.name,
+            "class": f"{type(self).__module__}.{type(self).__name__}",
+            "parameters": dict(vars(self)),
+            "backend": self.backend,
+            "backend_distribution": self.backend_distribution,
+            "backend_version": backend_version,
+        }
 
     @abstractmethod
     def combine(self, scores: np.ndarray) -> np.ndarray:
@@ -272,16 +293,18 @@ class VoteCombiner(Combiner):
     table of discrete votes: one integer label per model per trial. This base
     class performs the single shared step for all of them — argmax the
     ``(K, N, C)`` scores into a ``(K, N)`` integer vote table — and hands that to
-    ``aggregate``. A subclass implements ``aggregate`` and derives the class count
-    internally from the votes (``votes.max() + 1``), exactly as the original
-    vote-table implementations did, so nothing about their numerical behavior
-    changes: ``combine`` here is precisely the old ``lambda s: fn(s.argmax(2))``.
+    ``aggregate``. The declared class count is passed from ``scores.shape[2]``;
+    it must not be inferred from observed votes because a valid class may receive
+    no vote in a particular ensemble run.
     """
 
     @abstractmethod
-    def aggregate(self, votes: np.ndarray) -> np.ndarray:
-        """Fuse ``(K, N)`` integer hard votes into ``(N,)`` consensus labels."""
+    def aggregate(self, votes: np.ndarray, n_classes: int) -> np.ndarray:
+        """Fuse ``(K, N)`` hard votes with the declared class count."""
         ...
 
     def combine(self, scores: np.ndarray) -> np.ndarray:
-        return self.aggregate(scores.argmax(axis=2))
+        scores = np.asarray(scores)
+        if scores.ndim != 3 or scores.shape[2] < 2:
+            raise ValueError(f"scores must have shape (K, N, C>=2), got {scores.shape}")
+        return self.aggregate(scores.argmax(axis=2), int(scores.shape[2]))

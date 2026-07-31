@@ -215,15 +215,15 @@ EA-ADFCNN:
   axis: backbone
   baseline: EA-EEGNet
   config: EA · no-aug · ADFCNN · Linear · ERM
-  implementation: 'Ported from the authors'' implementation (https://github.com/UM-Tao/ADFCNN-MI) onto
-    the Backbone ABC: the classification head is dropped so the shared Linear head produces the logits,
-    and the feature width is measured by a construction-time dummy forward so the same file runs on any
-    (channels, samples) dataset. Deviations are listed in the module docstring of src/hustbciml/algorithms/models/ADFCNN.py;
-    see it before quoting this row against the paper''s own number.
+  implementation: 'Legacy architecture transfer from the authors'' implementation
+    (https://github.com/UM-Tao/ADFCNN-MI). It preserves the released feature extractor, including
+    the upstream reshape behavior, but drops its classifier and replaces the input window,
+    preprocessing and training protocol with the benchmark pipeline. This row is a regression
+    target for the archived port, not a paper-protocol reproduction.
 
     '
-  mechanism: 'Two parallel spectral-spatial pathways at different temporal scales, fused by a self-attention
-    module.
+  mechanism: 'Two parallel spectral-spatial pathways at different temporal scales are fused by
+    self-attention. The shared Linear head maps the resulting features to benchmark classes.
 
     '
   paradigm: MI
@@ -281,13 +281,14 @@ EA-DeepConvNet:
   axis: backbone
   baseline: EA-EEGNet
   config: EA · no-aug · DeepConvNet · Linear · ERM
-  implementation: 'Refactored from the Schirrmeister et al. 2017 architecture onto the Backbone ABC; self-contained,
-    no third-party code vendored.
+  implementation: 'Legacy self-contained HUST adaptation, pending paper-faithful replacement. Its
+    four blocks use temporal width 5 and width-2 pooling; the cited Braindecode Deep4Net uses width
+    10 and width-3 pooling, with different bias, initialization and final-dropout details. The
+    displayed values identify this archived port, not Schirrmeister et al.''s Deep4Net.
 
     '
-  mechanism: 'DeepConvNet stacks four temporal/spatial convolution-plus-pooling blocks — deeper and higher-capacity
-    than EEGNet — trained end-to-end on the EA-aligned trials with a linear head. It stays fully convolutional;
-    the extra depth edges it past EEGNet on this dataset.
+  mechanism: 'Four temporal/spatial convolution-and-pooling blocks feed the shared Linear head.
+    This description is limited to the archived implementation and makes no paper-fidelity claim.
 
     '
   paradigm: MI
@@ -362,15 +363,16 @@ EA-EEGWaveNet:
   axis: backbone
   baseline: EA-EEGNet
   config: EA · no-aug · EEGWaveNet · Linear · ERM
-  implementation: 'Ported from the authors'' implementation (https://github.com/IoBT-VISTEC/EEGWaveNet)
-    onto the Backbone ABC: the classification head is dropped so the shared Linear head produces the logits,
-    and the feature width is measured by a construction-time dummy forward so the same file runs on any
-    (channels, samples) dataset. Deviations are listed in the module docstring of src/hustbciml/algorithms/models/EEGWaveNet.py;
-    see it before quoting this row against the paper''s own number.
+  implementation: 'Adapted from the authors'' released implementation
+    (https://github.com/IoBT-VISTEC/EEGWaveNet). The feature extractor follows the released code:
+    six depthwise kernel-2/stride-2 convolutions and two regular kernel-4/stride-1 convolutions per
+    retained scale. The paper prose describes a different regular-convolution stride pattern, so
+    this row claims released-code fidelity only. Its valid convolutions require at least 448 input
+    samples, and the benchmark replaces the final class layer with the shared Linear head.
 
     '
-  mechanism: 'A cascade of depthwise Conv1d layers repeatedly halves the sampling rate to extract multiscale
-    temporal features; originally a seizure detector.
+  mechanism: 'Five retained scales from a depthwise temporal downsampling cascade are each processed
+    by a two-convolution feature block, pooled and fused by the released feature MLP.
 
     '
   paradigm: MI
@@ -379,15 +381,17 @@ EA-FBMSNet:
   axis: backbone
   baseline: EA-EEGNet
   config: EA · no-aug · FBMSNet · Linear · ERM
-  implementation: 'Ported from the authors'' implementation (https://github.com/Want2Vanish/FBMSNet) onto
-    the Backbone ABC: the classification head is dropped so the shared Linear head produces the logits,
-    and the feature width is measured by a construction-time dummy forward so the same file runs on any
-    (channels, samples) dataset. Deviations are listed in the module docstring of src/hustbciml/algorithms/models/FBMSNet.py;
-    see it before quoting this row against the paper''s own number.
+  implementation: 'Legacy non-equivalent adaptation of the authors'' implementation
+    (https://github.com/Want2Vanish/FBMSNet). The official generator applies a causal Chebyshev-II
+    filter bank before the network; this port uses a finite centered zero-phase approximation after
+    the benchmark-wide 8--32 Hz prefilter, so its nominal 4--8 and 32--40 Hz branches do not receive
+    the original raw-band content. The constrained classifier and center-loss training are replaced
+    by the shared Linear head and cross-entropy, and the effective benchmark dropout is 0.25. This
+    row is pending a separately named compliant implementation and remeasurement.
 
     '
-  mechanism: 'Decomposes the signal into a filter bank of narrow sub-bands, then applies mixed-scale depthwise
-    temporal convolutions.
+  mechanism: 'The archived port applies fixed sub-band kernels, mixed-scale temporal convolution,
+    depthwise spatial filtering and segmented log-variance aggregation before the shared head.
 
     '
   paradigm: MI

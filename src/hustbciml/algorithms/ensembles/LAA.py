@@ -38,14 +38,14 @@ class LAA(VoteCombiner):
 
     name = "LAA"
 
-    def aggregate(self, votes: np.ndarray) -> np.ndarray:
+    def aggregate(self, votes: np.ndarray, n_classes: int) -> np.ndarray:
         import torch
         import torch.nn as nn
         import torch.nn.functional as F
 
         preds = votes                                    # (K, N) integer hard votes
         K, N = preds.shape
-        C = int(preds.max()) + 1
+        C = int(n_classes)
         oh = onehot(preds, C)                            # (K, N, C)
         user_labels = np.concatenate([oh[k] for k in range(K)], axis=1)  # (N, K*C)
         # majority vote target (label-free), local tie-break

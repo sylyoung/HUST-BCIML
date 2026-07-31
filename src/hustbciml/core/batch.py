@@ -60,6 +60,8 @@ class EEGEpochs:
     ch_names : channel names (len C) — needed by montage-aware methods.
     paradigm : 'MI' | 'P300' | 'SSVEP' | ...
     classes : human-readable class names (len n_classes).
+    provenance : JSON-safe identity of the loader, preprocessing, software, and
+        cached array content. It is dataset-wide and therefore survives slicing.
     """
 
     X: np.ndarray
@@ -70,6 +72,7 @@ class EEGEpochs:
     ch_names: List[str] = field(default_factory=list)
     paradigm: str = "MI"
     classes: List[str] = field(default_factory=list)
+    provenance: dict = field(default_factory=dict)
 
     def __post_init__(self):
         # Normalize dtypes and shapes on construction so every downstream stage

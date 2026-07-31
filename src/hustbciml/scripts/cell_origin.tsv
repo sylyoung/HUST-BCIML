@@ -82,9 +82,9 @@ DELTA	BNCI2015001	7002	exact	3-seed mean reproduces the published value
 DJP-MMD	BNCI2014001	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
 DJP-MMD	BNCI2014002	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
 DJP-MMD	BNCI2015001	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
-EA-ADFCNN	BNCI2014001	10022	exact	3-seed mean reproduces the published value
-EA-ADFCNN	BNCI2014002	10022	exact	3-seed mean reproduces the published value
-EA-ADFCNN	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+EA-ADFCNN	BNCI2014001	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
+EA-ADFCNN	BNCI2014002	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
+EA-ADFCNN	BNCI2015001	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
 EA-CTNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
 EA-CTNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
 EA-CTNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
@@ -109,12 +109,12 @@ EA-EEGNeX	BNCI2015001	10022	exact	3-seed mean reproduces the published value
 EA-EEGNet	BNCI2014001	60022	exact	3-seed mean reproduces the published value
 EA-EEGNet	BNCI2014002	7002	exact	3-seed mean reproduces the published value
 EA-EEGNet	BNCI2015001	7002	exact	3-seed mean reproduces the published value
-EA-EEGWaveNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
-EA-EEGWaveNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
-EA-EEGWaveNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
-EA-FBMSNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
-EA-FBMSNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
-EA-FBMSNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+EA-EEGWaveNet	BNCI2014001	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
+EA-EEGWaveNet	BNCI2014002	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
+EA-EEGWaveNet	BNCI2015001	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
+EA-FBMSNet	BNCI2014001	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
+EA-FBMSNet	BNCI2014002	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
+EA-FBMSNet	BNCI2015001	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
 EA-KDFNet	BNCI2014001	7002	exact	3-seed mean reproduces the published value
 EA-KDFNet	BNCI2014002	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
 EA-KDFNet	BNCI2015001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json

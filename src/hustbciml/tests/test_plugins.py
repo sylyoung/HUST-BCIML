@@ -186,7 +186,7 @@ def test_results_refuse_to_overwrite_a_different_config(tmp_path):
     other = Exp_CrossSubject(Config(dataset="Toy", algorithm="EA-EEGNet",
                                     results_dir=str(tmp_path), device="cpu",
                                     epochs=1, batch_size=16, lr=5e-4))
-    with pytest.raises(FileExistsError, match="different configuration"):
+    with pytest.raises(FileExistsError, match="different measurement identity"):
         other.save_results(per, {"primary": {"mean": 71.0, "std": 0.0}})
 
 

@@ -14,13 +14,15 @@
 #     doi       = {10.1145/2588555.2610509},
 #   }
 # ===========================================================================
-"""PM (Li et al., 2014): truth discovery by source reliability.
+"""Three-round TestEnsemble PM/CRH truth-discovery implementation.
 
-An iterative truth-discovery aggregator. Start from the majority vote as the
-provisional truth; give each base model a weight equal to the negative log of its
-normalized disagreement with the current truth (so a model that rarely disagrees is
-trusted more); then re-estimate the truth as the weighted one-hot vote. A few
-iterations suffice. Votes are held in ±1 form, matching the reference PM.py.
+The current consensus initializes from majority vote. Each round gives a base model a
+weight equal to the negative logarithm of its maximum-normalized disagreement with the
+current consensus, then re-estimates the consensus from weighted one-hot votes. This
+matches the practical max-normalization scheme in the cited CRH method, but the paper
+describes alternating optimization to convergence rather than a fixed round count.
+The archived HUST runner uses three rounds while TestEnsemble's published driver used
+one; the configured count is part of method identity.
 """
 from __future__ import annotations
 
@@ -37,12 +39,14 @@ class PM(VoteCombiner):
     name = "PM"
 
     def __init__(self, n_iter: int = 3):
-        self.n_iter = n_iter                             # truth <-> weight refinement rounds
+        if int(n_iter) < 1:
+            raise ValueError("PM n_iter must be at least one")
+        self.n_iter = int(n_iter)                        # truth <-> weight refinement rounds
 
-    def aggregate(self, votes: np.ndarray) -> np.ndarray:
+    def aggregate(self, votes: np.ndarray, n_classes: int) -> np.ndarray:
         preds = votes                                    # (K, N) integer hard votes
         K, N = preds.shape
-        C = int(preds.max()) + 1
+        C = int(n_classes)
         with fixed_seed(0):
             # provisional truth = majority vote (local-seed tie-break)
             counts = np.zeros((C, N))

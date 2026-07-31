@@ -29,8 +29,26 @@ class GLAD(VoteCombiner):
     """EM aggregator over per-model ability and per-trial difficulty (crowdkit)."""
 
     name = "GLAD"
+    backend = "crowdkit.aggregation.GLAD"
+    backend_distribution = "crowd-kit"
 
-    def aggregate(self, votes: np.ndarray) -> np.ndarray:
+    def __init__(self, n_iter: int = 100, tol: float = 1e-5,
+                 m_step_max_iter: int = 25, m_step_tol: float = 0.01):
+        if int(n_iter) < 1 or int(m_step_max_iter) < 1:
+            raise ValueError("GLAD iteration counts must be at least one")
+        if float(tol) <= 0 or float(m_step_tol) <= 0:
+            raise ValueError("GLAD tolerances must be positive")
+        self.n_iter = int(n_iter)
+        self.tol = float(tol)
+        self.m_step_max_iter = int(m_step_max_iter)
+        self.m_step_tol = float(m_step_tol)
+
+    def aggregate(self, votes: np.ndarray, n_classes: int) -> np.ndarray:
         from crowdkit.aggregation import GLAD as _GLAD
 
-        return crowdkit_predict(votes, _GLAD())
+        model = _GLAD(
+            n_iter=self.n_iter, tol=self.tol, silent=True,
+            labels_priors=None, alphas_priors_mean=None, betas_priors_mean=None,
+            m_step_max_iter=self.m_step_max_iter, m_step_tol=self.m_step_tol,
+        )
+        return crowdkit_predict(votes, model)

@@ -140,6 +140,7 @@ class Config:
     # --- io ---
     data_dir: str = "./data"
     results_dir: str = "./results"
+    allow_legacy_cache: bool = False           # exploratory only; marks output non-measurement
     run_tag: str = ""                      # optional suffix on the results folder
     overwrite: bool = False                # allow replacing a result from a different config
     verbose: bool = False                  # print per-epoch training progress
@@ -151,6 +152,8 @@ class Config:
     sfreq: float = 0.0
     ch_names: List[str] = field(default_factory=list)   # for montage-aware stages
     classes: List[str] = field(default_factory=list)    # class names, for label-aware stages
+    data_provenance: dict = field(default_factory=dict) # filled by Exp._get_data
+    resolved_device: str = ""                       # effective cpu/cuda device used
 
     # --- bookkeeping (filled by resolve_config, not set by the user) ---
     # Stage flags the CLI used to override a named preset, e.g.
@@ -266,6 +269,9 @@ def build_parser() -> argparse.ArgumentParser:
                         "(e.g. --hp asfa_beta=0.3 --hp abat_eps=0.02); merges over the preset")
     p.add_argument("--data_dir", default=d.data_dir)
     p.add_argument("--results_dir", default=d.results_dir)
+    p.add_argument("--allow_legacy_cache", action="store_true",
+                   help="exploratory only: load a cache with no preprocessing provenance; "
+                        "the resulting artifact is marked is_measurement=false")
     p.add_argument("--run_tag", default=None,
                    help="suffix appended to the results folder, to keep several "
                         "hyperparameter settings of one algorithm side by side")
@@ -314,8 +320,8 @@ def resolve_config(argv=None) -> Config:
         "dataset", "protocol", "aligner", "augmenter", "backbone", "head", "strategy",
         "epochs", "batch_size", "lr", "F1", "D", "F2", "dropout", "seed", "itr", "device",
         "calib_ratio", "test_batch", "steps", "stride", "temperature", "weight_decay",
-        "val_ratio", "val_split", "early_stop_patience", "data_dir", "results_dir", "run_tag",
-        "overwrite", "verbose", "fold_seed",
+        "val_ratio", "val_split", "early_stop_patience", "data_dir", "results_dir",
+        "allow_legacy_cache", "run_tag", "overwrite", "verbose", "fold_seed",
     ]
     # Stage flags that redefine what the preset composes. Recording which ones
     # the user overrode is what keeps a modified preset from being filed — and

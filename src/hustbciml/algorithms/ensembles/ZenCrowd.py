@@ -14,14 +14,16 @@
 #     doi       = {10.1145/2187836.2187900},
 #   }
 # ===========================================================================
-"""ZenCrowd (Demartini et al., 2012): EM with one reliability scalar per model.
+"""Simplified TestEnsemble single-coin EM baseline labeled ``ZenCrowd``.
 
-The lightest EM aggregator here. Each base model has a single reliability scalar
-(not a full confusion matrix). E-step: each trial's label posterior multiplies, for
-every model, that model's reliability on the class it voted and the smoothed
-complement otherwise. M-step: each model's reliability becomes the mean posterior
-mass on the classes it voted. Ties in the final posterior are broken with a local
-fixed seed. Aggregates the hard votes only, no target labels.
+This is the lightweight implementation vendored from TestEnsemble, not the full
+ZenCrowd model described by Demartini et al. Each base model has one reliability
+scalar rather than a full confusion matrix. The E-step multiplies that scalar on the
+voted class and a smoothed complement otherwise; the M-step replaces reliability by
+the mean posterior mass on the model's votes. It aggregates hard votes without target
+labels. The HUST legacy artifacts used 20 passes; TestEnsemble's published driver used
+one. The pass count is therefore part of method identity and is serialized by the new
+runners.
 """
 from __future__ import annotations
 
@@ -38,12 +40,14 @@ class ZenCrowd(VoteCombiner):
     name = "ZenCrowd"
 
     def __init__(self, n_iter: int = 20):
-        self.n_iter = n_iter                             # EM sweeps (TestEnsemble default)
+        if int(n_iter) < 1:
+            raise ValueError("ZenCrowd n_iter must be at least one")
+        self.n_iter = int(n_iter)                        # serialized EM pass count
 
-    def aggregate(self, votes: np.ndarray) -> np.ndarray:
+    def aggregate(self, votes: np.ndarray, n_classes: int) -> np.ndarray:
         preds = votes                                    # (K, N) integer hard votes
         K, N = preds.shape
-        C = int(preds.max()) + 1
+        C = int(n_classes)
         labels = list(range(C))
         with fixed_seed(0):
             wm = {w: 0.8 for w in range(K)}                    # worker reliabilities
