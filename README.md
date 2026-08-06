@@ -61,6 +61,10 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-08-06 (v1.6.5).** Attribution fix: the BFT implementation credit now
+  names its two actual implementers, Jiayi Ouyang & Siyang Li (Ouyang first),
+  instead of the full paper author list. **No measured numbers change.**
+
 - **2026-08-06 (v1.6.4).** Documentation fix: the "What's new" block in both
   READMEs is collapsible again. Its `<details>` opening tag was accidentally
   dropped in the v1.6.0 rewrite, which made the whole digest render expanded

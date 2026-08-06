@@ -3,7 +3,7 @@
 
 # Original authors:    Siyang Li† & Jiayi Ouyang† & Zhenyao Cui†, Ziwei Wang, Tianwang Jia, Feng Wan, Dongrui Wu (2026) — "Backpropagation-Free Test-Time Adaptation for Lightweight EEG-Based Brain-Computer Interfaces", arXiv:2601.07556 (journal version in press)
 #                      Original code: https://github.com/sylyoung/DeepTransferEEG
-# Implementation:      Siyang Li, Jiayi Ouyang, Zhenyao Cui, Ziwei Wang, Tianwang Jia, Feng Wan, Dongrui Wu — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG)
+# Implementation:      Jiayi Ouyang & Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG)
 # Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported from)
 
 # References (IEEE BibTeX):

@@ -7,6 +7,14 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.5] - 2026-08-06
+
+### Changed
+
+- BFT header: the implementation credit now names its two actual implementers,
+  Jiayi Ouyang & Siyang Li (Ouyang first), instead of the full paper author
+  list. No measured numbers change.
+
 ## [1.6.4] - 2026-08-06
 
 ### Fixed
