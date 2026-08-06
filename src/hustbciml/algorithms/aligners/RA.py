@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/pyRiemann/pyRiemann (reference)
 # Implementation:      Alexandre Barachant & pyRiemann contributors — pyRiemann/pyRiemann (https://github.com/pyRiemann/pyRiemann)
 # Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (self-contained port, no pyriemann dependency)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Zanini2018,

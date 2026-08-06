@@ -1,14 +1,21 @@
 # ===========================================================================
 # Voting.py  —  HUST-BCIML EEG-decoding benchmark
 
-# Original authors:    Siyang Li, Ziwei Wang, Chenhao Liu, Dongrui Wu (2026) — "Black-Box Test-Time Ensemble (majority-voting baseline)", IEEE Comput. Intell. Mag.
-#                      Original code: https://github.com/sylyoung/TestEnsemble
+# Original authors:    Classical method, no single origin: majority (plurality) voting; the lab's Black-Box Test-Time Ensemble paper cites A. Narasimhamurthy (2005), "Theoretical Bounds of Majority Voting Performance for a Binary Classification Problem", IEEE Trans. Pattern Anal. Mach. Intell., for the theoretical performance bound
 # Implementation:      Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble)
 # Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (ported from)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
+#   @Article{Narasimhamurthy2005,
+#     author  = {Narasimhamurthy, Anand},
+#     journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+#     title   = {Theoretical Bounds of Majority Voting Performance for a Binary Classification Problem},
+#     year    = {2005},
+#     number  = {12},
+#     pages   = {1988-1995},
+#     volume  = {27},
+#     doi     = {10.1109/TPAMI.2005.249},
+#   }
 #   @Article{Li2026b,
 #     author  = {Li, Siyang and Wang, Ziwei and Liu, Chenhao and Wu, Dongrui},
 #     journal = {IEEE Computational Intelligence Magazine},

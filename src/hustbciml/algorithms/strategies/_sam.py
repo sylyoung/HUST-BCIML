@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/davda54/sam (canonical PyTorch implementation)
 # Implementation:      David Samuel (davda54) — davda54/sam (https://github.com/davda54/sam)
 # Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (used by FedBS; ported from)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 # ===========================================================================
 """Sharpness-Aware Minimization optimizer (Foret et al., ICLR 2021).
 

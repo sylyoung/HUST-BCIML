@@ -2,7 +2,6 @@
 # _common.py  —  HUST-BCIML EEG-decoding benchmark
 
 # Shared helper plumbing for the strategy family (online alignment, evaluation); authored by Siyang Li — HUST-BCIML.
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 # ===========================================================================
 """Shared training/inference helpers for gradient strategies.
 

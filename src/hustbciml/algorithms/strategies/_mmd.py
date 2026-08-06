@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/thuml/Transfer-Learning-Library (reference implementation)
 # Implementation:      Junguang Jiang et al. (thuml) — thuml/Transfer-Learning-Library (https://github.com/thuml/Transfer-Learning-Library) (canonical implementation)
 # Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (MMD kernels for DAN/JAN (https://github.com/DAN/JAN), ported from)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @InProceedings{Long2015,

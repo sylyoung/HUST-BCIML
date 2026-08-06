@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/Want2Vanish/FBMSNet (pinned 1c6b659)
 # Implementation:      Ke Liu et al. — Want2Vanish/FBMSNet (https://github.com/Want2Vanish/FBMSNet) (official)
 # Current code:        Siyang Li — ported from pinned Want2Vanish/FBMSNet (https://github.com/Want2Vanish/FBMSNet) commit (8-32 Hz architecture transfer)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Liu2023,

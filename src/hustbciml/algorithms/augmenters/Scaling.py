@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/xqchen914/PAT (also https://github.com/xqchen914/ABAT for the scaling trick)
 # Implementation:      Xiaoqing Chen, Tianwang Jia, Yunlu Tu, Dongrui Wu — xqchen914/PAT (https://github.com/xqchen914/PAT) (official)
 # Current code:        Siyang Li — ported directly from xqchen914/PAT (https://github.com/xqchen914/PAT) + xqchen914/ABAT (https://github.com/xqchen914/ABAT)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Chen2026,

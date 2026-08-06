@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/rmpeng/TIE-EEGNet
 # Implementation:      Ruimin Peng et al. — rmpeng/TIE-EEGNet (https://github.com/rmpeng/TIE-EEGNet) (official)
 # Current code:        Siyang Li — ported directly from rmpeng/TIE-EEGNet (https://github.com/rmpeng/TIE-EEGNet)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Peng2022,

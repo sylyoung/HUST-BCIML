@@ -2,7 +2,6 @@
 # _common.py  —  HUST-BCIML EEG-decoding benchmark.
 
 # Shared helper plumbing for the ensemble combiners (one-hot, majority vote, crowdkit adapter); authored by Siyang Li — HUST-BCIML.
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 # ===========================================================================
 """Shared helpers for the ensemble combiners.
 

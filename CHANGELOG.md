@@ -7,6 +7,14 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.3] - 2026-08-06
+
+### Changed
+
+- Header layout simplified: the `Integrated by:` and `Author:` lines are removed
+  from every algorithm header; the credit chain now reads original authors →
+  implementation → current code only. No measured numbers change.
+
 ## [1.6.2] - 2026-08-06
 
 ### Changed

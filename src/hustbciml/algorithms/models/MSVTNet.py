@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/SheldonLiu0412/MSVTNet
 # Implementation:      Ke Liu et al. — SheldonLiu0412/MSVTNet (https://github.com/SheldonLiu0412/MSVTNet) (official)
 # Current code:        Siyang Li — ported directly from SheldonLiu0412/MSVTNet (https://github.com/SheldonLiu0412/MSVTNet)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Liu2024,

@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/jxgogo/CSP-Net
 # Implementation:      Xue Jiang et al. — jxgogo/CSP-Net (https://github.com/jxgogo/CSP-Net) (official)
 # Current code:        Siyang Li — ported directly from jxgogo/CSP-Net (https://github.com/jxgogo/CSP-Net)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Jiang2024,

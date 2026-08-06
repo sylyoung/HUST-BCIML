@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/braindecode/braindecode (pinned f7562e9)
 # Implementation:      Robin T. Schirrmeister & Braindecode contributors — braindecode/braindecode (https://github.com/braindecode/braindecode) (official)
 # Current code:        Siyang Li — braindecode/braindecode (https://github.com/braindecode/braindecode), pinned commit f7562e9 (architecture transfer)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Schirrmeister2017,

@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/chamwen/LSFT
 # Implementation:      Wen Zhang, Dongrui Wu — chamwen/LSFT (https://github.com/chamwen/LSFT) (official)
 # Current code:        Siyang Li — ported from chamwen/LSFT (https://github.com/chamwen/LSFT)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Zhang2023,

@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/IoBT-VISTEC/EEGWaveNet (pinned 3b19098)
 # Implementation:      Punnawish Thuwajit et al. — IoBT-VISTEC/EEGWaveNet (https://github.com/IoBT-VISTEC/EEGWaveNet) (official)
 # Current code:        Siyang Li — ported from pinned IoBT-VISTEC/EEGWaveNet (https://github.com/IoBT-VISTEC/EEGWaveNet) commit (released-code transfer)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Thuwajit2022,

@@ -2,7 +2,6 @@
 # Identity.py  —  HUST-BCIML EEG-decoding benchmark
 
 # Trivial pass-through baseline; no external reference.
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 # ===========================================================================
 """No-op aligner (the 'no alignment' baseline)."""
 from hustbciml.core.batch import EEGEpochs

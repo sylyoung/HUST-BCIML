@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/TianwangJia/FedBS
 # Implementation:      Tianwang Jia et al. — TianwangJia/FedBS (https://github.com/TianwangJia/FedBS) (official)
 # Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (shared federated / LBSN core, ported from)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Jia2024,

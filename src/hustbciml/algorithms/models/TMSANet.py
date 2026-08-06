@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/Whit3Zhao/TMSA-Net
 # Implementation:      Qian Zhao, Weina Zhu — Whit3Zhao/TMSA-Net (https://github.com/Whit3Zhao/TMSA-Net) (official)
 # Current code:        Siyang Li — implemented from the paper description (no intermediate repo used)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Zhao2025a,

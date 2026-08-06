@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/vlawhern/arl-eegmodels
 # Implementation:      Vernon J. Lawhern et al. — vlawhern/arl-eegmodels (https://github.com/vlawhern/arl-eegmodels) (official)
 # Current code:        Siyang Li — ported from vlawhern/arl-eegmodels (https://github.com/vlawhern/arl-eegmodels), configuration follows DeepTransferEEG
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Lawhern2018,

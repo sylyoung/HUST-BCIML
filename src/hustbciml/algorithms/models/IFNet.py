@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/Jiaheng-Wang/IFNet
 # Implementation:      Jiaheng Wang et al. — Jiaheng-Wang/IFNet (https://github.com/Jiaheng-Wang/IFNet) (official)
 # Current code:        Ziwei Wang et al. — wzwvv/MVCNet (https://github.com/wzwvv/MVCNet) models/IFNet.py (the version this port follows)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Wang2023,

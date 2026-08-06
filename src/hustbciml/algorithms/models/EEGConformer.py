@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/eeyhsong/EEG-Conformer
 # Implementation:      Yonghao Song et al. — eeyhsong/EEG-Conformer (https://github.com/eeyhsong/EEG-Conformer) (official)
 # Current code:        Siyang Li — ported directly from eeyhsong/EEG-Conformer (https://github.com/eeyhsong/EEG-Conformer)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Song2023,

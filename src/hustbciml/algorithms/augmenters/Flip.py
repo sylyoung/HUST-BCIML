@@ -5,8 +5,6 @@
 #                      Original code: not publicly released
 # Implementation:      Ziwei Wang — wzwvv/EEGAug (https://github.com/wzwvv/EEGAug), wzwvv/CSDA (https://github.com/wzwvv/CSDA) (comparison baseline)
 # Current code:        Siyang Li — no intermediate repo; implemented in HUST-BCIML following those definitions
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Freer2020,

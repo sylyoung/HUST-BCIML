@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/jxgogo/KDFNet
 # Implementation:      Xue Jiang et al. — jxgogo/KDFNet (https://github.com/jxgogo/KDFNet) (official)
 # Current code:        Siyang Li — ported directly from jxgogo/KDFNet (https://github.com/jxgogo/KDFNet)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Jiang2026,

@@ -5,8 +5,6 @@
 #                      Original code: not publicly released (Hilbert transform concept: Freeman, Scholarpedia 2007)
 # Implementation:      Ziwei Wang — wzwvv/EEGAug (https://github.com/wzwvv/EEGAug), wzwvv/CSDA (https://github.com/wzwvv/CSDA) (comparison baseline in their augmentation studies, reproduced from Freer & Yang 2020)
 # Current code:        Siyang Li — no intermediate repo; implemented in HUST-BCIML following those definitions
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Freer2020,

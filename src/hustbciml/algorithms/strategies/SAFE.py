@@ -5,8 +5,6 @@
 #                      Original code: not publicly released yet (paper: will be released after acceptance)
 # Implementation:      Tianwang Jia, Xiaoqing Chen, Dongrui Wu — no official release; implemented from the paper
 # Current code:        Siyang Li — implemented in HUST-BCIML following the paper
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Jia2026,

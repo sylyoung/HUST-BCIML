@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/yi-ding-cs/EEG-Deformer
 # Implementation:      Yi Ding et al. — yi-ding-cs/EEG-Deformer (https://github.com/yi-ding-cs/EEG-Deformer) (official)
 # Current code:        Siyang Li — ported directly from yi-ding-cs/EEG-Deformer (https://github.com/yi-ding-cs/EEG-Deformer)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Ding2025,

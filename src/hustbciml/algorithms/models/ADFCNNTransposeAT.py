@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/UM-Tao/ADFCNN-MI (pinned b4796ca)
 # Implementation:      Wei Tao et al. — UM-Tao/ADFCNN-MI (https://github.com/UM-Tao/ADFCNN-MI) (official)
 # Current code:        Siyang Li — ported from pinned UM-Tao/ADFCNN-MI (https://github.com/UM-Tao/ADFCNN-MI) commit (architecture transfer)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Tao2024,

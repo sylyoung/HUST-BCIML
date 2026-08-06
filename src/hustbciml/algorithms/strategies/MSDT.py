@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/chamwen/MSDT
 # Implementation:      Wen Zhang, Ziwei Wang, Dongrui Wu — chamwen/MSDT (https://github.com/chamwen/MSDT) (official)
 # Current code:        Siyang Li — ported from chamwen/MSDT (https://github.com/chamwen/MSDT)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Zhang2022,

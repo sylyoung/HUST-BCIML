@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/xqchen914/ABAT
 # Implementation:      Xiaoqing Chen, Ziwei Wang, Dongrui Wu — xqchen914/ABAT (https://github.com/xqchen914/ABAT) (official)
 # Current code:        Siyang Li — ported from xqchen914/ABAT (https://github.com/xqchen914/ABAT)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Chen2024,

@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/xqchen914/PAT
 # Implementation:      Xiaoqing Chen, Tianwang Jia, Yunlu Tu, Dongrui Wu — xqchen914/PAT (https://github.com/xqchen914/PAT) (official)
 # Current code:        Siyang Li — ported from xqchen914/PAT (https://github.com/xqchen914/PAT)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Chen2026,

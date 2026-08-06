@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/tim-learn/SHOT
 # Implementation:      Jian Liang et al. — tim-learn/SHOT (https://github.com/tim-learn/SHOT) (official)
 # Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported from)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @InProceedings{Liang2020,

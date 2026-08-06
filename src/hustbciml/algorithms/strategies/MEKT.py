@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/chamwen/MEKT
 # Implementation:      Wen Zhang, Dongrui Wu — chamwen/MEKT (https://github.com/chamwen/MEKT) (official)
 # Current code:        TBC-TJU (MetaBCI) — ported via https://github.com/TBC-TJU/MetaBCI
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Zhang2020a,

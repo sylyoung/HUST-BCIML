@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/hehe03/EA
 # Implementation:      He He, Dongrui Wu — hehe03/EA (https://github.com/hehe03/EA) (official)
 # Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (lab version)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{He2020,

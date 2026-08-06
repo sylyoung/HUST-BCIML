@@ -5,8 +5,6 @@
 #                      Original code: https://github.com/sylyoung/DeepTransferEEG (paper's official code)
 # Implementation:      Siyang Li, Ziwei Wang, Hanbin Luo, Lieyun Ding, Dongrui Wu — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (official)
 # Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported directly)
-# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Li2024,
