@@ -55,9 +55,16 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 - [Acknowledgements](#acknowledgements)
 - [License](#license)
 
+<details>
+
 <summary><b>What's new</b></summary>
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
+
+- **2026-08-06 (v1.6.4).** Documentation fix: the "What's new" block in both
+  READMEs is collapsible again. Its `<details>` opening tag was accidentally
+  dropped in the v1.6.0 rewrite, which made the whole digest render expanded
+  instead of collapsed by default. **No measured numbers change.**
 
 - **2026-08-06 (v1.6.3).** Header layout simplified: the `Integrated by:` and
   `Author:` lines are removed from every algorithm header, leaving the credit chain

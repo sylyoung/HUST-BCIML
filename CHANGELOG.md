@@ -7,6 +7,15 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.4] - 2026-08-06
+
+### Fixed
+
+- The `<details>` opening tag was accidentally dropped from the "What's new"
+  block in both READMEs during the v1.6.0 rewrite, which made the whole digest
+  render expanded instead of collapsed. The tag is restored, so the block
+  collapses by default again. No measured numbers change.
+
 ## [1.6.3] - 2026-08-06
 
 ### Changed
