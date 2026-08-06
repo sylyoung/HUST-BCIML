@@ -1,8 +1,15 @@
 # ===========================================================================
 # SAFE.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-#
-# Reference (arXiv preprint; journal version not yet out — IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Tianwang Jia, Xiaoqing Chen, Dongrui Wu (2026) — "SAFE: Secure and Accurate Federated Learning for Privacy-Preserving Brain-Computer Interfaces", arXiv:2601.05789 (under review)
+#                        Original code: not publicly released yet (paper: will be released after acceptance)
+#   Implementation:      Tianwang Jia, Xiaoqing Chen, Dongrui Wu — no official release; implemented from the paper
+#   Current code:        Siyang Li — implemented in HUST-BCIML following the paper
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Jia2026,
 #     author = {Jia, Tianwang and Chen, Xiaoqing and Wu, Dongrui},
 #     title  = {{SAFE}: Secure and Accurate Federated Learning for Privacy-Preserving Brain-Computer Interfaces},

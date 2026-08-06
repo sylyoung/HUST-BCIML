@@ -1,9 +1,15 @@
 # ===========================================================================
 # DANN.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Adapted from: https://github.com/sylyoung/DeepTransferEEG
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Yaroslav Ganin, Evgeniya Ustinova, Hana Ajakan, Pascal Germain, Hugo Larochelle, François Laviolette, Mario Marchand, Victor Lempitsky (2016) — "Domain-Adversarial Training of Neural Networks", J. Mach. Learn. Res.
+#                        Original code: https://github.com/thuml/Transfer-Learning-Library (reference implementation)
+#   Implementation:      Junguang Jiang et al. (thuml) — thuml/Transfer-Learning-Library (https://github.com/thuml/Transfer-Learning-Library) (canonical implementation)
+#   Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported from)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Ganin2016,
 #     author  = {Ganin, Yaroslav and Ustinova, Evgeniya and Ajakan, Hana and Germain, Pascal and Larochelle, Hugo and Laviolette, Fran\c{c}ois and Marchand, Mario and Lempitsky, Victor},
 #     journal = {Journal of Machine Learning Research},

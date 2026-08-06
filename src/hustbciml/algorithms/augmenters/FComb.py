@@ -1,8 +1,15 @@
 # ===========================================================================
 # FComb.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Xuyang Zhao, Jordi Solé-Casals, Hidenori Sugano, Toshihisa Tanaka (2022) — "Seizure Onset Zone Classification Based on Imbalanced iEEG with Data Augmentation", J. Neural Eng.
+#                        Original code: not publicly released
+#   Implementation:      Ziwei Wang — wzwvv/CSDA (https://github.com/wzwvv/CSDA) (comparison baseline)
+#   Current code:        Siyang Li — no intermediate repo; implemented in HUST-BCIML following those definitions
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Zhao2022,
 #     author  = {Zhao, Xuyang and Sol\'e-Casals, Jordi and Sugano, Hidenori and Tanaka, Toshihisa},
 #     journal = {Journal of Neural Engineering},

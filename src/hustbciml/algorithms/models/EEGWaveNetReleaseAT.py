@@ -1,11 +1,15 @@
 # ===========================================================================
 # EEGWaveNetReleaseAT.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Original authors' code: https://github.com/IoBT-VISTEC/EEGWaveNet/tree/3b1909873f6cde2d8b5a916327791cf9a59f975c
-# Accessed: 2026-07-31
-# Original authors: Punnawish Thuwajit et al.
-# License: not stated in the upstream repository
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Punnawish Thuwajit, Phurin Rangpong, Phattarapong Sawangjai, Phairot Autthasan, Rattanaphon Chaisaen, Nannapas Banluesombatkul, et al. (2022) — "EEGWaveNet: Multiscale CNN-Based Spatiotemporal Feature Extraction for EEG Seizure Detection", IEEE Trans. Ind. Inform.
+#                        Original code: https://github.com/IoBT-VISTEC/EEGWaveNet (pinned 3b19098)
+#   Implementation:      Punnawish Thuwajit et al. — IoBT-VISTEC/EEGWaveNet (https://github.com/IoBT-VISTEC/EEGWaveNet) (official)
+#   Current code:        Siyang Li — ported from pinned IoBT-VISTEC/EEGWaveNet (https://github.com/IoBT-VISTEC/EEGWaveNet) commit (released-code transfer)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Thuwajit2022,
 #     author  = {Thuwajit, Punnawish and Rangpong, Phurin and Sawangjai, Phattarapong and Autthasan, Phairot and Chaisaen, Rattanaphon and Banluesombatkul, Nannapas and Boonchit, Puttaranun and Tatsaringkansakul, Nattasate and Sudhawiyangkul, Thapanun and Wilaiprasitporn, Theerawit},
 #     journal = {IEEE Transactions on Industrial Informatics},

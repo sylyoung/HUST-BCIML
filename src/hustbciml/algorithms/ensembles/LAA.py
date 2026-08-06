@@ -1,10 +1,14 @@
 # ===========================================================================
 # LAA.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-#
-# LAA label-aware autoencoder aggregator, vendored (torch) from
-# TestEnsemble/algs/LAA.py (https://github.com/sylyoung/TestEnsemble).
-#
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Liang Yin, Jianhua Han, Wenzhen Zhang, Yong Yu (2017) — "Aggregating Crowd Wisdoms with Label-Aware Autoencoders", Proc. IJCAI
+#                        Original code: https://github.com/coverdark/deep_laa (official)
+#   Implementation:      Chenhao Liu — Flashingcat/Golden_task-Ensemble (https://github.com/Flashingcat/Golden_task-Ensemble) (LAA.py, following the official deep_laa)
+#   Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (vendored from)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
 # References (IEEE BibTeX):
 #   @InProceedings{Yin2017LAA,
 #     author    = {Yin, L. and others},

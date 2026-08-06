@@ -1,8 +1,14 @@
 # ===========================================================================
 # _mmd.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Adapted from: https://github.com/sylyoung/DeepTransferEEG
-#
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Mingsheng Long, Yue Cao, Jianmin Wang, Michael I. Jordan (DAN); Mingsheng Long, Han Zhu, Jianmin Wang, Michael I. Jordan (JAN) (2015) — "Learning Transferable Features with Deep Adaptation Networks / Deep Transfer Learning with Joint Adaptation Networks", Proc. ICML
+#                        Original code: https://github.com/thuml/Transfer-Learning-Library (reference implementation)
+#   Implementation:      Junguang Jiang et al. (thuml) — thuml/Transfer-Learning-Library (https://github.com/thuml/Transfer-Learning-Library) (canonical implementation)
+#   Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (MMD kernels for DAN/JAN (https://github.com/DAN/JAN), ported from)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
 # References (IEEE BibTeX):
 #   @InProceedings{Long2015,
 #     author    = {Long, Mingsheng and Cao, Yue and Wang, Jianmin and Jordan, Michael I.},

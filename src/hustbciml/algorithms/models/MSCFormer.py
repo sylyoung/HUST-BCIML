@@ -1,9 +1,15 @@
 # ===========================================================================
 # MSCFormer.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Original authors' code: not publicly released (paper: https://www.nature.com/articles/s41598-025-96611-5)
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Wei Zhao, Baocan Zhang, Haifeng Zhou, Dezhi Wei, Chenxi Huang, Quan Lan (2025) — "Multi-Scale Convolutional Transformer Network for Motor Imagery Brain-Computer Interface", Sci. Rep.
+#                        Original code: https://github.com/snailpt/MSCFormer
+#   Implementation:      Wei Zhao et al. — snailpt/MSCFormer (https://github.com/snailpt/MSCFormer) (official)
+#   Current code:        Siyang Li — implemented from the paper description (no intermediate repo used)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Zhao2025,
 #     author  = {Zhao, Wei and Zhang, Baocan and Zhou, Haifeng and Wei, Dezhi and Huang, Chenxi and Lan, Quan},
 #     journal = {Scientific Reports},

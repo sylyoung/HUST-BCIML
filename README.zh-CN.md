@@ -56,6 +56,14 @@
 
 完整版本历史见 [`CHANGELOG.md`](CHANGELOG.md)。近期要点：
 
+- **2026-08-06（v1.6.1）** 仅文档与署名说明更新，**所有测量数值不变**。每个算法源文件
+头部现在带有完整的署名链：原始作者（论文、期刊与官方代码）、实现者及其仓库、当前移植
+的整理者、以及集成者，每个环节都附 GitHub 链接。共同一作以 † 标注，包括 Channel
+Reflection（Ziwei Wang† 与 Siyang Li†）与 StackingNet。集成器部分追溯到了最早发布：
+EBCC、ZenCrowd、PM、LA、LAA 与 StackingNet 均源自 Chenhao Liu 的
+`Flashingcat/Golden_task-Ensemble`，再进入实验室的 TestEnsemble。总览页也新增了实验室
+的 `wzwvv/EEGAug` 数据增强仓库。
+
 - **2026-08-06（v1.6.0）** 18 个网络骨干已全部从头重测，订正后的数值已经写入基准表。
 新流程逐目标被试执行严格的嵌套留一被试交叉验证，最终固定使用 5 个随机种子。五个订正行
 DeepConvNet、ShallowConvNet、ADFCNN、EEGWaveNet、FBMSNet 均为对所引文献的显式架构移植：

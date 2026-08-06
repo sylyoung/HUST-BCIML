@@ -1,11 +1,15 @@
 # ===========================================================================
 # PAT.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Original authors' code: https://github.com/xqchen914/PAT
-#
-# Reference (IEEE BibTeX). Journal pre-proof (accepted, in press); no final
-# volume/pages yet, so only verifiable fields are set and ``note`` marks it as
-# in press.
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Xiaoqing Chen, Tianwang Jia, Yunlu Tu, Dongrui Wu (2026) — "PAT: Privacy-Preserving Adversarial Transfer for Accurate, Robust and Privacy-Preserving EEG Decoding", Fundamental Research
+#                        Original code: https://github.com/xqchen914/PAT
+#   Implementation:      Xiaoqing Chen, Tianwang Jia, Yunlu Tu, Dongrui Wu — xqchen914/PAT (https://github.com/xqchen914/PAT) (official)
+#   Current code:        Siyang Li — ported from xqchen914/PAT (https://github.com/xqchen914/PAT)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Chen2026,
 #     author  = {Chen, Xiaoqing and Jia, Tianwang and Tu, Yunlu and Wu, Dongrui},
 #     journal = {Fundamental Research},

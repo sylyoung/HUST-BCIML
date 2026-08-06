@@ -1,9 +1,15 @@
 # ===========================================================================
 # EEGNeX.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Original authors' code: https://github.com/chenxiachan/EEGNeX
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Xia Chen, Xiangbin Teng, Han Chen, Yafeng Pan, Philipp Geyer (2024) — "Toward Reliable Signals Decoding for Electroencephalogram: A Benchmark Study to EEGNeX", Biomed. Signal Process. Control
+#                        Original code: https://github.com/chenxiachan/EEGNeX
+#   Implementation:      Xia Chen et al. — chenxiachan/EEGNeX (https://github.com/chenxiachan/EEGNeX) (official, TensorFlow)
+#   Current code:        Ziwei Wang et al. — wzwvv/DBConformer (https://github.com/wzwvv/DBConformer) models/EEGNeX.py (the PyTorch reproduction this port follows)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Chen2024,
 #     author  = {Chen, Xia and Teng, Xiangbin and Chen, Han and Pan, Yafeng and Geyer, Philipp},
 #     journal = {Biomedical Signal Processing and Control},

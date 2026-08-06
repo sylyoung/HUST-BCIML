@@ -1,12 +1,15 @@
 # ===========================================================================
 # ADFCNNTransposeAT.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Original authors' code: https://github.com/UM-Tao/ADFCNN-MI/tree/b4796ca3a93075e8da9dac5860ea6346f79d5a09
-# Accessed: 2026-07-31
-# Original authors: Wei Tao et al.
-# License: not stated in the upstream repository
-# Adaptation: corrects the released attention reshape to the transpose described by the method.
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Wei Tao, Ze Wang, Chi Man Wong, Ziyu Jia, Chang Li, Xun Chen, C. L. Philip Chen, Feng Wan (2024) — "ADFCNN: Attention-Based Deep Fusion of CNN and EEGNet for Motor Imagery Classification", IEEE Trans. Neural Syst. Rehabil. Eng.
+#                        Original code: https://github.com/UM-Tao/ADFCNN-MI (pinned b4796ca)
+#   Implementation:      Wei Tao et al. — UM-Tao/ADFCNN-MI (https://github.com/UM-Tao/ADFCNN-MI) (official)
+#   Current code:        Siyang Li — ported from pinned UM-Tao/ADFCNN-MI (https://github.com/UM-Tao/ADFCNN-MI) commit (architecture transfer)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Tao2024,
 #     author  = {Tao, Wei and Wang, Ze and Wong, Chi Man and Jia, Ziyu and Li, Chang and Chen, Xun and Chen, C. L. Philip and Wan, Feng},
 #     journal = {IEEE Transactions on Neural Systems and Rehabilitation Engineering},

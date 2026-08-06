@@ -1,10 +1,15 @@
 # ===========================================================================
 # MEKT.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Original authors' code: https://github.com/chamwen/MEKT
-# Ported via: https://github.com/TBC-TJU/MetaBCI
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Wen Zhang, Dongrui Wu (2020) — "Manifold Embedded Knowledge Transfer for Brain-Computer Interfaces", IEEE Trans. Neural Syst. Rehabil. Eng.
+#                        Original code: https://github.com/chamwen/MEKT
+#   Implementation:      Wen Zhang, Dongrui Wu — chamwen/MEKT (https://github.com/chamwen/MEKT) (official)
+#   Current code:        TBC-TJU (MetaBCI) — ported via https://github.com/TBC-TJU/MetaBCI
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Zhang2020a,
 #     author  = {Zhang, Wen and Wu, Dongrui},
 #     journal = {IEEE Transactions on Neural Systems and Rehabilitation Engineering},

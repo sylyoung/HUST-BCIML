@@ -1,9 +1,8 @@
 # ===========================================================================
 # ERM.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-#
-# Standard empirical risk minimization (supervised source training) — the
-# no-transfer baseline. No single-method reference.
+
+# Empirical risk minimization baseline; no external reference.
 # ===========================================================================
 """Empirical Risk Minimization — the supervised source-only baseline.
 

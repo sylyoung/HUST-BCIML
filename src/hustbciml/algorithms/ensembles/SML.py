@@ -1,10 +1,14 @@
 # ===========================================================================
 # SML.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-#
-# Binary Spectral Meta-Learner. Original authors' code:
-# https://github.com/sylyoung/TestEnsemble
-#
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Fabio Parisi, Francesco Strino, Boaz Nadler, Yuval Kluger (2014) — "Ranking and Combining Multiple Predictors Without Labeled Data", Proc. Natl. Acad. Sci.
+#                        Original code: https://github.com/sylyoung/TestEnsemble
+#   Implementation:      Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (implemented following the paper)
+#   Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (ported from)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
 # References (IEEE BibTeX):
 #   @Article{Parisi2014,
 #     author  = {Parisi, Fabio and Strino, Francesco and Nadler, Boaz and Kluger, Yuval},

@@ -1,9 +1,15 @@
 # ===========================================================================
 # PL.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Adapted from: https://github.com/sylyoung/DeepTransferEEG
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Dong-Hyun Lee (2013) — "Pseudo-Label: The Simple and Efficient Semi-Supervised Learning Method for Deep Neural Networks", ICML Workshop
+#                        Original code: not publicly released
+#   Implementation:      Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (implemented from the paper)
+#   Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported from)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @InProceedings{Lee2013,
 #     author    = {Lee, Dong-Hyun},
 #     booktitle = {International Conference on Machine Learning Workshop on Challenges in Representation Learning},

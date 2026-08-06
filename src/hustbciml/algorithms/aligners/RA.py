@@ -1,9 +1,15 @@
 # ===========================================================================
 # RA.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Reference implementation: https://github.com/pyRiemann/pyRiemann
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Paolo Zanini, Marco Congedo, Christian Jutten, Salem Said, Yannick Berthoumieu (2018) — "Transfer Learning: A Riemannian Geometry Framework with Applications to Brain-Computer Interfaces", IEEE Trans. Biomed. Eng.
+#                        Original code: https://github.com/pyRiemann/pyRiemann (reference)
+#   Implementation:      Alexandre Barachant & pyRiemann contributors — pyRiemann/pyRiemann (https://github.com/pyRiemann/pyRiemann)
+#   Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (self-contained port, no pyriemann dependency)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Zanini2018,
 #     author  = {Zanini, Paolo and Congedo, Marco and Jutten, Christian and Said, Salem and Berthoumieu, Yannick},
 #     journal = {IEEE Transactions on Biomedical Engineering},

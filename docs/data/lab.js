@@ -48,6 +48,14 @@ window.LAB = {
       "blurb": "Dual-branch convolutional transformer for EEG decoding, evaluated on motor imagery, seizure and SSVEP. Its repository also collects many EEG network backbones under one training and evaluation pipeline."
     },
     {
+      "pillar": "Data Augmentation",
+      "name": "EEGAug",
+      "owner": "wzwvv",
+      "url": "https://github.com/wzwvv/EEGAug",
+      "stars": 26,
+      "blurb": "The code of the lab's Channel Reflection paper (Neural Networks 2024) and its augmentation studies. This benchmark's data-augmentation family — Channel Reflection, CSDA, and the comparison baselines FShift, Flip, Noise, HS, FSurr and FComb — follows those studies."
+    },
+    {
       "pillar": "Foundation Models",
       "name": "EEG-FM-Benchmark",
       "owner": "Dingkun0817",

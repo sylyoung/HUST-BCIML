@@ -1,7 +1,14 @@
 # ===========================================================================
 # FShift.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-#
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Daniel Freer, Guang-Zhong Yang (2020) — "Data Augmentation for Self-Paced Motor Imagery Classification with C-LSTM", J. Neural Eng.
+#                        Original code: not publicly released (Hilbert transform concept: Freeman, Scholarpedia 2007)
+#   Implementation:      Ziwei Wang — wzwvv/EEGAug (https://github.com/wzwvv/EEGAug), wzwvv/CSDA (https://github.com/wzwvv/CSDA) (comparison baseline in their augmentation studies, reproduced from Freer & Yang 2020)
+#   Current code:        Siyang Li — no intermediate repo; implemented in HUST-BCIML following those definitions
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
 # References (IEEE BibTeX):
 #   @Article{Freer2020,
 #     author  = {Freer, Daniel and Yang, Guang-Zhong},

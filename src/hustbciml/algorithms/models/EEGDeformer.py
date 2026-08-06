@@ -1,9 +1,15 @@
 # ===========================================================================
 # EEGDeformer.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Original authors' code: https://github.com/yi-ding-cs/EEG-Deformer
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Yi Ding, Yong Li, Hao Sun, Rui Liu, Chengxuan Tong, Chenyu Liu, Xinliang Zhou, Cuntai Guan, et al. (2025) — "EEG-Deformer: Robust Time and Scale Transformer for EEG Decoding", IEEE J. Biomed. Health Inform.
+#                        Original code: https://github.com/yi-ding-cs/EEG-Deformer
+#   Implementation:      Yi Ding et al. — yi-ding-cs/EEG-Deformer (https://github.com/yi-ding-cs/EEG-Deformer) (official)
+#   Current code:        Siyang Li — ported directly from yi-ding-cs/EEG-Deformer (https://github.com/yi-ding-cs/EEG-Deformer)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Ding2025,
 #     author  = {Ding, Yi and Li, Yong and Sun, Hao and Liu, Rui and Tong, Chengxuan and Liu, Chenyu and Zhou, Xinliang and Guan, Cuntai},
 #     journal = {IEEE Journal of Biomedical and Health Informatics},

@@ -1,8 +1,15 @@
 # ===========================================================================
 # MSDT.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Wen Zhang, Ziwei Wang, Dongrui Wu (2022) — "Multi-Source Decentralized Transfer for Privacy-Preserving BCIs", IEEE Trans. Neural Syst. Rehabil. Eng.
+#                        Original code: https://github.com/chamwen/MSDT
+#   Implementation:      Wen Zhang, Ziwei Wang, Dongrui Wu — chamwen/MSDT (https://github.com/chamwen/MSDT) (official)
+#   Current code:        Siyang Li — ported from chamwen/MSDT (https://github.com/chamwen/MSDT)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Zhang2022,
 #     author  = {Zhang, Wen and Wang, Ziwei and Wu, Dongrui},
 #     journal = {IEEE Transactions on Neural Systems and Rehabilitation Engineering},

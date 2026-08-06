@@ -1,7 +1,14 @@
-# =============================================================================
+# ===========================================================================
 # Implementation of: FBMSNet 8-32 Hz architecture transfer
-#
-# Reference:
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Ke Liu, Mingzhao Yang, Zhuliang Yu, Guoyin Wang, Wei Wu (2023) — "FBMSNet: A Filter-Bank Multi-Scale Convolutional Neural Network for EEG-Based Motor Imagery Decoding", IEEE Trans. Biomed. Eng.
+#                        Original code: https://github.com/Want2Vanish/FBMSNet (pinned 1c6b659)
+#   Implementation:      Ke Liu et al. — Want2Vanish/FBMSNet (https://github.com/Want2Vanish/FBMSNet) (official)
+#   Current code:        Siyang Li — ported from pinned Want2Vanish/FBMSNet (https://github.com/Want2Vanish/FBMSNet) commit (8-32 Hz architecture transfer)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Liu2023,
 #     author  = {Liu, Ke and Yang, Mingzhao and Yu, Zhuliang and Wang, Guoyin and Wu, Wei},
 #     journal = {IEEE Transactions on Biomedical Engineering},
@@ -12,12 +19,7 @@
 #     volume  = {70},
 #     doi     = {10.1109/TBME.2022.3193277},
 #   }
-#
-# Source: https://github.com/Want2Vanish/FBMSNet/tree/1c6b6593200ff1cdb35517559b7cdce1c0161ee0
-# Accessed: 2026-07-31
-# Original authors: Ke Liu et al.
-# License: not stated in the upstream repository
-# =============================================================================
+# ===========================================================================
 """Compliant 8–32 Hz adaptation of the released FBMSNet feature extractor.
 
 The original nine-view 4–40 Hz bank cannot be used in this benchmark because

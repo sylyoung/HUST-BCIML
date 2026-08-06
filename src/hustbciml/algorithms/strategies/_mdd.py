@@ -1,9 +1,15 @@
 # ===========================================================================
 # _mdd.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Adapted from: https://github.com/sylyoung/DeepTransferEEG
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Yuchen Zhang, Tianle Liu, Mingsheng Long, Michael I. Jordan (2019) — "Bridging Theory and Algorithm for Domain Adaptation", Proc. ICML
+#                        Original code: https://github.com/thuml/Transfer-Learning-Library (reference implementation)
+#   Implementation:      Junguang Jiang et al. (thuml) — thuml/Transfer-Learning-Library (https://github.com/thuml/Transfer-Learning-Library) (canonical implementation)
+#   Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (MDD loss, ported from)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @InProceedings{Zhang2019,
 #     author    = {Zhang, Yuchen and Liu, Tianle and Long, Mingsheng and Jordan, Michael I.},
 #     booktitle = {Proceedings of the International Conference on Machine Learning},

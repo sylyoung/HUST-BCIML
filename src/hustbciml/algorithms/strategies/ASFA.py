@@ -1,8 +1,15 @@
 # ===========================================================================
 # ASFA.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Kun Xia, Lingfei Deng, Wlodzislaw Duch, Dongrui Wu (2022) — "Privacy-Preserving Domain Adaptation for Motor Imagery-Based Brain-Computer Interfaces", IEEE Trans. Biomed. Eng.
+#                        Original code: not publicly released
+#   Implementation:      Kun Xia et al. — no official release; implemented from the paper
+#   Current code:        Siyang Li — implemented in HUST-BCIML following the paper
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Xia2022,
 #     author  = {Xia, Kun and Deng, Lingfei and Duch, Wlodzislaw and Wu, Dongrui},
 #     journal = {IEEE Transactions on Biomedical Engineering},

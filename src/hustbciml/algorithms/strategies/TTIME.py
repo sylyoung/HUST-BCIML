@@ -1,12 +1,15 @@
 # ===========================================================================
 # TTIME.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-#
-# T-TIME (Li et al., 2024): online test-time information maximization for
-# plug-and-play cross-subject EEG BCIs (lab-proposed).
-# Original authors' code: https://github.com/sylyoung/DeepTransferEEG
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Siyang Li, Ziwei Wang, Hanbin Luo, Lieyun Ding, Dongrui Wu (2024) — "T-TIME: Test-Time Information Maximization Ensemble for Plug-and-Play BCIs", IEEE Trans. Biomed. Eng.
+#                        Original code: https://github.com/sylyoung/DeepTransferEEG (paper's official code)
+#   Implementation:      Siyang Li, Ziwei Wang, Hanbin Luo, Lieyun Ding, Dongrui Wu — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (official)
+#   Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported directly)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Li2024,
 #     author  = {Li, Siyang and Wang, Ziwei and Luo, Hanbin and Ding, Lieyun and Wu, Dongrui},
 #     journal = {IEEE Transactions on Biomedical Engineering},

@@ -1,10 +1,15 @@
 # ===========================================================================
 # Tent.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Original authors' code: https://github.com/DequanWang/tent
-# Adapted from: https://github.com/sylyoung/DeepTransferEEG
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Dequan Wang, Evan Shelhamer, Shaoteng Liu, Bruno Olshausen, Trevor Darrell (2021) — "Tent: Fully Test-Time Adaptation by Entropy Minimization", Proc. ICLR
+#                        Original code: https://github.com/DequanWang/tent
+#   Implementation:      Dequan Wang et al. — DequanWang/tent (https://github.com/DequanWang/tent) (official)
+#   Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported from)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @InProceedings{Wang2021,
 #     author    = {Wang, Dequan and Shelhamer, Evan and Liu, Shaoteng and Olshausen, Bruno and Darrell, Trevor},
 #     booktitle = {International Conference on Learning Representations},

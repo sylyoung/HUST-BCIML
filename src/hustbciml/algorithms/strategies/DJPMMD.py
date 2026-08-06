@@ -1,8 +1,15 @@
 # ===========================================================================
 # DJPMMD.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Wen Zhang, Dongrui Wu (2020) — "Discriminative Joint Probability Maximum Mean Discrepancy (DJP-MMD) for Domain Adaptation", Proc. IJCNN
+#                        Original code: https://github.com/chamwen/DaNN_DJP
+#   Implementation:      Wen Zhang, Dongrui Wu — chamwen/DaNN_DJP (https://github.com/chamwen/DaNN_DJP) (official)
+#   Current code:        Siyang Li — ported from chamwen/DaNN_DJP (https://github.com/chamwen/DaNN_DJP)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @InProceedings{Zhang2020,
 #     author    = {Zhang, Wen and Wu, Dongrui},
 #     booktitle = {Proceedings of the International Joint Conference on Neural Networks},

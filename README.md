@@ -59,6 +59,16 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-08-06 (v1.6.1).** Documentation and attribution only — **no measured numbers
+change.** Every algorithm source file now carries a complete credit chain in its header:
+original authors (paper, venue, and official code when one exists), the implementation
+author and repository, the author of the current port, and the integrator, with GitHub
+links on every node. Co-first authorships are marked (†), including Channel Reflection
+(Ziwei Wang† & Siyang Li†) and StackingNet. Ensemble chains were traced to their earliest
+release: EBCC, ZenCrowd, PM, LA, LAA and StackingNet follow Chenhao Liu's
+`Flashingcat/Golden_task-Ensemble` into the lab's TestEnsemble. The overview now also
+features the lab's `wzwvv/EEGAug` data-augmentation repository.
+
 - **2026-08-06 (v1.6.0).** All 18 Network rows were remeasured from scratch with
 literal target-isolated nested LOSO and five final seeds; the validated campaign is imported and the
 corrected values are published. Five rows whose identities were corrected — DeepConvNet,

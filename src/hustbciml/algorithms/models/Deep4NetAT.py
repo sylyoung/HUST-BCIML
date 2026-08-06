@@ -1,7 +1,14 @@
-# =============================================================================
+# ===========================================================================
 # Implementation of: Deep4Net architecture transfer
-#
-# Reference:
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Robin Tibor Schirrmeister, Jost Tobias Springenberg, Lukas Dominique Josef Fiederer, Martin Glasstetter, Katharina Eggensperger, Michael Tangermann, Frank Hutter, Wolfram Burgard, Tonio Ball (2017) — "Deep Learning with Convolutional Neural Networks for EEG Decoding and Visualization", Hum. Brain Mapp.
+#                        Original code: https://github.com/braindecode/braindecode (pinned f7562e9)
+#   Implementation:      Robin T. Schirrmeister & Braindecode contributors — braindecode/braindecode (https://github.com/braindecode/braindecode) (official)
+#   Current code:        Siyang Li — braindecode/braindecode (https://github.com/braindecode/braindecode), pinned commit f7562e9 (architecture transfer)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Schirrmeister2017,
 #     author  = {Schirrmeister, Robin Tibor and Springenberg, Jost Tobias and Fiederer, Lukas Dominique Josef and Glasstetter, Martin and Eggensperger, Katharina and Tangermann, Michael and Hutter, Frank and Burgard, Wolfram and Ball, Tonio},
 #     journal = {Human Brain Mapping},
@@ -12,12 +19,7 @@
 #     volume  = {38},
 #     doi     = {10.1002/hbm.23730},
 #   }
-#
-# Source: https://github.com/braindecode/braindecode/tree/f7562e9977f92495ac5b6fdbc9c5373e38169b4e
-# Accessed: 2026-07-31
-# Original authors: Robin Schirrmeister and Braindecode contributors
-# License: BSD-3-Clause
-# =============================================================================
+# ===========================================================================
 """Braindecode Deep4Net feature architecture under the HUST benchmark protocol.
 
 The temporal kernels, pooling, bias choices, dropout placement, batch

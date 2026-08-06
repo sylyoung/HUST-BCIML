@@ -1,10 +1,14 @@
 # ===========================================================================
 # ZenCrowd.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-#
-# ZenCrowd EM aggregator, vendored (pure numpy) from TestEnsemble/algs/ZC.py
-# (https://github.com/sylyoung/TestEnsemble).
-#
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Gianluca Demartini, Djellel Eddine Difallah, Philippe Cudré-Mauroux (2012) — "ZenCrowd: Leveraging Probabilistic Reasoning and Crowdsourcing Techniques for Large-Scale Entity Linking", Proc. WWW
+#                        Original code: no official release (verified 2026-08-06)
+#   Implementation:      Chenhao Liu — Flashingcat/Golden_task-Ensemble (https://github.com/Flashingcat/Golden_task-Ensemble) (Z_C.py, simplified single-coin EM variant, documented as not paper-faithful)
+#   Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (vendored from)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
 # References (IEEE BibTeX):
 #   @InProceedings{Demartini2012,
 #     author    = {Demartini, Gianluca and Difallah, Djellel Eddine and Cudr{\'e}-Mauroux, Philippe},

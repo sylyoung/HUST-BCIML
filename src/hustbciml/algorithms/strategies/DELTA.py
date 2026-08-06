@@ -1,9 +1,15 @@
 # ===========================================================================
 # DELTA.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Adapted from: https://github.com/sylyoung/DeepTransferEEG
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Bowen Zhao, Chen Chen, Shu-Tao Xia (2023) — "DELTA: Degradation-Free Fully Test-Time Adaptation", Proc. ICLR
+#                        Original code: https://github.com/bwbwzhao/DELTA
+#   Implementation:      Bowen Zhao et al. — bwbwzhao/DELTA (https://github.com/bwbwzhao/DELTA) (official)
+#   Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported from)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @InProceedings{Zhao2023,
 #     author    = {Zhao, Bowen and Chen, Chen and Xia, Shu-Tao},
 #     booktitle = {International Conference on Learning Representations},

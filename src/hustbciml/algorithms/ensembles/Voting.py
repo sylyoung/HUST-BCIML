@@ -1,10 +1,14 @@
 # ===========================================================================
 # Voting.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-#
-# Plain hard majority voting — the label-only baseline every other combiner is
-# measured against. Original authors' code: https://github.com/sylyoung/TestEnsemble
-#
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Siyang Li, Ziwei Wang, Chenhao Liu, Dongrui Wu (2026) — "Black-Box Test-Time Ensemble (majority-voting baseline)", IEEE Comput. Intell. Mag.
+#                        Original code: https://github.com/sylyoung/TestEnsemble
+#   Implementation:      Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble)
+#   Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (ported from)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
 # References (IEEE BibTeX):
 #   @Article{Li2026b,
 #     author  = {Li, Siyang and Wang, Ziwei and Liu, Chenhao and Wu, Dongrui},

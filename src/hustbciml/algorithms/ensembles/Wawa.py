@@ -1,10 +1,12 @@
 # ===========================================================================
 # Wawa.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-#
-# Wawa (Worker Agreement With Aggregate) — a crowd-kit heuristic with no separate
-# paper. Ported from https://github.com/sylyoung/TestEnsemble ; reference
-# implementation https://github.com/Toloka/crowd-kit .
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Worker Agreement With Aggregate — crowd-kit heuristic, no standalone paper.
+#   Implementation:      Toloka contributors — Toloka/crowd-kit (https://github.com/Toloka/crowd-kit)
+#   Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (wrapper ported from)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
 # ===========================================================================
 """Wawa — Worker Agreement With Aggregate (crowd-kit heuristic).
 

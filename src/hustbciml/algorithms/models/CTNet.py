@@ -1,9 +1,15 @@
 # ===========================================================================
 # CTNet.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Original authors' code: https://github.com/snailpt/CTNet
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Wei Zhao, Xiaolu Jiang, Baocan Zhang, Shixiao Xiao, Sujun Weng (2024) — "CTNet: A Novel CNN-Transformer Network for MI-EEG Decoding", Sci. Rep.
+#                        Original code: https://github.com/snailpt/CTNet
+#   Implementation:      Wei Zhao et al. — snailpt/CTNet (https://github.com/snailpt/CTNet) (official)
+#   Current code:        Siyang Li — ported directly from snailpt/CTNet (https://github.com/snailpt/CTNet)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @Article{Zhao2024,
 #     author  = {Zhao, Wei and Jiang, Xiaolu and Zhang, Baocan and Xiao, Shixiao and Weng, Sujun},
 #     journal = {Scientific Reports},

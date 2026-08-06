@@ -7,6 +7,30 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.1] - 2026-08-06
+
+### Added
+
+- Every algorithm source file (`aligners`, `augmenters`, `models`, `strategies`,
+  `ensembles`) now carries a complete credit chain in its header: original authors
+  (paper, venue, and official code when one exists), the implementation author and
+  repository, the author of the current port, and the integrator, with GitHub links on
+  every node except the integrator. Co-first authorships are marked with †:
+  Channel Reflection (Ziwei Wang† & Siyang Li†) and StackingNet
+  (Siyang Li† & Chenhao Liu†), verified against the journal pages.
+- Ensemble chains were traced to their earliest release: EBCC, ZenCrowd, PM, LA, LAA
+  and StackingNet follow Chenhao Liu's `Flashingcat/Golden_task-Ensemble` (2024–2025)
+  into the lab's `sylyoung/TestEnsemble` and from there into this benchmark. PM is
+  identified against its true source paper — "Resolving Conflicts in Heterogeneous
+  Data by Truth Discovery and Source Reliability Estimation" (CRH, SIGMOD 2014) —
+  rather than the earlier mis-attributed title.
+- The overview now features the lab's `wzwvv/EEGAug` data-augmentation repository.
+
+### Changed
+
+- Header attribution only; **no measured numbers change.** The full re-injected set
+  passed compile, header-verification, and header-only-diff checks.
+
 ## [1.6.0] - 2026-08-06
 
 ### Corrected

@@ -1,9 +1,15 @@
 # ===========================================================================
 # BNAdapt.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Adapted from: https://github.com/sylyoung/DeepTransferEEG
-#
-# Reference (IEEE BibTeX):
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Steffen Schneider, Evgenia Rusak, Luisa Eck, Oliver Bringmann, Wieland Brendel, Matthias Bethge (2020) — "Improving Robustness Against Common Corruptions with Covariate Shift Adaptation", Proc. NeurIPS
+#                        Original code: https://github.com/bethgelab/robustness (reference implementation)
+#   Implementation:      Steffen Schneider et al. — bethgelab/robustness (https://github.com/bethgelab/robustness) (canonical implementation)
+#   Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported from)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
+# References (IEEE BibTeX):
 #   @InProceedings{Schneider2020,
 #     author    = {Schneider, Steffen and Rusak, Evgenia and Eck, Luisa and Bringmann, Oliver and Brendel, Wieland and Bethge, Matthias},
 #     booktitle = {Advances in Neural Information Processing Systems},

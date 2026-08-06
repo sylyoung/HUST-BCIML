@@ -1,11 +1,14 @@
 # ===========================================================================
 # EBCC.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-#
-# EBCC enhanced Bayesian classifier combination, vendored (numpy/scipy) from
-# TestEnsemble/algs/EBCC.py (https://github.com/sylyoung/TestEnsemble). Defaults
-# follow the lab's ensemble.py (num_groups=10, empirical_prior=True).
-#
+
+# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
+#   Original authors:    Yuan Li, Benjamin I. P. Rubinstein, Trevor Cohn (2019) — "Exploiting Worker Correlation for Label Aggregation in Crowdsourcing", Proc. ICML
+#                        Original code: no official release identified (verified 2026-08-06)
+#   Implementation:      Chenhao Liu — Flashingcat/Golden_task-Ensemble (https://github.com/Flashingcat/Golden_task-Ensemble) (EBCC.py, variational-Bayes implementation)
+#   Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (vendored from)
+#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+
 # References (IEEE BibTeX):
 #   @InProceedings{Li2019EBCC,
 #     author    = {Li, Yuan and Rubinstein, Benjamin I. P. and Cohn, Trevor},
