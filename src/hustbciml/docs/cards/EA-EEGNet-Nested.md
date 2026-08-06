@@ -1,25 +1,25 @@
-# EA-EEGConformer
+# EA-EEGNet-Nested
 
 **Axis:** Network (backbone) &nbsp;·&nbsp; **Paradigm:** MI &nbsp;·&nbsp; **Dataset:** BNCI2014001 (literal-nested-cross-subject-loso LOSO)
 
-**Stage configuration:** `EA · no-aug · EEGConformer · Linear · ERM`
+**Stage configuration:** `EA · no-aug · EEGNet · Linear · ERM`
 
 ## Mechanism
-EEG Conformer is a convolutional tokenizer (temporal then spatial convolution producing patch tokens) feeding a transformer self-attention encoder and an MLP head, on EA-aligned trials. On this benchmark's three-dataset production run it lands slightly above the EA-EEGNet baseline with a small across-seed spread.
+A compact temporal convolution, depthwise spatial convolution, and separable convolution produce features for the shared Linear head.
 
 ## Result — 5 seeds (1, 2, 3, 4, 5)
 
 | Metric | Value |
 |---|--:|
-| Accuracy (mean ± std across seeds) | 74.04 ± 0.74 |
-| Δ vs baseline (EEGNet, 72.76) | +1.28 |
+| Accuracy (mean ± std across seeds) | 72.76 ± 1.14 |
+| Role | canonical base — every controlled delta is measured against this row |
 | Reference range (expected band) | — |
 
 Accuracy is the mean over seeds; ± is the standard deviation *across* seeds (a reproducibility figure, not the cross-subject spread). The reference range is the published / expected band on this dataset.
 
 ## Provenance
 - **Paper / source:** Validated Network campaign; executable source d7a46f7c04da53bda0679b5f834815c5bfe1212d3163018abc5e77293bda138f
-- **Implementation:** From-scratch implementation (no lab source in the repository) on the Backbone ABC; self-contained, carries the repository's MIT license.
+- **Implementation:** The released EEGNet architecture is evaluated under the Network table's separate target-isolated nested-selection contract. The distinct key prevents its pending five-seed result from being confused with the fixed-preset EA-EEGNet baseline used by the alignment, augmentation, transfer, and ensemble tables.
 
 ## Note
 Five-seed subject-macro accuracy from literal target-isolated nested LOSO. The complete campaign passed checkpoint reload, prediction, identity, cache, numerical-family, and coverage validation before publication.

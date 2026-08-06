@@ -1,25 +1,25 @@
-# EA-EEGConformer
+# EA-ADFCNN-Transpose-AT
 
 **Axis:** Network (backbone) &nbsp;·&nbsp; **Paradigm:** MI &nbsp;·&nbsp; **Dataset:** BNCI2014001 (literal-nested-cross-subject-loso LOSO)
 
-**Stage configuration:** `EA · no-aug · EEGConformer · Linear · ERM`
+**Stage configuration:** `EA · no-aug · ADFCNNTransposeAT · Linear · ERM`
 
 ## Mechanism
-EEG Conformer is a convolutional tokenizer (temporal then spatial convolution producing patch tokens) feeding a transformer self-attention encoder and an MLP head, on EA-aligned trials. On this benchmark's three-dataset production run it lands slightly above the EA-EEGNet baseline with a small across-seed spread.
+Two spectral-spatial pathways at different temporal scales are fused by self-attention; the corrected attention output is transposed before the shared Linear head.
 
 ## Result — 5 seeds (1, 2, 3, 4, 5)
 
 | Metric | Value |
 |---|--:|
-| Accuracy (mean ± std across seeds) | 74.04 ± 0.74 |
-| Δ vs baseline (EEGNet, 72.76) | +1.28 |
+| Accuracy (mean ± std across seeds) | 73.64 ± 0.78 |
+| Δ vs baseline (EEGNet, 72.76) | +0.88 |
 | Reference range (expected band) | — |
 
 Accuracy is the mean over seeds; ± is the standard deviation *across* seeds (a reproducibility figure, not the cross-subject spread). The reference range is the published / expected band on this dataset.
 
 ## Provenance
 - **Paper / source:** Validated Network campaign; executable source d7a46f7c04da53bda0679b5f834815c5bfe1212d3163018abc5e77293bda138f
-- **Implementation:** From-scratch implementation (no lab source in the repository) on the Backbone ABC; self-contained, carries the repository's MIT license.
+- **Implementation:** Adapted from the authors' released ADFCNN-MI implementation pinned at b4796ca3a93075e8da9dac5860ea6346f79d5a09. The feature extractor is retained, but the erroneous buffer reshape is replaced by a true channel-to-token transpose. The shared benchmark head, two-class input, preprocessing, and nested LOSO protocol make this an explicit architecture transfer rather than a paper-protocol reproduction.
 
 ## Note
 Five-seed subject-macro accuracy from literal target-isolated nested LOSO. The complete campaign passed checkpoint reload, prediction, identity, cache, numerical-family, and coverage validation before publication.

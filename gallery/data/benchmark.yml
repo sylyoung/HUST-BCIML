@@ -11,7 +11,7 @@
 # and Centralized Training respectively); the Ensemble Learning table against plain
 # majority voting. BNCI2014001 is used as its two-class left/right subset throughout;
 # its native four-class variant stays available in code but is not reported here.
-# Combiner rows carry mean ± std over three seeds like every other table; before v1.2.0 they were single-seed and mean-only. `lab: true` marks a method proposed by Prof.
+# Combiner rows carry mean ± std over three seeds; superseded single-seed aggregates are not reported. `lab: true` marks a method proposed by Prof.
 # Dongrui Wu's group. Every citation is CrossRef/arXiv-verified, with the full BibTeX
 # in each method's source-file header. Deltas are computed per dataset by gallery/build_site.py.
 
@@ -286,7 +286,7 @@ tables:
         std: 0.81
 - id: network
   title: Networks
-  blurb: 'Legacy measurements pending clean remeasurement. The input is Euclidean-aligned and the objective is ERM, but the archived rows mixed fixed and per-backbone schedules. The old learning-rate sweep held out random source trials and selected one dataset-wide value from validation scores pooled across overlapping LOSO folds; it was not target-isolated nested selection. These are adapted architecture comparisons under this benchmark protocol, not paper-protocol reproductions. DeepConvNet and FBMSNet materially differ from the cited methods, EEGWaveNet follows released code where it conflicts with the paper prose, and ADFCNN preserves the upstream reshape behavior while using an adapted head and training protocol. No displayed value has been changed by the audit. The baseline is EEGNet.'
+  blurb: 'All 18 rows are measured from scratch under literal target-isolated nested LOSO with five final seeds, on the same two-class 8–32 Hz input with target EA from unlabeled target trials, shared Linear head and ERM objective. The five corrected rows — DeepConvNet, ShallowConvNet, ADFCNN, EEGWaveNet and FBMSNet — are explicit architecture transfers of the cited references; the complete campaign passed checkpoint, prediction, provenance and seed-coverage validation before import. MVCNet is a lab-proposed network whose row retains its documented three-seed legacy measurements because it changes the IFNet backbone, the multi-view contrastive objective and the batch size together.'
   baseline: EEGNet
   rows:
   - name: CSP-Net
@@ -298,14 +298,14 @@ tables:
     desc: EEGNet whose depthwise spatial convolution is initialized with Common Spatial Pattern filters and then frozen.
     acc:
       BNCI2014001:
-        mean: 75.15
-        std: 1.06
+        mean: 75.54
+        std: 0.84
       BNCI2014002:
-        mean: 74.4
-        std: 0.24
+        mean: 75.94
+        std: 1.72
       BNCI2015001:
-        mean: 72.42
-        std: 0.38
+        mean: 72.48
+        std: 0.63
   - name: DBConformer
     key: EA-DBConformer
     lab: true
@@ -315,24 +315,23 @@ tables:
     desc: Dual-branch convolutional transformer with parallel temporal and spatial branches whose features are fused before classification.
     acc:
       BNCI2014001:
-        mean: 76.26
-        std: 0.84
+        mean: 75.76
+        std: 1.47
       BNCI2014002:
-        mean: 77.19
-        std: 1.28
+        mean: 75.20
+        std: 1.39
       BNCI2015001:
-        mean: 71.86
-        std: 0.23
+        mean: 71.64
+        std: 1.19
   - name: MVCNet
     key: MVCNet
     lab: true
     also_varies: >-
-      strategy (multi-view contrastive objective) and batch size 64, not the
-      backbone alone.
+      IFNet backbone, multi-view contrastive objective, and batch size 64.
     code: src/hustbciml/algorithms/strategies/MVCNet.py
     ref: Z. Wang, ..., D. Wu*, Knowl.-Based Syst., 2025
     doi: 10.1016/j.knosys.2025.114205
-    desc: Multi-View Contrastive Network. An IFNet convolutional backbone trained with a multi-view contrastive objective. At the inference time, only the backbone and the linear head are used.
+    desc: Multi-View Contrastive Network. An IFNet convolutional backbone trained with cross-view and cross-modal supervised contrastive losses; inference uses the backbone and shared Linear head.
     acc:
       BNCI2014001:
         mean: 75.75
@@ -352,14 +351,14 @@ tables:
     desc: 'EEGNet whose first temporal convolution is replaced by a time-information-enhanced convolution, which injects a fixed sinusoidal positional embedding into the signal. ⚠ Note: it was originally developed for seizure detection (Peng et al. 2022). This time-positional design targets seizure EEG, and may not be well suited to motor imagery.'
     acc:
       BNCI2014001:
-        mean: 73.51
-        std: 0.25
+        mean: 72.95
+        std: 1.17
       BNCI2014002:
-        mean: 73.17
-        std: 0.35
+        mean: 74.16
+        std: 1.39
       BNCI2015001:
-        mean: 73.83
-        std: 0.38
+        mean: 72.84
+        std: 0.48
   - name: KDFNet
     key: EA-KDFNet
     lab: true
@@ -369,62 +368,62 @@ tables:
     desc: Knowledge-data fusion CNN mirroring FBCSP. A windowed-sinc FIR filter bank and per-band CSP spatial filters are knowledge-initialized on the aligned source, then fine-tuned end-to-end.
     acc:
       BNCI2014001:
-        mean: 70.88
-        std: 0.32
+        mean: 71.91
+        std: 1.26
       BNCI2014002:
-        mean: 72.64
-        std: 0.69
+        mean: 73.43
+        std: 1.11
       BNCI2015001:
-        mean: 68.65
-        std: 1.05
+        mean: 70.14
+        std: 0.97
   - name: DeepConvNet
-    key: EA-DeepConvNet
-    code: src/hustbciml/algorithms/models/DeepConvNet.py
+    key: EA-Deep4Net-AT
+    code: src/hustbciml/algorithms/models/Deep4NetAT.py
     ref: R. T. Schirrmeister et al., Hum. Brain Mapp., 2017
     doi: 10.1002/hbm.23730
-    desc: 'Legacy HUST adaptation: four width-5 convolution blocks with width-2 pooling, rather than the cited Deep4Net width-10 kernels and width-3 pooling. Pending paper-faithful replacement and remeasurement.'
+    desc: Braindecode Deep4Net feature architecture with width-10 temporal kernels, 3/3 pooling and reference feature-layer initialization, evaluated with the shared benchmark head and protocol.
     acc:
       BNCI2014001:
-        mean: 73.79
-        std: 0.46
+        mean: 73.94
+        std: 1.59
       BNCI2014002:
-        mean: 69.05
-        std: 0.44
+        mean: 74.70
+        std: 1.56
       BNCI2015001:
-        mean: 69.29
-        std: 0.47
+        mean: 69.13
+        std: 1.44
   - name: ShallowConvNet
-    key: EA-ShallowConvNet
-    code: src/hustbciml/algorithms/models/ShallowConvNet.py
+    key: EA-ShallowFBCSPNet-AT
+    code: src/hustbciml/algorithms/models/ShallowFBCSPNetAT.py
     ref: R. T. Schirrmeister et al., Hum. Brain Mapp., 2017
     doi: 10.1002/hbm.23730
-    desc: Shallow convolution-and-pooling network modeled on band-power features.
+    desc: Braindecode ShallowFBCSPNet feature architecture and feature-layer initialization, evaluated with the shared benchmark head and protocol.
     acc:
       BNCI2014001:
-        mean: 71.12
-        std: 1.05
+        mean: 73.84
+        std: 0.39
       BNCI2014002:
-        mean: 70.88
-        std: 1.54
+        mean: 70.13
+        std: 0.86
       BNCI2015001:
-        mean: 72.35
-        std: 0.65
+        mean: 72.06
+        std: 1.31
   - name: EEGNet
-    key: EA-EEGNet
+    key: EA-EEGNet-Nested
     code: src/hustbciml/algorithms/models/EEGNet.py
     ref: V. J. Lawhern et al., J. Neural Eng., 2018
     doi: 10.1088/1741-2552/aace8c
     desc: Compact convolutional network, consisting of a temporal convolution, a depthwise spatial convolution and a separable convolution. The default backbone of the benchmark.
     acc:
       BNCI2014001:
-        mean: 72.53
-        std: 1.22
+        mean: 72.76
+        std: 1.14
       BNCI2014002:
-        mean: 74.4
-        std: 1.04
+        mean: 74.94
+        std: 0.37
       BNCI2015001:
-        mean: 73.39
-        std: 0.69
+        mean: 73.82
+        std: 0.58
   - name: EEGConformer
     key: EA-EEGConformer
     code: src/hustbciml/algorithms/models/EEGConformer.py
@@ -433,30 +432,30 @@ tables:
     desc: Convolutional tokenizer followed by a transformer encoder.
     acc:
       BNCI2014001:
-        mean: 72.84
-        std: 0.76
+        mean: 74.04
+        std: 0.74
       BNCI2014002:
-        mean: 74.88
-        std: 0.59
+        mean: 75.91
+        std: 0.88
       BNCI2015001:
-        mean: 73.43
-        std: 0.79
+        mean: 73.88
+        std: 0.93
   - name: ADFCNN
-    key: EA-ADFCNN
-    code: src/hustbciml/algorithms/models/ADFCNN.py
+    key: EA-ADFCNN-Transpose-AT
+    code: src/hustbciml/algorithms/models/ADFCNNTransposeAT.py
     ref: W. Tao et al., IEEE Trans. Neural Syst. Rehabil. Eng., 2024
     doi: 10.1109/TNSRE.2023.3342331
-    desc: 'Legacy architecture transfer. It preserves the released feature extractor and its upstream reshape behavior, but replaces the classifier, input window, preprocessing and training protocol. It is not a paper-protocol reproduction.'
+    desc: ADFCNN feature architecture with the released attention reshape corrected to a true channel-to-token transpose, evaluated as a two-class architecture transfer.
     acc:
       BNCI2014001:
-        mean: 72.17
-        std: 1.53
+        mean: 73.64
+        std: 0.78
       BNCI2014002:
-        mean: 71.81
-        std: 0.38
+        mean: 71.29
+        std: 0.87
       BNCI2015001:
-        mean: 71.62
-        std: 0.27
+        mean: 72.94
+        std: 1.21
   - name: CTNet
     key: EA-CTNet
     code: src/hustbciml/algorithms/models/CTNet.py
@@ -465,14 +464,14 @@ tables:
     desc: An EEGNet-style convolutional patch embedding feeding a transformer encoder.
     acc:
       BNCI2014001:
-        mean: 73.97
-        std: 0.8
+        mean: 72.70
+        std: 0.93
       BNCI2014002:
-        mean: 74.79
-        std: 0.48
+        mean: 74.41
+        std: 0.70
       BNCI2015001:
-        mean: 72.33
-        std: 0.37
+        mean: 71.26
+        std: 2.17
   - name: MSCFormer
     key: EA-MSCFormer
     code: src/hustbciml/algorithms/models/MSCFormer.py
@@ -481,14 +480,14 @@ tables:
     desc: Three parallel multi-scale temporal-convolution branches whose features are fused and passed to a transformer encoder.
     acc:
       BNCI2014001:
-        mean: 75.67
-        std: 0.26
+        mean: 76.11
+        std: 1.53
       BNCI2014002:
-        mean: 76.14
-        std: 1.21
+        mean: 74.31
+        std: 0.96
       BNCI2015001:
-        mean: 73.44
-        std: 1
+        mean: 72.56
+        std: 0.49
   - name: MSVTNet
     key: EA-MSVTNet
     code: src/hustbciml/algorithms/models/MSVTNet.py
@@ -497,14 +496,14 @@ tables:
     desc: Several parallel multi-scale EEGNet-style convolution branches followed by a transformer that mixes their tokens.
     acc:
       BNCI2014001:
-        mean: 74.82
-        std: 0.74
+        mean: 74.41
+        std: 1.34
       BNCI2014002:
-        mean: 75.9
-        std: 1.07
+        mean: 74.79
+        std: 0.76
       BNCI2015001:
-        mean: 73.17
-        std: 1.04
+        mean: 73.12
+        std: 0.71
   - name: TMSA-Net
     key: EA-TMSANet
     code: src/hustbciml/algorithms/models/TMSANet.py
@@ -513,30 +512,30 @@ tables:
     desc: Sums two parallel multi-scale temporal convolutions, then applies a temporal multi-scale self-attention module.
     acc:
       BNCI2014001:
-        mean: 71.84
-        std: 1.26
+        mean: 73.47
+        std: 0.99
       BNCI2014002:
-        mean: 73.67
-        std: 0.24
+        mean: 73.83
+        std: 0.63
       BNCI2015001:
-        mean: 70.92
-        std: 0.78
+        mean: 71.64
+        std: 0.45
   - name: EEGWaveNet
-    key: EA-EEGWaveNet
-    code: src/hustbciml/algorithms/models/EEGWaveNet.py
+    key: EA-EEGWaveNet-Release-AT
+    code: src/hustbciml/algorithms/models/EEGWaveNetReleaseAT.py
     ref: P. Thuwajit et al., IEEE Trans. Ind. Inform., 2022
     doi: 10.1109/TII.2021.3133307
-    desc: 'Released-code-faithful feature extractor: six depthwise downsampling layers and five retained scales. The paper prose describes a different stride pattern, so this row claims code fidelity only. The shared benchmark head and MI protocol are adaptations.'
+    desc: Released-code EEGWaveNet feature topology transferred to the shared motor-imagery benchmark; the conflicting paper-prose topology is not claimed.
     acc:
       BNCI2014001:
-        mean: 66.64
-        std: 1.44
+        mean: 61.53
+        std: 3.30
       BNCI2014002:
-        mean: 68.93
-        std: 1.49
+        mean: 71.14
+        std: 1.72
       BNCI2015001:
-        mean: 68.94
-        std: 1.3
+        mean: 72.19
+        std: 1.21
   - name: SlimSeiz
     key: EA-SlimSeiz
     code: src/hustbciml/algorithms/models/SlimSeiz.py
@@ -545,30 +544,30 @@ tables:
     desc: A lightweight multi-branch 1D convolution feature extractor, paired with a single Mamba selective state space mixer. It was originally a seizure prediction network.
     acc:
       BNCI2014001:
-        mean: 69.65
-        std: 0.42
+        mean: 67.75
+        std: 1.14
       BNCI2014002:
-        mean: 74.79
-        std: 1.61
+        mean: 73.64
+        std: 1.50
       BNCI2015001:
-        mean: 72.94
-        std: 1.04
+        mean: 73.04
+        std: 1.64
   - name: FBMSNet
-    key: EA-FBMSNet
-    code: src/hustbciml/algorithms/models/FBMSNet.py
+    key: EA-FBMSNet-8-32-AT
+    code: src/hustbciml/algorithms/models/FBMSNet8to32AT.py
     ref: K. Liu et al., IEEE Trans. Biomed. Eng., 2023
     doi: 10.1109/TBME.2022.3193277
-    desc: 'Legacy non-equivalent adaptation. It applies a finite zero-phase filter approximation after the benchmark-wide 8–32 Hz prefilter, replaces the constrained classifier and center-loss training, and uses effective dropout 0.25. Pending a separately named compliant implementation and remeasurement.'
+    desc: Explicit 8–32 Hz FBMSNet adaptation with six causal Chebyshev-II views and no branch below 8 Hz, evaluated with the shared benchmark head and objective.
     acc:
       BNCI2014001:
-        mean: 70.91
-        std: 0.95
+        mean: 71.93
+        std: 0.48
       BNCI2014002:
-        mean: 71.9
-        std: 0.41
+        mean: 71.93
+        std: 0.70
       BNCI2015001:
-        mean: 69.72
-        std: 0.96
+        mean: 69.11
+        std: 1.21
   - name: EEGNeX
     key: EA-EEGNeX
     code: src/hustbciml/algorithms/models/EEGNeX.py
@@ -577,14 +576,14 @@ tables:
     desc: A purely convolutional EEGNet variant that replaces the separable temporal convolutions with a stack of dilated convolutions for a wider receptive field.
     acc:
       BNCI2014001:
-        mean: 74.61
-        std: 0.92
+        mean: 75.28
+        std: 1.15
       BNCI2014002:
-        mean: 73.6
-        std: 0.59
+        mean: 74.34
+        std: 1.23
       BNCI2015001:
-        mean: 72.32
-        std: 0.64
+        mean: 72.25
+        std: 1.00
   - name: EEG-Deformer
     key: EA-EEGDeformer
     code: src/hustbciml/algorithms/models/EEGDeformer.py
@@ -593,17 +592,17 @@ tables:
     desc: A dense convolutional transformer that interleaves shallow CNN encoders with coarse-to-fine transformer stages.
     acc:
       BNCI2014001:
-        mean: 73.79
-        std: 1.78
+        mean: 70.96
+        std: 1.82
       BNCI2014002:
-        mean: 75.02
-        std: 0.8
+        mean: 73.41
+        std: 1.42
       BNCI2015001:
-        mean: 73.26
-        std: 0.09
+        mean: 73.01
+        std: 1.16
 # The network-free counterpart to the table above: same aligned input, no deep network
 # at all. Reported in src/hustbciml/RESULTS.md since the classical track was added, but
-# absent from this file until v1.2.0 — which left its six cells with no source of truth
+# added to this source file only later, which had left its six cells with no source of truth
 # and made them the only rows in the benchmark that no test cross-checked.
 - id: classical
   title: Classical Pipelines

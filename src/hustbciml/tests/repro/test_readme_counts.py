@@ -2,20 +2,14 @@
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.
 """The headline counts in both READMEs must match the leaderboard they describe.
 
-"56 EEG-decoding approaches" is stated three times per README — in a shields.io badge, in
-the opening description, and (in Chinese) again in the translation — and every one of them
-is typed by hand. Adding one leaderboard row makes all six wrong at once, and nothing about
-a stale badge looks wrong: it is a number in a picture.
+The approach count is stated in a shields.io badge and in each README's opening
+description, and every copy is typed by hand. Adding one leaderboard row makes all
+of them wrong at once, while a stale badge still looks authoritative.
 
-That is the same defect this release spent its time on elsewhere (ten stale card values, a
-`RESULTS.md` nobody was checking), so the count gets a check too. The built site data is
-the reference: it is derived from ``benchmark.yml`` by ``gallery/build_site.py``, and CI
-already fails if it is stale, so agreeing with it means agreeing with the leaderboard.
-
-The version-history bullets are deliberately *not* checked. "(**56** approaches)" under
-**2026-07-24 (v1.1.2)** is a true statement about that release and must not be rewritten
-when the count changes — which is exactly why this test matches the badge and the opening
-sentence specifically rather than every number in the file.
+The built site data is the reference: it is derived from ``benchmark.yml`` by
+``gallery/build_site.py``, and CI already fails if it is stale. This test therefore
+matches only the live badge and opening description rather than arbitrary numbers
+elsewhere in the documents.
 """
 import json
 import os

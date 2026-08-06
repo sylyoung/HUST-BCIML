@@ -157,8 +157,8 @@ class Config:
 
     # --- bookkeeping (filled by resolve_config, not set by the user) ---
     # Stage flags the CLI used to override a named preset, e.g.
-    # ``--algorithm EA-EEGNet --backbone ShallowConvNet`` records
-    # ``{"backbone": "ShallowConvNet"}``. Recorded so the run identity can say
+    # ``--algorithm EA-EEGNet --backbone ShallowFBCSPNetAT`` records
+    # ``{"backbone": "ShallowFBCSPNetAT"}``. Recorded so the run identity can say
     # that it is *not* the plain preset.
     stage_overrides: dict = field(default_factory=dict)
 
@@ -175,7 +175,7 @@ class Config:
 
         A preset name that was partly overridden on the command line is no
         longer filed under the plain preset identity: the overridden stages are
-        appended, so ``--algorithm EA-EEGNet --backbone ShallowConvNet`` cannot
+        appended, so ``--algorithm EA-EEGNet --backbone ShallowFBCSPNetAT`` cannot
         overwrite the genuine ``EA-EEGNet`` result.
 
         Hyperparameters (``lr``, ``epochs``, ``hp`` …) are deliberately *not* in

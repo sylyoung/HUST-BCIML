@@ -1,5 +1,5 @@
 # EA + EEG Conformer (Song et al. 2022) + Linear, trained with ERM.
-# Network-axis comparison against EEGNet / ShallowConvNet / DeepConvNet: a
+# Network-axis comparison against EEGNet / ShallowFBCSPNet-AT / Deep4Net-AT: a
 # convolutional-tokenizer + transformer-encoder backbone on the same EA-aligned
 # ERM setup.
 aligner: EA

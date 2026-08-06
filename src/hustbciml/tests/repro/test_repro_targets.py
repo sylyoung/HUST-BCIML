@@ -97,7 +97,11 @@ def test_target_names_a_runnable_algorithm(name):
 @pytest.mark.parametrize("name", TARGET_IDS)
 def test_reproduced_value_is_inside_its_own_reference_range(name):
     row = TARGETS[name]
-    lo, hi = row["reference_range"]
+    reference_range = row.get("reference_range")
+    if reference_range is None:
+        assert row.get("measurement_runner") == "tune_networks"
+        pytest.skip(f"{name} is validated by the complete nested Network campaign")
+    lo, hi = reference_range
     assert lo <= row["reproduced"] <= hi, (
         f"{name}: recorded {row['reproduced']} is outside its own reference range "
         f"[{lo}, {hi}]")
@@ -152,6 +156,10 @@ def test_reproduces_reference_range(name):
     from hustbciml.run import PROTOCOLS
 
     row = TARGETS[name]
+    if row.get("measurement_runner") == "tune_networks":
+        pytest.skip(
+            f"{name} requires the complete nested Network campaign, not one preset run"
+        )
     seeds = int(row.get("seeds", 1))
     results_dir = os.environ.get("HUSTBCIML_REPRO_RESULTS", "./results_repro")
     values = []

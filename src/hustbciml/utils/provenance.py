@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import importlib.metadata
+import json
 import os
 import platform
 import shutil
@@ -16,6 +17,7 @@ from typing import Mapping
 import numpy as np
 
 _NON_MEASUREMENT_TREES = frozenset({"docs", "tests"})
+_ENVIRONMENT_LOCK = "requirements-network-production.txt"
 _DEPENDENCIES = (
     "numpy", "scipy", "scikit-learn", "torch", "pyriemann", "PyYAML",
     "moabb", "mne", "crowd-kit", "pandas",
@@ -102,16 +104,65 @@ def _git_info(package_root: Path) -> dict:
         return {"root": None, "commit": None, "dirty": None}
     try:
         commit = subprocess.run(
-            [git, "-C", str(root), "rev-parse", "HEAD"], check=True,
+            [git, "rev-parse", "HEAD"], check=True, cwd=root,
             capture_output=True, text=True, timeout=10,
         ).stdout.strip()
         status = subprocess.run(
-            [git, "-C", str(root), "status", "--porcelain"], check=True,
+            [git, "status", "--porcelain"], check=True, cwd=root,
             capture_output=True, text=True, timeout=10,
         ).stdout
     except (OSError, subprocess.SubprocessError):
         return {"root": str(root), "commit": None, "dirty": None}
     return {"root": str(root), "commit": commit, "dirty": bool(status.strip())}
+
+
+def _environment_lock_identity(package_root: Path) -> dict:
+    """Identify the exact package lock beside the clean production checkout."""
+    root = _find_git_root(package_root)
+    if root is None:
+        return {
+            "path": None, "sha256": None, "size_bytes": None,
+            "expected_runtime": None, "expected_packages": None,
+            "matches_installed": None, "mismatches": None,
+        }
+    path = root / _ENVIRONMENT_LOCK
+    if not path.is_file():
+        return {
+            "path": _ENVIRONMENT_LOCK, "sha256": None, "size_bytes": None,
+            "expected_runtime": None, "expected_packages": None,
+            "matches_installed": None, "mismatches": None,
+        }
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(block)
+    expected = {}
+    expected_runtime = None
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if line.startswith("# runtime: "):
+            expected_runtime = json.loads(line.removeprefix("# runtime: "))
+            continue
+        if not line or line.startswith(("#", "-")):
+            continue
+        if "==" not in line:
+            raise RuntimeError(f"{path} contains a non-exact requirement: {line}")
+        name, version = line.split("==", 1)
+        expected[name] = version
+    mismatches = {}
+    for name, expected_version in sorted(expected.items()):
+        actual = _version(name)
+        if actual != expected_version:
+            mismatches[name] = {"expected": expected_version, "actual": actual}
+    return {
+        "path": path.relative_to(root).as_posix(),
+        "sha256": digest.hexdigest(),
+        "size_bytes": path.stat().st_size,
+        "expected_runtime": expected_runtime,
+        "expected_packages": len(expected),
+        "matches_installed": not mismatches,
+        "mismatches": mismatches,
+    }
 
 
 def _numpy_build() -> dict:
@@ -168,21 +219,66 @@ def _numerical_libraries() -> list[dict]:
     )
 
 
+def _nvidia_driver_version() -> str | list[str] | None:
+    """Read the active NVIDIA driver without assuming a Python CUDA binding."""
+    executable = shutil.which("nvidia-smi")
+    if executable is None:
+        return None
+    try:
+        output = subprocess.run(
+            [
+                executable,
+                "--query-gpu=driver_version",
+                "--format=csv,noheader,nounits",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        ).stdout
+    except (OSError, subprocess.SubprocessError):
+        return None
+    versions = sorted({line.strip() for line in output.splitlines() if line.strip()})
+    if not versions:
+        return None
+    return versions[0] if len(versions) == 1 else versions
+
+
 def runtime_provenance() -> dict:
     """Return the execution environment and exact installed source identity."""
     package_root = Path(__file__).resolve().parents[1]
+    git_info = _git_info(package_root)
+    environment_lock = _environment_lock_identity(package_root)
     try:
         from hustbciml import __version__ as hustbciml_version
     except Exception:
         hustbciml_version = _version("hustbciml")
 
-    torch_runtime = {"cuda_runtime": None, "cudnn": None, "cuda_available": None}
+    torch_runtime = {
+        "torch_version": None,
+        "cuda_runtime": None,
+        "cudnn": None,
+        "cuda_available": None,
+        "devices": [],
+    }
     try:
         import torch
+        devices = []
+        if torch.cuda.is_available():
+            for index in range(torch.cuda.device_count()):
+                properties = torch.cuda.get_device_properties(index)
+                devices.append({
+                    "index": index,
+                    "name": properties.name,
+                    "capability": list(torch.cuda.get_device_capability(index)),
+                    "total_memory": int(properties.total_memory),
+                })
         torch_runtime = {
+            "torch_version": torch.__version__,
             "cuda_runtime": torch.version.cuda,
             "cudnn": torch.backends.cudnn.version(),
             "cuda_available": bool(torch.cuda.is_available()),
+            "devices": devices,
         }
     except Exception:
         pass
@@ -191,7 +287,8 @@ def runtime_provenance() -> dict:
         "schema_version": 1,
         "hustbciml_version": hustbciml_version,
         "source_sha256": source_tree_digest(package_root),
-        "git": _git_info(package_root),
+        "git": git_info,
+        "environment_lock": environment_lock,
         "python": sys.version.split()[0],
         "platform": platform.platform(),
         "machine": {
@@ -202,5 +299,6 @@ def runtime_provenance() -> dict:
         "dependencies": dependency_versions(),
         "numpy_build": _numpy_build(),
         "numerical_libraries": _numerical_libraries(),
+        "nvidia_driver": _nvidia_driver_version(),
         "torch_runtime": torch_runtime,
     }

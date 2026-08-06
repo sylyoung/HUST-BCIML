@@ -1,0 +1,11 @@
+# EA + corrected ADFCNN attention transfer + shared Linear head, trained with ERM.
+# The transpose repair changes the released feature implementation; reportable
+# Network results therefore require the target-isolated nested tuner.
+aligner: EA
+augmenter: Identity
+backbone: ADFCNNTransposeAT
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

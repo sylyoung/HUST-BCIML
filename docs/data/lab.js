@@ -20,7 +20,7 @@ window.LAB = {
     "name": "HUST-BCIML: unified EEG-decoding benchmark",
     "owner": "sylyoung",
     "url": "https://github.com/sylyoung/HUST-BCIML",
-    "blurb": "This repository. A self-contained framework that reimplements 58 pipeline approaches and 14 ensemble combiners on a single composable pipeline, covering data alignment, data augmentation, network backbones, transfer learning and ensemble aggregation. All of them are compared under one controlled protocol on three MOABB motor imagery EEG datasets. Every result on the leaderboard is a measured reproduction, recorded for each approach."
+    "blurb": "This repository. A self-contained framework that reimplements 59 pipeline approaches and 14 ensemble combiners on a single composable pipeline, covering data alignment, data augmentation, network backbones, transfer learning and ensemble aggregation. All of them are compared under one controlled protocol on three MOABB motor imagery EEG datasets. Every result on the leaderboard is a measured reproduction, recorded for each approach."
   },
   "flagships": [
     {
@@ -177,4 +177,4 @@ window.LAB = {
     }
   ]
 };
-window.SITE = {"n_papers": 263, "n_code": 72, "n_methods": 58, "n_lab_methods": 20, "n_ensemble_methods": 14, "n_approaches": 74};
+window.SITE = {"n_papers": 263, "n_code": 72, "n_methods": 59, "n_lab_methods": 22, "n_ensemble_methods": 14, "n_approaches": 72};

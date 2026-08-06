@@ -76,69 +76,71 @@ deliberately NOT presented.
 > result of that corrected procedure until it is remeasured.
 
 **Lab methods** (marked **(lab)** throughout) are proposed by Prof. Dongrui Wu's group.
-They are the backbones **CSP-Net**, **DBConformer**, **TIE-EEGNet** and **KDFNet**, the augmenters
-**Channel Reflection** and **CSDA**, the transfer methods **MEKT**, **MDMAML**, **ASFA**,
-**ABAT**, **BFT**, **DJP-MMD**, **LSFT** and **T-TIME**, the composite **MVCNet**, the
+They are the backbones **CSP-Net**, **DBConformer**, **TIE-EEGNet**, **KDFNet** and **MVCNet**,
+the augmenters **Channel Reflection** and **CSDA**, the transfer methods
+**MEKT**, **MDMAML**, **ASFA**, **ABAT**, **BFT**, **DJP-MMD**, **LSFT** and **T-TIME**, the
 privacy methods **SAFE**, **FedBS** and **MSDT**, and the decentralized-ensemble combiners
 **SML-OVR** and **StackingNet**. Their measured numbers are recorded in
 `tests/repro/repro_targets.yaml`, against each paper's own reported value where the protocol
-matches, or an expected behavior band where it differs. Six methods added 2026-07-18 are marked
-*(new)*: **TIE-EEGNet**, **KDFNet** (backbones), **MEKT**, **MDMAML**, **ASFA** (transfer) and
-**SAFE** (privacy). A further ten network backbones (ADFCNN, CTNet, MSCFormer, MSVTNet, TMSA-Net,
-EEGWaveNet, SlimSeiz, FBMSNet, EEGNeX, EEG-Deformer) and seven augmentation baselines (additive
-noise, amplitude flip, amplitude scaling, frequency shift, Fourier surrogate, frequency
-recombination, half-sample recombination) were added 2026-07-24, all external
-comparison methods measured on all three datasets over three seeds.
+matches, or an expected behavior band where it differs. The Network table was the exception: all 18
+of its legacy entries were removed from the reproduction registry while the corrected five-seed
+nested-LOSO campaign was pending. The campaign is now validated and imported. The five rows
+whose identities were corrected — DeepConvNet, ShallowConvNet, ADFCNN, EEGWaveNet, and
+FBMSNet — are explicit architecture transfers of the cited references (the Braindecode Deep4Net
+and ShallowFBCSPNet feature architectures, the released-code ADFCNN and EEGWaveNet topologies,
+and an 8–32 Hz adaptation of FBMSNet), evaluated under the shared benchmark protocol.
 
 Regenerate live (on the server, where the raw results are), per dataset:
 `python -m hustbciml.scripts.compare ./results --dataset BNCI2014002`
 
 ---
 
-## Network (backbone) — legacy, pending clean remeasurement
-_Archived EA + ERM measurements with no augmentation. The table mixed fixed schedules with
-per-backbone schedules chosen by the non-nested global procedure documented above; it is not the
-output of the corrected target-isolated tuner. The EEGNet row used the legacy tuned schedule and
-therefore differs from the canonical fixed-HP EEGNet baseline in the other tables. No value has
-been altered during the audit. Baseline = EEGNet._
-
-_These rows compare adapted architectures under this benchmark protocol, not paper protocols.
-DeepConvNet is an archived width-5/pool-2 adaptation rather than the cited Deep4Net. FBMSNet uses a
-non-equivalent finite zero-phase approximation after the global 8–32 Hz preprocessing, plus an
-adapted head/loss. EEGWaveNet follows the released code where it conflicts with the paper prose.
-ADFCNN preserves the upstream reshape behavior but replaces its classifier, window and training
-protocol._
+## Network (backbone) — validated five-seed nested LOSO
+_All 18 corrected rows use the same two-class 8–32 Hz input, target EA from unlabeled trials,
+shared Linear head, cross-entropy ERM objective, literal target-isolated nested LOSO, and final
+seeds 1–5. Values are seed-level subject-macro accuracy means; ± is the sample standard deviation
+across the five seeds. The complete campaign passed checkpoint, prediction, source, cache,
+numerical-family, and coverage validation before import. MVCNet keeps its documented three-seed
+legacy values because it changes the IFNet backbone, the multi-view contrastive objective and
+the batch size together; the caveats are noted below the table._
 
 | Backbone | BNCI2014001 | BNCI2014002 | BNCI2015001 |
 |---|--:|--:|--:|
-| DBConformer **(lab)** | 76.26 ± 0.84 | **77.19 ± 1.28** | 71.86 ± 0.23 |
-| MSCFormer | 75.67 ± 0.26 | 76.14 ± 1.21 | 73.44 ± 1.00 |
-| CSP-Net **(lab)** | 75.15 ± 1.06 | 74.40 ± 0.24 | 72.42 ± 0.38 |
-| MSVTNet | 74.82 ± 0.74 | 75.90 ± 1.07 | 73.17 ± 1.04 |
-| EEGNeX | 74.61 ± 0.92 | 73.60 ± 0.59 | 72.32 ± 0.64 |
-| CTNet | 73.97 ± 0.80 | 74.79 ± 0.48 | 72.33 ± 0.37 |
-| DeepConvNet | 73.79 ± 0.46 | 69.05 ± 0.44 | 69.29 ± 0.47 |
-| EEG-Deformer | 73.79 ± 1.78 | 75.02 ± 0.80 | 73.26 ± 0.09 |
-| TIE-EEGNet **(lab)** *(new)* | 73.51 ± 0.25 | 73.17 ± 0.35 | 73.83 ± 0.38 |
-| EEGConformer | 72.84 ± 0.76 | 74.88 ± 0.59 | 73.43 ± 0.79 |
-| EEGNet (baseline) | 72.53 ± 1.22 | 74.40 ± 1.04 | 73.39 ± 0.69 |
-| ADFCNN | 72.17 ± 1.53 | 71.81 ± 0.38 | 71.62 ± 0.27 |
-| TMSA-Net | 71.84 ± 1.26 | 73.67 ± 0.24 | 70.92 ± 0.78 |
-| ShallowConvNet | 71.12 ± 1.05 | 70.88 ± 1.54 | 72.35 ± 0.65 |
-| FBMSNet | 70.91 ± 0.95 | 71.90 ± 0.41 | 69.72 ± 0.96 |
-| KDFNet **(lab)** *(new)* | 70.88 ± 0.32 | 72.64 ± 0.69 | 68.65 ± 1.05 |
-| SlimSeiz | 69.65 ± 0.42 | 74.79 ± 1.61 | 72.94 ± 1.04 |
-| EEGWaveNet | 66.64 ± 1.44 | 68.93 ± 1.49 | 68.94 ± 1.30 |
+| CSP-Net **(lab)** | 75.54 ± 0.84 | 75.94 ± 1.72 | 72.48 ± 0.63 |
+| DBConformer **(lab)** | 75.76 ± 1.47 | 75.20 ± 1.39 | 71.64 ± 1.19 |
+| MVCNet **(lab)** | 75.75 ± 0.56 | 77.86 ± 1.07 | 74.75 ± 0.10 |
+| TIE-EEGNet **(lab)** | 72.95 ± 1.17 | 74.16 ± 1.39 | 72.84 ± 0.48 |
+| KDFNet **(lab)** | 71.91 ± 1.26 | 73.43 ± 1.11 | 70.14 ± 0.97 |
+| DeepConvNet | 73.94 ± 1.59 | 74.70 ± 1.56 | 69.13 ± 1.44 |
+| ShallowConvNet | 73.84 ± 0.39 | 70.13 ± 0.86 | 72.06 ± 1.31 |
+| EEGNet | 72.76 ± 1.14 | 74.94 ± 0.37 | 73.82 ± 0.58 |
+| EEGConformer | 74.04 ± 0.74 | 75.91 ± 0.88 | 73.88 ± 0.93 |
+| ADFCNN | 73.64 ± 0.78 | 71.29 ± 0.87 | 72.94 ± 1.21 |
+| CTNet | 72.70 ± 0.93 | 74.41 ± 0.70 | 71.26 ± 2.17 |
+| MSCFormer | 76.11 ± 1.53 | 74.31 ± 0.96 | 72.56 ± 0.49 |
+| MSVTNet | 74.41 ± 1.34 | 74.79 ± 0.76 | 73.12 ± 0.71 |
+| TMSA-Net | 73.47 ± 0.99 | 73.83 ± 0.63 | 71.64 ± 0.45 |
+| EEGWaveNet | 61.53 ± 3.30 | 71.14 ± 1.72 | 72.19 ± 1.21 |
+| SlimSeiz | 67.75 ± 1.14 | 73.64 ± 1.50 | 73.04 ± 1.64 |
+| FBMSNet | 71.93 ± 0.48 | 71.93 ± 0.70 | 69.11 ± 1.21 |
+| EEGNeX | 75.28 ± 1.15 | 74.34 ± 1.23 | 72.25 ± 1.00 |
+| EEG-Deformer | 70.96 ± 1.82 | 73.41 ± 1.42 | 73.01 ± 1.16 |
 
-The archived ranking is dataset-dependent. On BNCI2014001 the lab's DBConformer has 76.26,
-followed by MSCFormer (75.67), CSP-Net (75.15) and MSVTNet (74.82). On BNCI2014002 DBConformer has
-77.19, MSCFormer 76.14 and MSVTNet 75.90. On BNCI2015001 several means lie within the rows' own
-across-seed standard deviations, so their order should not be read as a stable ranking. EEGWaveNet
-has 66.64 on BNCI2014001, while SlimSeiz has 74.79 on BNCI2014002. KDFNet and the archived FBMSNet
-port lie below the EEGNet row in all three columns. CTNet's sampling-rate-sized temporal kernel
-produced **+1.44 / +0.39 / −1.06** relative to the baseline in this legacy run. These observations
-describe the archived implementations and selection procedure only.
+These are architecture transfers under one benchmark protocol, not reproductions of each paper's
+dataset, split, preprocessing, classifier, or optimizer. Target EA is transductive normalization
+from unlabeled target trials; no target label is used for alignment, selection, or training.
 
+MVCNet keeps its documented three-seed legacy values rather than a five-seed campaign
+measurement, because it changes the IFNet backbone, the multi-view contrastive objective and the
+batch size together; it carries an "also varies" note instead of being a single-stage ablation. At
+inference it is just IFNet + the linear head. Its learning rate (3e-4) was selected by the legacy
+global source-validation campaign rather than the corrected nested procedure, and its two
+contrastive loss weights are set to 1.0 (the source has no hardcoded default).
+
+> An earlier BNCI2015001 measurement was 72.21 ± 0.50 rather than 74.75 ± 0.10 at the same
+> selected learning rate. The corrected run stopped building a channel-reflection view on this
+> dataset, where that view was mislabeled. The earlier number was depressed by it at every learning
+> rate in the grid, not only at the preset, so the difference was not a learning-rate artifact.
 ## Alignment
 _EEGNet + ERM, no aug. Vary the aligner. Baseline = no alignment._
 
@@ -241,29 +243,6 @@ CSDA (+0.38, a db4-wavelet cross-subject detail-swap) are modestly positive, whi
 ±1.5 points on every dataset, the small-gain, high-variance profile expected of trial-level
 augmentation here; CSDA itself is +0.38 / −0.85 / +0.23 across the three. Only the paper's
 DWTaug variant of CSDA is ported (HHTaug omitted).
-
-## Composite method (changes more than one stage)
-_Not a single-axis controlled comparison. Shown against the EA-EEGNet reference as a
-context number only._
-
-| Method | BNCI2014001 | BNCI2014002 | BNCI2015001 |
-|---|--:|--:|--:|
-| MVCNet **(lab)** (IFNet + multi-view contrastive) | 75.75 ± 0.56 | 77.86 ± 1.07 | 74.75 ± 0.10 |
-| _EA-EEGNet (reference)_ | 72.07 ± 1.58 | 74.40 ± 1.04 | 73.19 ± 0.81 |
-
-MVCNet changes two stages at once, an IFNet CNN backbone **and** a multi-view contrastive
-training strategy (cross-view + cross-modal supervised-contrastive losses), so it cannot
-sit in any one-axis table. At inference it is just IFNet + the linear head. It is above the
-reference on all three: BNCI2014001 (75.75, +3.68), BNCI2014002 (77.86, +3.46) and
-BNCI2015001 (74.75, +1.56). The legacy global source-validation campaign selected learning rate
-3e-4 rather than the preset 1e-3; this was not the corrected nested procedure. Its two contrastive
-loss weights are set to 1.0 (the source has no hardcoded default).
-
-_The BNCI2015001 cell moved in v1.2.0, from 72.21 ± 0.50 to 74.75 ± 0.10, at the same
-selected learning rate — the re-run picked 3e-4 again. What changed is that MVCNet no longer
-builds a channel-reflection view on this dataset, where that view was mislabeled. The v1.1.x
-number was depressed by it at every learning rate in the grid, not only at the preset, so the
-earlier reading of this cell as a learning-rate artifact was wrong._
 
 ## Classical (network-free) baselines
 _EA-aligned trials into a classical pipeline (no backbone). Deterministic fit-mode, so the

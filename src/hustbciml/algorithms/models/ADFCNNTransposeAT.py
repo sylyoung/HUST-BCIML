@@ -1,8 +1,11 @@
 # ===========================================================================
-# ADFCNN.py  —  HUST-BCIML EEG-decoding benchmark
+# ADFCNNTransposeAT.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Original authors' code: https://github.com/UM-Tao/ADFCNN-MI
-#
+# Original authors' code: https://github.com/UM-Tao/ADFCNN-MI/tree/b4796ca3a93075e8da9dac5860ea6346f79d5a09
+# Accessed: 2026-07-31
+# Original authors: Wei Tao et al.
+# License: not stated in the upstream repository
+# Adaptation: corrects the released attention reshape to the transpose described by the method.
 # Reference (IEEE BibTeX):
 #   @Article{Tao2024,
 #     author  = {Tao, Wei and Wang, Ze and Wong, Chi Man and Jia, Ziyu and Li, Chang and Chen, Xun and Chen, C. L. Philip and Wan, Feng},
@@ -14,57 +17,15 @@
 #     doi     = {10.1109/TNSRE.2023.3342331},
 #   }
 # ===========================================================================
-"""ADFCNN (Tao et al., 2024) - an attention-based dual-scale fusion CNN for
-motor-imagery decoding.
+"""Corrected ADFCNN feature architecture under the HUST benchmark protocol.
 
-The network runs two parallel spectral-spatial pathways at two different
-temporal scales, then fuses them with a self-attention module. Mapping to the
-paper (IEEE Transactions on Neural Systems and Rehabilitation Engineering,
-2024), Section III (Method) and Fig. 2:
-
-  * Spectral convolution (paper Section III-B, "Spectral Convolution Module").
-    Two temporal convolutions read the raw signal at two scales. A long kernel
-    of 125 samples captures low-frequency rhythm information and a short kernel
-    of 30 samples captures higher-frequency detail. Each produces F1 feature
-    maps followed by batch normalization.
-  * Spatial convolution (paper Section III-C, "Spatial Convolution Module").
-    Each scale gets its own spatial branch. Branch 1 uses a depthwise spatial
-    convolution over the channel axis, then a pointwise convolution, ELU, and
-    average pooling, in the EEGNet-style temporal-compression sense. Branch 2
-    uses a spatial convolution followed by the square nonlinearity, average
-    pooling, and the log nonlinearity, in the ShallowConvNet log-power sense.
-  * Feature fusion (paper Section III-D, "Feature Fusion Module"). The two
-    pooled branch outputs are concatenated along the time axis and fed to a
-    single-head self-attention block. Query and key are L2-normalized before
-    the scaled dot product, then attention is applied to the value and added
-    back as a residual. This is the cross-scale attention that gives the
-    network its name.
-
-The pre-logit feature is the flattened fused representation of width
-F2 * (W1 + W2), where W1 and W2 are the pooled time lengths of the two spatial
-branches. That width depends on the input length, so it is inferred by a dummy
-forward in ``__init__`` and stored in ``self.out_features``; the backbone is
-therefore dataset-agnostic. The paper's final classifier (a convolution that
-maps the fused feature to class scores) is removed here so the shared hustbciml
-``Linear`` head produces the logits.
-
-Source: github.com/UM-Tao/ADFCNN-MI, as mirrored in DBConformer/models/ADFCNN.py.
-
-Behaviour-preserving deviations: the paper hardcodes the classifier kernel to a
-fixed input length, so that final classifier is dropped in favour of the shared
-head and the fused feature width is measured by a dummy forward. No global cudnn
-flags are set. Layer sizes, kernel lengths, pooling, dropout, and nonlinearities
-are kept identical to the reference default configuration (F1=8, D=1, F2=8,
-dropout=0.25, mean pooling).
-
-KNOWN DEFECT INHERITED FROM THE REFERENCE — see `_ScaledDotAttention.forward`.
-The attention output is reinterpreted with `.reshape(B, N, C)` where a transpose
-is meant, so the residual fusion adds token-indexed features to channel-indexed
-ones. The line is character-identical in the reference
-(`DBConformer/models/ADFCNN.py`), so this port reproduces the published ADFCNN
-*implementation* faithfully — and that implementation departs from the module the
-paper describes. Kept as-is for comparability; correcting it changes the
-EA-ADFCNN row and needs a re-run.
+The released feature extractor is retained at its default F1=F2=8, dropout
+0.25, temporal kernels 125/30, and pooling schedules. Its attention output is
+transposed from ``(B, C, N)`` to ``(B, N, C)`` before residual fusion, correcting
+the released implementation's storage-reinterpreting reshape. The original
+fixed-window classifier is replaced by the benchmark's shared linear head, so
+this is a corrected two-class architecture transfer rather than a complete
+reproduction of Tao et al.'s preprocessing and training protocol.
 """
 from __future__ import annotations
 
@@ -109,12 +70,24 @@ class _ActLog(nn.Module):
         return torch.log(torch.clamp(x, min=self.eps))
 
 
-class ADFCNN(Backbone):
+def _transpose_attention_output(x: torch.Tensor) -> torch.Tensor:
+    """Convert attention output from channel-major to token-major layout."""
+    if x.ndim != 3:
+        raise ValueError(f"attention output must have shape (B, C, N), got {tuple(x.shape)}")
+    return x.permute(0, 2, 1).contiguous()
+
+
+class ADFCNNTransposeAT(Backbone):
     task_name = "classification"
 
     def __init__(self, n_chans: int, n_times: int, n_classes: int, sfreq: float,
                  pool_mode: str = "mean", drop_out: float = 0.25, **_):
         super().__init__()
+        if n_classes != 2:
+            raise ValueError(
+                f"ADFCNN-Transpose-AT is reportable only for the two-class MI "
+                f"protocol, got n_classes={n_classes}"
+            )
         self.n_chans = n_chans
         self.n_times = n_times
         pooling_layer = dict(max=nn.MaxPool2d, mean=nn.AvgPool2d)[pool_mode]
@@ -202,12 +175,10 @@ class ADFCNN(Backbone):
         d_k = q.size(-1)
         attn = (q @ k.transpose(-2, -1)) / math.sqrt(d_k)
         attn = attn.softmax(dim=-1)
-        # `attn @ v` is (B, C, N). `.reshape(B, N, C)` reinterprets that buffer
-        # instead of transposing it, so it only coincides with a transpose when
-        # C == N. Inherited verbatim from the reference implementation (see the
-        # module docstring); a transpose here would be `permute(0, 2, 1)` and would
-        # change the published EA-ADFCNN number.
-        x = (attn @ v).reshape(B, N, C)
+        # `attn @ v` is (B, C, N). The released code reinterprets its storage
+        # with `.reshape(B, N, C)`; transpose the axes instead so the attention
+        # output has the token-major layout required by the residual.
+        x = _transpose_attention_output(attn @ v)
 
         # Residual add, reshape back to feature-map form, dropout, then flatten.
         x_attention = x_attention + self.drop(x)

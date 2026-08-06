@@ -4,7 +4,7 @@
 
 The counterpart to ``decentralized.py --base hetero3``, which trains three models per
 source subject and aggregates (N-1)*3 hard votes per target. This paradigm instead
-trains FIVE architectures — EEGNet, ShallowConvNet, DeepConvNet, EEGConformer,
+trains FIVE architectures — EEGNet, ShallowFBCSPNet-AT, Deep4Net-AT, EEGConformer,
 CSPNet — each ONCE on the POOLED source (all subjects except the target, Euclidean-
 aligned), giving five per-trial predictions on the target. The diversity the
 combiners exploit here comes from the heterogeneous *architectures* (different
@@ -50,10 +50,10 @@ from hustbciml.utils.seed import fix_random_seed, resolve_device
 
 
 # Five heterogeneous backbones (distinct inductive biases): EEGNet (compact
-# depthwise-separable conv), ShallowConvNet (shallow FBCSP-style), DeepConvNet
-# (deep 4-block conv), EEGConformer (conv stem + transformer), CSPNet (CSP-
-# initialized spatial conv). Each trains on the same pooled EA-aligned source.
-BACKBONES = ["EEGNet", "ShallowConvNet", "DeepConvNet", "EEGConformer", "CSPNet"]
+# depthwise-separable conv), ShallowFBCSPNet-AT (shallow FBCSP-style), Deep4Net-AT
+# (four reference convolution blocks), EEGConformer (conv stem + transformer),
+# CSPNet (CSP-initialized spatial conv). Each trains on the same pooled EA-aligned source.
+BACKBONES = ["EEGNet", "ShallowFBCSPNetAT", "Deep4NetAT", "EEGConformer", "CSPNet"]
 
 
 def _combined_scores(cfg, dev, epochs_a, subjects, C, backbones):

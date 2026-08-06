@@ -1,0 +1,11 @@
+# EA + Deep4Net architecture transfer + shared Linear head, trained with ERM.
+# Reportable Network results come only from the target-isolated nested tuner;
+# these fixed values are a convenient non-reportable single-run composition.
+aligner: EA
+augmenter: Identity
+backbone: Deep4NetAT
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

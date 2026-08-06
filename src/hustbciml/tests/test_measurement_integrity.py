@@ -15,14 +15,23 @@ import pytest
 import torch
 
 from hustbciml.algorithms.ensembles import build_combiners, combiner_manifest
+from hustbciml.algorithms.network_methods import NETWORK_METHOD_BY_NAME
 from hustbciml.algorithms.strategies._common import split_train_val
 from hustbciml.core.batch import EEGEpochs
 from hustbciml.core.config import Config
+from hustbciml.core.context import RunContext
 from hustbciml.core.stages import VoteCombiner
-from hustbciml.data_provider.datasets import MOABBAdapter, _epochs_digest
+from hustbciml.data_provider.datasets import MOABBAdapter, _MOABB_SPEC, _epochs_digest
 from hustbciml.exp.exp_cross_subject import Exp_CrossSubject
+from hustbciml.exp import network_training
 from hustbciml.scripts import combined_ensemble, decentralized, ensemble, tune_networks
-from hustbciml.utils.io import atomic_json_dump
+from hustbciml.utils.io import (
+    atomic_json_dump,
+    atomic_torch_save,
+    atomic_write_text,
+    file_sha256,
+)
+from hustbciml.utils import provenance as provenance_module
 from hustbciml.utils.provenance import arrays_digest, runtime_provenance, source_tree_digest
 
 
@@ -90,6 +99,31 @@ def test_source_digest_excludes_tests_and_docs_but_includes_presets(tmp_path):
     assert source_tree_digest(root) != initial
 
 
+def test_git_provenance_uses_working_directory_for_legacy_git(monkeypatch, tmp_path):
+    root = tmp_path / "repository"
+    (root / ".git").mkdir(parents=True)
+    calls = []
+
+    def fake_run(command, **kwargs):
+        calls.append((command, kwargs))
+        stdout = "clean-commit\n" if command[1] == "rev-parse" else ""
+        return types.SimpleNamespace(stdout=stdout)
+
+    monkeypatch.setattr(provenance_module.shutil, "which", lambda name: "/usr/bin/git")
+    monkeypatch.setattr(provenance_module.subprocess, "run", fake_run)
+
+    assert provenance_module._git_info(root) == {
+        "root": str(root),
+        "commit": "clean-commit",
+        "dirty": False,
+    }
+    assert [command for command, _ in calls] == [
+        ["/usr/bin/git", "rev-parse", "HEAD"],
+        ["/usr/bin/git", "status", "--porcelain"],
+    ]
+    assert all(kwargs["cwd"] == root for _, kwargs in calls)
+
+
 def test_runtime_provenance_records_effective_numerical_backend():
     provenance = runtime_provenance()
     assert len(provenance["source_sha256"]) == 64
@@ -102,6 +136,29 @@ def test_runtime_provenance_records_effective_numerical_backend():
         "blas" in numpy_build or "blas_opt_info" in numpy_build
     ), numpy_build
     assert isinstance(provenance["numerical_libraries"], list)
+    assert provenance["nvidia_driver"] is None or isinstance(
+        provenance["nvidia_driver"], (str, list)
+    )
+    assert provenance["torch_runtime"]["torch_version"] == torch.__version__
+    assert isinstance(provenance["torch_runtime"]["devices"], list)
+    lock_path = Path(__file__).resolve().parents[3] / "requirements-network-production.txt"
+    lock = provenance["environment_lock"]
+    assert lock["path"] == "requirements-network-production.txt"
+    assert lock["sha256"] == file_sha256(lock_path)
+    assert lock["size_bytes"] == lock_path.stat().st_size
+    assert lock["expected_runtime"] == {
+        "python": "3.11.13",
+        "nvidia_driver": "525.60.13",
+        "cuda_runtime": "12.1",
+        "cudnn": 90100,
+        "gpu": "NVIDIA GeForce RTX 3090",
+    }
+    assert lock["expected_packages"] == sum(
+        bool(line.strip()) and not line.lstrip().startswith(("#", "-"))
+        for line in lock_path.read_text().splitlines()
+    )
+    assert isinstance(lock["matches_installed"], bool)
+    assert isinstance(lock["mismatches"], dict)
 
 
 def test_atomic_json_is_strict_and_leaves_no_temporary_file(tmp_path):
@@ -112,6 +169,18 @@ def test_atomic_json_is_strict_and_leaves_no_temporary_file(tmp_path):
     with pytest.raises(ValueError):
         atomic_json_dump({"bad": float("nan")}, destination)
     assert json.loads(destination.read_text()) == {"complete": True}
+    assert not list(tmp_path.glob(".*.tmp.*"))
+
+    text_path = tmp_path / "report.txt"
+    atomic_write_text("complete\n", text_path)
+    assert text_path.read_text() == "complete\n"
+    checkpoint_path = tmp_path / "checkpoint.pt"
+    atomic_torch_save({"weight": torch.arange(3)}, checkpoint_path)
+    assert torch.equal(
+        torch.load(checkpoint_path)["weight"],
+        torch.arange(3),
+    )
+    assert len(file_sha256(checkpoint_path)) == 64
     assert not list(tmp_path.glob(".*.tmp.*"))
 
 
@@ -145,7 +214,16 @@ def _bnci_2014_002_epochs():
     return epochs
 
 
-def test_legacy_cache_fails_by_default_and_is_marked_exploratory(tmp_path):
+@pytest.fixture
+def small_bnci_2014_002_spec(monkeypatch):
+    specification = dict(_MOABB_SPEC["BNCI2014002"])
+    specification.update(n_subjects=2, per_subject=2, n_times=16)
+    monkeypatch.setitem(_MOABB_SPEC, "BNCI2014002", specification)
+
+
+def test_legacy_cache_fails_by_default_and_is_marked_exploratory(
+    tmp_path, small_bnci_2014_002_spec
+):
     cache = tmp_path / "BNCI2014002_epochs.npz"
     _write_cache(cache, _bnci_2014_002_epochs())
     with pytest.raises(ValueError, match="no preprocessing provenance"):
@@ -159,11 +237,13 @@ def test_legacy_cache_fails_by_default_and_is_marked_exploratory(tmp_path):
     assert loaded.provenance["content_sha256"] == _epochs_digest(loaded)
 
 
-def test_annotated_cache_rejects_content_or_preprocessing_mismatch(tmp_path):
+def test_annotated_cache_rejects_content_or_preprocessing_mismatch(
+    tmp_path, small_bnci_2014_002_spec
+):
     cache = tmp_path / "BNCI2014002_epochs.npz"
     epochs = _bnci_2014_002_epochs()
     provenance = {
-        "schema_version": 1,
+        "schema_version": 2,
         "is_measurement": True,
         "dataset": "BNCI2014002",
         "content_sha256": "not-the-array-digest",
@@ -194,12 +274,22 @@ def test_annotated_cache_rejects_content_or_preprocessing_mismatch(tmp_path):
         "run_contains": "train",
         "two_class": None,
     }
+    provenance["selection_resolved"] = {
+        "session_order": ["0"],
+        "selected_sessions": ["0"],
+        "run_order": ["0train", "1train"],
+        "selected_runs": ["0train", "1train"],
+        "subject_trial_counts": [2, 2],
+        "class_trial_counts": [2, 2],
+    }
     _write_cache(cache, epochs, provenance)
     with pytest.raises(ValueError, match="software versions"):
         MOABBAdapter("BNCI2014002", data_dir=str(tmp_path)).load()
 
 
-def test_fresh_moabb_call_uses_explicit_preprocessing(monkeypatch, tmp_path):
+def test_fresh_moabb_call_uses_explicit_preprocessing(
+    monkeypatch, tmp_path, small_bnci_2014_002_spec
+):
     captured = {}
 
     class FakeDataset:
@@ -249,9 +339,23 @@ def test_fresh_moabb_call_uses_explicit_preprocessing(monkeypatch, tmp_path):
         "tmin": 0.0,
         "tmax": None,
     }
+    assert loaded.provenance["schema_version"] == 2
+    assert loaded.provenance["selection_resolved"] == {
+        "session_order": ["0"],
+        "selected_sessions": ["0"],
+        "run_order": ["0train", "1train"],
+        "selected_runs": ["0train", "1train"],
+        "subject_trial_counts": [2, 2],
+        "class_trial_counts": [2, 2],
+    }
     with np.load(tmp_path / "BNCI2014002_epochs.npz", allow_pickle=False) as archive:
         stored = json.loads(str(archive["provenance_json"].item()))
     assert stored["content_sha256"] == _epochs_digest(loaded)
+    manifest_path = tmp_path / "BNCI2014002_epochs.npz.manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    assert manifest["schema_version"] == 2
+    assert manifest["file_sha256"] == file_sha256(tmp_path / "BNCI2014002_epochs.npz")
+    assert manifest["content_sha256"] == stored["content_sha256"]
 
 
 def test_base_metrics_and_predictions_share_one_atomic_write_identity(tmp_path):
@@ -348,10 +452,10 @@ def test_selection_fold_never_constructs_or_scores_outer_target(monkeypatch):
     }
 
 
-def test_nested_summary_is_nonmeasurement_until_all_backbones_finish(
+def test_literal_nested_tuner_visits_every_inner_subject_and_stays_nonmeasurement(
     monkeypatch, tmp_path
 ):
-    epochs = _epochs(domains=(0, 1))
+    epochs = _epochs(domains=(0, 1, 2))
 
     def fake_get_data(self):
         self.cfg.n_chans = epochs.n_channels
@@ -365,76 +469,224 @@ def test_nested_summary_is_nonmeasurement_until_all_backbones_finish(
 
     monkeypatch.setattr(Exp_CrossSubject, "_get_data", fake_get_data)
     monkeypatch.setattr(tune_networks, "runtime_provenance", _runtime)
-    monkeypatch.setattr(
-        tune_networks,
-        "_selection_record",
-        lambda base_cfg, ep, runtime, backbone, lr, epochs_ceiling,
-               batch_size, selection_seed, target, root: {
-                   "val_primary": 80.0 if lr == 0.001 else 70.0
-               },
-    )
+    selection_calls = []
 
-    def fake_final(base_cfg, ep, runtime, backbone, lr, epochs_ceiling,
-                   batch_size, seed, target, root):
-        if backbone == "DeepConvNet":
-            raise RuntimeError("simulated interrupted backbone")
-        value = 60.0 + seed + target
+    def fake_selection(
+        base_cfg, ep, runtime, method, lr, epochs_ceiling, batch_size,
+        selection_seed, outer_target, inner_validation, method_root, mode,
+    ):
+        selection_calls.append((outer_target, inner_validation, lr))
+        return {
+            "val_primary": 80.0 if lr == 0.001 else 70.0,
+            "best_epoch": 1,
+        }
+
+    def fake_final(
+        base_cfg, ep, runtime, method, lr, selected_epochs, batch_size,
+        final_seed, outer_target, method_root, mode,
+    ):
+        value = 60.0 + final_seed + outer_target
         return {
             "metrics": {"accuracy": value, "kappa": value / 100, "primary": value}
         }
 
+    monkeypatch.setattr(tune_networks, "_selection_record", fake_selection)
     monkeypatch.setattr(tune_networks, "_final_record", fake_final)
-    with pytest.raises(RuntimeError, match="simulated interrupted"):
-        tune_networks.main([
-            "--dataset", "Toy", "--device", "cpu",
-            "--results_dir", str(tmp_path),
-            "--backbones", "EEGNet,DeepConvNet",
-            "--lrs", "0.001,0.003", "--epochs", "1",
-            "--batch_size", "2", "--seeds", "1,2",
-        ])
+    tune_networks.main([
+        "--dataset", "Toy", "--device", "cpu",
+        "--results_dir", str(tmp_path),
+        "--methods", "EEGNet", "--targets", "0",
+        "--lrs", "0.001,0.003", "--epochs", "1",
+        "--batch_size", "2", "--seeds", "1", "--mode", "smoke",
+    ])
 
-    archive = json.loads((tmp_path / "nested_tuned_Toy.json").read_text())
+    assert selection_calls == [
+        (0, 1, 0.001), (0, 1, 0.003),
+        (0, 2, 0.001), (0, 2, 0.003),
+    ]
+    archive = json.loads((tmp_path / "Toy" / "EA-EEGNet-Nested" / "summary.json").read_text())
     assert archive["is_measurement"] is False
-    assert archive["completed_backbones"] == ["EEGNet"]
-    assert archive["requested_backbones"] == ["EEGNet", "DeepConvNet"]
-    assert archive["backbones"]["EEGNet"]["selected_lr_by_target"] == {
-        "0": 0.001, "1": 0.001
-    }
+    assert archive["requested_targets"] == [0]
+    assert archive["requested_seeds"] == [1]
+    assert archive["selected_by_target"] == {"0": {"lr": 0.001, "epochs": 1}}
 
 
-def test_nested_final_cache_requires_matching_prediction_write(tmp_path):
-    config = Config(dataset="Toy", device="cpu", resolved_device="cpu")
-    config.data_provenance = {
-        "is_measurement": True,
-        "content_sha256": "data-digest",
+def test_network_production_requires_exact_five_seed_contract():
+    arguments = types.SimpleNamespace(
+        dataset="BNCI2014001",
+        epochs=tune_networks.PRODUCTION_EPOCHS,
+        batch_size=tune_networks.PRODUCTION_BATCH_SIZE,
+        selection_seed=tune_networks.PRODUCTION_SELECTION_SEED,
+    )
+    method = (NETWORK_METHOD_BY_NAME["EEGNet"],)
+    runtime_specification = {
+        "python": "3.11.13",
+        "nvidia_driver": "525.60.13",
+        "cuda_runtime": "12.1",
+        "cudnn": 90100,
+        "gpu": "NVIDIA GeForce RTX 3090",
     }
-    runtime = _runtime()
-    identity = {
-        **tune_networks._identity_base(config, runtime),
-        "phase": "final",
-        "backbone": "EEGNet",
-        "lr": 0.001,
-        "epochs": 1,
-        "batch_size": 2,
-        "seed": 1,
-        "initialization_seed": 1000,
-        "target": 0,
-        "val_split": "subject",
+    runtime = {
+        "git": {"commit": "clean-commit", "dirty": False},
+        "environment_lock": {
+            "sha256": "lock-digest", "expected_runtime": runtime_specification,
+            "matches_installed": True, "mismatches": {},
+        },
+        "python": runtime_specification["python"],
+        "nvidia_driver": runtime_specification["nvidia_driver"],
+        "torch_runtime": {
+            "cuda_runtime": runtime_specification["cuda_runtime"],
+            "cudnn": runtime_specification["cudnn"],
+            "devices": [{"name": runtime_specification["gpu"]}],
+        },
     }
-    directory = tmp_path / "final" / "Toy" / "EEGNet" / "target0"
-    directory.mkdir(parents=True)
-    record_path = directory / "lr0p001_ep1_seed1.json"
-    prediction_path = directory / "lr0p001_ep1_seed1_predictions.npz"
-    record_path.write_text(json.dumps({
-        "identity": identity,
-        "is_measurement": True,
-        "artifact_id": "record-write",
-    }))
-    np.savez(prediction_path, artifact_id=np.asarray("prediction-write", dtype="U"))
-    with pytest.raises(RuntimeError, match="different writes"):
-        tune_networks._final_record(
-            config, _epochs(), runtime, "EEGNet", 0.001, 1, 2, 1, 0, tmp_path
+    with pytest.raises(ValueError, match="seeds must be exactly"):
+        tune_networks._validate_production_request(
+            arguments,
+            method,
+            list(tune_networks.PRODUCTION_LRS),
+            [1],
+            [0, 1],
+            [0, 1],
+            runtime,
         )
+    tune_networks._validate_production_request(
+        arguments,
+        method,
+        list(tune_networks.PRODUCTION_LRS),
+        list(tune_networks.PRODUCTION_SEEDS),
+        [0, 1],
+        [0, 1],
+        runtime,
+    )
+    with pytest.raises(RuntimeError, match="environment"):
+        tune_networks._validate_production_request(
+            arguments,
+            method,
+            list(tune_networks.PRODUCTION_LRS),
+            list(tune_networks.PRODUCTION_SEEDS),
+            [0, 1],
+            [0, 1],
+            {"git": {"commit": "clean-commit", "dirty": False}},
+        )
+    with pytest.raises(RuntimeError, match="differs"):
+        tune_networks._validate_production_request(
+            arguments,
+            method,
+            list(tune_networks.PRODUCTION_LRS),
+            list(tune_networks.PRODUCTION_SEEDS),
+            [0, 1],
+            [0, 1],
+            {
+                "git": {"commit": "clean-commit", "dirty": False},
+                "environment_lock": {
+                    "sha256": "lock-digest",
+                    "matches_installed": False,
+                    "mismatches": {"numpy": {"expected": "1", "actual": "2"}},
+                },
+            },
+        )
+
+
+def test_nested_final_cache_requires_matching_triplet_write(tmp_path):
+    identity = {"phase": "outer_final", "outer_target": 0, "final_seed": 1}
+    directory = tmp_path / "final" / "outer0" / "seed1"
+    directory.mkdir(parents=True)
+    record_path = directory / "record.json"
+    prediction_path = directory / "predictions.npz"
+    checkpoint_path = directory / "checkpoint.pt"
+    np.savez(
+        prediction_path,
+        artifact_id=np.asarray("prediction-write", dtype="U"),
+        identity_json=np.asarray(json.dumps(identity, sort_keys=True), dtype="U"),
+    )
+    atomic_torch_save(
+        {
+            "artifact_id": "checkpoint-write",
+            "identity": identity,
+            "model_state": {},
+        },
+        checkpoint_path,
+    )
+    atomic_json_dump(
+        {
+            "identity": identity,
+            "is_measurement": True,
+            "artifact_id": "record-write",
+            "predictions_file": prediction_path.name,
+            "predictions_sha256": file_sha256(prediction_path),
+            "checkpoint_file": checkpoint_path.name,
+            "checkpoint_sha256": file_sha256(checkpoint_path),
+        },
+        record_path,
+    )
+    with pytest.raises(RuntimeError, match="different writes"):
+        tune_networks._validate_final_triplet(record_path, identity)
+
+
+def test_network_training_resumes_exact_interrupted_epoch(monkeypatch, tmp_path):
+    epochs = _epochs(domains=(0,), trials_per_domain=8, n_chans=1, n_times=4)
+    config = Config(seed=7, lr=0.01, batch_size=2, weight_decay=0.0)
+    context = RunContext(
+        cfg=config,
+        device=torch.device("cpu"),
+        augmenter=lambda batch: batch,
+        aligner=None,
+        log=lambda _: None,
+    )
+    identity = {"phase": "resume-test", "seed": 7}
+    resume_path = tmp_path / "training.resume.pt"
+
+    class TinyModel(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.classifier = torch.nn.Linear(4, 2)
+
+        def forward(self, x):
+            features = x.flatten(1)
+            return features, self.classifier(features)
+
+    real_save = network_training.atomic_torch_save
+    saves = {"count": 0}
+
+    def interrupt_after_save(payload, path):
+        real_save(payload, path)
+        saves["count"] += 1
+        if saves["count"] == 1:
+            raise RuntimeError("simulated process interruption")
+
+    torch.manual_seed(11)
+    monkeypatch.setattr(network_training, "atomic_torch_save", interrupt_after_save)
+    with pytest.raises(RuntimeError, match="simulated process interruption"):
+        network_training.train_network(
+            TinyModel(),
+            epochs,
+            context,
+            epochs=3,
+            validation_epochs=None,
+            patience=None,
+            resume_path=resume_path,
+            resume_identity=identity,
+            resume_interval=1,
+        )
+    assert resume_path.exists()
+
+    monkeypatch.setattr(network_training, "atomic_torch_save", real_save)
+    torch.manual_seed(11)
+    result = network_training.train_network(
+        TinyModel(),
+        epochs,
+        context,
+        epochs=3,
+        validation_epochs=None,
+        patience=None,
+        resume_path=resume_path,
+        resume_identity=identity,
+    )
+    assert result.resumed_from_epoch == 1
+    assert result.stop_epoch == 3
+    assert result.optimizer_steps == 12
+    assert not resume_path.exists()
 
 
 def test_vote_combiner_receives_declared_unobserved_class_count():

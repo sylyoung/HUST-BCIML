@@ -6,25 +6,29 @@ end-to-end, and EA-EEGNet learns above chance on the synthetic task.
 """
 import dataclasses
 import hashlib
+from pathlib import Path
 
 from hustbciml.core.config import Config
 from hustbciml.core import registry
 from hustbciml.exp.exp_cross_subject import Exp_CrossSubject
+from hustbciml.utils.provenance import source_tree_digest
 
 
 def _toy_cfg(**over):
+    results_dir = Path(__file__).resolve().parents[3] / "results" / "test-smoke"
     base = dict(dataset="Toy", protocol="cross_subject", algorithm="EA-EEGNet",
                 aligner="EA", augmenter="Identity", backbone="EEGNet",
                 head="Linear", strategy="ERM", epochs=30, batch_size=16,
                 lr=1e-3, seed=2023, itr=1, device="cpu", early_stop_patience=8,
-                results_dir="/tmp/hustbciml_test_results")
+                results_dir=str(results_dir))
     base.update(over)
-    # Every distinct test config gets its own results folder. Two tests that run
-    # the same algorithm with different knobs (T-TIME at steps=0 and steps=1, say)
-    # otherwise share one ``setting()`` and one of them overwrites the other's
-    # metrics — which is precisely what ``save_results`` now refuses to do.
+    # Every distinct test config and executable source gets its own result folder.
+    # This keeps repeat runs resumable without letting a stale pre-change artifact
+    # collide with the current measurement identity.
+    source = source_tree_digest()[:12]
     base.setdefault("run_tag", hashlib.sha1(
-        ",".join(f"{k}={over[k]}" for k in sorted(over)).encode()).hexdigest()[:8])
+        (source + "," + ",".join(f"{k}={over[k]}" for k in sorted(over))).encode()
+    ).hexdigest()[:12])
     return Config(**base)
 
 

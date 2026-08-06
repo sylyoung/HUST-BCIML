@@ -1,0 +1,11 @@
+# EA + released-code EEGWaveNet feature transfer + shared Linear head, trained with ERM.
+# This identity follows the released topology rather than the conflicting paper
+# prose; reportable results come only from the target-isolated nested tuner.
+aligner: EA
+augmenter: Identity
+backbone: EEGWaveNetReleaseAT
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001

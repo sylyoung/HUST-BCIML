@@ -221,6 +221,12 @@ def approach_names(benchmark):
     """
     names = set()
     for t in benchmark["tables"]:
+        # The classical pipelines table (CSP-LDA, Riemann-MDM) stays in the
+        # Benchmark tables as a network-free reference but is not listed as an
+        # Overview approach; benchApproaches() in app.js applies the same rule
+        # so the chip list and this count describe the same population.
+        if t["id"] == "classical":
+            continue
         for g in t["groups"]:
             for r in g["rows"]:
                 if not r.get("isReference") and r.get("name") and r["name"] != "none":
@@ -291,9 +297,12 @@ def main():
     site = {"n_papers": len(papers), "n_code": n_code,
             # Pipeline compositions (alignment, augmentation, backbone, transfer).
             "n_methods": len(pipeline_keys),
-            # Of those, how many are the lab's own — computed over the same
-            # population as n_methods, so "N of M are the lab's" is a true reading.
-            "n_lab_methods": len(lab_keys(benchmark, pipeline_keys)),
+            # How many rows are the lab's own, over every keyed row the Overview
+            # highlights — the pipeline methods and the two lab ensemble combiners
+            # (SML-OVR, StackingNet) alike — so the count matches the highlighted
+            # chips the page actually shows.
+            "n_lab_methods": len(lab_keys(benchmark, pipeline_keys
+                                          | method_keys(benchmark, include_ensemble=True))),
             # Ensemble combiners, counted separately because they are post-hoc
             # aggregators over trained models rather than pipeline stages.
             "n_ensemble_methods": len(ensemble_keys),

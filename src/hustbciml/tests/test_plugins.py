@@ -28,7 +28,7 @@ from hustbciml.exp.exp_cross_subject import Exp_CrossSubject
 
 # (n_chans, n_times, sfreq) of the three benchmark datasets, so a backbone is
 # exercised at every shape it is actually published on rather than one of them.
-DATASET_SHAPES = [(22, 1001, 250.0), (15, 2560, 512.0), (13, 2560, 512.0)]
+DATASET_SHAPES = [(22, 1001, 250.0), (15, 2561, 512.0), (13, 2561, 512.0)]
 
 
 @pytest.mark.parametrize("name", registry.available("models"))
@@ -159,9 +159,9 @@ def test_preset_override_gets_its_own_run_identity():
     name, or it overwrites the genuine result and ``metrics.json`` mislabels it."""
     plain, _ = resolve_config(["--algorithm", "EA-EEGNet", "--dataset", "Toy"])
     over, _ = resolve_config(["--algorithm", "EA-EEGNet", "--dataset", "Toy",
-                              "--backbone", "ShallowConvNet"])
+                              "--backbone", "ShallowFBCSPNetAT"])
     assert plain.setting() != over.setting()
-    assert "ShallowConvNet" in over.setting()
+    assert "ShallowFBCSPNetAT" in over.setting()
 
 
 def test_run_identity_distinguishes_augmenters():

@@ -31,7 +31,7 @@ import numpy as np
 from sklearn import preprocessing
 
 from hustbciml.core.batch import EEGEpochs
-from hustbciml.utils.io import atomic_savez
+from hustbciml.utils.io import atomic_json_dump, atomic_savez, file_sha256
 from hustbciml.utils.provenance import arrays_digest, dependency_versions
 
 
@@ -252,19 +252,32 @@ _BNCI2015001_CH = ["FC3", "FCz", "FC4", "C5", "C3", "C1", "Cz", "C2", "C4", "C6"
 # These values used to be inherited from MOABB defaults. They are part of the
 # benchmark definition, so they are explicit in both the call and cache identity.
 _MI_PARADIGM = dict(fmin=8.0, fmax=32.0, tmin=0.0, tmax=None)
+_CACHE_PROVENANCE_SCHEMA = 2
+_CACHE_MANIFEST_SCHEMA = 2
 
 _MOABB_SPEC = {
     "BNCI2014001":   dict(cls=["BNCI2014_001", "BNCI2014001"], n_classes=4, sfreq=250.0,
                           session_first=True, two_class=["left_hand", "right_hand"],
+                          classes=["left_hand", "right_hand"], n_subjects=9,
+                          per_subject=144, n_times=1001,
                           ch_names=_BNCI2014001_CH),
     "BNCI2014001-4": dict(cls=["BNCI2014_001", "BNCI2014001"], n_classes=4, sfreq=250.0,
-                          session_first=True, two_class=None, ch_names=_BNCI2014001_CH),
+                          session_first=True, two_class=None,
+                          classes=["feet", "left_hand", "right_hand", "tongue"], n_subjects=9,
+                          per_subject=288, n_times=1001,
+                          ch_names=_BNCI2014001_CH),
     # 14 subj, 2-class (right_hand/feet), 15 ch, 512 Hz; train runs only (100/subj).
     "BNCI2014002":   dict(cls=["BNCI2014_002", "BNCI2014002"], n_classes=2, sfreq=512.0,
-                          run_contains="train", two_class=None, ch_names=_BNCI2014002_CH),
+                          run_contains="train", two_class=None,
+                          classes=["feet", "right_hand"], n_subjects=14,
+                          per_subject=100, n_times=2561,
+                          ch_names=_BNCI2014002_CH),
     # 12 subj, 2-class (right_hand/feet), 13 ch, 512 Hz; first session '0A' (200/subj).
     "BNCI2015001":   dict(cls=["BNCI2015_001", "BNCI2015001"], n_classes=2, sfreq=512.0,
-                          session_first=True, two_class=None, ch_names=_BNCI2015001_CH),
+                          session_first=True, two_class=None,
+                          classes=["feet", "right_hand"], n_subjects=12,
+                          per_subject=200, n_times=2561,
+                          ch_names=_BNCI2015001_CH),
 }
 
 
@@ -350,6 +363,8 @@ class MOABBAdapter:
                     )
                 ep.provenance = provenance
             self._check_cache(ep, cache)
+            if ep.provenance.get("is_measurement") is True:
+                self._check_file_manifest(cache, ep.provenance)
             return ep
 
         import moabb
@@ -368,6 +383,9 @@ class MOABBAdapter:
         labels = np.asarray([str(v) for v in labels])
         subj = meta["subject"].to_numpy()
         sess = meta["session"].to_numpy().astype(str)
+        run = meta["run"].to_numpy().astype(str)
+        session_order = list(dict.fromkeys(sess.tolist()))
+        run_order = list(dict.fromkeys(run.tolist()))
 
         mask = np.ones(len(X), dtype=bool)
         if self.spec.get("session_first"):
@@ -375,17 +393,18 @@ class MOABBAdapter:
             # training session is picked by position, not by name: dict.fromkeys
             # preserves first-seen order, and its first key is the session moabb
             # emitted first, which is the training session in its output order.
-            first_session = list(dict.fromkeys(sess.tolist()))[0]  # training session, in output order
+            first_session = session_order[0]  # training session, in output order
             mask &= (sess == first_session)
         if self.spec.get("run_contains"):                # train/test split lives in the run label
             # Some datasets keep only one session and put the train/test split in
             # the run name instead, so keep the runs whose label contains the
             # marker substring (e.g. "train").
-            run = meta["run"].to_numpy().astype(str)
             mask &= np.array([self.spec["run_contains"] in r for r in run])
         if self.spec["two_class"] is not None:
             # Optionally drop down to the two classes of interest.
             mask &= np.isin(labels, self.spec["two_class"])
+        selected_sessions = list(dict.fromkeys(sess[mask].tolist()))
+        selected_runs = list(dict.fromkeys(run[mask].tolist()))
         X, labels, subj = X[mask], labels[mask], subj[mask]
 
         # Encode the surviving string labels and subject ids to contiguous
@@ -401,7 +420,7 @@ class MOABBAdapter:
         )
         versions = dependency_versions()
         ep = _attach_provenance(ep, {
-            "schema_version": 1,
+            "schema_version": _CACHE_PROVENANCE_SCHEMA,
             "is_measurement": True,
             "loader": "MOABBAdapter",
             "dataset": self.name,
@@ -416,6 +435,18 @@ class MOABBAdapter:
                 "run_contains": self.spec.get("run_contains"),
                 "two_class": self.spec.get("two_class"),
             },
+            "selection_resolved": {
+                "session_order": session_order,
+                "selected_sessions": selected_sessions,
+                "run_order": run_order,
+                "selected_runs": selected_runs,
+                "subject_trial_counts": np.bincount(
+                    domain, minlength=self.spec["n_subjects"]
+                ).astype(int).tolist(),
+                "class_trial_counts": np.bincount(
+                    y, minlength=len(classes)
+                ).astype(int).tolist(),
+            },
             "software": {name: versions[name] for name in ("numpy", "moabb", "mne")},
         })
         self._check_cache(ep, "<freshly built>")
@@ -429,7 +460,41 @@ class MOABBAdapter:
                 json.dumps(ep.provenance, sort_keys=True, ensure_ascii=False), dtype="U"
             ),
         )
+        atomic_json_dump(
+            {
+                "schema_version": _CACHE_MANIFEST_SCHEMA,
+                "dataset": self.name,
+                "cache_file": os.path.basename(cache),
+                "file_sha256": file_sha256(cache),
+                "content_sha256": ep.provenance["content_sha256"],
+            },
+            f"{cache}.manifest.json",
+        )
         return ep
+
+    def _check_file_manifest(self, cache: str, provenance: dict) -> None:
+        manifest_path = f"{cache}.manifest.json"
+        if not os.path.isfile(manifest_path):
+            raise ValueError(
+                f"{cache} has array provenance but no whole-file manifest; preserve it "
+                "and regenerate the cache before reportable measurement"
+            )
+        try:
+            with open(manifest_path, encoding="utf-8") as handle:
+                manifest = json.load(handle)
+        except Exception as exc:
+            raise ValueError(f"{manifest_path} is not readable strict JSON") from exc
+        expected = {
+            "schema_version": _CACHE_MANIFEST_SCHEMA,
+            "dataset": self.name,
+            "cache_file": os.path.basename(cache),
+            "file_sha256": file_sha256(cache),
+            "content_sha256": provenance.get("content_sha256"),
+        }
+        if manifest != expected:
+            raise ValueError(
+                f"{manifest_path} does not match the cache file or content identity"
+            )
 
     def _check_cache(self, ep: EEGEpochs, where: str) -> None:
         """Confirm the loaded epochs are the dataset this spec describes.
@@ -452,15 +517,35 @@ class MOABBAdapter:
         expected_classes = 2 if spec.get("two_class") else spec["n_classes"]
         if int(ep.n_classes) != expected_classes:
             problems.append(f"{ep.n_classes} classes, expected {expected_classes}")
+        if list(ep.classes) != list(spec["classes"]):
+            problems.append(f"classes {ep.classes!r} != {spec['classes']!r}")
         if len(ep.X) == 0 or ep.X.ndim != 3:
             problems.append(f"X has shape {ep.X.shape}")
+        else:
+            expected_shape = (len(ep.X), len(spec["ch_names"]), spec["n_times"])
+            if tuple(ep.X.shape) != expected_shape:
+                problems.append(f"X shape {ep.X.shape} != {expected_shape}")
+        domains = np.unique(ep.domain)
+        if len(domains) != spec["n_subjects"] or not np.array_equal(
+            domains, np.arange(spec["n_subjects"])
+        ):
+            problems.append(
+                f"domains {domains.tolist()} != 0..{spec['n_subjects'] - 1}"
+            )
+        if len(ep.domain):
+            counts = np.bincount(ep.domain.astype(int), minlength=spec["n_subjects"])
+            if not np.all(counts == spec["per_subject"]):
+                problems.append(
+                    f"per-subject trial counts {counts.tolist()} != {spec['per_subject']}"
+                )
         provenance = ep.provenance or {}
         if not provenance:
             problems.append("provenance is missing")
         elif provenance.get("is_measurement", True):
-            if provenance.get("schema_version") != 1:
+            if provenance.get("schema_version") != _CACHE_PROVENANCE_SCHEMA:
                 problems.append(
-                    f"unsupported provenance schema {provenance.get('schema_version')!r}"
+                    f"unsupported provenance schema {provenance.get('schema_version')!r}; "
+                    f"expected {_CACHE_PROVENANCE_SCHEMA}"
                 )
             if provenance.get("loader") != "MOABBAdapter":
                 problems.append(f"provenance loader {provenance.get('loader')!r} != 'MOABBAdapter'")
@@ -486,6 +571,38 @@ class MOABBAdapter:
             }
             if selection != expected_selection:
                 problems.append(f"selection {selection!r} != {expected_selection!r}")
+            resolved = provenance.get("selection_resolved") or {}
+            session_order = resolved.get("session_order") or []
+            selected_sessions = resolved.get("selected_sessions") or []
+            run_order = resolved.get("run_order") or []
+            selected_runs = resolved.get("selected_runs") or []
+            if spec.get("session_first"):
+                if not session_order or selected_sessions != [session_order[0]]:
+                    problems.append(
+                        "resolved session selection does not prove the first emitted session"
+                    )
+            elif not selected_sessions:
+                problems.append("resolved selected session labels are missing")
+            if not set(selected_sessions).issubset(set(session_order)):
+                problems.append("resolved selected sessions are absent from session order")
+            run_marker = spec.get("run_contains")
+            if run_marker:
+                if not selected_runs or any(run_marker not in run for run in selected_runs):
+                    problems.append(
+                        f"resolved runs do not all contain {run_marker!r}"
+                    )
+            if not set(selected_runs).issubset(set(run_order)):
+                problems.append("resolved selected runs are absent from run order")
+            actual_subject_counts = np.bincount(
+                ep.domain.astype(int), minlength=spec["n_subjects"]
+            ).astype(int).tolist()
+            if resolved.get("subject_trial_counts") != actual_subject_counts:
+                problems.append("resolved subject trial counts do not match cache arrays")
+            actual_class_counts = np.bincount(
+                ep.y.astype(int), minlength=expected_classes
+            ).astype(int).tolist()
+            if resolved.get("class_trial_counts") != actual_class_counts:
+                problems.append("resolved class trial counts do not match cache arrays")
             software = provenance.get("software") or {}
             missing_software = sorted({"numpy", "moabb", "mne"} - set(software))
             if missing_software:

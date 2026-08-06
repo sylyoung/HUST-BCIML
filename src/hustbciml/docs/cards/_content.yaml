@@ -143,7 +143,8 @@ CSP-LDA:
   role: reference
 CSP-Net:
   axis: backbone
-  baseline: EA-EEGNet
+  status: validated
+  baseline: EA-EEGNet-Nested
   config: EA · no-aug · CSPNet · Linear · ERM
   implementation: 'Adapted from github.com/jxgogo/CSP-Net (Jiang et al. 2024, Knowledge-Based Systems)
     onto the Backbone ABC as CSP-Net-2-fix: the depthwise spatial-conv weights are overwritten with mne
@@ -211,26 +212,27 @@ DJP-MMD:
     '
   paradigm: MI
   role: method
-EA-ADFCNN:
+EA-ADFCNN-Transpose-AT:
   axis: backbone
-  baseline: EA-EEGNet
-  config: EA · no-aug · ADFCNN · Linear · ERM
-  implementation: 'Legacy architecture transfer from the authors'' implementation
-    (https://github.com/UM-Tao/ADFCNN-MI). It preserves the released feature extractor, including
-    the upstream reshape behavior, but drops its classifier and replaces the input window,
-    preprocessing and training protocol with the benchmark pipeline. This row is a regression
-    target for the archived port, not a paper-protocol reproduction.
-
-    '
-  mechanism: 'Two parallel spectral-spatial pathways at different temporal scales are fused by
-    self-attention. The shared Linear head maps the resulting features to benchmark classes.
-
-    '
+  status: validated
+  baseline: EA-EEGNet-Nested
+  config: EA · no-aug · ADFCNNTransposeAT · Linear · ERM
+  implementation: >-
+    Adapted from the authors' released ADFCNN-MI implementation pinned at
+    b4796ca3a93075e8da9dac5860ea6346f79d5a09. The feature extractor is retained,
+    but the erroneous buffer reshape is replaced by a true channel-to-token transpose.
+    The shared benchmark head, two-class input, preprocessing, and nested LOSO protocol
+    make this an explicit architecture transfer rather than a paper-protocol reproduction.
+  mechanism: >-
+    Two spectral-spatial pathways at different temporal scales are fused by self-attention;
+    the corrected attention output is transposed before the shared Linear head.
   paradigm: MI
   role: method
+
 EA-CTNet:
   axis: backbone
-  baseline: EA-EEGNet
+  status: validated
+  baseline: EA-EEGNet-Nested
   config: EA · no-aug · CTNet · Linear · ERM
   implementation: 'Ported from the authors'' implementation (https://github.com/snailpt/CTNet) onto the
     Backbone ABC: the classification head is dropped so the shared Linear head produces the logits, and
@@ -261,7 +263,8 @@ EA-DANN:
   role: method
 EA-DBConformer:
   axis: backbone
-  baseline: EA-EEGNet
+  status: validated
+  baseline: EA-EEGNet-Nested
   config: EA · no-aug · DBConformer · Linear · ERM
   implementation: 'Adapted from github.com/wzwvv/DBConformer (Ziwei Wang et al. 2025) onto the Backbone
     ABC, using the paper''s default all-branch configuration (channel attention and positional embeddings
@@ -277,25 +280,26 @@ EA-DBConformer:
     '
   paradigm: MI
   role: method
-EA-DeepConvNet:
+EA-Deep4Net-AT:
   axis: backbone
-  baseline: EA-EEGNet
-  config: EA · no-aug · DeepConvNet · Linear · ERM
-  implementation: 'Legacy self-contained HUST adaptation, pending paper-faithful replacement. Its
-    four blocks use temporal width 5 and width-2 pooling; the cited Braindecode Deep4Net uses width
-    10 and width-3 pooling, with different bias, initialization and final-dropout details. The
-    displayed values identify this archived port, not Schirrmeister et al.''s Deep4Net.
-
-    '
-  mechanism: 'Four temporal/spatial convolution-and-pooling blocks feed the shared Linear head.
-    This description is limited to the archived implementation and makes no paper-fidelity claim.
-
-    '
+  status: validated
+  baseline: EA-EEGNet-Nested
+  config: EA · no-aug · Deep4NetAT · Linear · ERM
+  implementation: >-
+    The feature architecture and feature-layer initialization follow Braindecode Deep4Net
+    pinned at f7562e9977f92495ac5b6fdbc9c5373e38169b4e. The original classifier and cropped
+    training are replaced by the shared Linear head and benchmark protocol, so the row is
+    named as an architecture transfer.
+  mechanism: >-
+    Four temporal/spatial convolution-and-pooling blocks use width-10 temporal kernels,
+    3/3 pooling, and 25→50→100→200 feature maps before the shared Linear head.
   paradigm: MI
   role: method
+
 EA-EEGConformer:
   axis: backbone
-  baseline: EA-EEGNet
+  status: validated
+  baseline: EA-EEGNet-Nested
   config: EA · no-aug · EEGConformer · Linear · ERM
   implementation: 'From-scratch implementation (no lab source in the repository) on the Backbone ABC;
     self-contained, carries the repository''s MIT license.
@@ -311,7 +315,8 @@ EA-EEGConformer:
   role: method
 EA-EEGDeformer:
   axis: backbone
-  baseline: EA-EEGNet
+  status: validated
+  baseline: EA-EEGNet-Nested
   config: EA · no-aug · EEGDeformer · Linear · ERM
   implementation: 'Ported from the authors'' implementation (https://github.com/yi-ding-cs/EEG-Deformer)
     onto the Backbone ABC: the classification head is dropped so the shared Linear head produces the logits,
@@ -328,7 +333,8 @@ EA-EEGDeformer:
   role: method
 EA-EEGNeX:
   axis: backbone
-  baseline: EA-EEGNet
+  status: validated
+  baseline: EA-EEGNet-Nested
   config: EA · no-aug · EEGNeX · Linear · ERM
   implementation: 'Ported from the authors'' implementation (https://github.com/chenxiachan/EEGNeX) onto
     the Backbone ABC: the classification head is dropped so the shared Linear head produces the logits,
@@ -359,46 +365,43 @@ EA-EEGNet:
     '
   paradigm: MI
   role: base
-EA-EEGWaveNet:
+EA-EEGWaveNet-Release-AT:
   axis: backbone
-  baseline: EA-EEGNet
-  config: EA · no-aug · EEGWaveNet · Linear · ERM
-  implementation: 'Adapted from the authors'' released implementation
-    (https://github.com/IoBT-VISTEC/EEGWaveNet). The feature extractor follows the released code:
-    six depthwise kernel-2/stride-2 convolutions and two regular kernel-4/stride-1 convolutions per
-    retained scale. The paper prose describes a different regular-convolution stride pattern, so
-    this row claims released-code fidelity only. Its valid convolutions require at least 448 input
-    samples, and the benchmark replaces the final class layer with the shared Linear head.
-
-    '
-  mechanism: 'Five retained scales from a depthwise temporal downsampling cascade are each processed
-    by a two-convolution feature block, pooled and fused by the released feature MLP.
-
-    '
+  status: validated
+  baseline: EA-EEGNet-Nested
+  config: EA · no-aug · EEGWaveNetReleaseAT · Linear · ERM
+  implementation: >-
+    The feature topology follows the authors' released implementation pinned at
+    3b1909873f6cde2d8b5a916327791cf9a59f975c. It deliberately claims released-code
+    fidelity where the paper prose conflicts, enforces the 448-sample minimum, and uses
+    the shared benchmark head and training protocol.
+  mechanism: >-
+    Five retained scales from a depthwise downsampling cascade are processed by
+    two-convolution feature blocks, pooled, concatenated, and projected to shared features.
   paradigm: MI
   role: method
-EA-FBMSNet:
+
+EA-FBMSNet-8-32-AT:
   axis: backbone
-  baseline: EA-EEGNet
-  config: EA · no-aug · FBMSNet · Linear · ERM
-  implementation: 'Legacy non-equivalent adaptation of the authors'' implementation
-    (https://github.com/Want2Vanish/FBMSNet). The official generator applies a causal Chebyshev-II
-    filter bank before the network; this port uses a finite centered zero-phase approximation after
-    the benchmark-wide 8--32 Hz prefilter, so its nominal 4--8 and 32--40 Hz branches do not receive
-    the original raw-band content. The constrained classifier and center-loss training are replaced
-    by the shared Linear head and cross-entropy, and the effective benchmark dropout is 0.25. This
-    row is pending a separately named compliant implementation and remeasurement.
-
-    '
-  mechanism: 'The archived port applies fixed sub-band kernels, mixed-scale temporal convolution,
-    depthwise spatial filtering and segmented log-variance aggregation before the shared head.
-
-    '
+  status: validated
+  baseline: EA-EEGNet-Nested
+  config: EA · no-aug · FBMSNet8to32AT · Linear · ERM
+  implementation: >-
+    Adapted from the released FBMSNet implementation pinned at
+    1c6b6593200ff1cdb35517559b7cdce1c0161ee0. It uses exactly six causal
+    Chebyshev-II views from 8–12 through 28–32 Hz and no branch below 8 Hz.
+    The native constrained classifier and center loss are replaced by the shared
+    Linear head and cross-entropy to keep the Network table single-axis.
+  mechanism: >-
+    Six causal sub-band views feed shared mixed-scale temporal and depthwise spatial
+    filters; four remainder-preserving temporal log-variance segments form the features.
   paradigm: MI
   role: method
+
 EA-KDFNet:
   axis: backbone
-  baseline: EA-EEGNet
+  status: validated
+  baseline: EA-EEGNet-Nested
   config: EA · no-aug · KDFNet · Linear · ERM
   implementation: 'Adapted from Jiang et al. 2026 (Information Sciences) onto the Backbone ABC: windowed-sinc
     filter-bank init (data-free) and per-band CSP spatial init (data-dependent, on the training split),
@@ -417,7 +420,8 @@ EA-KDFNet:
   role: method
 EA-MSCFormer:
   axis: backbone
-  baseline: EA-EEGNet
+  status: validated
+  baseline: EA-EEGNet-Nested
   config: EA · no-aug · MSCFormer · Linear · ERM
   implementation: 'Ported from the authors'' implementation (not) onto the Backbone ABC: the classification
     head is dropped so the shared Linear head produces the logits, and the feature width is measured by
@@ -434,7 +438,8 @@ EA-MSCFormer:
   role: method
 EA-MSVTNet:
   axis: backbone
-  baseline: EA-EEGNet
+  status: validated
+  baseline: EA-EEGNet-Nested
   config: EA · no-aug · MSVTNet · Linear · ERM
   implementation: 'Ported from the authors'' implementation (https://github.com/SheldonLiu0412/MSVTNet)
     onto the Backbone ABC: the classification head is dropped so the shared Linear head produces the logits,
@@ -449,24 +454,26 @@ EA-MSVTNet:
     '
   paradigm: MI
   role: method
-EA-ShallowConvNet:
+EA-ShallowFBCSPNet-AT:
   axis: backbone
-  baseline: EA-EEGNet
-  config: EA · no-aug · ShallowConvNet · Linear · ERM
-  implementation: 'Refactored from Schirrmeister et al. 2017 onto the Backbone ABC; self-contained.
-
-    '
-  mechanism: 'ShallowConvNet is a single temporal convolution followed by a spatial convolution, a square
-    activation, mean pooling and a log — the FBCSP-style band-power pipeline made differentiable — on
-    EA-aligned trials. Deliberately shallow and tuned for the oscillatory band-power that carries motor
-    imagery.
-
-    '
+  status: validated
+  baseline: EA-EEGNet-Nested
+  config: EA · no-aug · ShallowFBCSPNetAT · Linear · ERM
+  implementation: >-
+    The feature architecture and initialization follow Braindecode ShallowFBCSPNet pinned
+    at f7562e9977f92495ac5b6fdbc9c5373e38169b4e. The benchmark retains its own shared
+    Linear head and nested LOSO training, so this is an architecture transfer rather than
+    a paper-protocol reproduction.
+  mechanism: >-
+    A temporal convolution and whole-channel spatial convolution are followed by square,
+    average pooling, safe logarithm, and dropout to represent FBCSP-style band power.
   paradigm: MI
   role: method
+
 EA-SlimSeiz:
   axis: backbone
-  baseline: EA-EEGNet
+  status: validated
+  baseline: EA-EEGNet-Nested
   config: EA · no-aug · SlimSeiz · Linear · ERM
   implementation: 'Ported from the authors'' implementation (https://github.com/guoruilu/SlimSeiz) onto
     the Backbone ABC: the classification head is dropped so the shared Linear head produces the logits,
@@ -483,7 +490,8 @@ EA-SlimSeiz:
   role: method
 EA-TIEEEGNet:
   axis: backbone
-  baseline: EA-EEGNet
+  status: validated
+  baseline: EA-EEGNet-Nested
   config: EA · no-aug · TIEEEGNet · Linear · ERM
   implementation: 'Refactored from Peng et al. 2022 (IEEE TNSRE) onto the Backbone ABC. The paper targets
     seizure subtype classification; here the architecture is evaluated on the same EA + ERM motor-imagery
@@ -504,7 +512,8 @@ EA-TIEEEGNet:
   role: method
 EA-TMSANet:
   axis: backbone
-  baseline: EA-EEGNet
+  status: validated
+  baseline: EA-EEGNet-Nested
   config: EA · no-aug · TMSANet · Linear · ERM
   implementation: 'Ported from the authors'' implementation (not) onto the Backbone ABC: the classification
     head is dropped so the shared Linear head produces the logits, and the feature width is measured by
@@ -766,7 +775,7 @@ MSDT:
   role: method
 MVCNet:
   axis: backbone
-  baseline: EA-EEGNet
+  baseline: EA-EEGNet-Nested
   config: EA · multi-view aug · IFNet · Linear · MVCNet (CVC + CMC contrastive)
   implementation: 'Adapted from github.com/wzwvv/MVCNet (Wang et al. 2025, Knowledge-Based Systems) with
     the IFNet backbone (Wang et al. 2023, IEEE TNSRE); the contrastive loss weights lamda1 and lamda2
@@ -774,11 +783,12 @@ MVCNet:
     terms.
 
     '
-  mechanism: 'Multi-View Contrastive Network is a composite algorithm: it pairs an IFNet backbone (an
-    interactive frequency-domain CNN) with multi-view training — several augmented views per trial supervised
-    by cross-view (CVC) and cross-modal (CMC) supervised-contrastive losses alongside classification.
-    At inference only IFNet and the linear head run. Because it changes more than one stage it is not
-    a single-axis controlled row; it is shown against the reference as a context number.
+  mechanism: 'Multi-View Contrastive Network is a dual-branch network: an IFNet backbone (an interactive
+    frequency-domain CNN) trained with multi-view augmentation and cross-view (CVC) plus cross-modal (CMC)
+    supervised-contrastive losses alongside classification. At inference only IFNet and the shared Linear
+    head run. It changes the backbone, the learning objective and the batch size together, so it carries
+    an "also varies" note; its values are the documented three-seed legacy measurements, outside the
+    corrected five-seed campaign.
 
     '
   paradigm: MI
@@ -970,3 +980,18 @@ Tent:
     '
   paradigm: MI
   role: method
+
+EA-EEGNet-Nested:
+  axis: backbone
+  status: validated
+  config: EA · no-aug · EEGNet · Linear · ERM
+  implementation: >-
+    The released EEGNet architecture is evaluated under the Network table's separate
+    target-isolated nested-selection contract. The distinct key prevents its pending
+    five-seed result from being confused with the fixed-preset EA-EEGNet baseline used
+    by the alignment, augmentation, transfer, and ensemble tables.
+  mechanism: >-
+    A compact temporal convolution, depthwise spatial convolution, and separable
+    convolution produce features for the shared Linear head.
+  paradigm: MI
+  role: base

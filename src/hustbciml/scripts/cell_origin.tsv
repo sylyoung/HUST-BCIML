@@ -48,6 +48,9 @@
 # different BLAS family than produced them. Reading every tuned_<dataset>.json on every
 # reachable box resolved all three and 14 further cells that had no entry.
 #
+# The corrected 18-row Network table was imported only after the complete five-seed,
+# literal nested-LOSO campaign passed the validated campaign certificate.
+#
 # algorithm	dataset	origin	confidence	basis
 ABAT	BNCI2014001	60022	exact	3-seed mean reproduces the published value
 ABAT	BNCI2014002	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
@@ -70,9 +73,6 @@ CSDA-EEGNet	BNCI2015001	7002	exact	3-seed mean reproduces the published value
 CSP-LDA	BNCI2014001	20022	exact	73.7654 in eegdec_results; deterministic, so seed1 is the 3-seed mean
 CSP-LDA	BNCI2014002	7002	exact	3-seed mean reproduces the published value
 CSP-LDA	BNCI2015001	7002	exact	3-seed mean reproduces the published value
-CSP-Net	BNCI2014001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
-CSP-Net	BNCI2014002	7002	exact	3-seed mean reproduces the published value
-CSP-Net	BNCI2015001	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/nets2015001/tuned_<ds>.json
 DAN	BNCI2014001	60022	exact	3-seed mean reproduces the published value
 DAN	BNCI2014002	7002	exact	3-seed mean reproduces the published value
 DAN	BNCI2015001	7002	exact	3-seed mean reproduces the published value
@@ -82,57 +82,12 @@ DELTA	BNCI2015001	7002	exact	3-seed mean reproduces the published value
 DJP-MMD	BNCI2014001	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
 DJP-MMD	BNCI2014002	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
 DJP-MMD	BNCI2015001	10022	exact	3-seed mean and std reproduce in hustbciml_results_qual/strat/tuned_<ds>.json
-EA-ADFCNN	BNCI2014001	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
-EA-ADFCNN	BNCI2014002	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
-EA-ADFCNN	BNCI2015001	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
-EA-CTNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
-EA-CTNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
-EA-CTNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
+EA-EEGNet	BNCI2014001	60022	exact	fixed-preset 3-seed mean used outside the nested Network table
+EA-EEGNet	BNCI2014002	7002	exact	fixed-preset 3-seed mean used outside the nested Network table
+EA-EEGNet	BNCI2015001	7002	exact	fixed-preset 3-seed mean used outside the nested Network table
 EA-DANN	BNCI2014001	60022	exact	3-seed mean reproduces the published value
 EA-DANN	BNCI2014002	7002	exact	3-seed mean reproduces the published value
 EA-DANN	BNCI2015001	7002	exact	3-seed mean reproduces the published value
-EA-DBConformer	BNCI2014001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
-EA-DBConformer	BNCI2014002	7002	exact	3-seed mean reproduces the published value
-EA-DBConformer	BNCI2015001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
-EA-DeepConvNet	BNCI2014001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
-EA-DeepConvNet	BNCI2014002	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
-EA-DeepConvNet	BNCI2015001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
-EA-EEGConformer	BNCI2014001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
-EA-EEGConformer	BNCI2014002	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
-EA-EEGConformer	BNCI2015001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
-EA-EEGDeformer	BNCI2014001	10022	exact	3-seed mean reproduces the published value
-EA-EEGDeformer	BNCI2014002	10022	exact	3-seed mean reproduces the published value
-EA-EEGDeformer	BNCI2015001	10022	exact	3-seed mean reproduces the published value
-EA-EEGNeX	BNCI2014001	10022	exact	3-seed mean reproduces the published value
-EA-EEGNeX	BNCI2014002	10022	exact	3-seed mean reproduces the published value
-EA-EEGNeX	BNCI2015001	10022	exact	3-seed mean reproduces the published value
-EA-EEGNet	BNCI2014001	60022	exact	3-seed mean reproduces the published value
-EA-EEGNet	BNCI2014002	7002	exact	3-seed mean reproduces the published value
-EA-EEGNet	BNCI2015001	7002	exact	3-seed mean reproduces the published value
-EA-EEGWaveNet	BNCI2014001	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
-EA-EEGWaveNet	BNCI2014002	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
-EA-EEGWaveNet	BNCI2015001	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
-EA-FBMSNet	BNCI2014001	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
-EA-FBMSNet	BNCI2014002	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
-EA-FBMSNet	BNCI2015001	20022	exact	3-seed metrics.json under hustbciml_v12_results reproduce the published value
-EA-KDFNet	BNCI2014001	7002	exact	3-seed mean reproduces the published value
-EA-KDFNet	BNCI2014002	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
-EA-KDFNet	BNCI2015001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
-EA-MSCFormer	BNCI2014001	10022	exact	3-seed mean reproduces the published value
-EA-MSCFormer	BNCI2014002	10022	exact	3-seed mean reproduces the published value
-EA-MSCFormer	BNCI2015001	10022	exact	3-seed mean reproduces the published value
-EA-MSVTNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
-EA-MSVTNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
-EA-MSVTNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
-EA-ShallowConvNet	BNCI2014001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
-EA-ShallowConvNet	BNCI2014002	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
-EA-ShallowConvNet	BNCI2015001	7002	exact	selected lr and 3-seed mean recorded in hustbciml_results_nettune/tuned_<ds>.json
-EA-SlimSeiz	BNCI2014001	10022	exact	3-seed mean reproduces the published value
-EA-SlimSeiz	BNCI2014002	10022	exact	3-seed mean reproduces the published value
-EA-SlimSeiz	BNCI2015001	10022	exact	3-seed mean reproduces the published value
-EA-TMSANet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
-EA-TMSANet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
-EA-TMSANet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
 FComb-EEGNet	BNCI2014001	10022	exact	3-seed mean reproduces the published value
 FComb-EEGNet	BNCI2014002	10022	exact	3-seed mean reproduces the published value
 FComb-EEGNet	BNCI2015001	10022	exact	3-seed mean reproduces the published value
@@ -264,3 +219,57 @@ M-MSR	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/dec
 single-source	BNCI2014001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014001_hetero3_EA-EEGNet.json
 single-source	BNCI2014002	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2014002_hetero3_EA-EEGNet.json
 single-source	BNCI2015001	7002	exact	3-seed mean and std from hustbciml_v132_hetero3/decentralized_BNCI2015001_hetero3_EA-EEGNet.json
+EA-EEGNet-Nested	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-EEGNet-Nested	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-EEGNet-Nested	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-ShallowFBCSPNet-AT	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-ShallowFBCSPNet-AT	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-ShallowFBCSPNet-AT	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-Deep4Net-AT	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-Deep4Net-AT	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-Deep4Net-AT	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-EEGConformer	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-EEGConformer	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-EEGConformer	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-DBConformer	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-DBConformer	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-DBConformer	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+CSP-Net	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+CSP-Net	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+CSP-Net	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-TIEEEGNet	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-TIEEEGNet	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-TIEEEGNet	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-KDFNet	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-KDFNet	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-KDFNet	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-ADFCNN-Transpose-AT	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-ADFCNN-Transpose-AT	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-ADFCNN-Transpose-AT	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-CTNet	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-CTNet	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-CTNet	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-MSCFormer	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-MSCFormer	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-MSCFormer	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-MSVTNet	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-MSVTNet	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-MSVTNet	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-TMSANet	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-TMSANet	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-TMSANet	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-EEGWaveNet-Release-AT	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-EEGWaveNet-Release-AT	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-EEGWaveNet-Release-AT	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-SlimSeiz	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-SlimSeiz	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-SlimSeiz	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-FBMSNet-8-32-AT	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-FBMSNet-8-32-AT	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-FBMSNet-8-32-AT	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-EEGNeX	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-EEGNeX	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-EEGNeX	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-EEGDeformer	BNCI2014001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-EEGDeformer	BNCI2014002	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json
+EA-EEGDeformer	BNCI2015001	localhost.localdomain	exact	5-seed literal nested LOSO; validated_network_campaign.json

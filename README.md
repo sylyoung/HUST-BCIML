@@ -18,7 +18,7 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-3776ab)
 ![PyTorch](https://img.shields.io/badge/PyTorch-1.12%2B-ee4c2c)
-![Approaches](https://img.shields.io/badge/approaches-58-4338ca)
+![Approaches](https://img.shields.io/badge/approaches-59-4338ca)
 ![Datasets](https://img.shields.io/badge/datasets-3%20MOABB%20MI-059669)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
@@ -55,10 +55,20 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 - [Acknowledgements](#acknowledgements)
 - [License](#license)
 
-<details>
 <summary><b>What's new</b></summary>
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
+
+- **2026-08-06 (v1.6.0).** All 18 Network rows were remeasured from scratch with
+literal target-isolated nested LOSO and five final seeds; the validated campaign is imported and the
+corrected values are published. Five rows whose identities were corrected — DeepConvNet,
+ShallowConvNet, ADFCNN, EEGWaveNet, and FBMSNet — are explicit architecture transfers of the
+cited references (Braindecode Deep4Net/ShallowFBCSPNet feature architectures, released-code
+ADFCNN/EEGWaveNet topologies, and an 8–32 Hz adaptation of FBMSNet). MVCNet is reported on
+the Network axis with its documented three-seed legacy values. Legacy values were
+withdrawn rather than assigned to the corrected code. Checkpoints, predictions, selected settings,
+source/data/software provenance, and resumable training state are recorded for every final fold; the
+importer fails closed unless the complete campaign passes independent validation.
 
 - **2026-07-31 (unreleased audit correction).** The Network table is now identified as a legacy
 measurement pending clean remeasurement: its rows mixed fixed and per-backbone schedules, and the
@@ -166,7 +176,7 @@ This repository contains two deliverables.
 **1. The EEG-decoding benchmark**, in directory [`src/hustbciml/`](src/hustbciml/).
 
 A self-contained framework built around a single command-line entry point and an auto-scanning
-plug-in registry. On one composable pipeline it re-implements **58 EEG-decoding approaches**,
+plug-in registry. On one composable pipeline it re-implements **59 EEG-decoding approaches**,
 spanning data alignment, data augmentation, network backbones and transfer learning, together
 with **14 ensemble combiners** counted separately, as they aggregate several trained models
 rather than composing a pipeline. All of them are evaluated under a **single controlled
@@ -217,16 +227,16 @@ reporting rather than left to convention.
    row carries an explicit "also varies" note on the leaderboard rather than being presented as
    a single-stage change. The ERM baseline takes the best checkpoint on a held-out source split,
    whereas the domain-adaptation rows take the last iterate of their fixed reference schedules.
-   The published Network table predates the corrected nested tuner: it mixes fixed and tuned
-   schedules, and its old sweep selected one dataset-wide learning rate from validation scores
-   pooled across overlapping LOSO folds. Its numbers are retained as legacy evidence pending
-   clean remeasurement.
+   The superseded Network table mixed fixed and tuned schedules, and its old sweep selected one
+   dataset-wide learning rate from validation scores pooled across overlapping LOSO folds. Those
+   values are withdrawn. Its corrected rows use literal target-isolated nested LOSO; the complete
+   five-seed campaign passed validation on 2026-08-06 and its values are published.
 
 3. **Measurement integrity.**
-   Every leaderboard number is a **measured** mean over three random seeds. No number is ever
-   hand-set to match a paper. Each is recorded in a machine-readable reproduction file, against
-   the paper's own value where the protocol matches, or against an expected-behavior band where
-   it differs.
+   Every displayed leaderboard number is a measured mean over three random seeds. The corrected
+   Network table is pending and will use five seeds. No number is ever hand-set to match a paper.
+   Every published value has a machine-readable reproduction record; validated Network values also
+   require the complete campaign certificate.
 
 4. **Honest reporting.**
    Negative and below-baseline results are kept and explained rather than hidden. Rankings are
@@ -237,9 +247,9 @@ reporting rather than left to convention.
    New runs persist the full resolved configuration, source-tree and data digests, dependency and
    BLAS/LAPACK runtime identity, explicit preprocessing, method parameters, and per-subject
    predictions/scores. Reuse requires the complete measurement identity to match; partial,
-   unreadable, legacy, or differently configured artifacts fail closed. Model checkpoints are not
-   persisted. The current public numbers predate this artifact schema and remain labeled legacy
-   until remeasured through it.
+   unreadable, legacy, or differently configured artifacts fail closed. Corrected Network runs
+   additionally persist model checkpoints and epoch-level resume state. Other public values predate
+   that complete artifact schema and remain labeled as historical measurements.
 
 6. **Self-containment and zero build.**
    The web app renders from a single file with no build step, and the benchmark runs end-to-end
@@ -276,19 +286,20 @@ EA  ·  no augmentation  ·  EEGNet  ·  Linear head  ·  ERM
 ```
 
 A row's delta (Δ) is its accuracy minus that table's same-dataset baseline. Rows that necessarily
-change more than one stage state the extra changes under their names, and the legacy Network table
-has the tuning caveat above. A separate **ensemble** axis aggregates several models and is reported
-apart from the pipeline-stage tables.
+change more than one stage state the extra changes under their names. The corrected Network table
+uses its own nested-selection contract and distinct EEGNet baseline key. A separate **ensemble**
+axis aggregates several models and is reported apart from the pipeline-stage tables.
 
 ### Evaluation protocol
 
 All results are **cross-subject, leave-one-subject-out (LOSO)**: the model is trained on all but
 one subject and evaluated on the held-out subject, repeated over every subject.
 
-Each configuration is run over **three random seeds** (1, 2, 3). Reported accuracy is the **mean
-over seeds**. The reported `±` is the standard deviation **across seeds**, a reproducibility
-measure rather than the cross-subject spread. Deterministic, network-free methods therefore
-carry a standard deviation of `0.00` by construction.
+Displayed historical configurations use **three random seeds** (1, 2, 3); corrected Network rows
+use **five seeds** (1–5). Reported accuracy is the mean over seed-level subject-macro accuracies.
+The reported `±` is the sample standard deviation **across seeds**, a reproducibility measure rather
+than the cross-subject spread. Deterministic, network-free methods therefore carry a standard
+deviation of `0.00` by construction.
 
 ### Datasets
 
@@ -333,16 +344,20 @@ cross-subject detail-swap), **additive noise**, **amplitude flip**, **amplitude 
 none.
 
 **Network backbones.**
-On a fixed EA-aligned, ERM-trained setup, only the network changes. **EEGNet** is the canonical
-baseline, alongside **ShallowConvNet**, **DeepConvNet**, **EEG Conformer**, **CSP-Net (lab)**,
-**TIE-EEGNet (lab)**, **KDFNet (lab)**, **DBConformer (lab)**, **MVCNet (lab)**, and a set of
-recent networks (**ADFCNN**, **CTNet**, **MSCFormer**, **MSVTNet**, **TMSA-Net**, **EEGWaveNet**,
-**SlimSeiz**, **FBMSNet**, **EEGNeX**, **EEG-Deformer**). These are architecture-transfer rows under
-a shared MI/LOSO pipeline, not paper-protocol reproductions. In particular, the archived
-DeepConvNet and FBMSNet implementations materially differ from their cited methods; EEGWaveNet
-follows the released code where it conflicts with the paper prose; and ADFCNN preserves the
-released reshape behavior while replacing its classifier and training protocol. The displayed
-numbers are legacy values pending clean nested remeasurement.
+On one fixed two-class setup, only the feature network changes: MOABB 8–32 Hz epochs, target EA
+from unlabeled target trials, a shared Linear head, cross-entropy ERM, literal target-isolated nested
+LOSO, and five final seeds. The corrected rows are **EEGNet**, **ShallowConvNet**,
+**DeepConvNet**, **EEG Conformer**, **CSP-Net (lab)**, **TIE-EEGNet (lab)**,
+**KDFNet (lab)**, **DBConformer (lab)**, **ADFCNN**, **CTNet**,
+**MSCFormer**, **MSVTNet**, **TMSA-Net**, **EEGWaveNet**, **SlimSeiz**,
+**FBMSNet**, **EEGNeX**, and **EEG-Deformer**, plus **MVCNet (lab)**, which keeps its
+documented three-seed legacy values because it changes the backbone, the learning objective and
+the batch size together. These are architecture transfers, not
+reproductions of each paper's dataset, split, preprocessing, classifier, or optimizer. The five
+corrected rows record material adaptation choices in their linked implementations: corrected
+ADFCNN attention transpose, released-code EEGWaveNet topology, Braindecode
+Deep4Net/ShallowFBCSPNet feature architectures, and six causal FBMSNet views restricted to
+8–32 Hz.
 
 **Transfer and adaptation strategies** (vary the learning objective on a fixed EA-aligned
 EEGNet). The families differ in when the unlabeled target is used and whether the source data is
@@ -413,6 +428,10 @@ python -m hustbciml.run --algorithm EA-EEGNet --dataset Toy --device cpu       #
 python -m hustbciml.run --algorithm EA-EEGNet --dataset BNCI2014001 --itr 3    # real data, via MOABB
 ```
 
+The exact Python 3.11 and CUDA package stack used for the corrected five-seed Network campaign is frozen in
+[`requirements-network-production.txt`](requirements-network-production.txt). It is a measurement lock,
+not a replacement for the general installation above.
+
 Compose an algorithm on the fly instead of naming a preset:
 
 ```bash
@@ -449,6 +468,8 @@ python3 gallery/build_site.py     # requires only PyYAML
 
 ```
 HUST-BCIML/
+├── .github/workflows/ci.yml    # tests, generated-file checks, weekly link check
+├── .gitignore                  # shared exclusions for generated/local artifacts
 ├── src/hustbciml/              # THE BENCHMARK  (the importable package)
 │   ├── run.py                  # python -m hustbciml.run --algorithm EA-EEGNet --dataset BNCI2014001
 │   ├── core/                   # batch, stages (ABCs), registry, pipeline, config, context
@@ -471,32 +492,38 @@ HUST-BCIML/
 │   │   └── benchmark.yml        # controlled-comparison leaderboard
 │   └── build_site.py           # YAML → docs/data/*.js   (requires only PyYAML)
 ├── pyproject.toml              # packaging + pytest configuration
-└── requirements.txt
+├── requirements.txt            # supported general-purpose dependencies
+└── requirements-network-production.txt  # exact corrected-Network measurement lock
 ```
 
-The package sits under `src/` rather than at the top level so that the repository root
-names what each directory is for. `hustbciml` remains the import name, so every command
-in this file is unchanged; `pip install -e .` is what puts it on the path.
+The package sits under `src/` rather than at the top level because `src/` is the package-search root
+and `hustbciml/` is the actual import package. Flattening the two would remove the
+`import hustbciml` namespace used by the CLI and plug-in registry. `pip install -e .` adds the
+search root to Python's path.
+
+The three small root infrastructure files are intentionally tracked. `.gitignore` is shared policy
+that prevents local caches, results, and build products from entering commits. `pyproject.toml`
+defines how the package is installed, its dependencies and package data, and the pytest settings.
+`.github/workflows/ci.yml` tells GitHub Actions to run the non-reproduction tests and generated-file
+checks on changes, plus the external-link check each week; it does not commit or push files.
 
 ## Reproduction and measurement integrity
 
-Every number in the benchmark is a **measured** three-seed mean. None is ever hand-set to match
-a paper.
+Every displayed benchmark number is a measured multi-seed mean (three seeds for the historical
+tables, five for the corrected Network table). The corrected Network values were imported only
+after the complete campaign passed validation on 2026-08-06. No value is ever hand-set to match a paper.
 
-Each number is recorded in
-[`src/hustbciml/tests/repro/repro_targets.yaml`](src/hustbciml/tests/repro/repro_targets.yaml), against
-the paper's own value where the protocol matches, or against an expected-behavior band where it
-differs, together with a per-method note. `tests/repro/test_repro_targets.py` checks on every
-commit that every leaderboard key has an entry, that each recorded value sits inside its own
-reference range, and that the registry and the public leaderboard do not publish two different
-numbers for the same run. The algorithm [cards](src/hustbciml/docs/cards/README.md) carry the
-reported-vs-reproduced table and, for each method, the upstream source it was ported from.
-Upstream *license* terms are recorded where the source repository states one; where it does not,
-the card says so rather than implying an audit that was not performed.
+Each published value is recorded in
+[`src/hustbciml/tests/repro/repro_targets.yaml`](src/hustbciml/tests/repro/repro_targets.yaml), with a
+per-method note. `tests/repro/test_repro_targets.py` checks that the leaderboard, registry, and
+runnable presets agree. Corrected Network results are instead gated by the complete campaign
+validator, which checks all checkpoints, predictions, five seeds, nested splits, and provenance;
+a single preset run cannot replace that campaign. The algorithm
+[cards](src/hustbciml/docs/cards/README.md) document each method and its upstream implementation.
 
 #### Hyperparameter selection: legacy results and corrected procedure
 
-The displayed values predate the corrected tuner. The historical sweep used two selection signals:
+The non-Network displayed values predate the corrected tuner. The historical sweep used two selection signals:
 
 * **Global source-validation selection** (`select="val"`, including the old Network-table tuning).
   Despite the earlier documentation, this held out random source **trials**, not whole source
@@ -511,13 +538,15 @@ The displayed values predate the corrected tuner. The historical sweep used two 
 
 The historical publication process also retained a newly tuned value only when its test result
 improved on the previous value. That adoption rule directly uses test performance and is not a
-valid model-selection firewall. These values are retained only as legacy evidence.
+valid model-selection firewall. Related non-Network values remain displayed as historical evidence;
+the superseded Network values were withdrawn.
 
 The corrected `tune_networks.py` performs nested selection separately for each outer target. It
 holds out whole source subjects, never aligns/predicts/scores the outer target during selection,
-then evaluates that target once with a fresh model at the selected learning rate. It also refuses
-partial seeds, stale identities and legacy caches. No corrected leaderboard value is claimed until
-that procedure is run.
+then evaluates that target with fresh models for seeds 1–5 at the selected learning rate and epoch
+count. It refuses partial seeds, stale identities, legacy caches, and mixed numerical families. The
+Network table's corrected values were imported after the complete campaign passed validation on
+2026-08-06.
 
 > **Disclaimer.**
 > This benchmark **re-implements** both external baselines and the laboratory's own methods
@@ -563,7 +592,7 @@ The following directions are planned for future releases.
   (streaming) protocol, alongside the current cross-subject LOSO.
 - **Paradigm breadth.** ERP/P300 (with ROC-AUC as the primary metric) and SSVEP, beyond
   motor imagery.
-- **Citable release.** A versioned, DOI-archived release once the results are frozen.
+- **Citable release.** The versioned 1.6.0 release is published; a DOI archive is planned.
 
 ## Citation
 
@@ -571,7 +600,7 @@ If the benchmark or gallery is useful in your work, please cite the relevant lab
 and link back to this repository. Each method's source file carries its exact IEEE citation in
 its header.
 
-A versioned, citable release with a DOI is planned.
+A DOI-archived release is planned; version 1.6.0 is published.
 
 ## Contact
 

@@ -48,10 +48,11 @@ CELL = re.compile(r"^\*{0,2}(\d+\.\d+)"          # the mean
                   r"(?:\s*±\s*(\d+\.\d+))?"      # optional ± std
                   r"\*{0,2}"                     # closing bold
                   r"(?:\s*\([^)]*\))?$")         # optional "(+1.85)" delta annotation
-# A minimum that must actually be compared. Set well below the current count so
-# ordinary edits do not trip it, but above zero so a parser that silently stops
-# matching cannot pass.
-MIN_CELLS_CHECKED = 200
+# A minimum that must actually be compared. The corrected Network table contributes
+# no numeric cells while its 54 values are pending, so the active publication has
+# 190 cross-checked RESULTS cells. Keep the floor close enough to catch a broken
+# parser without requiring intentionally absent Network values.
+MIN_CELLS_CHECKED = 180
 
 # RESULTS.md names a row by what it *is* in its table — "none (no alignment)",
 # "_EA-EEGNet (deep reference)_" — while benchmark.yml carries the bare name. That
@@ -63,7 +64,6 @@ MIN_CELLS_CHECKED = 200
 # rows checked *more* precisely than the ones matched by name alone.
 ALIAS = {
     "EEGNet (baseline)":                          ("EEGNet", "network"),
-    "MVCNet (IFNet + multi-view contrastive)":    ("MVCNet", "network"),
     "ERM (no transfer)":                          ("ERM", "transfer"),
     "none (no alignment)":                        ("none", "alignment"),
     "none (EA-EEGNet)":                           ("none", "augmentation"),

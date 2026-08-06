@@ -1,8 +1,10 @@
 # ===========================================================================
-# EEGWaveNet.py  —  HUST-BCIML EEG-decoding benchmark
+# EEGWaveNetReleaseAT.py  —  HUST-BCIML EEG-decoding benchmark
 # Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
-# Original authors' code: https://github.com/IoBT-VISTEC/EEGWaveNet
-#
+# Original authors' code: https://github.com/IoBT-VISTEC/EEGWaveNet/tree/3b1909873f6cde2d8b5a916327791cf9a59f975c
+# Accessed: 2026-07-31
+# Original authors: Punnawish Thuwajit et al.
+# License: not stated in the upstream repository
 # Reference (IEEE BibTeX):
 #   @Article{Thuwajit2022,
 #     author  = {Thuwajit, Punnawish and Rangpong, Phurin and Sawangjai, Phattarapong and Autthasan, Phairot and Chaisaen, Rattanaphon and Banluesombatkul, Nannapas and Boonchit, Puttaranun and Tatsaringkansakul, Nattasate and Sudhawiyangkul, Thapanun and Wilaiprasitporn, Theerawit},
@@ -39,7 +41,7 @@ from hustbciml.core.stages import Backbone
 from hustbciml.utils.shapes import probe
 
 
-class EEGWaveNet(Backbone):
+class EEGWaveNetReleaseAT(Backbone):
     task_name = "classification"
 
     def __init__(self, n_chans: int, n_times: int, n_classes: int, sfreq: float, **_):
@@ -48,7 +50,7 @@ class EEGWaveNet(Backbone):
         self.n_times = n_times
         if n_times < 448:
             raise ValueError(
-                f"EEGWaveNet's released valid-convolution architecture requires at "
+                f"EEGWaveNet-Release-AT's valid-convolution architecture requires at "
                 f"least 448 samples, got n_times={n_times}"
             )
 

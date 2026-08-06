@@ -205,6 +205,11 @@
   function benchApproaches() {
     var wrap = el("div", { class: "lab-methods" }), any = false;
     (BENCH.tables || []).forEach(function (t) {
+      // The classical pipelines table (CSP-LDA, Riemann-MDM) stays in the
+      // Benchmark tables as a network-free reference but is not listed as an
+      // Overview approach; approach_names() in build_site.py applies the same
+      // rule so the heading count above these chips stays in step.
+      if (t.id === "classical") return;
       // all rows for this table, deduped by method name. A method can appear in
       // several sub-categories — the privacy family, for instance, is measured on
       // three datasets — but it should still show as a single chip. The no-op

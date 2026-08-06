@@ -7,31 +7,22 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
-## [Unreleased]
+## [1.6.0] - 2026-08-06
 
 ### Corrected
-- **Measurement identity now fails closed.** New result and cache artifacts record source and data
-  digests, Git state, dependency/runtime versions, machine and NumPy BLAS/LAPACK identity, explicit
-  MOABB preprocessing, dimensions, channels/classes, and method parameters. Unreadable, incomplete,
-  legacy, or mismatched artifacts cannot be reused for reportable measurements. JSON and NPZ writes
-  are atomic. Legacy caches may be inspected or explicitly loaded only as `is_measurement=false`.
-- **Network selection is target-isolated.** The rewritten tuner selects a learning rate separately
-  for each outer target from validation on whole source subjects. Selection mode does not align,
-  predict, score, save, or print the outer target; final evaluation starts from a fresh model and
-  requires complete target-by-seed coverage. The former procedure held out random source trials and
-  pooled overlapping LOSO folds, so every reported subject could influence the dataset-wide choice.
-- **Ensemble method identity is explicit.** Vote combiners receive the declared class count;
-  Crowd-Kit parameters, backend versions, ZenCrowd iterations and PM rounds are serialized; and a
-  requested combiner failure or missing seed aborts aggregation. New artifacts contain per-target
-  hard votes and predictions.
-- Public documentation now identifies the Network table as legacy pending clean remeasurement,
-  describes the old selection leakage and test-score adoption rule, and distinguishes the archived
-  DeepConvNet, FBMSNet, EEGWaveNet and ADFCNN ports from paper-protocol reproductions. ZenCrowd is
-  identified as the simplified TestEnsemble EM baseline and PM as the three-round PM/CRH port.
 
-This audit correction changes **no published result number** and does not alter model or combiner
-mathematics. Corrected DeepConvNet/FBMSNet implementations and all long remeasurement runs remain a
-separate future pass.
+- The Network benchmark now has one declarative 18-method inventory and a literal target-isolated nested leave-one-subject-out selector. Selection excludes the outer target, validates on every remaining source subject, and final evaluation uses seeds 1–5.
+- The complete five-seed campaign was run, validated, and imported: 18 methods × 3 datasets × all target subjects × 5 seeds, with complete inner-LOSO coverage. The importer independently recomputes metrics and is the only path that can replace Network values in the publication sources.
+- Five rows whose identities were corrected — DeepConvNet, ShallowConvNet, ADFCNN, EEGWaveNet and FBMSNet — are explicit architecture transfers of the cited references (the Braindecode Deep4Net and ShallowFBCSPNet feature architectures, the released-code ADFCNN and EEGWaveNet topologies, and an 8–32 Hz adaptation of FBMSNet with exactly six causal views and no branch below 8 Hz). Their plug-ins are `Deep4NetAT.py`, `ShallowFBCSPNetAT.py`, `ADFCNNTransposeAT.py`, `EEGWaveNetReleaseAT.py`, and `FBMSNet8to32AT.py`.
+- MVCNet is reported on the Network axis with its documented three-seed legacy values; the one-row Composite group was removed.
+- Every final Network fold writes a matched JSON, prediction archive, and model checkpoint, reloads the checkpoint to verify its logits, and maintains an atomic resumable training state. Cache, source, software, method, seed, and numerical-family identities fail closed.
+- The exact Python 3.11/CUDA package environment is frozen in `requirements-network-production.txt`; production refuses to run unless the lock digest is recorded and every installed distribution matches it.
+- This release also carries the audit-phase corrections from the previously unreleased trunk: result/cache/ensemble artifacts record source, software, preprocessing and method parameters and fail closed on stale, partial or mismatched inputs; the ensemble combiners' parameters are serialized; and ZenCrowd is identified as the simplified TestEnsemble EM baseline and PM as the three-round PM/CRH port.
+
+### Measurement status
+
+- Legacy Network values from the superseded selection procedure were withdrawn and replaced by the corrected five-seed campaign values, which passed checkpoint, prediction, provenance, and coverage validation on 2026-08-06.
+- Other tables retain their documented historical measurements and provenance; no four-class result is published.
 
 ## [1.5.0] - 2026-07-30
 

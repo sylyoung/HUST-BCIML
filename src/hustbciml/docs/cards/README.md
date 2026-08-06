@@ -1,6 +1,6 @@
 # Algorithm cards
 
-One card per benchmarked method — every key on the public leaderboard except the ensemble combiners, which are post-hoc aggregators over several trained models rather than pipeline compositions and are documented on the leaderboard row itself. `tests/repro/test_repro_targets.py` fails if a key is missing. Generated from the reproduction registry. Accuracy is the 3-seed mean ± the standard deviation across seeds on **BNCI2014001**, cross-subject leave-one-subject-out (9 subjects, 2-class, chance 50%). Single-axis methods show Δ against that axis's baseline; composite and classical methods show Δ against the EA-EEGNet reference.
+One card per benchmarked method — every key on the public leaderboard except the ensemble combiners, which are post-hoc aggregators over several trained models rather than pipeline compositions and are documented on the leaderboard row itself. `tests/repro/test_repro_targets.py` fails if a key is missing. Generated from the reproduction registry. Measured cards show their recorded multi-seed mean ± standard deviation on **BNCI2014001**. The Network rows come from the validated five-seed nested-LOSO campaign; MVCNet retains its documented three-seed legacy values. Single-axis measured methods show Δ against that axis's baseline; classical methods show Δ against the EA-EEGNet reference.
 
 See [../../RESULTS.md](../../RESULTS.md) for the controlled-comparison tables, [../glossary.md](../glossary.md) for terms, and [../porting_guide.md](../porting_guide.md) to add a method.
 
@@ -14,24 +14,25 @@ See [../../RESULTS.md](../../RESULTS.md) for the controlled-comparison tables, [
 
 | Method | Acc ± std | Δ | Mechanism |
 |---|--:|--:|---|
-| [EA-DBConformer](EA-DBConformer.md) | 76.26 ± 0.84 | +4.19 | A dual-branch convolutional transformer. |
-| [MVCNet](MVCNet.md) | 75.75 ± 0.56 | +3.68 | Multi-View Contrastive Network is a composite algorithm: it pairs an IFNet backbone (an interactive frequency-domain CNN) with mu… |
-| [EA-MSCFormer](EA-MSCFormer.md) | 75.67 ± 0.26 | +3.60 | Three parallel multi-scale temporal-convolution branches whose features are fused and passed to a transformer encoder. |
-| [CSP-Net](CSP-Net.md) | 75.15 ± 1.06 | +3.08 | A standard EEGNet whose depthwise spatial convolution is initialized with Common Spatial Pattern filters estimated from the EA-al… |
-| [EA-MSVTNet](EA-MSVTNet.md) | 74.82 ± 0.74 | +2.75 | Several parallel multi-scale EEGNet-style convolution branches followed by a transformer that mixes their tokens. |
-| [EA-EEGNeX](EA-EEGNeX.md) | 74.61 ± 0.92 | +2.54 | A purely convolutional EEGNet variant that replaces the separable temporal convolutions with a stack of dilated convolutions for… |
-| [EA-CTNet](EA-CTNet.md) | 73.97 ± 0.80 | +1.90 | An EEGNet-style convolutional patch embedding feeding a transformer encoder. |
-| [EA-DeepConvNet](EA-DeepConvNet.md) | 73.79 ± 0.46 | +1.72 | Four temporal/spatial convolution-and-pooling blocks feed the shared Linear head. |
-| [EA-EEGDeformer](EA-EEGDeformer.md) | 73.79 ± 1.78 | +1.72 | A dense convolutional transformer that interleaves shallow CNN encoders with coarse-to-fine transformer stages. |
-| [EA-TIEEEGNet](EA-TIEEEGNet.md) | 73.51 ± 0.25 | +1.44 | TIE-EEGNet is EEGNet with its first temporal convolution replaced by a time-information-enhanced (TIE) convolution: a fixed sinus… |
-| [EA-EEGConformer](EA-EEGConformer.md) | 72.84 ± 0.76 | +0.77 | EEG Conformer is a convolutional tokenizer (temporal then spatial convolution producing patch tokens) feeding a transformer self-… |
-| [EA-ADFCNN](EA-ADFCNN.md) | 72.17 ± 1.53 | +0.10 | Two parallel spectral-spatial pathways at different temporal scales are fused by self-attention. |
-| [EA-TMSANet](EA-TMSANet.md) | 71.84 ± 1.26 | -0.23 | Sums two parallel multi-scale temporal convolutions, then applies a temporal multi-scale self-attention module. |
-| [EA-ShallowConvNet](EA-ShallowConvNet.md) | 71.12 ± 1.05 | -0.95 | ShallowConvNet is a single temporal convolution followed by a spatial convolution, a square activation, mean pooling and a log —… |
-| [EA-FBMSNet](EA-FBMSNet.md) | 70.91 ± 0.95 | -1.16 | The archived port applies fixed sub-band kernels, mixed-scale temporal convolution, depthwise spatial filtering and segmented log… |
-| [EA-KDFNet](EA-KDFNet.md) | 70.88 ± 0.32 | -1.19 | KDFNet (knowledge-data fusion network) mirrors the FBCSP pipeline inside a CNN: a windowed-sinc FIR filter bank supplies fixed, d… |
-| [EA-SlimSeiz](EA-SlimSeiz.md) | 69.65 ± 0.42 | -2.42 | A lightweight multi-branch 1D-convolution feature extractor paired with a single Mamba selective-state-space mixer; originally a… |
-| [EA-EEGWaveNet](EA-EEGWaveNet.md) | 66.64 ± 1.44 | -5.43 | Five retained scales from a depthwise temporal downsampling cascade are each processed by a two-convolution feature block, pooled… |
+| [EA-MSCFormer](EA-MSCFormer.md) | 76.11 ± 1.53 | +3.35 | Three parallel multi-scale temporal-convolution branches whose features are fused and passed to a transformer encoder. |
+| [EA-DBConformer](EA-DBConformer.md) | 75.76 ± 1.47 | +3.00 | A dual-branch convolutional transformer. |
+| [MVCNet](MVCNet.md) | 75.75 ± 0.56 | +2.99 | Multi-View Contrastive Network is a dual-branch network: an IFNet backbone (an interactive frequency-domain CNN) trained with mul… |
+| [CSP-Net](CSP-Net.md) | 75.54 ± 0.84 | +2.78 | A standard EEGNet whose depthwise spatial convolution is initialized with Common Spatial Pattern filters estimated from the EA-al… |
+| [EA-EEGNeX](EA-EEGNeX.md) | 75.28 ± 1.15 | +2.52 | A purely convolutional EEGNet variant that replaces the separable temporal convolutions with a stack of dilated convolutions for… |
+| [EA-MSVTNet](EA-MSVTNet.md) | 74.41 ± 1.34 | +1.65 | Several parallel multi-scale EEGNet-style convolution branches followed by a transformer that mixes their tokens. |
+| [EA-EEGConformer](EA-EEGConformer.md) | 74.04 ± 0.74 | +1.28 | EEG Conformer is a convolutional tokenizer (temporal then spatial convolution producing patch tokens) feeding a transformer self-… |
+| [EA-Deep4Net-AT](EA-Deep4Net-AT.md) | 73.94 ± 1.59 | +1.18 | Four temporal/spatial convolution-and-pooling blocks use width-10 temporal kernels, 3/3 pooling, and 25→50→100→200 feature maps b… |
+| [EA-ShallowFBCSPNet-AT](EA-ShallowFBCSPNet-AT.md) | 73.84 ± 0.39 | +1.08 | A temporal convolution and whole-channel spatial convolution are followed by square, average pooling, safe logarithm, and dropout… |
+| [EA-ADFCNN-Transpose-AT](EA-ADFCNN-Transpose-AT.md) | 73.64 ± 0.78 | +0.88 | Two spectral-spatial pathways at different temporal scales are fused by self-attention; the corrected attention output is transpo… |
+| [EA-TMSANet](EA-TMSANet.md) | 73.47 ± 0.99 | +0.71 | Sums two parallel multi-scale temporal convolutions, then applies a temporal multi-scale self-attention module. |
+| [EA-TIEEEGNet](EA-TIEEEGNet.md) | 72.95 ± 1.17 | +0.19 | TIE-EEGNet is EEGNet with its first temporal convolution replaced by a time-information-enhanced (TIE) convolution: a fixed sinus… |
+| [EA-EEGNet-Nested](EA-EEGNet-Nested.md) | 72.76 ± 1.14 | base | A compact temporal convolution, depthwise spatial convolution, and separable convolution produce features for the shared Linear h… |
+| [EA-CTNet](EA-CTNet.md) | 72.70 ± 0.93 | -0.06 | An EEGNet-style convolutional patch embedding feeding a transformer encoder. |
+| [EA-FBMSNet-8-32-AT](EA-FBMSNet-8-32-AT.md) | 71.93 ± 0.48 | -0.83 | Six causal sub-band views feed shared mixed-scale temporal and depthwise spatial filters; four remainder-preserving temporal log-… |
+| [EA-KDFNet](EA-KDFNet.md) | 71.91 ± 1.26 | -0.85 | KDFNet (knowledge-data fusion network) mirrors the FBCSP pipeline inside a CNN: a windowed-sinc FIR filter bank supplies fixed, d… |
+| [EA-EEGDeformer](EA-EEGDeformer.md) | 70.96 ± 1.82 | -1.80 | A dense convolutional transformer that interleaves shallow CNN encoders with coarse-to-fine transformer stages. |
+| [EA-SlimSeiz](EA-SlimSeiz.md) | 67.75 ± 1.14 | -5.01 | A lightweight multi-branch 1D-convolution feature extractor paired with a single Mamba selective-state-space mixer; originally a… |
+| [EA-EEGWaveNet-Release-AT](EA-EEGWaveNet-Release-AT.md) | 61.53 ± 3.30 | -11.23 | Five retained scales from a depthwise downsampling cascade are processed by two-convolution feature blocks, pooled, concatenated,… |
 
 ## Alignment
 
@@ -93,4 +94,4 @@ See [../../RESULTS.md](../../RESULTS.md) for the controlled-comparison tables, [
 | [Riemann-MDM](Riemann-MDM.md) | 71.68 ± 0.00 | -0.39 vs ref | Minimum Distance to Riemannian Mean represents each trial by its spatial covariance matrix and classifies by the smallest affine-… |
 
 ---
-_Generated by `scripts/build_cards.py` — 58 methods._
+_Generated by `scripts/build_cards.py` — 59 methods._

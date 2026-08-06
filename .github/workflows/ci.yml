@@ -15,6 +15,7 @@ on:
 
 jobs:
   test:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -39,13 +40,11 @@ jobs:
           pip install -e .
           pip install pytest
 
-      - name: Plug-in and guard coverage (fast)
-        run: pytest src/hustbciml/tests/test_plugins.py src/hustbciml/tests/repro -q
-
-      - name: Integration smoke on bundled toy data
-        run: pytest src/hustbciml/tests/test_smoke.py -q
+      - name: Complete non-reproduction integrity suite
+        run: pytest -m "not repro" src/hustbciml/tests -q
 
   generated-artifacts:
+    if: github.event_name != 'schedule'
     # The site data under docs/data/ and the cards under src/hustbciml/docs/cards/
     # are generated from YAML. This job regenerates both and fails if the result
     # differs from what is committed, so the public page cannot disagree with the

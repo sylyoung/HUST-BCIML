@@ -8,6 +8,7 @@ for a finished run.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -51,3 +52,51 @@ def atomic_savez(path: str | os.PathLike, **arrays) -> None:
     finally:
         if temporary.exists():
             temporary.unlink()
+
+
+def atomic_torch_save(payload: Any, path: str | os.PathLike) -> None:
+    """Write a PyTorch checkpoint atomically and flush it to stable storage."""
+    import torch
+
+    destination = Path(path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = _temporary_path(destination)
+    try:
+        with temporary.open("wb") as handle:
+            torch.save(payload, handle)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, destination)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
+def atomic_write_text(
+    text: str,
+    path: str | os.PathLike,
+    *,
+    encoding: str = "utf-8",
+) -> None:
+    """Write plain text atomically with the same durability as JSON artifacts."""
+    destination = Path(path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = _temporary_path(destination)
+    try:
+        with temporary.open("w", encoding=encoding) as handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, destination)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
+def file_sha256(path: str | os.PathLike) -> str:
+    """Return the SHA-256 digest of one artifact without loading it into memory."""
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()

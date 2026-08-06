@@ -510,7 +510,7 @@ window.BENCHMARK = {
     {
       "id": "network",
       "title": "Networks",
-      "blurb": "Legacy measurements pending clean remeasurement. The input is Euclidean-aligned and the objective is ERM, but the archived rows mixed fixed and per-backbone schedules. The old learning-rate sweep held out random source trials and selected one dataset-wide value from validation scores pooled across overlapping LOSO folds; it was not target-isolated nested selection. These are adapted architecture comparisons under this benchmark protocol, not paper-protocol reproductions. DeepConvNet and FBMSNet materially differ from the cited methods, EEGWaveNet follows released code where it conflicts with the paper prose, and ADFCNN preserves the upstream reshape behavior while using an adapted head and training protocol. No displayed value has been changed by the audit. The baseline is EEGNet.",
+      "blurb": "All 18 rows are measured from scratch under literal target-isolated nested LOSO with five final seeds, on the same two-class 8–32 Hz input with target EA from unlabeled target trials, shared Linear head and ERM objective. The five corrected rows — DeepConvNet, ShallowConvNet, ADFCNN, EEGWaveNet and FBMSNet — are explicit architecture transfers of the cited references; the complete campaign passed checkpoint, prediction, provenance and seed-coverage validation before import. MVCNet is a lab-proposed network whose row retains its documented three-seed legacy measurements because it changes the IFNet backbone, the multi-view contrastive objective and the batch size together.",
       "groups": [
         {
           "subcat": null,
@@ -535,75 +535,42 @@ window.BENCHMARK = {
                 }
               },
               "delta": {
-                "BNCI2014001": 3.22,
-                "BNCI2014002": 3.46,
-                "BNCI2015001": 1.36
+                "BNCI2014001": 2.99,
+                "BNCI2014002": 2.92,
+                "BNCI2015001": 0.93
               },
               "isBaseline": false,
               "isReference": false,
               "key": "MVCNet",
               "lab": true,
               "code": "src/hustbciml/algorithms/strategies/MVCNet.py",
-              "desc": "Multi-View Contrastive Network. An IFNet convolutional backbone trained with a multi-view contrastive objective. At the inference time, only the backbone and the linear head are used.",
+              "desc": "Multi-View Contrastive Network. An IFNet convolutional backbone trained with cross-view and cross-modal supervised contrastive losses; inference uses the backbone and shared Linear head.",
               "ref": "Z. Wang, ..., D. Wu*, Knowl.-Based Syst., 2025",
               "doi": "10.1016/j.knosys.2025.114205",
               "naReason": null,
-              "alsoVaries": "strategy (multi-view contrastive objective) and batch size 64, not the backbone alone.",
-              "pinAfter": null
-            },
-            {
-              "name": "DBConformer",
-              "acc": {
-                "BNCI2014001": {
-                  "mean": 76.26,
-                  "std": 0.84
-                },
-                "BNCI2014002": {
-                  "mean": 77.19,
-                  "std": 1.28
-                },
-                "BNCI2015001": {
-                  "mean": 71.86,
-                  "std": 0.23
-                }
-              },
-              "delta": {
-                "BNCI2014001": 3.73,
-                "BNCI2014002": 2.79,
-                "BNCI2015001": -1.53
-              },
-              "isBaseline": false,
-              "isReference": false,
-              "key": "EA-DBConformer",
-              "lab": true,
-              "code": "src/hustbciml/algorithms/models/DBConformer.py",
-              "desc": "Dual-branch convolutional transformer with parallel temporal and spatial branches whose features are fused before classification.",
-              "ref": "Z. Wang, ..., D. Wu*, IEEE J. Biomed. Health Inform., 2026",
-              "doi": "10.1109/JBHI.2025.3622725",
-              "naReason": null,
-              "alsoVaries": null,
+              "alsoVaries": "IFNet backbone, multi-view contrastive objective, and batch size 64.",
               "pinAfter": null
             },
             {
               "name": "CSP-Net",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 75.15,
-                  "std": 1.06
+                  "mean": 75.54,
+                  "std": 0.84
                 },
                 "BNCI2014002": {
-                  "mean": 74.4,
-                  "std": 0.24
+                  "mean": 75.94,
+                  "std": 1.72
                 },
                 "BNCI2015001": {
-                  "mean": 72.42,
-                  "std": 0.38
+                  "mean": 72.48,
+                  "std": 0.63
                 }
               },
               "delta": {
-                "BNCI2014001": 2.62,
-                "BNCI2014002": 0.0,
-                "BNCI2015001": -0.97
+                "BNCI2014001": 2.78,
+                "BNCI2014002": 1.0,
+                "BNCI2015001": -1.34
               },
               "isBaseline": false,
               "isReference": false,
@@ -618,25 +585,58 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "TIE-EEGNet",
+              "name": "DBConformer",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 73.51,
-                  "std": 0.25
+                  "mean": 75.76,
+                  "std": 1.47
                 },
                 "BNCI2014002": {
-                  "mean": 73.17,
-                  "std": 0.35
+                  "mean": 75.2,
+                  "std": 1.39
                 },
                 "BNCI2015001": {
-                  "mean": 73.83,
-                  "std": 0.38
+                  "mean": 71.64,
+                  "std": 1.19
                 }
               },
               "delta": {
-                "BNCI2014001": 0.98,
-                "BNCI2014002": -1.23,
-                "BNCI2015001": 0.44
+                "BNCI2014001": 3.0,
+                "BNCI2014002": 0.26,
+                "BNCI2015001": -2.18
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-DBConformer",
+              "lab": true,
+              "code": "src/hustbciml/algorithms/models/DBConformer.py",
+              "desc": "Dual-branch convolutional transformer with parallel temporal and spatial branches whose features are fused before classification.",
+              "ref": "Z. Wang, ..., D. Wu*, IEEE J. Biomed. Health Inform., 2026",
+              "doi": "10.1109/JBHI.2025.3622725",
+              "naReason": null,
+              "alsoVaries": null,
+              "pinAfter": null
+            },
+            {
+              "name": "TIE-EEGNet",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 72.95,
+                  "std": 1.17
+                },
+                "BNCI2014002": {
+                  "mean": 74.16,
+                  "std": 1.39
+                },
+                "BNCI2015001": {
+                  "mean": 72.84,
+                  "std": 0.48
+                }
+              },
+              "delta": {
+                "BNCI2014001": 0.19,
+                "BNCI2014002": -0.78,
+                "BNCI2015001": -0.98
               },
               "isBaseline": false,
               "isReference": false,
@@ -654,22 +654,22 @@ window.BENCHMARK = {
               "name": "KDFNet",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 70.88,
-                  "std": 0.32
+                  "mean": 71.91,
+                  "std": 1.26
                 },
                 "BNCI2014002": {
-                  "mean": 72.64,
-                  "std": 0.69
+                  "mean": 73.43,
+                  "std": 1.11
                 },
                 "BNCI2015001": {
-                  "mean": 68.65,
-                  "std": 1.05
+                  "mean": 70.14,
+                  "std": 0.97
                 }
               },
               "delta": {
-                "BNCI2014001": -1.65,
-                "BNCI2014002": -1.76,
-                "BNCI2015001": -4.74
+                "BNCI2014001": -0.85,
+                "BNCI2014002": -1.51,
+                "BNCI2015001": -3.68
               },
               "isBaseline": false,
               "isReference": false,
@@ -684,25 +684,58 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "MSCFormer",
+              "name": "EEGConformer",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 75.67,
-                  "std": 0.26
+                  "mean": 74.04,
+                  "std": 0.74
                 },
                 "BNCI2014002": {
-                  "mean": 76.14,
-                  "std": 1.21
+                  "mean": 75.91,
+                  "std": 0.88
                 },
                 "BNCI2015001": {
-                  "mean": 73.44,
-                  "std": 1
+                  "mean": 73.88,
+                  "std": 0.93
                 }
               },
               "delta": {
-                "BNCI2014001": 3.14,
-                "BNCI2014002": 1.74,
-                "BNCI2015001": 0.05
+                "BNCI2014001": 1.28,
+                "BNCI2014002": 0.97,
+                "BNCI2015001": 0.06
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-EEGConformer",
+              "lab": false,
+              "code": "src/hustbciml/algorithms/models/EEGConformer.py",
+              "desc": "Convolutional tokenizer followed by a transformer encoder.",
+              "ref": "Y. Song et al., IEEE Trans. Neural Syst. Rehabil. Eng., 2023",
+              "doi": "10.1109/TNSRE.2022.3230250",
+              "naReason": null,
+              "alsoVaries": null,
+              "pinAfter": null
+            },
+            {
+              "name": "MSCFormer",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 76.11,
+                  "std": 1.53
+                },
+                "BNCI2014002": {
+                  "mean": 74.31,
+                  "std": 0.96
+                },
+                "BNCI2015001": {
+                  "mean": 72.56,
+                  "std": 0.49
+                }
+              },
+              "delta": {
+                "BNCI2014001": 3.35,
+                "BNCI2014002": -0.63,
+                "BNCI2015001": -1.26
               },
               "isBaseline": false,
               "isReference": false,
@@ -720,22 +753,22 @@ window.BENCHMARK = {
               "name": "MSVTNet",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 74.82,
-                  "std": 0.74
+                  "mean": 74.41,
+                  "std": 1.34
                 },
                 "BNCI2014002": {
-                  "mean": 75.9,
-                  "std": 1.07
+                  "mean": 74.79,
+                  "std": 0.76
                 },
                 "BNCI2015001": {
-                  "mean": 73.17,
-                  "std": 1.04
+                  "mean": 73.12,
+                  "std": 0.71
                 }
               },
               "delta": {
-                "BNCI2014001": 2.29,
-                "BNCI2014002": 1.5,
-                "BNCI2015001": -0.22
+                "BNCI2014001": 1.65,
+                "BNCI2014002": -0.15,
+                "BNCI2015001": -0.7
               },
               "isBaseline": false,
               "isReference": false,
@@ -750,124 +783,25 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "EEG-Deformer",
-              "acc": {
-                "BNCI2014001": {
-                  "mean": 73.79,
-                  "std": 1.78
-                },
-                "BNCI2014002": {
-                  "mean": 75.02,
-                  "std": 0.8
-                },
-                "BNCI2015001": {
-                  "mean": 73.26,
-                  "std": 0.09
-                }
-              },
-              "delta": {
-                "BNCI2014001": 1.26,
-                "BNCI2014002": 0.62,
-                "BNCI2015001": -0.13
-              },
-              "isBaseline": false,
-              "isReference": false,
-              "key": "EA-EEGDeformer",
-              "lab": false,
-              "code": "src/hustbciml/algorithms/models/EEGDeformer.py",
-              "desc": "A dense convolutional transformer that interleaves shallow CNN encoders with coarse-to-fine transformer stages.",
-              "ref": "Y. Ding et al., IEEE J. Biomed. Health Inform., 2025",
-              "doi": "10.1109/JBHI.2024.3504604",
-              "naReason": null,
-              "alsoVaries": null,
-              "pinAfter": null
-            },
-            {
-              "name": "EEGConformer",
-              "acc": {
-                "BNCI2014001": {
-                  "mean": 72.84,
-                  "std": 0.76
-                },
-                "BNCI2014002": {
-                  "mean": 74.88,
-                  "std": 0.59
-                },
-                "BNCI2015001": {
-                  "mean": 73.43,
-                  "std": 0.79
-                }
-              },
-              "delta": {
-                "BNCI2014001": 0.31,
-                "BNCI2014002": 0.48,
-                "BNCI2015001": 0.04
-              },
-              "isBaseline": false,
-              "isReference": false,
-              "key": "EA-EEGConformer",
-              "lab": false,
-              "code": "src/hustbciml/algorithms/models/EEGConformer.py",
-              "desc": "Convolutional tokenizer followed by a transformer encoder.",
-              "ref": "Y. Song et al., IEEE Trans. Neural Syst. Rehabil. Eng., 2023",
-              "doi": "10.1109/TNSRE.2022.3230250",
-              "naReason": null,
-              "alsoVaries": null,
-              "pinAfter": null
-            },
-            {
-              "name": "CTNet",
-              "acc": {
-                "BNCI2014001": {
-                  "mean": 73.97,
-                  "std": 0.8
-                },
-                "BNCI2014002": {
-                  "mean": 74.79,
-                  "std": 0.48
-                },
-                "BNCI2015001": {
-                  "mean": 72.33,
-                  "std": 0.37
-                }
-              },
-              "delta": {
-                "BNCI2014001": 1.44,
-                "BNCI2014002": 0.39,
-                "BNCI2015001": -1.06
-              },
-              "isBaseline": false,
-              "isReference": false,
-              "key": "EA-CTNet",
-              "lab": false,
-              "code": "src/hustbciml/algorithms/models/CTNet.py",
-              "desc": "An EEGNet-style convolutional patch embedding feeding a transformer encoder.",
-              "ref": "W. Zhao et al., Sci. Rep., 2024",
-              "doi": "10.1038/s41598-024-71118-7",
-              "naReason": null,
-              "alsoVaries": null,
-              "pinAfter": null
-            },
-            {
               "name": "EEGNeX",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 74.61,
-                  "std": 0.92
+                  "mean": 75.28,
+                  "std": 1.15
                 },
                 "BNCI2014002": {
-                  "mean": 73.6,
-                  "std": 0.59
+                  "mean": 74.34,
+                  "std": 1.23
                 },
                 "BNCI2015001": {
-                  "mean": 72.32,
-                  "std": 0.64
+                  "mean": 72.25,
+                  "std": 1.0
                 }
               },
               "delta": {
-                "BNCI2014001": 2.08,
-                "BNCI2014002": -0.8,
-                "BNCI2015001": -1.07
+                "BNCI2014001": 2.52,
+                "BNCI2014002": -0.6,
+                "BNCI2015001": -1.57
               },
               "isBaseline": false,
               "isReference": false,
@@ -882,58 +816,25 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
-              "name": "SlimSeiz",
-              "acc": {
-                "BNCI2014001": {
-                  "mean": 69.65,
-                  "std": 0.42
-                },
-                "BNCI2014002": {
-                  "mean": 74.79,
-                  "std": 1.61
-                },
-                "BNCI2015001": {
-                  "mean": 72.94,
-                  "std": 1.04
-                }
-              },
-              "delta": {
-                "BNCI2014001": -2.88,
-                "BNCI2014002": 0.39,
-                "BNCI2015001": -0.45
-              },
-              "isBaseline": false,
-              "isReference": false,
-              "key": "EA-SlimSeiz",
-              "lab": false,
-              "code": "src/hustbciml/algorithms/models/SlimSeiz.py",
-              "desc": "A lightweight multi-branch 1D convolution feature extractor, paired with a single Mamba selective state space mixer. It was originally a seizure prediction network.",
-              "ref": "G. Lu et al., IEEE Int. Symp. Circuits Syst., 2025",
-              "doi": "10.1109/ISCAS56072.2025.11043364",
-              "naReason": null,
-              "alsoVaries": null,
-              "pinAfter": null
-            },
-            {
               "name": "TMSA-Net",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 71.84,
-                  "std": 1.26
+                  "mean": 73.47,
+                  "std": 0.99
                 },
                 "BNCI2014002": {
-                  "mean": 73.67,
-                  "std": 0.24
+                  "mean": 73.83,
+                  "std": 0.63
                 },
                 "BNCI2015001": {
-                  "mean": 70.92,
-                  "std": 0.78
+                  "mean": 71.64,
+                  "std": 0.45
                 }
               },
               "delta": {
-                "BNCI2014001": -0.69,
-                "BNCI2014002": -0.73,
-                "BNCI2015001": -2.47
+                "BNCI2014001": 0.71,
+                "BNCI2014002": -1.11,
+                "BNCI2015001": -2.18
               },
               "isBaseline": false,
               "isReference": false,
@@ -948,100 +849,67 @@ window.BENCHMARK = {
               "pinAfter": null
             },
             {
+              "name": "CTNet",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 72.7,
+                  "std": 0.93
+                },
+                "BNCI2014002": {
+                  "mean": 74.41,
+                  "std": 0.7
+                },
+                "BNCI2015001": {
+                  "mean": 71.26,
+                  "std": 2.17
+                }
+              },
+              "delta": {
+                "BNCI2014001": -0.06,
+                "BNCI2014002": -0.53,
+                "BNCI2015001": -2.56
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-CTNet",
+              "lab": false,
+              "code": "src/hustbciml/algorithms/models/CTNet.py",
+              "desc": "An EEGNet-style convolutional patch embedding feeding a transformer encoder.",
+              "ref": "W. Zhao et al., Sci. Rep., 2024",
+              "doi": "10.1038/s41598-024-71118-7",
+              "naReason": null,
+              "alsoVaries": null,
+              "pinAfter": null
+            },
+            {
               "name": "ADFCNN",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 72.17,
-                  "std": 1.53
+                  "mean": 73.64,
+                  "std": 0.78
                 },
                 "BNCI2014002": {
-                  "mean": 71.81,
-                  "std": 0.38
+                  "mean": 71.29,
+                  "std": 0.87
                 },
                 "BNCI2015001": {
-                  "mean": 71.62,
-                  "std": 0.27
+                  "mean": 72.94,
+                  "std": 1.21
                 }
               },
               "delta": {
-                "BNCI2014001": -0.36,
-                "BNCI2014002": -2.59,
-                "BNCI2015001": -1.77
+                "BNCI2014001": 0.88,
+                "BNCI2014002": -3.65,
+                "BNCI2015001": -0.88
               },
               "isBaseline": false,
               "isReference": false,
-              "key": "EA-ADFCNN",
+              "key": "EA-ADFCNN-Transpose-AT",
               "lab": false,
-              "code": "src/hustbciml/algorithms/models/ADFCNN.py",
-              "desc": "Legacy architecture transfer. It preserves the released feature extractor and its upstream reshape behavior, but replaces the classifier, input window, preprocessing and training protocol. It is not a paper-protocol reproduction.",
+              "code": "src/hustbciml/algorithms/models/ADFCNNTransposeAT.py",
+              "desc": "ADFCNN feature architecture with the released attention reshape corrected to a true channel-to-token transpose, evaluated as a two-class architecture transfer.",
               "ref": "W. Tao et al., IEEE Trans. Neural Syst. Rehabil. Eng., 2024",
               "doi": "10.1109/TNSRE.2023.3342331",
-              "naReason": null,
-              "alsoVaries": null,
-              "pinAfter": null
-            },
-            {
-              "name": "ShallowConvNet",
-              "acc": {
-                "BNCI2014001": {
-                  "mean": 71.12,
-                  "std": 1.05
-                },
-                "BNCI2014002": {
-                  "mean": 70.88,
-                  "std": 1.54
-                },
-                "BNCI2015001": {
-                  "mean": 72.35,
-                  "std": 0.65
-                }
-              },
-              "delta": {
-                "BNCI2014001": -1.41,
-                "BNCI2014002": -3.52,
-                "BNCI2015001": -1.04
-              },
-              "isBaseline": false,
-              "isReference": false,
-              "key": "EA-ShallowConvNet",
-              "lab": false,
-              "code": "src/hustbciml/algorithms/models/ShallowConvNet.py",
-              "desc": "Shallow convolution-and-pooling network modeled on band-power features.",
-              "ref": "R. T. Schirrmeister et al., Hum. Brain Mapp., 2017",
-              "doi": "10.1002/hbm.23730",
-              "naReason": null,
-              "alsoVaries": null,
-              "pinAfter": null
-            },
-            {
-              "name": "FBMSNet",
-              "acc": {
-                "BNCI2014001": {
-                  "mean": 70.91,
-                  "std": 0.95
-                },
-                "BNCI2014002": {
-                  "mean": 71.9,
-                  "std": 0.41
-                },
-                "BNCI2015001": {
-                  "mean": 69.72,
-                  "std": 0.96
-                }
-              },
-              "delta": {
-                "BNCI2014001": -1.62,
-                "BNCI2014002": -2.5,
-                "BNCI2015001": -3.67
-              },
-              "isBaseline": false,
-              "isReference": false,
-              "key": "EA-FBMSNet",
-              "lab": false,
-              "code": "src/hustbciml/algorithms/models/FBMSNet.py",
-              "desc": "Legacy non-equivalent adaptation. It applies a finite zero-phase filter approximation after the benchmark-wide 8–32 Hz prefilter, replaces the constrained classifier and center-loss training, and uses effective dropout 0.25. Pending a separately named compliant implementation and remeasurement.",
-              "ref": "K. Liu et al., IEEE Trans. Biomed. Eng., 2023",
-              "doi": "10.1109/TBME.2022.3193277",
               "naReason": null,
               "alsoVaries": null,
               "pinAfter": null
@@ -1050,31 +918,163 @@ window.BENCHMARK = {
               "name": "DeepConvNet",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 73.79,
-                  "std": 0.46
+                  "mean": 73.94,
+                  "std": 1.59
                 },
                 "BNCI2014002": {
-                  "mean": 69.05,
-                  "std": 0.44
+                  "mean": 74.7,
+                  "std": 1.56
                 },
                 "BNCI2015001": {
-                  "mean": 69.29,
-                  "std": 0.47
+                  "mean": 69.13,
+                  "std": 1.44
                 }
               },
               "delta": {
-                "BNCI2014001": 1.26,
-                "BNCI2014002": -5.35,
-                "BNCI2015001": -4.1
+                "BNCI2014001": 1.18,
+                "BNCI2014002": -0.24,
+                "BNCI2015001": -4.69
               },
               "isBaseline": false,
               "isReference": false,
-              "key": "EA-DeepConvNet",
+              "key": "EA-Deep4Net-AT",
               "lab": false,
-              "code": "src/hustbciml/algorithms/models/DeepConvNet.py",
-              "desc": "Legacy HUST adaptation: four width-5 convolution blocks with width-2 pooling, rather than the cited Deep4Net width-10 kernels and width-3 pooling. Pending paper-faithful replacement and remeasurement.",
+              "code": "src/hustbciml/algorithms/models/Deep4NetAT.py",
+              "desc": "Braindecode Deep4Net feature architecture with width-10 temporal kernels, 3/3 pooling and reference feature-layer initialization, evaluated with the shared benchmark head and protocol.",
               "ref": "R. T. Schirrmeister et al., Hum. Brain Mapp., 2017",
               "doi": "10.1002/hbm.23730",
+              "naReason": null,
+              "alsoVaries": null,
+              "pinAfter": null
+            },
+            {
+              "name": "EEG-Deformer",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 70.96,
+                  "std": 1.82
+                },
+                "BNCI2014002": {
+                  "mean": 73.41,
+                  "std": 1.42
+                },
+                "BNCI2015001": {
+                  "mean": 73.01,
+                  "std": 1.16
+                }
+              },
+              "delta": {
+                "BNCI2014001": -1.8,
+                "BNCI2014002": -1.53,
+                "BNCI2015001": -0.81
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-EEGDeformer",
+              "lab": false,
+              "code": "src/hustbciml/algorithms/models/EEGDeformer.py",
+              "desc": "A dense convolutional transformer that interleaves shallow CNN encoders with coarse-to-fine transformer stages.",
+              "ref": "Y. Ding et al., IEEE J. Biomed. Health Inform., 2025",
+              "doi": "10.1109/JBHI.2024.3504604",
+              "naReason": null,
+              "alsoVaries": null,
+              "pinAfter": null
+            },
+            {
+              "name": "ShallowConvNet",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 73.84,
+                  "std": 0.39
+                },
+                "BNCI2014002": {
+                  "mean": 70.13,
+                  "std": 0.86
+                },
+                "BNCI2015001": {
+                  "mean": 72.06,
+                  "std": 1.31
+                }
+              },
+              "delta": {
+                "BNCI2014001": 1.08,
+                "BNCI2014002": -4.81,
+                "BNCI2015001": -1.76
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-ShallowFBCSPNet-AT",
+              "lab": false,
+              "code": "src/hustbciml/algorithms/models/ShallowFBCSPNetAT.py",
+              "desc": "Braindecode ShallowFBCSPNet feature architecture and feature-layer initialization, evaluated with the shared benchmark head and protocol.",
+              "ref": "R. T. Schirrmeister et al., Hum. Brain Mapp., 2017",
+              "doi": "10.1002/hbm.23730",
+              "naReason": null,
+              "alsoVaries": null,
+              "pinAfter": null
+            },
+            {
+              "name": "SlimSeiz",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 67.75,
+                  "std": 1.14
+                },
+                "BNCI2014002": {
+                  "mean": 73.64,
+                  "std": 1.5
+                },
+                "BNCI2015001": {
+                  "mean": 73.04,
+                  "std": 1.64
+                }
+              },
+              "delta": {
+                "BNCI2014001": -5.01,
+                "BNCI2014002": -1.3,
+                "BNCI2015001": -0.78
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-SlimSeiz",
+              "lab": false,
+              "code": "src/hustbciml/algorithms/models/SlimSeiz.py",
+              "desc": "A lightweight multi-branch 1D convolution feature extractor, paired with a single Mamba selective state space mixer. It was originally a seizure prediction network.",
+              "ref": "G. Lu et al., IEEE Int. Symp. Circuits Syst., 2025",
+              "doi": "10.1109/ISCAS56072.2025.11043364",
+              "naReason": null,
+              "alsoVaries": null,
+              "pinAfter": null
+            },
+            {
+              "name": "FBMSNet",
+              "acc": {
+                "BNCI2014001": {
+                  "mean": 71.93,
+                  "std": 0.48
+                },
+                "BNCI2014002": {
+                  "mean": 71.93,
+                  "std": 0.7
+                },
+                "BNCI2015001": {
+                  "mean": 69.11,
+                  "std": 1.21
+                }
+              },
+              "delta": {
+                "BNCI2014001": -0.83,
+                "BNCI2014002": -3.01,
+                "BNCI2015001": -4.71
+              },
+              "isBaseline": false,
+              "isReference": false,
+              "key": "EA-FBMSNet-8-32-AT",
+              "lab": false,
+              "code": "src/hustbciml/algorithms/models/FBMSNet8to32AT.py",
+              "desc": "Explicit 8–32 Hz FBMSNet adaptation with six causal Chebyshev-II views and no branch below 8 Hz, evaluated with the shared benchmark head and objective.",
+              "ref": "K. Liu et al., IEEE Trans. Biomed. Eng., 2023",
+              "doi": "10.1109/TBME.2022.3193277",
               "naReason": null,
               "alsoVaries": null,
               "pinAfter": null
@@ -1083,29 +1083,29 @@ window.BENCHMARK = {
               "name": "EEGWaveNet",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 66.64,
-                  "std": 1.44
+                  "mean": 61.53,
+                  "std": 3.3
                 },
                 "BNCI2014002": {
-                  "mean": 68.93,
-                  "std": 1.49
+                  "mean": 71.14,
+                  "std": 1.72
                 },
                 "BNCI2015001": {
-                  "mean": 68.94,
-                  "std": 1.3
+                  "mean": 72.19,
+                  "std": 1.21
                 }
               },
               "delta": {
-                "BNCI2014001": -5.89,
-                "BNCI2014002": -5.47,
-                "BNCI2015001": -4.45
+                "BNCI2014001": -11.23,
+                "BNCI2014002": -3.8,
+                "BNCI2015001": -1.63
               },
               "isBaseline": false,
               "isReference": false,
-              "key": "EA-EEGWaveNet",
+              "key": "EA-EEGWaveNet-Release-AT",
               "lab": false,
-              "code": "src/hustbciml/algorithms/models/EEGWaveNet.py",
-              "desc": "Released-code-faithful feature extractor: six depthwise downsampling layers and five retained scales. The paper prose describes a different stride pattern, so this row claims code fidelity only. The shared benchmark head and MI protocol are adaptations.",
+              "code": "src/hustbciml/algorithms/models/EEGWaveNetReleaseAT.py",
+              "desc": "Released-code EEGWaveNet feature topology transferred to the shared motor-imagery benchmark; the conflicting paper-prose topology is not claimed.",
               "ref": "P. Thuwajit et al., IEEE Trans. Ind. Inform., 2022",
               "doi": "10.1109/TII.2021.3133307",
               "naReason": null,
@@ -1116,16 +1116,16 @@ window.BENCHMARK = {
               "name": "EEGNet",
               "acc": {
                 "BNCI2014001": {
-                  "mean": 72.53,
-                  "std": 1.22
+                  "mean": 72.76,
+                  "std": 1.14
                 },
                 "BNCI2014002": {
-                  "mean": 74.4,
-                  "std": 1.04
+                  "mean": 74.94,
+                  "std": 0.37
                 },
                 "BNCI2015001": {
-                  "mean": 73.39,
-                  "std": 0.69
+                  "mean": 73.82,
+                  "std": 0.58
                 }
               },
               "delta": {
@@ -1135,7 +1135,7 @@ window.BENCHMARK = {
               },
               "isBaseline": true,
               "isReference": false,
-              "key": "EA-EEGNet",
+              "key": "EA-EEGNet-Nested",
               "lab": false,
               "code": "src/hustbciml/algorithms/models/EEGNet.py",
               "desc": "Compact convolutional network, consisting of a temporal convolution, a depthwise spatial convolution and a separable convolution. The default backbone of the benchmark.",

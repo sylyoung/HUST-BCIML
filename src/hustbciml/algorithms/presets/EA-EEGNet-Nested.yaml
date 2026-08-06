@@ -1,0 +1,11 @@
+# Runnable EEGNet composition for the Network table's nested-selection contract.
+# Reportable values come only from scripts/tune_networks.py production mode;
+# this preset alone does not reproduce its target-specific selected schedules.
+aligner: EA
+augmenter: Identity
+backbone: EEGNet
+head: Linear
+strategy: ERM
+epochs: 300
+batch_size: 32
+lr: 0.001

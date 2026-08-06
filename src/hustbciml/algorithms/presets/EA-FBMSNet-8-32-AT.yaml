@@ -1,0 +1,11 @@
+# EA + compliant 8-32 Hz FBMSNet transfer + shared Linear head, trained with ERM.
+# The filter bank contains no branch below 8 Hz. Reportable Network results come
+# only from the target-isolated nested tuner.
+aligner: EA
+augmenter: Identity
+backbone: FBMSNet8to32AT
+head: Linear
+strategy: ERM
+epochs: 100
+batch_size: 32
+lr: 0.001
