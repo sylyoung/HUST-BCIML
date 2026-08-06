@@ -1,13 +1,12 @@
 # ===========================================================================
 # KDFNet.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Xue Jiang, Lubin Meng, Xinru Chen, Wei Li, Dongrui Wu (2026) — "KDFNet: Knowledge-Data Fusion Network for Motor Imagery Based Brain-Computer Interfaces", Inf. Sci.
-#                        Original code: https://github.com/jxgogo/KDFNet
-#   Implementation:      Xue Jiang et al. — jxgogo/KDFNet (https://github.com/jxgogo/KDFNet) (official)
-#   Current code:        Siyang Li — ported directly from jxgogo/KDFNet (https://github.com/jxgogo/KDFNet)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Xue Jiang, Lubin Meng, Xinru Chen, Wei Li, Dongrui Wu (2026) — "KDFNet: Knowledge-Data Fusion Network for Motor Imagery Based Brain-Computer Interfaces", Inf. Sci.
+#                      Original code: https://github.com/jxgogo/KDFNet
+# Implementation:      Xue Jiang et al. — jxgogo/KDFNet (https://github.com/jxgogo/KDFNet) (official)
+# Current code:        Siyang Li — ported directly from jxgogo/KDFNet (https://github.com/jxgogo/KDFNet)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Jiang2026,

@@ -1,13 +1,12 @@
 # ===========================================================================
 # HS.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Yu Pei, Zhiguo Luo, Ye Yan, Huijiong Yan, Jing Jiang, Wei Li, Liang Xie, Erwei Yin (2021) — "Data Augmentation: Using Channel-Level Recombination to Improve Classification Performance for Motor Imagery EEG", Front. Hum. Neurosci.
-#                        Original code: not publicly released
-#   Implementation:      Ziwei Wang — wzwvv/CSDA (https://github.com/wzwvv/CSDA) (comparison baseline)
-#   Current code:        Siyang Li — no intermediate repo; implemented in HUST-BCIML following those definitions
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Yu Pei, Zhiguo Luo, Ye Yan, Huijiong Yan, Jing Jiang, Wei Li, Liang Xie, Erwei Yin (2021) — "Data Augmentation: Using Channel-Level Recombination to Improve Classification Performance for Motor Imagery EEG", Front. Hum. Neurosci.
+#                      Original code: not publicly released
+# Implementation:      Ziwei Wang — wzwvv/CSDA (https://github.com/wzwvv/CSDA) (comparison baseline)
+# Current code:        Siyang Li — no intermediate repo; implemented in HUST-BCIML following those definitions
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Pei2021,

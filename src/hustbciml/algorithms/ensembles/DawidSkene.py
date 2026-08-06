@@ -1,13 +1,12 @@
 # ===========================================================================
 # DawidSkene.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    A. P. Dawid, A. M. Skene (1979) — "Maximum Likelihood Estimation of Observer Error-Rates Using the EM Algorithm", J. R. Stat. Soc. Ser. C
-#                        Original code: https://github.com/Toloka/crowd-kit (reference implementation)
-#   Implementation:      Toloka contributors — Toloka/crowd-kit (https://github.com/Toloka/crowd-kit)
-#   Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (wrapper ported from)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    A. P. Dawid, A. M. Skene (1979) — "Maximum Likelihood Estimation of Observer Error-Rates Using the EM Algorithm", J. R. Stat. Soc. Ser. C
+#                      Original code: https://github.com/Toloka/crowd-kit (reference implementation)
+# Implementation:      Toloka contributors — Toloka/crowd-kit (https://github.com/Toloka/crowd-kit)
+# Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (wrapper ported from)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{DawidSkene1979,

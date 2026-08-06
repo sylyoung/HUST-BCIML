@@ -1,13 +1,12 @@
 # ===========================================================================
 # MACE.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Dirk Hovy, Taylor Berg-Kirkpatrick, Ashish Vaswani, Eduard Hovy (2013) — "Learning Whom to Trust with MACE", Proc. NAACL-HLT
-#                        Original code: https://github.com/Toloka/crowd-kit (reference implementation)
-#   Implementation:      Toloka contributors — Toloka/crowd-kit (https://github.com/Toloka/crowd-kit)
-#   Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (wrapper ported from)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Dirk Hovy, Taylor Berg-Kirkpatrick, Ashish Vaswani, Eduard Hovy (2013) — "Learning Whom to Trust with MACE", Proc. NAACL-HLT
+#                      Original code: https://github.com/Toloka/crowd-kit (reference implementation)
+# Implementation:      Toloka contributors — Toloka/crowd-kit (https://github.com/Toloka/crowd-kit)
+# Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (wrapper ported from)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 # ===========================================================================
 """MACE (Hovy et al., 2013): separate competent labelling from spamming.
 

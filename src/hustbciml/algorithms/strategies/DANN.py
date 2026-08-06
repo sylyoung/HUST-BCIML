@@ -1,13 +1,12 @@
 # ===========================================================================
 # DANN.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Yaroslav Ganin, Evgeniya Ustinova, Hana Ajakan, Pascal Germain, Hugo Larochelle, François Laviolette, Mario Marchand, Victor Lempitsky (2016) — "Domain-Adversarial Training of Neural Networks", J. Mach. Learn. Res.
-#                        Original code: https://github.com/thuml/Transfer-Learning-Library (reference implementation)
-#   Implementation:      Junguang Jiang et al. (thuml) — thuml/Transfer-Learning-Library (https://github.com/thuml/Transfer-Learning-Library) (canonical implementation)
-#   Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported from)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Yaroslav Ganin, Evgeniya Ustinova, Hana Ajakan, Pascal Germain, Hugo Larochelle, François Laviolette, Mario Marchand, Victor Lempitsky (2016) — "Domain-Adversarial Training of Neural Networks", J. Mach. Learn. Res.
+#                      Original code: https://github.com/thuml/Transfer-Learning-Library (reference implementation)
+# Implementation:      Junguang Jiang et al. (thuml) — thuml/Transfer-Learning-Library (https://github.com/thuml/Transfer-Learning-Library) (canonical implementation)
+# Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported from)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Ganin2016,

@@ -1,13 +1,12 @@
 # ===========================================================================
 # EEGNet.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Vernon J. Lawhern, Amelia J. Solon, Nicholas R. Waytowich, Stephen M. Gordon, Chou P. Hung, Brent J. Lance (2018) — "EEGNet: A Compact Convolutional Neural Network for EEG-Based Brain-Computer Interfaces", J. Neural Eng.
-#                        Original code: https://github.com/vlawhern/arl-eegmodels
-#   Implementation:      Vernon J. Lawhern et al. — vlawhern/arl-eegmodels (https://github.com/vlawhern/arl-eegmodels) (official)
-#   Current code:        Siyang Li — ported from vlawhern/arl-eegmodels (https://github.com/vlawhern/arl-eegmodels), configuration follows DeepTransferEEG
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Vernon J. Lawhern, Amelia J. Solon, Nicholas R. Waytowich, Stephen M. Gordon, Chou P. Hung, Brent J. Lance (2018) — "EEGNet: A Compact Convolutional Neural Network for EEG-Based Brain-Computer Interfaces", J. Neural Eng.
+#                      Original code: https://github.com/vlawhern/arl-eegmodels
+# Implementation:      Vernon J. Lawhern et al. — vlawhern/arl-eegmodels (https://github.com/vlawhern/arl-eegmodels) (official)
+# Current code:        Siyang Li — ported from vlawhern/arl-eegmodels (https://github.com/vlawhern/arl-eegmodels), configuration follows DeepTransferEEG
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Lawhern2018,

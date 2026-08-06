@@ -1,13 +1,12 @@
 # ===========================================================================
 # EA.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    He He, Dongrui Wu (2020) — "Transfer Learning for Brain-Computer Interfaces: A Euclidean Space Data Alignment Approach", IEEE Trans. Biomed. Eng.
-#                        Original code: https://github.com/hehe03/EA
-#   Implementation:      He He, Dongrui Wu — hehe03/EA (https://github.com/hehe03/EA) (official)
-#   Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (lab version)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    He He, Dongrui Wu (2020) — "Transfer Learning for Brain-Computer Interfaces: A Euclidean Space Data Alignment Approach", IEEE Trans. Biomed. Eng.
+#                      Original code: https://github.com/hehe03/EA
+# Implementation:      He He, Dongrui Wu — hehe03/EA (https://github.com/hehe03/EA) (official)
+# Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (lab version)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{He2020,

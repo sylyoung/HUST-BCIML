@@ -1,13 +1,12 @@
 # ===========================================================================
 # StackingNet.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Siyang Li† & Chenhao Liu†, Dongrui Wu, Zhigang Zeng, Lieyun Ding (2026) — "StackingNet: Collective Inference Across Independent AI Foundation Models", Advanced Science
-#                        Original code: https://github.com/sylyoung/TestEnsemble (paper's released code)
-#   Implementation:      Chenhao Liu — Flashingcat/Golden_task-Ensemble (https://github.com/Flashingcat/Golden_task-Ensemble) (Stacking_net.py, initial implementation)
-#   Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (official, further organized)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Siyang Li† & Chenhao Liu†, Dongrui Wu, Zhigang Zeng, Lieyun Ding (2026) — "StackingNet: Collective Inference Across Independent AI Foundation Models", Advanced Science
+#                      Original code: https://github.com/sylyoung/TestEnsemble (paper's released code)
+# Implementation:      Chenhao Liu — Flashingcat/Golden_task-Ensemble (https://github.com/Flashingcat/Golden_task-Ensemble) (Stacking_net.py, initial implementation)
+# Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (official, further organized)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Li2026a,

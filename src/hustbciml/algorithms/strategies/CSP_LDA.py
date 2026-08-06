@@ -1,13 +1,12 @@
 # ===========================================================================
 # CSP_LDA.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Herbert Ramoser, Johannes Müller-Gerking, Gert Pfurtscheller (CSP); Benjamin Blankertz et al. (BCI practice) (2000) — "Optimal Spatial Filtering of Single Trial EEG During Imagined Hand Movement", IEEE Trans. Rehabil. Eng.
-#                        Original code: https://scikit-learn.org (reference implementation)
-#   Implementation:      scikit-learn developers — scikit-learn/scikit-learn (https://github.com/scikit-learn/scikit-learn) (CSP via mne, LDA via sklearn)
-#   Current code:        Siyang Li — implemented in HUST-BCIML with scikit-learn components
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Herbert Ramoser, Johannes Müller-Gerking, Gert Pfurtscheller (CSP); Benjamin Blankertz et al. (BCI practice) (2000) — "Optimal Spatial Filtering of Single Trial EEG During Imagined Hand Movement", IEEE Trans. Rehabil. Eng.
+#                      Original code: https://scikit-learn.org (reference implementation)
+# Implementation:      scikit-learn developers — scikit-learn/scikit-learn (https://github.com/scikit-learn/scikit-learn) (CSP via mne, LDA via sklearn)
+# Current code:        Siyang Li — implemented in HUST-BCIML with scikit-learn components
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Blankertz2008,

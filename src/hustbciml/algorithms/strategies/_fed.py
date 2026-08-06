@@ -1,13 +1,12 @@
 # ===========================================================================
 # _fed.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Tianwang Jia, Lubin Meng, Siyang Li, Jiajing Liu, Dongrui Wu (FedBS); Brendan McMahan et al. (FedAvg) (2024) — "Federated Motor Imagery Classification for Privacy-Preserving Brain-Computer Interfaces", IEEE Trans. Neural Syst. Rehabil. Eng.
-#                        Original code: https://github.com/TianwangJia/FedBS
-#   Implementation:      Tianwang Jia et al. — TianwangJia/FedBS (https://github.com/TianwangJia/FedBS) (official)
-#   Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (shared federated / LBSN core, ported from)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Tianwang Jia, Lubin Meng, Siyang Li, Jiajing Liu, Dongrui Wu (FedBS); Brendan McMahan et al. (FedAvg) (2024) — "Federated Motor Imagery Classification for Privacy-Preserving Brain-Computer Interfaces", IEEE Trans. Neural Syst. Rehabil. Eng.
+#                      Original code: https://github.com/TianwangJia/FedBS
+# Implementation:      Tianwang Jia et al. — TianwangJia/FedBS (https://github.com/TianwangJia/FedBS) (official)
+# Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (shared federated / LBSN core, ported from)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Jia2024,

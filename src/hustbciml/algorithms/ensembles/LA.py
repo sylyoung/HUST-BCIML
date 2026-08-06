@@ -1,13 +1,12 @@
 # ===========================================================================
 # LA.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Yi Yang, Zhong-Qiu Zhao, Quan Bai, Qing Liu, Weihua Li (2024) — "A Lightweight, Effective, and Efficient Model for Label Aggregation in Crowdsourcing", ACM Trans. Knowl. Discov. Data
-#                        Original code: https://github.com/yyang318/LA_onepass (official)
-#   Implementation:      Chenhao Liu — Flashingcat/Golden_task-Ensemble (https://github.com/Flashingcat/Golden_task-Ensemble) (LA_twopass.py, the two-pass variant this port follows)
-#   Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (vendored from)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Yi Yang, Zhong-Qiu Zhao, Quan Bai, Qing Liu, Weihua Li (2024) — "A Lightweight, Effective, and Efficient Model for Label Aggregation in Crowdsourcing", ACM Trans. Knowl. Discov. Data
+#                      Original code: https://github.com/yyang318/LA_onepass (official)
+# Implementation:      Chenhao Liu — Flashingcat/Golden_task-Ensemble (https://github.com/Flashingcat/Golden_task-Ensemble) (LA_twopass.py, the two-pass variant this port follows)
+# Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (vendored from)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Yang2024LA,

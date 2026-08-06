@@ -1,13 +1,12 @@
 # ===========================================================================
 # MSVTNet.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Ke Liu, Tao Yang, Zhuliang Yu, Weibo Yi, Hong Yu, Guoyin Wang, Wei Wu (2024) — "MSVTNet: Multi-Scale Vision Transformer Neural Network for EEG-Based Motor Imagery Decoding", IEEE J. Biomed. Health Inform.
-#                        Original code: https://github.com/SheldonLiu0412/MSVTNet
-#   Implementation:      Ke Liu et al. — SheldonLiu0412/MSVTNet (https://github.com/SheldonLiu0412/MSVTNet) (official)
-#   Current code:        Siyang Li — ported directly from SheldonLiu0412/MSVTNet (https://github.com/SheldonLiu0412/MSVTNet)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Ke Liu, Tao Yang, Zhuliang Yu, Weibo Yi, Hong Yu, Guoyin Wang, Wei Wu (2024) — "MSVTNet: Multi-Scale Vision Transformer Neural Network for EEG-Based Motor Imagery Decoding", IEEE J. Biomed. Health Inform.
+#                      Original code: https://github.com/SheldonLiu0412/MSVTNet
+# Implementation:      Ke Liu et al. — SheldonLiu0412/MSVTNet (https://github.com/SheldonLiu0412/MSVTNet) (official)
+# Current code:        Siyang Li — ported directly from SheldonLiu0412/MSVTNet (https://github.com/SheldonLiu0412/MSVTNet)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Liu2024,

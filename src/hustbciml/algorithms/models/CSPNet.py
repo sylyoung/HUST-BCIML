@@ -1,13 +1,12 @@
 # ===========================================================================
 # CSPNet.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Xue Jiang, Lubin Meng, Xinru Chen, Yifan Xu, Dongrui Wu (2024) — "CSP-Net: Common Spatial Pattern Empowered Neural Networks for EEG-Based Motor Imagery Classification", Knowledge-Based Systems
-#                        Original code: https://github.com/jxgogo/CSP-Net
-#   Implementation:      Xue Jiang et al. — jxgogo/CSP-Net (https://github.com/jxgogo/CSP-Net) (official)
-#   Current code:        Siyang Li — ported directly from jxgogo/CSP-Net (https://github.com/jxgogo/CSP-Net)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Xue Jiang, Lubin Meng, Xinru Chen, Yifan Xu, Dongrui Wu (2024) — "CSP-Net: Common Spatial Pattern Empowered Neural Networks for EEG-Based Motor Imagery Classification", Knowledge-Based Systems
+#                      Original code: https://github.com/jxgogo/CSP-Net
+# Implementation:      Xue Jiang et al. — jxgogo/CSP-Net (https://github.com/jxgogo/CSP-Net) (official)
+# Current code:        Siyang Li — ported directly from jxgogo/CSP-Net (https://github.com/jxgogo/CSP-Net)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Jiang2024,

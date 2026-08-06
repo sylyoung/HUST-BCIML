@@ -1,13 +1,12 @@
 # ===========================================================================
 # SlimSeiz.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Guorui Lu, Jing Peng, Bingyuan Huang, Chang Gao, Todor Stefanov, Yong Hao, Qinyu Chen (2025) — "SlimSeiz: Efficient Channel-Adaptive Seizure Prediction", Proc. IEEE ISCAS
-#                        Original code: https://github.com/guoruilu/SlimSeiz
-#   Implementation:      Guorui Lu et al. — guoruilu/SlimSeiz (https://github.com/guoruilu/SlimSeiz) (official; mamba-minimal block from johnma2006/mamba-minimal (https://github.com/johnma2006/mamba-minimal))
-#   Current code:        Siyang Li — ported directly from guoruilu/SlimSeiz (https://github.com/guoruilu/SlimSeiz)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Guorui Lu, Jing Peng, Bingyuan Huang, Chang Gao, Todor Stefanov, Yong Hao, Qinyu Chen (2025) — "SlimSeiz: Efficient Channel-Adaptive Seizure Prediction", Proc. IEEE ISCAS
+#                      Original code: https://github.com/guoruilu/SlimSeiz
+# Implementation:      Guorui Lu et al. — guoruilu/SlimSeiz (https://github.com/guoruilu/SlimSeiz) (official; mamba-minimal block from johnma2006/mamba-minimal (https://github.com/johnma2006/mamba-minimal))
+# Current code:        Siyang Li — ported directly from guoruilu/SlimSeiz (https://github.com/guoruilu/SlimSeiz)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @InProceedings{Lu2025,

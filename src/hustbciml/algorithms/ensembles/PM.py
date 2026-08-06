@@ -1,13 +1,12 @@
 # ===========================================================================
 # PM.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Qi Li, Yaliang Li, Jing Gao, Bo Zhao, Wei Fan, Jiawei Han (2014) — "Resolving Conflicts in Heterogeneous Data by Truth Discovery and Source Reliability Estimation (CRH)", Proc. ACM SIGMOD
-#                        Original code: no official release (verified 2026-08-06); PM is the hard-label specialization of Participant-Mine/CRH
-#   Implementation:      Chenhao Liu — Flashingcat/Golden_task-Ensemble (https://github.com/Flashingcat/Golden_task-Ensemble) (pm.py, implemented following the paper)
-#   Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (vendored from)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Qi Li, Yaliang Li, Jing Gao, Bo Zhao, Wei Fan, Jiawei Han (2014) — "Resolving Conflicts in Heterogeneous Data by Truth Discovery and Source Reliability Estimation (CRH)", Proc. ACM SIGMOD
+#                      Original code: no official release (verified 2026-08-06); PM is the hard-label specialization of Participant-Mine/CRH
+# Implementation:      Chenhao Liu — Flashingcat/Golden_task-Ensemble (https://github.com/Flashingcat/Golden_task-Ensemble) (pm.py, implemented following the paper)
+# Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (vendored from)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @InProceedings{Li2014PM,

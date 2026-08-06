@@ -1,13 +1,12 @@
 # ===========================================================================
 # GLAD.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Jacob Whitehill, Ting-fan Wu, Jacob Bergsma, Javier Movellan, Paul Ruvolo (2009) — "Whose Vote Should Count More: Optimal Integration of Labels from Labelers of Unknown Expertise", Proc. NeurIPS
-#                        Original code: https://github.com/Toloka/crowd-kit (reference implementation)
-#   Implementation:      Toloka contributors — Toloka/crowd-kit (https://github.com/Toloka/crowd-kit)
-#   Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (wrapper ported from)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Jacob Whitehill, Ting-fan Wu, Jacob Bergsma, Javier Movellan, Paul Ruvolo (2009) — "Whose Vote Should Count More: Optimal Integration of Labels from Labelers of Unknown Expertise", Proc. NeurIPS
+#                      Original code: https://github.com/Toloka/crowd-kit (reference implementation)
+# Implementation:      Toloka contributors — Toloka/crowd-kit (https://github.com/Toloka/crowd-kit)
+# Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (wrapper ported from)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 # ===========================================================================
 """GLAD (Whitehill et al., 2009): jointly infer label, ability, and difficulty.
 

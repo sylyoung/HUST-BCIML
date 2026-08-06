@@ -59,6 +59,10 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-08-06 (v1.6.2).** Header layout only: the credit-chain legend line is
+  dropped and the `Author:` line moves below the chain, so headers are title, chain,
+  author, references — no prose. **No measured numbers change.**
+
 - **2026-08-06 (v1.6.1).** Documentation and attribution only — **no measured numbers
 change.** Every algorithm source file now carries a complete credit chain in its header:
 original authors (paper, venue, and official code when one exists), the implementation

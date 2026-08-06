@@ -1,13 +1,12 @@
 # ===========================================================================
 # DBConformer.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Ziwei Wang, Hongbin Wang, Tianwang Jia, Xingyi He, Siyang Li, Dongrui Wu (2026) — "DBConformer: Dual-Branch Convolutional Transformer for EEG Decoding", IEEE J. Biomed. Health Inform.
-#                        Original code: https://github.com/wzwvv/DBConformer
-#   Implementation:      Ziwei Wang, Hongbin Wang, Tianwang Jia, Xingyi He, Siyang Li, Dongrui Wu — wzwvv/DBConformer (https://github.com/wzwvv/DBConformer) (official)
-#   Current code:        Ziwei Wang et al. — wzwvv/DBConformer (https://github.com/wzwvv/DBConformer) (ported directly)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Ziwei Wang, Hongbin Wang, Tianwang Jia, Xingyi He, Siyang Li, Dongrui Wu (2026) — "DBConformer: Dual-Branch Convolutional Transformer for EEG Decoding", IEEE J. Biomed. Health Inform.
+#                      Original code: https://github.com/wzwvv/DBConformer
+# Implementation:      Ziwei Wang, Hongbin Wang, Tianwang Jia, Xingyi He, Siyang Li, Dongrui Wu — wzwvv/DBConformer (https://github.com/wzwvv/DBConformer) (official)
+# Current code:        Ziwei Wang et al. — wzwvv/DBConformer (https://github.com/wzwvv/DBConformer) (ported directly)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Wang2026,

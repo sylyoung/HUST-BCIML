@@ -1,13 +1,12 @@
 # ===========================================================================
 # IFNet.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Jiaheng Wang, Lin Yao, Yueming Wang (2023) — "IFNet: An Interactive Frequency Convolutional Neural Network for Enhancing Motor Imagery Decoding from EEG", IEEE Trans. Neural Syst. Rehabil. Eng.
-#                        Original code: https://github.com/Jiaheng-Wang/IFNet
-#   Implementation:      Jiaheng Wang et al. — Jiaheng-Wang/IFNet (https://github.com/Jiaheng-Wang/IFNet) (official)
-#   Current code:        Ziwei Wang et al. — wzwvv/MVCNet (https://github.com/wzwvv/MVCNet) models/IFNet.py (the version this port follows)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Jiaheng Wang, Lin Yao, Yueming Wang (2023) — "IFNet: An Interactive Frequency Convolutional Neural Network for Enhancing Motor Imagery Decoding from EEG", IEEE Trans. Neural Syst. Rehabil. Eng.
+#                      Original code: https://github.com/Jiaheng-Wang/IFNet
+# Implementation:      Jiaheng Wang et al. — Jiaheng-Wang/IFNet (https://github.com/Jiaheng-Wang/IFNet) (official)
+# Current code:        Ziwei Wang et al. — wzwvv/MVCNet (https://github.com/wzwvv/MVCNet) models/IFNet.py (the version this port follows)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Wang2023,

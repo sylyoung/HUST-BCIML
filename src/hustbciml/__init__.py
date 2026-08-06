@@ -10,4 +10,4 @@ Entry point: ``python -m hustbciml.run``.
 
 # The package and website share one release number. ``pyproject.toml`` reads it
 # from here, and the packaging test checks it against the changelog heading.
-__version__ = "1.6.0"
+__version__ = "1.6.2"

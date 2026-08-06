@@ -1,13 +1,12 @@
 # ===========================================================================
 # _mvcnet.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Ziwei Wang, Siyang Li, Xiaoqing Chen, Dongrui Wu (2025) — "MVCNet: Multi-View Contrastive Network for Motor Imagery Classification", Knowledge-Based Systems
-#                        Original code: https://github.com/wzwvv/MVCNet
-#   Implementation:      Ziwei Wang, Siyang Li, Xiaoqing Chen, Dongrui Wu — wzwvv/MVCNet (https://github.com/wzwvv/MVCNet) (official)
-#   Current code:        Siyang Li — ported from wzwvv/MVCNet (https://github.com/wzwvv/MVCNet)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Ziwei Wang, Siyang Li, Xiaoqing Chen, Dongrui Wu (2025) — "MVCNet: Multi-View Contrastive Network for Motor Imagery Classification", Knowledge-Based Systems
+#                      Original code: https://github.com/wzwvv/MVCNet
+# Implementation:      Ziwei Wang, Siyang Li, Xiaoqing Chen, Dongrui Wu — wzwvv/MVCNet (https://github.com/wzwvv/MVCNet) (official)
+# Current code:        Siyang Li — ported from wzwvv/MVCNet (https://github.com/wzwvv/MVCNet)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Wang2025b,

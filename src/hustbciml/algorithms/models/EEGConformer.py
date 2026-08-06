@@ -1,13 +1,12 @@
 # ===========================================================================
 # EEGConformer.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Yonghao Song, Qingqing Zheng, Bingchuan Liu, Xiaorong Gao (2023) — "EEG Conformer: Convolutional Transformer for EEG Decoding and Visualization", IEEE Trans. Neural Syst. Rehabil. Eng.
-#                        Original code: https://github.com/eeyhsong/EEG-Conformer
-#   Implementation:      Yonghao Song et al. — eeyhsong/EEG-Conformer (https://github.com/eeyhsong/EEG-Conformer) (official)
-#   Current code:        Siyang Li — ported directly from eeyhsong/EEG-Conformer (https://github.com/eeyhsong/EEG-Conformer)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Yonghao Song, Qingqing Zheng, Bingchuan Liu, Xiaorong Gao (2023) — "EEG Conformer: Convolutional Transformer for EEG Decoding and Visualization", IEEE Trans. Neural Syst. Rehabil. Eng.
+#                      Original code: https://github.com/eeyhsong/EEG-Conformer
+# Implementation:      Yonghao Song et al. — eeyhsong/EEG-Conformer (https://github.com/eeyhsong/EEG-Conformer) (official)
+# Current code:        Siyang Li — ported directly from eeyhsong/EEG-Conformer (https://github.com/eeyhsong/EEG-Conformer)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Song2023,

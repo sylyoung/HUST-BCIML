@@ -1,13 +1,12 @@
 # ===========================================================================
 # ISFDA.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Xinhao Li, Jingjing Li, Lei Zhu, Guoqing Wang, Zi Huang (2021) — "Imbalanced Source-Free Domain Adaptation", Proc. ACM Multimedia
-#                        Original code: https://github.com/LeoXinhaoLee/Imbalanced-Source-free-Domain-Adaptation
-#   Implementation:      Xinhao Li et al. — LeoXinhaoLee/Imbalanced-Source-free-Domain-Adaptation (https://github.com/LeoXinhaoLee/Imbalanced-Source-free-Domain-Adaptation) (official)
-#   Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported from)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Xinhao Li, Jingjing Li, Lei Zhu, Guoqing Wang, Zi Huang (2021) — "Imbalanced Source-Free Domain Adaptation", Proc. ACM Multimedia
+#                      Original code: https://github.com/LeoXinhaoLee/Imbalanced-Source-free-Domain-Adaptation
+# Implementation:      Xinhao Li et al. — LeoXinhaoLee/Imbalanced-Source-free-Domain-Adaptation (https://github.com/LeoXinhaoLee/Imbalanced-Source-free-Domain-Adaptation) (official)
+# Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported from)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @InProceedings{Li2021,

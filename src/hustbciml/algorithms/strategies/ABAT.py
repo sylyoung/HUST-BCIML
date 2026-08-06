@@ -1,13 +1,12 @@
 # ===========================================================================
 # ABAT.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Xiaoqing Chen, Ziwei Wang, Dongrui Wu (2024) — "Alignment-Based Adversarial Training (ABAT) for Improving the Robustness and Accuracy of EEG-Based BCIs", IEEE Trans. Neural Syst. Rehabil. Eng.
-#                        Original code: https://github.com/xqchen914/ABAT
-#   Implementation:      Xiaoqing Chen, Ziwei Wang, Dongrui Wu — xqchen914/ABAT (https://github.com/xqchen914/ABAT) (official)
-#   Current code:        Siyang Li — ported from xqchen914/ABAT (https://github.com/xqchen914/ABAT)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Xiaoqing Chen, Ziwei Wang, Dongrui Wu (2024) — "Alignment-Based Adversarial Training (ABAT) for Improving the Robustness and Accuracy of EEG-Based BCIs", IEEE Trans. Neural Syst. Rehabil. Eng.
+#                      Original code: https://github.com/xqchen914/ABAT
+# Implementation:      Xiaoqing Chen, Ziwei Wang, Dongrui Wu — xqchen914/ABAT (https://github.com/xqchen914/ABAT) (official)
+# Current code:        Siyang Li — ported from xqchen914/ABAT (https://github.com/xqchen914/ABAT)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Chen2024,

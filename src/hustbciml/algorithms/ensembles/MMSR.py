@@ -1,13 +1,12 @@
 # ===========================================================================
 # MMSR.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Qian Ma, Alex Olshevsky (2020) — "Adversarial Crowdsourcing Through Robust Rank-One Matrix Completion", Proc. NeurIPS
-#                        Original code: https://github.com/Toloka/crowd-kit (reference implementation)
-#   Implementation:      Toloka contributors — Toloka/crowd-kit (https://github.com/Toloka/crowd-kit)
-#   Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (wrapper ported from)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Qian Ma, Alex Olshevsky (2020) — "Adversarial Crowdsourcing Through Robust Rank-One Matrix Completion", Proc. NeurIPS
+#                      Original code: https://github.com/Toloka/crowd-kit (reference implementation)
+# Implementation:      Toloka contributors — Toloka/crowd-kit (https://github.com/Toloka/crowd-kit)
+# Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (wrapper ported from)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 # ===========================================================================
 """M-MSR (Ma & Olshevsky, 2020): worker skill from the agreement matrix.
 

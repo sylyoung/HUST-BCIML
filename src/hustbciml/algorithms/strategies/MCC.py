@@ -1,13 +1,12 @@
 # ===========================================================================
 # MCC.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Ying Jin, Ximei Wang, Mingsheng Long, Jianmin Wang (2020) — "Minimum Class Confusion for Versatile Domain Adaptation", Proc. ECCV
-#                        Original code: https://github.com/thuml/Transfer-Learning-Library (reference implementation)
-#   Implementation:      Junguang Jiang et al. (thuml) — thuml/Transfer-Learning-Library (https://github.com/thuml/Transfer-Learning-Library) (canonical implementation)
-#   Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported from)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Ying Jin, Ximei Wang, Mingsheng Long, Jianmin Wang (2020) — "Minimum Class Confusion for Versatile Domain Adaptation", Proc. ECCV
+#                      Original code: https://github.com/thuml/Transfer-Learning-Library (reference implementation)
+# Implementation:      Junguang Jiang et al. (thuml) — thuml/Transfer-Learning-Library (https://github.com/thuml/Transfer-Learning-Library) (canonical implementation)
+# Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported from)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @InProceedings{Jin2020,

@@ -1,13 +1,12 @@
 # ===========================================================================
 # ChannelReflection.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Ziwei Wang† & Siyang Li†, Jingwei Luo, Jiajing Liu, Dongrui Wu (2024) — "Channel Reflection: Knowledge-Driven Data Augmentation for EEG-Based Brain-Computer Interfaces", Neural Networks
-#                        Original code: https://github.com/sylyoung/DeepTransferEEG (paper's official code) + https://github.com/wzwvv/EEGAug
-#   Implementation:      Ziwei Wang, Siyang Li, Jingwei Luo, Jiajing Liu, Dongrui Wu — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG), wzwvv/EEGAug (https://github.com/wzwvv/EEGAug) (official)
-#   Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (eegdec port)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Ziwei Wang† & Siyang Li†, Jingwei Luo, Jiajing Liu, Dongrui Wu (2024) — "Channel Reflection: Knowledge-Driven Data Augmentation for EEG-Based Brain-Computer Interfaces", Neural Networks
+#                      Original code: https://github.com/sylyoung/DeepTransferEEG (paper's official code) + https://github.com/wzwvv/EEGAug
+# Implementation:      Ziwei Wang, Siyang Li, Jingwei Luo, Jiajing Liu, Dongrui Wu — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG), wzwvv/EEGAug (https://github.com/wzwvv/EEGAug) (official)
+# Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (eegdec port)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Wang2024,

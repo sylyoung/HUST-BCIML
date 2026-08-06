@@ -1,13 +1,12 @@
 # ===========================================================================
 # TMSANet.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Qian Zhao, Weina Zhu (2025) — "TMSA-Net: A Novel Attention Mechanism for Improved Motor Imagery EEG Signal Processing", Biomed. Signal Process. Control
-#                        Original code: https://github.com/Whit3Zhao/TMSA-Net
-#   Implementation:      Qian Zhao, Weina Zhu — Whit3Zhao/TMSA-Net (https://github.com/Whit3Zhao/TMSA-Net) (official)
-#   Current code:        Siyang Li — implemented from the paper description (no intermediate repo used)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Qian Zhao, Weina Zhu (2025) — "TMSA-Net: A Novel Attention Mechanism for Improved Motor Imagery EEG Signal Processing", Biomed. Signal Process. Control
+#                      Original code: https://github.com/Whit3Zhao/TMSA-Net
+# Implementation:      Qian Zhao, Weina Zhu — Whit3Zhao/TMSA-Net (https://github.com/Whit3Zhao/TMSA-Net) (official)
+# Current code:        Siyang Li — implemented from the paper description (no intermediate repo used)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Zhao2025a,

@@ -1,13 +1,12 @@
 # ===========================================================================
 # TIEEEGNet.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Ruimin Peng, Changming Zhao, Jun Jiang, Guangtao Kuang, Yuqi Cui, Yifan Xu, Hao Du, Jianbo Shao, Dongrui Wu (2022) — "TIE-EEGNet: Temporal Information Enhanced EEGNet for Seizure Subtype Classification", IEEE Trans. Neural Syst. Rehabil. Eng.
-#                        Original code: https://github.com/rmpeng/TIE-EEGNet
-#   Implementation:      Ruimin Peng et al. — rmpeng/TIE-EEGNet (https://github.com/rmpeng/TIE-EEGNet) (official)
-#   Current code:        Siyang Li — ported directly from rmpeng/TIE-EEGNet (https://github.com/rmpeng/TIE-EEGNet)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Ruimin Peng, Changming Zhao, Jun Jiang, Guangtao Kuang, Yuqi Cui, Yifan Xu, Hao Du, Jianbo Shao, Dongrui Wu (2022) — "TIE-EEGNet: Temporal Information Enhanced EEGNet for Seizure Subtype Classification", IEEE Trans. Neural Syst. Rehabil. Eng.
+#                      Original code: https://github.com/rmpeng/TIE-EEGNet
+# Implementation:      Ruimin Peng et al. — rmpeng/TIE-EEGNet (https://github.com/rmpeng/TIE-EEGNet) (official)
+# Current code:        Siyang Li — ported directly from rmpeng/TIE-EEGNet (https://github.com/rmpeng/TIE-EEGNet)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Peng2022,

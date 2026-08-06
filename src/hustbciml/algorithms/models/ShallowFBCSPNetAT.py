@@ -1,12 +1,12 @@
 # ===========================================================================
 # Implementation of: ShallowFBCSPNet architecture transfer
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Robin Tibor Schirrmeister, Jost Tobias Springenberg, Lukas Dominique Josef Fiederer, Martin Glasstetter, Katharina Eggensperger, Michael Tangermann, Frank Hutter, Wolfram Burgard, Tonio Ball (2017) — "Deep Learning with Convolutional Neural Networks for EEG Decoding and Visualization", Hum. Brain Mapp.
-#                        Original code: https://github.com/braindecode/braindecode (pinned f7562e9)
-#   Implementation:      Robin T. Schirrmeister & Braindecode contributors — braindecode/braindecode (https://github.com/braindecode/braindecode) (official)
-#   Current code:        Siyang Li — braindecode/braindecode (https://github.com/braindecode/braindecode), pinned commit f7562e9 (architecture transfer)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Robin Tibor Schirrmeister, Jost Tobias Springenberg, Lukas Dominique Josef Fiederer, Martin Glasstetter, Katharina Eggensperger, Michael Tangermann, Frank Hutter, Wolfram Burgard, Tonio Ball (2017) — "Deep Learning with Convolutional Neural Networks for EEG Decoding and Visualization", Hum. Brain Mapp.
+#                      Original code: https://github.com/braindecode/braindecode (pinned f7562e9)
+# Implementation:      Robin T. Schirrmeister & Braindecode contributors — braindecode/braindecode (https://github.com/braindecode/braindecode) (official)
+# Current code:        Siyang Li — braindecode/braindecode (https://github.com/braindecode/braindecode), pinned commit f7562e9 (architecture transfer)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Schirrmeister2017,

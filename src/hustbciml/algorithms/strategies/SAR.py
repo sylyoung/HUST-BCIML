@@ -1,13 +1,12 @@
 # ===========================================================================
 # SAR.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Shuaicheng Niu, Jiaxiang Wu, Yifan Zhang, Zhiquan Wen, Yaofo Chen, Peilin Zhao, Mingkui Tan (2023) — "Towards Stable Test-Time Adaptation in Dynamic Environments", Proc. ICLR
-#                        Original code: https://github.com/mr-eggplant/SAR
-#   Implementation:      Shuaicheng Niu et al. — mr-eggplant/SAR (https://github.com/mr-eggplant/SAR) (official)
-#   Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported from)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Shuaicheng Niu, Jiaxiang Wu, Yifan Zhang, Zhiquan Wen, Yaofo Chen, Peilin Zhao, Mingkui Tan (2023) — "Towards Stable Test-Time Adaptation in Dynamic Environments", Proc. ICLR
+#                      Original code: https://github.com/mr-eggplant/SAR
+# Implementation:      Shuaicheng Niu et al. — mr-eggplant/SAR (https://github.com/mr-eggplant/SAR) (official)
+# Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (ported from)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @InProceedings{Niu2023,

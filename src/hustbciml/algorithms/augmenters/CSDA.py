@@ -1,13 +1,12 @@
 # ===========================================================================
 # CSDA.py  —  HUST-BCIML EEG-decoding benchmark
-# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
-# Credit chain († = co-first authors; every node except the integrator carries its GitHub link):
-#   Original authors:    Ziwei Wang, Siyang Li, Xiaoqing Chen, Dongrui Wu (2025) — "Time-Frequency Transform Based EEG Data Augmentation for Brain-Computer Interfaces", Knowledge-Based Systems
-#                        Original code: https://github.com/wzwvv/CSDA
-#   Implementation:      Ziwei Wang, Siyang Li, Xiaoqing Chen, Dongrui Wu — wzwvv/CSDA (https://github.com/wzwvv/CSDA) (official)
-#   Current code:        Ziwei Wang et al. — wzwvv/CSDA (https://github.com/wzwvv/CSDA) (ported directly)
-#   Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Original authors:    Ziwei Wang, Siyang Li, Xiaoqing Chen, Dongrui Wu (2025) — "Time-Frequency Transform Based EEG Data Augmentation for Brain-Computer Interfaces", Knowledge-Based Systems
+#                      Original code: https://github.com/wzwvv/CSDA
+# Implementation:      Ziwei Wang, Siyang Li, Xiaoqing Chen, Dongrui Wu — wzwvv/CSDA (https://github.com/wzwvv/CSDA) (official)
+# Current code:        Ziwei Wang et al. — wzwvv/CSDA (https://github.com/wzwvv/CSDA) (ported directly)
+# Integrated by:       Siyang Li <lsyyoungll@gmail.com> — HUST-BCIML
+# Author: Siyang Li <lsyyoungll@gmail.com>, 2026.  Part of the unified benchmark; see repo README.
 
 # References (IEEE BibTeX):
 #   @Article{Wang2025a,

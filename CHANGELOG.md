@@ -7,6 +7,14 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.2] - 2026-08-06
+
+### Changed
+
+- Header layout refined: the explanatory "Credit chain († = ...)" legend line is
+  removed, and the `Author:` line moves below the chain (after `Integrated by:`),
+  so every header reads as title, chain, author, references — no prose.
+
 ## [1.6.1] - 2026-08-06
 
 ### Added
