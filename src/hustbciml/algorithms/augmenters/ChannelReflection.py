@@ -3,7 +3,7 @@
 
 # Original authors:    Ziwei Wang† & Siyang Li†, Jingwei Luo, Jiajing Liu, Dongrui Wu (2024) — "Channel Reflection: Knowledge-Driven Data Augmentation for EEG-Based Brain-Computer Interfaces", Neural Networks
 #                      Original code: https://github.com/sylyoung/DeepTransferEEG (paper's official code) + https://github.com/wzwvv/EEGAug
-# Implementation:      Ziwei Wang, Siyang Li, Jingwei Luo, Jiajing Liu, Dongrui Wu — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG), wzwvv/EEGAug (https://github.com/wzwvv/EEGAug) (official)
+# Implementation:      Ziwei Wang & Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG), wzwvv/EEGAug (https://github.com/wzwvv/EEGAug) (official)
 # Current code:        Siyang Li — sylyoung/DeepTransferEEG (https://github.com/sylyoung/DeepTransferEEG) (eegdec port)
 
 # References (IEEE BibTeX):

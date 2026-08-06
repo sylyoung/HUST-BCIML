@@ -7,6 +7,17 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.6] - 2026-08-06
+
+### Changed
+
+- Attribution fixes: the StackingNet implementation credit now names Chenhao
+  Liu & Siyang Li (Liu first), and the Channel Reflection credit Ziwei Wang &
+  Siyang Li (Wang first), instead of the full paper author lists. No measured
+  numbers change.
+- The "What's new" digest in both READMEs now uses one-line labels per
+  release; the full detail stays in this file.
+
 ## [1.6.5] - 2026-08-06
 
 ### Changed

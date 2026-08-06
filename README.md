@@ -61,138 +61,51 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
-- **2026-08-06 (v1.6.5).** Attribution fix: the BFT implementation credit now
-  names its two actual implementers, Jiayi Ouyang & Siyang Li (Ouyang first),
-  instead of the full paper author list. **No measured numbers change.**
+- **2026-08-06 (v1.6.6).** Attribution fixes (StackingNet, Channel Reflection); revision history shortened.
 
-- **2026-08-06 (v1.6.4).** Documentation fix: the "What's new" block in both
-  READMEs is collapsible again. Its `<details>` opening tag was accidentally
-  dropped in the v1.6.0 rewrite, which made the whole digest render expanded
-  instead of collapsed by default. **No measured numbers change.**
+- **2026-08-06 (v1.6.5).** Attribution fix.
 
-- **2026-08-06 (v1.6.3).** Header layout simplified: the `Integrated by:` and
-  `Author:` lines are removed from every algorithm header, leaving the credit chain
-  as original authors → implementation → current code. **No measured numbers change.**
+- **2026-08-06 (v1.6.4).** Changelog collapsible again.
 
-- **2026-08-06 (v1.6.2).** Header layout only: the credit-chain legend line is
-  dropped and the `Author:` line moves below the chain, so headers are title, chain,
-  author, references — no prose. **No measured numbers change.**
+- **2026-08-06 (v1.6.3).** Header layout simplified.
 
-- **2026-08-06 (v1.6.1).** Documentation and attribution only — **no measured numbers
-change.** Every algorithm source file now carries a complete credit chain in its header:
-original authors (paper, venue, and official code when one exists), the implementation
-author and repository, the author of the current port, and the integrator, with GitHub
-links on every node. Co-first authorships are marked (†), including Channel Reflection
-(Ziwei Wang† & Siyang Li†) and StackingNet. Ensemble chains were traced to their earliest
-release: EBCC, ZenCrowd, PM, LA, LAA and StackingNet follow Chenhao Liu's
-`Flashingcat/Golden_task-Ensemble` into the lab's TestEnsemble. The overview now also
-features the lab's `wzwvv/EEGAug` data-augmentation repository.
+- **2026-08-06 (v1.6.2).** Header layout refined.
 
-- **2026-08-06 (v1.6.0).** All 18 Network rows were remeasured from scratch with
-literal target-isolated nested LOSO and five final seeds; the validated campaign is imported and the
-corrected values are published. Five rows whose identities were corrected — DeepConvNet,
-ShallowConvNet, ADFCNN, EEGWaveNet, and FBMSNet — are explicit architecture transfers of the
-cited references (Braindecode Deep4Net/ShallowFBCSPNet feature architectures, released-code
-ADFCNN/EEGWaveNet topologies, and an 8–32 Hz adaptation of FBMSNet). MVCNet is reported on
-the Network axis with its documented three-seed legacy values. Legacy values were
-withdrawn rather than assigned to the corrected code. Checkpoints, predictions, selected settings,
-source/data/software provenance, and resumable training state are recorded for every final fold; the
-importer fails closed unless the complete campaign passes independent validation.
+- **2026-08-06 (v1.6.1).** Full credit-chain headers.
 
-- **2026-07-31 (unreleased audit correction).** The Network table is now identified as a legacy
-measurement pending clean remeasurement: its rows mixed fixed and per-backbone schedules, and the
-old global learning-rate sweep reused reported subjects as source-validation data in other LOSO
-folds. The new tuner performs target-isolated nested selection and never evaluates the outer target
-during selection. Result/cache/ensemble artifacts now record source, software, preprocessing and
-method parameters and fail closed on stale, partial or mismatched inputs. DeepConvNet and FBMSNet
-are documented as legacy adaptations rather than paper-faithful ports. No leaderboard number was
-changed in this correction.
+- **2026-08-06 (v1.6.0).** All 18 Network rows remeasured with target-isolated nested LOSO and five seeds.
 
-- **2026-07-30 (v1.5.0).** Repository structure only. The library moved to `src/hustbciml/`, so the
-root names what each directory holds; `hustbciml` is still the import name and every documented
-command is unchanged, but the package is now installed with `pip install -e .`. Added
-`pyproject.toml` (which absorbs `pytest.ini`) and removed 33 internal files — `RERUN.md` with the
-seven scripts that carried out the finished v1.2.0 re-measurement, and 25 sweep and launch scripts
-that hard-coded one contributor's home directory. No measured number changes.
+- **2026-07-31 (unreleased audit correction).** Legacy Network values flagged pending remeasurement.
 
-- **2026-07-30 (v1.4.1).** Restored the "Ensemble Learning" group of approach chips on the
-Overview, which v1.3.0 had dropped, so all 14 combiners are listed and the lab's SML-OVR and
-StackingNet are visible there; the chip count rises from 60 to 74. The ensemble table's two
-non-ensemble reference rows stay out of that list. No measured number changes and the leaderboard
-renders identically.
+- **2026-07-30 (v1.5.0).** Package moved to `src/hustbciml/`.
 
-- **2026-07-30 (v1.4.0).** Re-measured the Ensemble Learning table on a three-learner-per-source pool,
-one per model family: tangent-space logistic regression, CSP-Net and EEGConformer, so each target
-collects (N−1)×3 hard votes. All 45 combiner and reference cells are new. SML-OVR (lab) and binary
-SML rise from a mean +0.47 over the three datasets to +1.61, positive on all three for the first
-time; StackingNet (lab) from −0.08 to +0.31. `--base hetero` is removed.
+- **2026-07-30 (v1.4.1).** Ensemble chip group restored on the Overview.
 
-- **2026-07-29 (v1.3.2).** Deleted both four-class BNCI2014001 appendices from `RESULTS.md`. The benchmark is
-two-class throughout, as its header states, but two supplementary appendices still reported native
-four-class results (chance 25%), and two four-class figures had leaked into the two-class per-dataset
-discussion as the third entry of a triple. All of it is removed and the affected sentences restated
-against the two-class evidence. No two-class number changes; the web leaderboard never carried
-four-class content, and the `BNCI2014001-4` code path stays, since it is what SML-OVR's one-vs-rest
-form exists for.
+- **2026-07-30 (v1.4.0).** Ensemble table remeasured, three learners per source.
 
-- **2026-07-28 (v1.3.1).** Corrected StackingNet's sum-to-one regularizer to the L1-norm form the
-authors' released code uses. For non-negative weights the two agree in value but not in gradient,
-so a weight the non-negativity clamp drives to zero now stays there instead of being revived, which
-is the published method's own behaviour. No measured number changes: the two forms have identical
-gradients while every weight stays positive, which is the case at the shipped hyperparameters, and
-on cached decentralized votes over three datasets and three seeds they agree on 100.00% of trials.
-`RESULTS.md`, the leaderboard and the web app are unchanged.
+- **2026-07-29 (v1.3.2).** Four-class appendices removed from `RESULTS.md`.
 
-- **2026-07-27 (v1.3.0).** Restored the Ensemble Learning table, which v1.2.5 had briefly
-withdrawn, with the numbers it carried in v1.2.4; nothing was re-measured. Removed the ensemble
-block from the Overview instead: the "ensemble combiners" statistic and the "Ensemble Learning"
-group of approach chips are gone, so the Overview describes the decoding pipeline alone and the
-approach-chip count falls from 75 to 60. The Benchmark tab, the method inventory in both READMEs,
-and every number in `RESULTS.md` are unchanged.
+- **2026-07-28 (v1.3.1).** StackingNet regularizer corrected to the L1 form.
 
-- **2026-07-27 (v1.2.4).** Rewrote both READMEs in the same two registers, and corrected what
-they claimed. The Chinese file still stated that runs persist model checkpoints and that
-hyperparameter selection touches no target label, neither of which the code or the English text
-supports, and claimed a license audit of the ported code that was never performed. Both files
-reported 76 papers with public code (the count is 72) and a per-run `config.yaml` that nothing
-writes. The Chinese "Design principles" also regained the two caveats it never had.
+- **2026-07-27 (v1.3.0).** Ensemble Learning table restored; ensemble block removed from the Overview.
 
-- **2026-07-27 (v1.2.3).** Completed the prose rewrite: twelve transfer and ensemble row
-descriptions the v1.2.2 pass missed, which kept British spelling and four sentences that judged a
-number rather than stating it.
+- **2026-07-27 (v1.2.4).** Both READMEs rewritten and corrected.
 
-- **2026-07-27 (v1.2.2).** Rewrote the web app's explanatory prose in both languages: the English in
-the register of the lab's own papers, the Chinese in that of the lab's own 公众号 writing. Fixed the
-anchor card's stale approach count, and closed a gap in `check_i18n.py` that left the library card
-and the Overview prose unchecked (39 generated strings checked, now 64).
+- **2026-07-27 (v1.2.3).** Prose rewrite completed.
 
-- **2026-07-27 (v1.2.1).** Bounded `scikit-learn` to `<1.8`: from 1.8 its `check_is_fitted` requires
-`__sklearn_tags__`, which crowd-kit's `Wawa` does not provide, so that combiner raised before
-aggregating and its leaderboard row could not be reproduced. Found by the CI added the same day, on
-its first run. The other four crowd-kit combiners are unaffected.
+- **2026-07-27 (v1.2.2).** Web app prose rewritten in both languages.
 
-- **2026-07-27 (v1.2.0).** Acted on a 176-finding external code review: fixed silent fallbacks and
-missing guards throughout the measurement path, corrected several method implementations
-(Channel Reflection, Fourier Surrogate, CSDA, RA, SML, LAA, PM, CTNet, backbone shape
-probing), recorded four defects inherited verbatim from the reference implementations rather than
-"fixing" them out of comparability, made the reproduction registry executable, added CI and a link
-checker, and corrected the claims that did not match the code. Those fixes change what the code
-computes, so **every leaderboard cell they touch was re-measured**, each on the machine that
-produced the published value, because the same code gives different numbers on different BLAS
-builds. Which machine produced each published cell is recorded in
-[`cell_origin.tsv`](src/hustbciml/scripts/cell_origin.tsv). The rows the release does not
-touch were re-run as controls and come back identical to v1.1.x for every subject. The ensemble
-table now carries mean ± std over three seeds, where before it was single-seed and mean-only. Also
-adds a **Classical Pipelines** table for the two network-free rows (**58** approaches), which were
-published in `RESULTS.md` but appeared on no leaderboard table and so were cross-checked by nothing.
+- **2026-07-27 (v1.2.1).** scikit-learn bounded to <1.8.
 
-- **2026-07-24 (v1.1.3).** Rewrote all 22 lab methods' in-source docs to match their published papers (documentation only; benchmark numbers unchanged).
+- **2026-07-27 (v1.2.0).** Acted on a 176-finding external review; affected cells re-measured.
 
-- **2026-07-24 (v1.1.2).** Regrouped the transfer and ensemble families, renamed **privacy-preserving transfer**, and dropped Channel Symmetry as a benchmarked augmenter (**56** approaches).
+- **2026-07-24 (v1.1.3).** Lab methods' in-source docs rewritten to match the papers.
 
-- **2026-07-24 (v1.1.1).** Split the ensemble table, listed augmenters by full name, and de-duplicated the publication index (275 → 263).
+- **2026-07-24 (v1.1.2).** Families regrouped; privacy-preserving transfer renamed.
 
-- **2026-07-24 (v1.1.0).** Added ten network backbones, eight augmentation baselines, and five lab methods (CSP-Net, DJP-MMD, LSFT, MSDT, and a full MEKT), all benchmarked over three datasets × three seeds; launched the web app's leaderboard and paper-to-code gallery.
+- **2026-07-24 (v1.1.1).** Ensemble table split; augmenters listed by full name.
+
+- **2026-07-24 (v1.1.0).** Backbones, augmenters and lab methods added; web app launched.
 
 </details>
 

@@ -3,7 +3,7 @@
 
 # Original authors:    Siyang Li† & Chenhao Liu†, Dongrui Wu, Zhigang Zeng, Lieyun Ding (2026) — "StackingNet: Collective Inference Across Independent AI Foundation Models", Advanced Science
 #                      Original code: https://github.com/sylyoung/TestEnsemble (paper's released code)
-# Implementation:      Chenhao Liu — Flashingcat/Golden_task-Ensemble (https://github.com/Flashingcat/Golden_task-Ensemble) (Stacking_net.py, initial implementation)
+# Implementation:      Chenhao Liu & Siyang Li — Flashingcat/Golden_task-Ensemble (https://github.com/Flashingcat/Golden_task-Ensemble) (Stacking_net.py, initial implementation)
 # Current code:        Siyang Li — sylyoung/TestEnsemble (https://github.com/sylyoung/TestEnsemble) (official, further organized)
 
 # References (IEEE BibTeX):
