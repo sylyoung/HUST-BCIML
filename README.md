@@ -61,6 +61,8 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-08-06 (v1.6.7).** Single published dependency file; measurement lock kept out of the repo.
+
 - **2026-08-06 (v1.6.6).** Attribution fixes (StackingNet, Channel Reflection); revision history shortened.
 
 - **2026-08-06 (v1.6.5).** Attribution fix.
@@ -370,9 +372,11 @@ python -m hustbciml.run --algorithm EA-EEGNet --dataset Toy --device cpu       #
 python -m hustbciml.run --algorithm EA-EEGNet --dataset BNCI2014001 --itr 3    # real data, via MOABB
 ```
 
-The exact Python 3.11 and CUDA package stack used for the corrected five-seed Network campaign is frozen in
-[`requirements-network-production.txt`](requirements-network-production.txt). It is a measurement lock,
-not a replacement for the general installation above.
+This repository carries a single dependency file: `requirements.txt`. The exact Python 3.11/CUDA
+package stack of the corrected five-seed Network campaign is pinned on the measurement machine only,
+outside the repository; its digest and runtime identity are recorded with the campaign's provenance.
+Reproducing the leaderboard numbers means re-creating that environment — the recipe at the bottom of
+`requirements.txt` explains how.
 
 Compose an algorithm on the fly instead of naming a preset:
 
@@ -434,8 +438,7 @@ HUST-BCIML/
 │   │   └── benchmark.yml        # controlled-comparison leaderboard
 │   └── build_site.py           # YAML → docs/data/*.js   (requires only PyYAML)
 ├── pyproject.toml              # packaging + pytest configuration
-├── requirements.txt            # supported general-purpose dependencies
-└── requirements-network-production.txt  # exact corrected-Network measurement lock
+└── requirements.txt            # the repository's single dependency file
 ```
 
 The package sits under `src/` rather than at the top level because `src/` is the package-search root

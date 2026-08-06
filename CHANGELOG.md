@@ -7,6 +7,19 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.7] - 2026-08-06
+
+### Changed
+
+- The repository now publishes a single dependency file, `requirements.txt`.
+  The exact Python 3.11/CUDA measurement lock is no longer part of the public
+  tree: it lives on the measurement machine at `results/env/requirements-lock.txt`
+  (gitignored), with a copy preserved in the lab's review archive. Its digest and
+  runtime identity stay recorded in the campaign provenance, the production gate
+  still refuses to run when the installed environment differs from the lock, and
+  the integrity test runs its full lock checks wherever the lock exists and skips
+  where it does not (CI is not the measurement machine).
+
 ## [1.6.6] - 2026-08-06
 
 ### Changed

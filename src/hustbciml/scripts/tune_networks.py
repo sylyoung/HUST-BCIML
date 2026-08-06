@@ -641,12 +641,11 @@ def _validate_production_request(
     environment_lock = runtime.get("environment_lock") or {}
     if environment_lock.get("sha256") is None:
         raise RuntimeError(
-            "production requires an environment lock at "
-            "requirements-network-production.txt"
+            "production requires an environment lock at results/env/requirements-lock.txt"
         )
     if environment_lock.get("matches_installed") is not True:
         raise RuntimeError(
-            "production environment differs from requirements-network-production.txt: "
+            "production environment differs from results/env/requirements-lock.txt: "
             f"{environment_lock.get('mismatches')}"
         )
     expected_runtime = environment_lock.get("expected_runtime") or {}

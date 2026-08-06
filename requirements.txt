@@ -50,8 +50,9 @@ pandas>=1.5             # long-format vote table for the crowd-kit wrappers
 # different behaviour from the run that produced the tables.
 #
 # To pin an environment for a re-run, capture it on the machine that produces the
-# numbers and commit the result alongside them:
-#     pip freeze > requirements-lock.txt
+# numbers and keep it beside the results there (this repository carries only this
+# file — the measurement lock is not published):
+#     pip freeze > results/env/requirements-lock.txt
 # and record the Python, CUDA and driver versions in RESULTS.md next to the run
 # they belong to. This file is deliberately not a hand-written lock: an invented
 # pin set would look authoritative while matching nothing that was ever run.

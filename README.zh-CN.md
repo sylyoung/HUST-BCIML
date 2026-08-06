@@ -58,6 +58,8 @@
 
 完整版本历史见 [`CHANGELOG.md`](CHANGELOG.md)。近期要点：
 
+- **2026-08-06（v1.6.7）** 仓库只发布一个依赖文件，测量环境锁不再随仓库发布。
+
 - **2026-08-06（v1.6.6）** 署名修正（StackingNet、Channel Reflection），更新日志精简。
 
 - **2026-08-06（v1.6.5）** 署名修正。
@@ -258,8 +260,9 @@ python -m hustbciml.run --algorithm EA-EEGNet --dataset Toy --device cpu       #
 python -m hustbciml.run --algorithm EA-EEGNet --dataset BNCI2014001 --itr 3    # real data, via MOABB
 ```
 
-订正后的五种子网络骨干实验实际使用的 Python 3.11 与 CUDA 软件包版本，完整冻结在
-[`requirements-network-production.txt`](requirements-network-production.txt) 中。它用于锁定测量环境，不替代上面的通用安装方式。
+本仓库只发布一个依赖文件：`requirements.txt`。订正后的五种子网络骨干实验实际使用的 Python 3.11
+与 CUDA 软件包版本，只在测量机器上锁定、不随仓库发布。其摘要与运行时身份记录在实验溯源数据中。
+复现榜单数字需要重建该环境，做法见 `requirements.txt` 末尾的说明。
 
 也可以即时组合一个算法，而不必指定某个预设：
 
@@ -312,8 +315,7 @@ HUST-BCIML/
 │   │   └── benchmark.yml        # controlled-comparison leaderboard
 │   └── build_site.py           # YAML → docs/data/*.js   (requires only PyYAML)
 ├── pyproject.toml              # 打包与 pytest 配置
-├── requirements.txt            # 通用安装依赖
-└── requirements-network-production.txt  # 订正后网络实验的精确环境锁
+└── requirements.txt            # 仓库唯一的依赖文件
 ```
 
 `src/` 是 Python 查找代码包的根目录，`hustbciml/` 才是实际导入包。把二者压成一层会破坏命令行入口和插件注册表所用的 `import hustbciml` 命名空间。`pip install -e .` 负责把这个查找根目录加入 Python 路径。

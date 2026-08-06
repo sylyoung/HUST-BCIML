@@ -17,7 +17,11 @@ from typing import Mapping
 import numpy as np
 
 _NON_MEASUREMENT_TREES = frozenset({"docs", "tests"})
-_ENVIRONMENT_LOCK = "requirements-network-production.txt"
+# The measurement lock is deliberately not part of the public tree: the repo
+# carries a single dependency file (requirements.txt), and the exact pinned
+# environment belongs to the machine that produced the numbers. On the
+# measurement machine the lock lives here, inside the gitignored results/ dir.
+_ENVIRONMENT_LOCK = "results/env/requirements-lock.txt"
 _DEPENDENCIES = (
     "numpy", "scipy", "scikit-learn", "torch", "pyriemann", "PyYAML",
     "moabb", "mne", "crowd-kit", "pandas",
