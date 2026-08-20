@@ -7,6 +7,14 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.8] - 2026-08-19
+
+### Added
+
+- Lab logo in the web-app header (`docs/`): `assets/logo.png` beside the brand
+  text, sized for the header in `assets/style.css`, and also registered as the
+  favicon so the browser tab shows it.
+
 ## [1.6.7] - 2026-08-06
 
 ### Changed

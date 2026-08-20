@@ -61,6 +61,7 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-08-19 (v1.6.8).** Lab logo in the web-app header and as the favicon.
 - **2026-08-06 (v1.6.7).** Single published dependency file; measurement lock kept out of the repo.
 
 - **2026-08-06 (v1.6.6).** Attribution fixes (StackingNet, Channel Reflection); revision history shortened.

@@ -53,6 +53,11 @@ h1, h2, h3 { line-height: 1.25; }
 }
 .brand { font-weight: 700; letter-spacing: -.01em; color: var(--text); font-size: 16px; }
 .brand:hover { text-decoration: none; color: var(--accent); }
+.brand-logo {
+  height: 24px; width: auto; border-radius: 5px;
+  vertical-align: middle; margin-right: 8px;
+  border: 1px solid var(--border);
+}
 .tabs { display: flex; gap: 4px; margin-left: 6px; }
 .tab {
   border: 0; background: transparent; color: var(--muted);
