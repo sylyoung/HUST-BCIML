@@ -7,6 +7,25 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.12] - 2026-08-28
+
+### Fixed
+
+- Every code link in the gallery was re-resolved and checked against the paper it
+  is attached to. All ninety-eight resolved, and each one belongs to its paper, so
+  the code and no-code marks the Papers page shows were confirmed correct rather
+  than assumed. Four entries disagreed with themselves: they were flagged as having
+  code released with the paper while carrying no link. Three of them, the two
+  privacy-preserving brain-computer interface papers and the source-free seizure
+  subtype paper, have no reachable release and are now honestly marked as having no
+  code. The fourth, the 2012 journal version of the Enhanced Interval Approach, now
+  links to the authors' own software page, which carries the `EIA` routine citing
+  Coupland, Mendel and Wu, and which its 2010 conference sibling already pointed to.
+  Papers with public code: 98 → 99.
+- Twenty-eight entries left `code_source` unset instead of recording that no code
+  exists. The field now agrees with the presence of a link on all 314 entries, so a
+  future refresh can trust it when deciding which papers still need a search.
+
 ## [1.6.11] - 2026-08-28
 
 ### Fixed

@@ -189,7 +189,7 @@
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Wu2004_SimplifiedArchitectureTypeFLSsApplicationNonlinear
@@ -275,7 +275,7 @@
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Liu2018_UnsupervisedEnsembleLearningClassImbalanceProblems
@@ -1937,7 +1937,7 @@
   paradigm:
   - Seizure
   code_url: null
-  code_source: paper
+  code_source: none
   tldr: 'Addresses source-free semi-supervised domain adaptation (SF-SSDA) for privacy-preserving EEG-based
     seizure subtype classification, tackling how to fuse raw EEG data with expert knowledge in classifier
     design and how to align source/target distributions without access to source data. Proposes KDF-MutualSHOT:
@@ -3702,7 +3702,7 @@
   paradigm:
   - Drowsy
   code_url: null
-  code_source: paper
+  code_source: none
   tldr: Enables machine learning over EEG data from many users while cryptographically protecting each
     individual's raw signals, motivated by how much sensitive information (PINs, passwords, etc.) leaks
     from unprotected EEG. Proposes commodity-based Secure Multiparty Computation (SMC) protocols using
@@ -3929,7 +3929,7 @@
   paradigm:
   - Drowsy
   code_url: null
-  code_source: paper
+  code_source: none
   tldr: EEG/BCI data is highly sensitive, and application developers can extract private information (e.g.,
     PINs) from unprotected signals, so the challenge is doing meaningful machine learning on EEG while
     preserving user privacy. The paper uses secure multiparty computation (SMC) to train a linear-regression
@@ -4679,7 +4679,7 @@
   kind: published
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
-  code_url: null
+  code_url: https://sipi.usc.edu/~mendel/software
   code_source: paper
   tldr: Constructing interval type-2 (IT2) fuzzy set models of words from survey data intervals is the
     first step of the Perceptual Computer, and the Interval Approach (IA) had been the only systematic
@@ -5400,7 +5400,7 @@
   topic: General ML & Optimization
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Kan2026_CMCRDCrossModalContrastiveRepresentationDistillation
@@ -5414,7 +5414,7 @@
   paradigm:
   - Affect
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Deng2026_LMIDComprehensiveMultimodalDatasetFailurePrediction
@@ -5433,7 +5433,7 @@
   topic: General ML & Optimization
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Chen2025_DataAlignmentAdversarialDefenseBenchmarkEEG
@@ -5460,7 +5460,7 @@
   topic: Data Augmentation & Generation
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Li2024_FutureGenerationAttackDefenseNeuralNetworks
@@ -5473,7 +5473,7 @@
   topic: Robustness & Security
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Wu2024_TMMMTransformerMultimodalSentimentAnalysisMissing
@@ -5486,7 +5486,7 @@
   topic: Deep Architectures
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Deng2024_TimeAwareAttentionTransformerTAATCloud
@@ -5499,7 +5499,7 @@
   topic: Deep Architectures
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Wu2023_Type1IntervalType2Fuzzy
@@ -5512,7 +5512,7 @@
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Zhao2023_BoostTreeBoostForestEnsembleLearning
@@ -5539,7 +5539,7 @@
   paradigm:
   - Affect
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Zhang2023_LightweightSourceFreeTransferPrivacyPreserving
@@ -5594,7 +5594,7 @@
   topic: General ML & Optimization
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Liu2023_23rdIEEEACISInternationalConferenceComputer
@@ -5608,7 +5608,7 @@
   topic: General ML & Optimization
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Li2022_MetaLearningFastPrivacyPreservingSource
@@ -5653,7 +5653,7 @@
   topic: General ML & Optimization
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Fu2021_PersonalizedHumanActivityRecognitionIntegratedWearable
@@ -5666,7 +5666,7 @@
   topic: Transfer Learning & Alignment
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Gu2021_EEGBrainComputerInterfacesBCIsSurvey
@@ -5680,7 +5680,7 @@
   topic: General ML & Optimization
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Wu2020_OnFunctionalEquivalenceTSKFuzzySystems
@@ -5694,7 +5694,7 @@
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Deng2019_GuestEditorialSpecialIssueAdvancesDeep
@@ -5707,7 +5707,7 @@
   topic: Transfer Learning & Alignment
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Wu2019_PoolSequentialActiveLearningRegression
@@ -5733,7 +5733,7 @@
   topic: General ML & Optimization
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Wu2017_GuestEditorialSpecialSectionBrainComputer
@@ -5746,7 +5746,7 @@
   topic: General ML & Optimization
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Wu2016_SpectralMetaLearnerRegressionSMLRModel
@@ -5760,7 +5760,7 @@
   topic: General ML & Optimization
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Wu2013_SpecialIssueComputationalIntelligenceAffectiveComputing
@@ -5774,7 +5774,7 @@
   paradigm:
   - Affect
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Wu2008_CorrectionsAggregationLinguisticWeightedAverageInterval
@@ -5787,7 +5787,7 @@
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Mendel2007_PerceptualReasoningComputingWordsEngine
@@ -5800,7 +5800,7 @@
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Wu2006_TheLinguisticWeightedAverage
@@ -5813,7 +5813,7 @@
   topic: General ML & Optimization
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Wu2005_Type2FLSModelingCapabilityAnalysis
@@ -5826,7 +5826,7 @@
   topic: General ML & Optimization
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Wu2005_ComputationallyEfficientTypeReductionStrategiesType
@@ -5839,7 +5839,7 @@
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only
 - id: Wu2004_AType2FuzzyLogicController
@@ -5852,6 +5852,6 @@
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
   code_url: null
-  code_source: null
+  code_source: none
   tldr: ''
   source: meta-only

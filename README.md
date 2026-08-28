@@ -61,6 +61,7 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-08-28 (v1.6.12).** Every code link re-resolved and matched to its paper; one more paper gained a link and the code/no-code marks are now verified, not assumed.
 - **2026-08-28 (v1.6.11).** Data and asset URLs are stamped with the release version, so a returning browser no longer shows a cached, out-of-date paper count.
 - **2026-08-28 (v1.6.10).** Seventeen missing code links restored and forty-one unlisted papers added, taking the index to 314 papers, 98 with code.
 - **2026-08-28 (v1.6.9).** Publication index refreshed to 273 papers, with three preprints now published and every entry carrying a DOI.
@@ -133,7 +134,7 @@ protocol**, and every reported number carries a per-method reproduction record.
 **2. The paper-to-code web app**, in directory [`docs/`](docs/).
 
 A static web application that presents the benchmark leaderboard alongside a searchable
-**paper-to-code gallery** over the laboratory's **314 publications**, 98 of which have public
+**paper-to-code gallery** over the laboratory's **314 publications**, 99 of which have public
 code. It opens as a local file and is served by GitHub Pages with **no build step**.
 
 ## Motivation
