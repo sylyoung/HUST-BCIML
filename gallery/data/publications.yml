@@ -1,3 +1,246 @@
+- id: Cui2026_SCORESubjectCoordinateRecoveryLabelFree
+  title: 'SCORE: Subject Coordinate Recovery for Label-Free Cross-Subject EEG-to-Image Retrieval'
+  authors: Zhenyao Cui et al.
+  year: 2026
+  venue: CoRR
+  doi: 10.48550/ARXIV.2608.19134
+  kind: preprint
+  topic: Transfer Learning & Alignment
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Cross-subject EEG-to-image retrieval performs far below its within-subject counterpart for a new
+    user without labeled calibration. Comparing EEG features across subjects shows that different subjects
+    preserve similar relationships among concepts but express them along different coordinate directions.
+    Proposes Subject Coordinate Recovery (SCORE), a target-label-free framework that trains on source
+    subjects with recovery-aware episodes and, at deployment with both encoders frozen, selects reliable
+    EEG-image landmarks by hubness-corrected matching and estimates an orthogonal transformation recovering
+    the target subject's coordinates, without source data or target labels. In 200-way retrieval it beats
+    the unadapted baseline for every target subject, reaching 53.23%/83.55% Top-1/Top-5 on THINGS-EEG2
+    and 12.01%/32.16% on Alljoined-1.6M, 17.45/15.70 and 3.08/4.62 percentage points above the strongest
+    baselines.
+  source: summarized
+- id: Cui2026_BeyondTrialAveragingAnchoringNeuralVisual
+  title: 'Beyond Trial Averaging: Anchoring Neural and Visual Representations for Few-Repetition Brain-to-Image
+    Retrieval'
+  authors: Zhenyao Cui et al.
+  year: 2026
+  venue: CoRR
+  doi: 10.48550/ARXIV.2608.19128
+  kind: preprint
+  topic: Deep Architectures
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Brain-to-image retrieval usually averages many neural trials per image, up to 80, which requires
+    repeated stimulus presentation and raises latency, cost and user burden, and accuracy drops sharply
+    when only one or a few repetitions are available. That drop is commonly blamed on query noise, but
+    this paper finds a non-transitive alignment pattern in which the low-repetition query and the image
+    representation each align with the high-repetition center yet not with each other, so where a candidate
+    sits in the gallery matters too. Proposes a neural-anchor-based retrieval (NEAR) framework that treats
+    the high-repetition center as an anchor and approaches it from both sides, denoising the query toward
+    the true anchor while a small network predicts each candidate's pseudo anchor from its image and pulls
+    the image toward it. Across four EEG, MEG and fMRI datasets NEAR consistently improves few-repetition
+    retrieval, adding 5.7 and 9.3 points of 200-way Top-1 accuracy on THINGS-EEG2 when averaging one and
+    four repetitions.
+  source: summarized
+- id: Cong2026_SWProxyCEZeroQueryAdversarialTransfer
+  title: 'SW-ProxyCE: Zero-Query Adversarial Transfer from Public EEG Encoders to Private Downstream Models'
+  authors: Linhua Cong et al.
+  year: 2026
+  venue: CoRR
+  doi: 10.48550/ARXIV.2608.16931
+  kind: preprint
+  topic: Robustness & Security
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Openly released EEG foundation encoders help downstream development but also create a security
+    risk for the private models built on them. This paper studies adversarial transfer in a public-encoder,
+    private-downstream setting, where the attacker has white-box access to a released encoder and a small
+    task-matched labeled reference set but cannot access or query the victim's parameters, outputs or
+    gradients. Proposes Shrinkage-Whitened Proxy Cross-Entropy (SW-ProxyCE), which recovers task-level
+    decision geometry from the reference set through shrinkage-whitened class prototypes and generates
+    transferable adversarial examples without training a surrogate classifier. Across three EEG tasks,
+    three general-purpose foundation encoders and one paradigm-specific encoder, covering linear probing
+    and full fine-tuning in cross-subject and within-subject scenarios, the attacks transferred to inaccessible
+    downstream models and consistently beat task-agnostic representation-shift attacks, indicating that
+    the strong transferability of EEG foundation models does not imply adversarial robustness.
+  source: summarized
+- id: Chen2026_STEAMSpatioTEmporalAlignmentMixtureExperts
+  title: 'STEAM: A Spatio-TEmporal Alignment Mixture-of-Experts Model with Hierarchical Pre-training for
+    EEG Decoding'
+  authors: Zhu Chen et al.
+  year: 2026
+  venue: CoRR
+  doi: 10.48550/ARXIV.2608.02070
+  kind: preprint
+  topic: Foundation & Self-Supervised Models
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Conventional neural decoders generalize poorly and are expensive to adapt, and existing BCI foundation
+    models still struggle to combine general transferability, accurate decoding and efficient downstream
+    adaptation. Proposes STEAM, a hierarchical transfer framework instantiated as a dual-branch spatio-temporal
+    encoder whose shared soft mixture-of-experts module aligns the spatial and temporal branches so that
+    complementary representations exchange information through a compact set of soft slots. Across seven
+    downstream datasets and fourteen evaluation settings it attains the best average rank among the compared
+    methods at a competitive inference cost measured in FLOPs. Building on the first-stage general initialization,
+    the hierarchical pre-training strategy then specializes the model to a target paradigm without retraining
+    from scratch, giving consistent gains in paradigm-specific decoding accuracy.
+  source: summarized
+- id: Wang2026_FAConformerFrequencyAwareConvolutionalTransformerAuditory
+  title: 'FAConformer: Frequency-Aware Convolutional Transformer for Auditory Attention Decoding'
+  authors: Ziwei Wang et al.
+  year: 2026
+  venue: CoRR
+  doi: 10.48550/ARXIV.2606.14120
+  kind: preprint
+  topic: Deep Architectures
+  paradigm: []
+  code_url: https://github.com/wzwvv/FAConformer
+  code_source: paper
+  tldr: Auditory attention decoding infers the attended speaker from neural responses in multi-speaker
+    environments, a key problem for neuro-steered hearing systems, yet existing models exploit frequency-domain
+    EEG information only shallowly, through handcrafted features or plain cross-band concatenation, and
+    may miss band-specific patterns and cross-band interactions. Proposes FAConformer, which decomposes
+    the EEG into multiple frequency bands, encodes each with its own CNN-Transformer branch, and fuses
+    the band-wise features with a frequency-aware attention module that treats them as tokens to model
+    cross-band dependencies. Band-wise auxiliary supervision keeps weakly contributing branches from being
+    under-optimized during joint training. On two public auditory-attention datasets at three decision-window
+    lengths it outperformed 12 competitive baselines and surpassed the previous state of the art by 4.9%,
+    with band-importance, ablation and sensitivity analyses supporting the design.
+  source: summarized
+- id: Zhang2026_LocalDifferentialPrivacyDynamicQuantizationDistributed
+  title: Local Differential Privacy via Dynamic Quantization in Distributed Online Stochastic Optimization
+  authors: Zhiguo Zhang et al.
+  year: 2026
+  venue: CoRR
+  doi: 10.48550/ARXIV.2605.29845
+  kind: preprint
+  topic: General ML & Optimization
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Distributed online stochastic optimization suits streaming data, but the information exchanged
+    over the communication network can leak private data. Proposes a locally differentially private distributed
+    online stochastic optimization algorithm that masks the exchanged information with a dynamic stochastic
+    quantizer before communication. The analysis shows almost-sure convergence to the optimal solution
+    together with local differential privacy for every agent even as the number of iterations grows without
+    bound, and the algorithm is fully distributed and applies when the interaction network is a directed
+    graph. Experiments on distributed online training over a mushroom classification dataset, a handwritten
+    digit recognition dataset and a brain-computer interface dataset support the analysis.
+  source: summarized
+- id: Lu2026_MirrorDescentSafePolicyOptimizationReinforcement
+  title: Mirror Descent Safe Policy Optimization for Reinforcement Learning Agents
+  authors: Renzhi Lu et al.
+  year: 2026
+  venue: IEEE Trans. Pattern Anal. Mach. Intell.
+  doi: 10.1109/TPAMI.2026.3674995
+  kind: published
+  topic: General ML & Optimization
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: 'A reinforcement-learning agent improves its policy by exploring the action space, but not every
+    action there is safe and acceptable, so exploration has to be constrained. Proposes mirror descent
+    safe policy optimization (MDSPO), which maximizes the return while satisfying a safety constraint
+    through a three-stage strategy: gradient descent without the cost constraint, projection onto the
+    nonparametric policy space with the cost constraint, and projection onto the parametric policy space.
+    Unlike earlier methods it is a simple first-order approach that imposes no hard trust-region constraint,
+    and its analysis gives a lower bound on return improvement and an upper bound on constraint violation
+    at every policy update. On two sets of constrained locomotion experiments MDSPO raises the average
+    return by about 12% and satisfies the cost constraints better than state-of-the-art methods, and in
+    a real obstacle-avoidance experiment with an unmanned surface vessel it finds the optimal path while
+    keeping the agent safe.'
+  source: summarized
+- id: Luo2026_PGAPPurityGuidedActivePromptingEEG
+  title: 'PGAP: Purity-Guided Active Prompting for EEG Decoding With LLMs'
+  authors: Jingwei Luo et al.
+  year: 2026
+  venue: IEEE Comput. Intell. Mag.
+  doi: 10.1109/MCI.2026.3665159
+  kind: published
+  topic: Active Learning
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Large language models show strong in-context learning, particularly under few-shot prompting,
+    but their use on complex physiological signals such as EEG is largely unexplored. Proposes purity-guided
+    active prompting (PGAP), which combines domain-specific EEG feature extraction with an active-learning
+    demonstration-selection strategy, identifying once a compact set of prototypical examples that activates
+    a model's few-shot ability without gradient-based parameter updates, instead of drawing random demonstrations
+    per test sample, and works with both open-source and closed-source models. On seven EEG datasets across
+    three paradigms it consistently outperformed five sample-selection baselines in accuracy and robustness,
+    improved with more capable models such as DeepSeek-V3 and GPT-4.1, and sometimes surpassed state-of-the-art
+    supervised models.
+  source: summarized
+- id: Zhang2026_OnlineBimanualEEGMIBCIShared
+  title: An Online Bimanual EEG-MI-BCI With Shared Control for Bilateral Robotic-Assisted Training
+  authors: Mingming Zhang et al.
+  year: 2026
+  venue: IEEE Trans. Neural Syst. Rehabil. Eng.
+  doi: 10.1109/TNSRE.2026.3714990
+  kind: published
+  topic: General ML & Optimization
+  paradigm:
+  - MI
+  code_url: null
+  code_source: none
+  tldr: Bimanual movements are common in daily life and in rehabilitation therapy, yet BCIs for robot-assisted
+    rehabilitation have mostly addressed motor imagery of a single limb, and such systems have been held
+    back by the difficulty of decoding EEG accurately and robustly. Presents an online EEG-MI-BCI for
+    bilateral robot-assisted training that combines a bimanual paradigm imagining three coordinated movement
+    directions of both hands, left, middle and right, with a shared-control strategy in which prior-knowledge
+    assistance corrects direction-decoding errors and robot autonomy manages movement velocity. In one-step
+    decoding over eight participants all six tested models beat the 33.33% chance level, EEGNet performing
+    best at 52.93% offline and 49.67% online. In an online multi-step reaching task the average success
+    rate rose from 48.33% without assistance to 71.67% with shared control.
+  source: summarized
+- id: Cui2026_FuzzySetClassificationRegressionExtensionFramework
+  title: A Fuzzy Set Based Classification-to-Regression Extension Framework for Transfer Learning and
+    its Application to Brain-Computer Interfaces
+  authors: Zhenyao Cui et al.
+  year: 2026
+  venue: IEEE Trans. Emerg. Top. Comput. Intell.
+  doi: 10.1109/TETCI.2026.3683713
+  kind: published
+  topic: Fuzzy Systems & Computing-with-Words
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Transfer learning uses data or knowledge from source domains to help learning in a target domain,
+    and has worked well in applications such as brain-computer interfaces, but far fewer transfer-learning
+    algorithms exist for regression than for classification. Proposes a fuzzy set based framework that
+    estimates class-conditional probabilities in regression, so that traditional or deep transfer-learning
+    algorithms built on class-conditional probabilities can be extended from classification to regression,
+    and a new transfer-learning algorithm that outperforms naive extensions of classification methods.
+    On three EEG-based BCI regression datasets the extended algorithms consistently outperformed several
+    classic and state-of-the-art regression transfer approaches. The extension framework is presented
+    as applicable beyond transfer learning, wherever class-conditional information is needed.
+  source: summarized
+- id: Wu2026_AsynchronousSSVEPBCIRecognitionMultiStart
+  title: Asynchronous SSVEP-BCI recognition via Multi-Start-Point Slice Ensembles and Hard Voting
+  authors: Huanyu Wu et al.
+  year: 2026
+  venue: ICASSP
+  doi: 10.1109/ICASSP55912.2026.11461264
+  kind: published
+  topic: General ML & Optimization
+  paradigm:
+  - SSVEP
+  code_url: null
+  code_source: none
+  tldr: Steady-state visual evoked potentials are widely used in BCIs for their high signal-to-noise ratio,
+    but existing asynchronous detection approaches decide from a single window, which underuses temporal
+    information, and separate intentional from non-intentional control through a single output, which
+    gives high false-positive rates. Proposes Multi-Start-Point Slice Ensembles with Hard Voting (MSPHV),
+    which integrates windows with different starting points to recognize both control states and stabilizes
+    the output through hard voting. It raised true-positive rates and lowered false-positive rates in
+    the asynchronous scenario and improved accuracy by nearly 3 to 7% in the synchronous scenario. The
+    approach contributed to a first prize in the SSVEP-based BCI competition at the 2025 World Robot Contest
+    Championship.
+  source: summarized
 - id: Fu2026_FSTAMNetDualAttentionNetworkMotor
   title: 'FSTAM-net: A dual attention network for motor imagery decoding and visualization analysis'
   authors: Shuo Fu et al.
@@ -175,9 +418,9 @@
   title: Backpropagation-Free Test-Time Adaptation for Lightweight EEG-Based Brain-Computer Interfaces
   authors: Siyang Li et al.
   year: 2026
-  venue: CoRR
-  doi: 10.48550/ARXIV.2601.07556
-  kind: preprint
+  venue: IEEE J. Biomed. Health Informatics
+  doi: 10.1109/JBHI.2026.3725326
+  kind: published
   topic: Privacy-Preserving BCI
   paradigm:
   - Drowsy
@@ -212,19 +455,19 @@
     match or exceed traditional time-series approaches without any retraining or downstream architecture
     design.'
   source: summarized
-- id: Liu2026_EEGFoundationModelsProgressesBenchmarkingOpen
-  title: 'EEG Foundation Models: Progresses, Benchmarking, and Open Problems'
+- id: Liu2026_EEGFMCompassProgressBenchmarkingFuture
+  title: 'EEG-FM-Compass: Progress, Benchmarking, and Future Directions for EEG Foundation Models'
   authors: Dingkun Liu et al.
   year: 2026
-  venue: CoRR
-  doi: 10.48550/ARXIV.2601.17883
-  kind: preprint
+  venue: National Science Review
+  doi: 10.1093/nsr/nwag466
+  kind: published
   topic: Foundation & Self-Supervised Models
   paradigm: []
   code_url: https://github.com/Dingkun0817/EEG-FM-Benchmark
   code_source: paper
   tldr: 'There is no fair, comprehensive comparison of EEG foundation models due to inconsistent pre-training
-    objectives, preprocessing, and evaluation protocols. This paper reviews 50 representative models under
+    objectives, preprocessing, and evaluation protocols. This paper reviews 55 representative models under
     a unified taxonomy (data standardization, architecture, self-supervised pre-training) and benchmarks
     12 open-source foundation models plus competitive specialist baselines across 13 datasets and nine
     BCI paradigms, under leave-one-subject-out cross-subject and within-subject few-shot protocols, comparing
@@ -546,10 +789,10 @@
     (e.g., label alignment), and pointing out potential new research directions. It is a tutorial/review
     intended to guide EEG decoding researchers.
   source: summarized
-- id: Liu2025_SpatialDistillationDistributionAlignmentSDDACross
-  title: Spatial Distillation based Distribution Alignment (SDDA) for Cross-Headset EEG Classification
+- id: Liu2026_SDDASpatialDistillationDistributionAlignmentCross
+  title: 'SDDA: Spatial Distillation Based Distribution Alignment for Cross-Headset EEG Classification'
   authors: Dingkun Liu et al.
-  year: 2025
+  year: 2026
   venue: IEEE Transactions on Biomedical Engineering
   doi: 10.1109/TBME.2025.3631604
   kind: published
@@ -565,10 +808,10 @@
     two BCI paradigms it outperforms 10 classical and state-of-the-art transfer-learning algorithms in
     both offline unsupervised and online supervised domain adaptation.
   source: summarized
-- id: Wang2025_SACMSEEGAudioContrastiveMatchingChinese
+- id: Wang2026_SACMSEEGAudioContrastiveMatchingChinese
   title: 'SACM: SEEG-Audio Contrastive Matching for Chinese Speech Decoding'
   authors: Hongbin Wang et al.
-  year: 2025
+  year: 2026
   venue: IEEE Transactions on Biomedical Engineering
   doi: 10.1109/TBME.2026.3678858
   kind: published
@@ -624,10 +867,10 @@
     the effectiveness of both the text-MEG dataset and MASD, which the authors present as the first modality-assisted
     decoding approach for non-invasive speech BCIs.
   source: summarized
-- id: Chen2025_AFPMAlignmentFramePatchModelingCross
+- id: Chen2026_AFPMAlignmentFramePatchModelingCross
   title: 'AFPM: Alignment-based Frame Patch Modeling for Cross-Dataset EEG Decoding'
   authors: Xiaoqing Chen et al.
-  year: 2025
+  year: 2026
   venue: Science China Information Sciences
   doi: 10.1007/S11432-025-4736-2
   kind: published
@@ -636,14 +879,14 @@
   - P300
   code_url: null
   code_source: none
-  tldr: 'Cross-dataset EEG decoding is hampered by inconsistent channel layouts, non-stationary signal
+  tldr: Cross-dataset EEG decoding is hampered by inconsistent channel layouts, non-stationary signal
     distributions, and limited use of neurophysiological priors. AFPM is a plug-and-play, calibration-free
     framework with two parts. The first, Spatial Alignment, selects task-relevant channels using brain-region
     priors, aligns EEG distributions across domains, and remaps channels to a unified layout. The second,
-    Frame-Patch Encoding, models multi-dataset signals as unified spatiotemporal patches. Compared with 17 state-of-the-art
-    methods that require dataset-specific tuning, calibration-free AFPM achieves gains up to 4.40% on
-    motor imagery and 3.58% on ERP tasks, and is presented as the first calibration-free cross-dataset
-    EEG decoding framework.'
+    Frame-Patch Encoding, models multi-dataset signals as unified spatiotemporal patches. Compared with
+    17 state-of-the-art methods that require dataset-specific tuning, calibration-free AFPM achieves gains
+    up to 4.40% on motor imagery and 3.58% on ERP tasks, and is presented as the first calibration-free
+    cross-dataset EEG decoding framework.
   source: summarized
 - id: Jiang2024_CSPRetrainingFrameworkMotorImageryBrain
   title: A CSP-based retraining framework for motor imagery based brain-computer interfaces
@@ -960,10 +1203,10 @@
     pre-trained classifiers) show adversarial attacks can be repurposed to jointly improve accuracy and
     robustness.
   source: summarized
-- id: Chen2024_UserWisePerturbationsUserIdentityProtection
+- id: Chen2025_UserWisePerturbationsUserIdentityProtection
   title: User-wise Perturbations for User Identity Protection in EEG-Based BCIs
   authors: Xiaoqing Chen et al.
-  year: 2024
+  year: 2025
   venue: Journal of Neural Engineering
   doi: 10.1088/1741-2552/AD88A5
   kind: published
@@ -1020,10 +1263,10 @@
     show SWPC always achieved the highest average accuracy, beating the best state-of-the-art baseline
     on each dataset by about 2%.'
   source: summarized
-- id: Chen2024_FrontEndReplicationDynamicWindowFRDW
+- id: Chen2023_FrontEndReplicationDynamicWindowFRDW
   title: Front-end Replication Dynamic Window (FRDW) for Online Motor Imagery Classification
   authors: Xinru Chen et al.
-  year: 2024
+  year: 2023
   venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
   doi: 10.1109/TNSRE.2023.3321640
   kind: published
@@ -1040,10 +1283,11 @@
     classifiers and three data-augmentation methods, FRDW significantly increased the information transfer
     rate, and it helped win national champion of the 2022 China BCI Competition.'
   source: summarized
-- id: Chen2024_AccurateRobustPrivacyPreservingBrainComputer
-  title: Accurate, Robust and Privacy-Preserving Brain-Computer Interface Decoding
+- id: Chen2026_PATPrivacyPreservingAdversarialTransferAccurateRobust
+  title: 'PAT: Privacy-Preserving Adversarial Transfer for Accurate, Robust and Privacy-Preserving EEG
+    Decoding'
   authors: Xiaoqing Chen et al.
-  year: 2024
+  year: 2026
   venue: Fundamental Research
   doi: 10.1016/J.FMRE.2026.04.034
   kind: published
@@ -1081,10 +1325,10 @@
     and state-of-the-art deep-learning approaches, and the authors state it is the first work on knowledge
     distillation for EEG-based seizure subtype classification.
   source: summarized
-- id: Wang2024_CrossSpeciesCrossModalityEpilepticSeizure
-  title: Cross-Species and Cross-Modality Epileptic Seizure Detection via Multi-Space Alignment
+- id: Wang2025_CanineEEGHelpsHumanCrossSpecies
+  title: 'Canine EEG helps human: cross-species and cross-modality epileptic seizure detection'
   authors: Z. Wang et al.
-  year: 2024
+  year: 2025
   venue: National Science Review
   doi: 10.1093/NSR/NWAF086
   kind: published
@@ -1102,10 +1346,10 @@
     the first demonstration that integrating heterogeneous species/modality data improves EEG seizure
     detection.
   source: summarized
-- id: Fu2024_EffectiveEfficientIntracorticalBrainSignalDecoding
+- id: Fu2026_EffectiveEfficientIntracorticalBrainSignalDecoding
   title: Effective and Efficient Intracortical Brain Signal Decoding with Spiking Neural Networks
   authors: Haotian Fu et al.
-  year: 2024
+  year: 2026
   venue: Neurocomputing
   doi: 10.1016/J.NEUCOM.2026.134374
   kind: published
@@ -1621,10 +1865,10 @@
     and model-architecture choice. On the competition's official validation sets, both proposed approaches
     outperform the baselines by a large margin.
   source: summarized
-- id: Chen2022_AdversarialArtifactDetectionEEGBrainComputer
+- id: Chen2024_AdversarialArtifactDetectionEEGBrainComputer
   title: Adversarial Artifact Detection in EEG-Based Brain-Computer Interfaces
   authors: Xiaoqing Chen et al.
-  year: 2022
+  year: 2024
   venue: Journal of Neural Engineering
   doi: 10.1088/1741-2552/AD8964
   kind: published
@@ -1922,10 +2166,10 @@
     random selection and several state-of-the-art single-task active learning methods, yielding better
     classification and regression models at the same labeling budget.
   source: summarized
-- id: Wu2021_AdversarialAttacksDefensesPhysiologicalComputingSystematic
+- id: Wu2023_AdversarialAttacksDefensesPhysiologicalComputingSystematic
   title: 'Adversarial Attacks and Defenses in Physiological Computing: A Systematic Review'
   authors: Dongrui Wu et al.
-  year: 2021
+  year: 2023
   venue: National Science Open
   doi: 10.1360/NSO/20220023
   kind: published
@@ -1946,7 +2190,7 @@
   authors: Xiao Zhang et al.
   year: 2021
   venue: CoRR
-  doi: null
+  doi: 10.48550/ARXIV.2106.01714
   kind: preprint
   topic: General ML & Optimization
   paradigm: []
@@ -2195,7 +2439,7 @@
   authors: Xiao Zhang et al.
   year: 2020
   venue: ICLR
-  doi: null
+  doi: 10.48550/ARXIV.2001.01072
   kind: preprint
   topic: Deep Architectures
   paradigm: []
@@ -2263,15 +2507,17 @@
     stacking, needing only three or four labeled trials per subject to reach RMSE below 3 beats/min. It
     is presented as the first work on active stacking.
   source: summarized
-- id: Zhang2020_TinyNoiseCanMakeEEGBrain
-  title: Tiny Noise Can Make an EEG-Based Brain-Computer Interface Speller Output Anything
+- id: Zhang2021_TinyNoiseBigMistakesAdversarialPerturbationsInduce
+  title: 'Tiny noise, big mistakes: adversarial perturbations induce errors in brain-computer interface
+    spellers'
   authors: Xiao Zhang et al.
-  year: 2020
-  venue: CoRR
-  doi: null
-  kind: preprint
+  year: 2021
+  venue: National Science Review
+  doi: 10.1093/nsr/nwaa233
+  kind: published
   topic: Privacy-Preserving BCI
   paradigm:
+  - P300
   - SSVEP
   code_url: https://github.com/ZhangXiao96/Speller-Attacks
   code_source: paper
@@ -2286,7 +2532,7 @@
   authors: Yuqi Cui et al.
   year: 2020
   venue: CoRR
-  doi: null
+  doi: 10.48550/ARXIV.2002.12404
   kind: preprint
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
@@ -2304,7 +2550,7 @@
   authors: Dongrui Wu
   year: 2020
   venue: CoRR
-  doi: null
+  doi: 10.48550/ARXIV.2003.00608
   kind: preprint
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
@@ -2338,25 +2584,6 @@
     cross-device, and cross-task settings. It summarizes the state of the art per paradigm and draws observations
     and future research directions.
   source: summarized
-- id: Wu2020_TransferLearningBrainComputerInterfacesComplete
-  title: 'Transfer Learning for Brain-Computer Interfaces: A Complete Pipeline'
-  authors: Dongrui Wu et al.
-  year: 2020
-  venue: CoRR
-  doi: null
-  kind: preprint
-  topic: Transfer Learning & Alignment
-  paradigm:
-  - MI
-  code_url: https://github.com/drwuHUST/TLBCI
-  code_source: paper
-  tldr: Prior transfer learning for motor-imagery (MI) BCIs addressed only one or two blocks of the decoding
-    pipeline. This paper argues TL should be applied to all three components (spatial filtering, feature
-    engineering, and classification) of MI-based BCIs, and adds a data-alignment component (Euclidean
-    alignment) before spatial filtering to make cross-subject data more consistent and thus facilitate
-    downstream TL. Offline calibration experiments on two MI datasets confirm that integrating data alignment
-    with sophisticated TL significantly improves classification and greatly reduces calibration effort.
-  source: summarized
 - id: Zhang2023_OvercomingNegativeTransferSurvey
   title: 'A Survey on Negative Transfer'
   authors: Wen Zhang et al.
@@ -2377,10 +2604,10 @@
     adversarial attacks). The published version adds a benchmark comparing over 20 NT-detection methods
     on synthetic and real object- and emotion-recognition datasets.'
   source: summarized
-- id: Meng2020_EEGBrainComputerInterfacesVulnerableBackdoor
+- id: Meng2023_EEGBrainComputerInterfacesVulnerableBackdoor
   title: EEG-Based Brain-Computer Interfaces Are Vulnerable to Backdoor Attacks
   authors: Lubin Meng et al.
-  year: 2020
+  year: 2023
   venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
   doi: 10.1109/TNSRE.2023.3273214
   kind: published
@@ -2684,7 +2911,7 @@
   authors: Yu Cao et al.
   year: 2019
   venue: CoRR
-  doi: null
+  doi: 10.48550/ARXIV.1904.03570
   kind: preprint
   topic: Robustness & Security
   paradigm: []
@@ -2723,7 +2950,7 @@
   authors: Chenfeng Guo et al.
   year: 2019
   venue: CoRR
-  doi: null
+  doi: 10.48550/ARXIV.1907.01693
   kind: preprint
   topic: Transfer Learning & Alignment
   paradigm: []
@@ -2742,7 +2969,7 @@
   authors: Yuqi Cui et al.
   year: 2019
   venue: CoRR
-  doi: null
+  doi: 10.48550/ARXIV.1908.00636
   kind: preprint
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
@@ -2755,10 +2982,10 @@
     classifiers to expedite convergence. Experiments on 12 UCI datasets show UR and BN are each effective
     and their integration further improves classification performance.'
   source: summarized
-- id: Shi2019_MultiViewBroadLearningSystemPrimate
+- id: Shi2020_MultiViewBroadLearningSystemPrimate
   title: Multi-View Broad Learning System for Primate Oculomotor Decision Decoding
   authors: Zhenhua Shi et al.
-  year: 2019
+  year: 2020
   venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
   doi: 10.1109/TNSRE.2020.3003342
   kind: published
@@ -2794,10 +3021,10 @@
     weighting and episodic training are effective and their integration further improves cross-subject
     generalization, making it suitable for plug-and-play BCIs.
   source: summarized
-- id: Zhang2019_ManifoldEmbeddedKnowledgeTransferBrainComputer
+- id: Zhang2020_ManifoldEmbeddedKnowledgeTransferBrainComputer
   title: Manifold Embedded Knowledge Transfer for Brain-Computer Interfaces
   authors: Wen Zhang et al.
-  year: 2019
+  year: 2020
   venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
   doi: 10.1109/TNSRE.2020.2985996
   kind: published
@@ -2806,14 +3033,14 @@
   - P300
   code_url: https://github.com/chamwen/MEKT
   code_source: github-search
-  tldr: 'Addresses offline unsupervised cross-subject EEG classification, where labeled trials exist for
+  tldr: Addresses offline unsupervised cross-subject EEG classification, where labeled trials exist for
     source subjects but only unlabeled trials for the target. Proposes Manifold Embedded Knowledge Transfer
     (MEKT), which aligns the EEG trial covariance matrices on the Riemannian manifold, extracts features
     in the tangent space, then performs domain adaptation by minimizing the joint (marginal and conditional)
     distribution shift between source and target while preserving their geometric structures. A domain
     transferability estimation (DTE) selects the most beneficial source subjects. On four EEG datasets
     across two paradigms (MI and ERP), MEKT outperformed several state-of-the-art transfer-learning methods,
-    and DTE cut more than half the computational cost with little accuracy loss.'
+    and DTE cut more than half the computational cost with little accuracy loss.
   source: summarized
 - id: Zhang2020_TransferabilityVersusDiscriminabilityJointProbabilityDistribution
   title: 'Discriminative Joint Probability Maximum Mean Discrepancy (DJP-MMD) for Domain Adaptation'
@@ -2834,10 +3061,10 @@
     and embeds it in a joint probability domain adaptation (JPDA) framework. On six image-classification
     datasets DJP-MMD outperforms traditional MMD-based domain adaptation.'
   source: summarized
-- id: He2019_DifferentSetDomainAdaptationBrainComputer
+- id: He2020_DifferentSetDomainAdaptationBrainComputer
   title: 'Different Set Domain Adaptation for Brain-Computer Interfaces: A Label Alignment Approach'
   authors: He He et al.
-  year: 2019
+  year: 2020
   venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
   doi: 10.1109/TNSRE.2020.2980299
   kind: published
@@ -2853,10 +3080,10 @@
     combined with other domain-adaptation methods. Experiments on two motor-imagery datasets demonstrate
     its effectiveness.
   source: summarized
-- id: Liu2019_UniversalAdversarialPerturbationsCNNClassifiersEEG
+- id: Liu2021_UniversalAdversarialPerturbationsCNNClassifiersEEG
   title: Universal Adversarial Perturbations for CNN Classifiers in EEG-Based BCIs
   authors: Zihan Liu et al.
-  year: 2019
+  year: 2021
   venue: Journal of Neural Engineering
   doi: 10.1088/1741-2552/AC0F4C
   kind: published
@@ -3005,7 +3232,7 @@
   authors: Yuqi Cui et al.
   year: 2018
   venue: CoRR
-  doi: null
+  doi: 10.48550/ARXIV.1805.00348
   kind: preprint
   topic: General ML & Optimization
   paradigm:
@@ -3062,7 +3289,7 @@
   authors: Dongrui Wu et al.
   year: 2018
   venue: CoRR
-  doi: null
+  doi: 10.48550/ARXIV.1812.06303
   kind: preprint
   topic: Fuzzy Systems & Computing-with-Words
   paradigm: []
@@ -3240,11 +3467,11 @@
     detector to cope with the subjective uncertainty of EEG signals. Tested on data from multiple subjects
     in simulated and real-world human-system interaction, the detector achieves acceptable detection performance.
   source: summarized
-- id: Wu2017_SwitchingEEGHeadsetsMadeEasyReducing
+- id: Wu2016_SwitchingEEGHeadsetsMadeEasyReducing
   title: 'Switching EEG Headsets Made Easy: Reducing Offline Calibration Effort Using Active Weighted
     Adaptation Regularization'
   authors: Dongrui Wu et al.
-  year: 2017
+  year: 2016
   venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
   doi: 10.1109/TNSRE.2016.2544108
   kind: published
@@ -4642,10 +4869,15 @@
   topic: Transfer Learning & Alignment
   paradigm:
   - MI
-  code_url: null
-  code_source: null
-  tldr: ''
-  source: meta-only
+  code_url: https://github.com/drwuHUST/TLBCI
+  code_source: paper
+  tldr: Prior transfer learning for motor-imagery (MI) BCIs addressed only one or two blocks of the decoding
+    pipeline. This paper argues TL should be applied to all three components (spatial filtering, feature
+    engineering, and classification) of MI-based BCIs, and adds a data-alignment component (Euclidean
+    alignment) before spatial filtering to make cross-subject data more consistent and thus facilitate
+    downstream TL. Offline calibration experiments on two MI datasets confirm that integrating data alignment
+    with sophisticated TL significantly improves classification and greatly reduces calibration effort.
+  source: summarized
 - id: Li2022_FacialExpressionRecognitionWildDeepPre
   title: Facial Expression Recognition In-the-Wild with Deep Pre-trained Models
   authors: Siyang Li et al.

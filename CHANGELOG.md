@@ -7,6 +7,60 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.9] - 2026-08-28
+
+### Added
+
+- Eleven publications the index was missing, taking the gallery from 263 to 273
+  papers and from 72 to 73 with public code. Five are published: *Mirror Descent
+  Safe Policy Optimization for Reinforcement Learning Agents* (IEEE TPAMI), *PGAP:
+  Purity-Guided Active Prompting for EEG Decoding With LLMs* (IEEE CIM), *An Online
+  Bimanual EEG-MI-BCI With Shared Control for Bilateral Robotic-Assisted Training*
+  (IEEE TNSRE), *A Fuzzy Set Based Classification-to-Regression Extension Framework
+  for Transfer Learning* (IEEE TETCI) and *Asynchronous SSVEP-BCI recognition via
+  Multi-Start-Point Slice Ensembles and Hard Voting* (ICASSP). Six are preprints:
+  SCORE, NEAR (*Beyond Trial Averaging*), SW-ProxyCE, STEAM, FAConformer, which is
+  the one that brings a code link, and a locally differentially private distributed
+  online stochastic optimization algorithm.
+- A DOI on every entry. The nine oldest preprint rows carried none at all, so
+  nothing identified them, the link checker had nothing to resolve and the web app
+  could not link the title. Each one's arXiv id was recovered and its registered
+  arXiv DOI added.
+
+### Changed
+
+- Three rows the index still called preprints have appeared, and each keeps its
+  summary and code link while gaining the published title, venue, DOI and year:
+  *EEG Foundation Models: Progresses, Benchmarking, and Open Problems* is now
+  *EEG-FM-Compass* in **National Science Review** (its review count rises from 50
+  models to 55 with the published version), *Backpropagation-Free Test-Time
+  Adaptation for Lightweight EEG-Based Brain-Computer Interfaces* is in **IEEE
+  J. Biomed. Health Informatics**, and *Tiny Noise Can Make an EEG-Based
+  Brain-Computer Interface Speller Output Anything* is the 2021 **National Science
+  Review** paper *Tiny noise, big mistakes*.
+- Sixteen entries carried the year of the preprint although their DOI already
+  pointed at the published version, which is the year the papers page sorts, groups
+  and filters on. Each now carries the volume or issue year in the publisher's own
+  record, which moves papers as far as three years: the backdoor-attack paper from
+  2020 to its 2023 IEEE TNSRE issue, adversarial artifact detection from 2022 to
+  2024, the systematic review of attacks and defenses in physiological computing
+  from 2021 to 2023, universal adversarial perturbations from 2019 to 2021, MEKT,
+  label alignment and the primate oculomotor paper from 2019 to their 2020 issues,
+  the canine-EEG seizure paper and user-wise perturbations to 2025, PAT, SDDA,
+  SACM, AFPM and the intracortical spiking-network paper to 2026, and, in the other
+  direction, FRDW back to 2023 and *Switching EEG Headsets Made Easy* back to its
+  2016 issue. Three of them were also retitled by their publisher and now use the
+  published title: PAT, SDDA and the canine-EEG seizure paper, which became *Canine
+  EEG helps human*. An online-first deposit date is not an issue year,
+  so the five entries whose deposit date and issue year disagree keep the issue
+  year the index already had.
+- The preprint *Transfer Learning for Brain-Computer Interfaces: A Complete
+  Pipeline* was the same manuscript as the **Neural Networks** 2022 tutorial the
+  index already listed, which the arXiv record states itself by carrying that
+  journal reference and DOI. The two rows are now one: the published entry inherits
+  the preprint's summary, its MI paradigm tag and its TLBCI code link, so the
+  tutorial gains a code link it did not have.
+
 ## [1.6.8] - 2026-08-19
 
 ### Added

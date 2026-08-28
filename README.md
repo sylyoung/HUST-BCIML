@@ -61,6 +61,7 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-08-28 (v1.6.9).** Publication index refreshed to 273 papers, with three preprints now published and every entry carrying a DOI.
 - **2026-08-19 (v1.6.8).** Lab logo in the web-app header and as the favicon.
 - **2026-08-06 (v1.6.7).** Single published dependency file; measurement lock kept out of the repo.
 
@@ -130,7 +131,7 @@ protocol**, and every reported number carries a per-method reproduction record.
 **2. The paper-to-code web app**, in directory [`docs/`](docs/).
 
 A static web application that presents the benchmark leaderboard alongside a searchable
-**paper-to-code gallery** over the laboratory's **263 publications**, 72 of which have public
+**paper-to-code gallery** over the laboratory's **273 publications**, 73 of which have public
 code. It opens as a local file and is served by GitHub Pages with **no build step**.
 
 ## Motivation
@@ -399,7 +400,7 @@ The web app is generated from human-curated YAML by a single script with no fram
 dependency.
 
 - **Source of truth.** The files under [`gallery/data/`](gallery/data/):
-  `publications.yml` (the 263 papers), `lab.yml` (bio, anchor project, featured repos), and
+  `publications.yml` (the 273 papers), `lab.yml` (bio, anchor project, featured repos), and
   `benchmark.yml` (the controlled-comparison leaderboard).
 
 - **Generator.** [`gallery/build_site.py`](gallery/build_site.py) compiles those YAML files
@@ -434,7 +435,7 @@ HUST-BCIML/
 │   └── data/                   # generated: lab.js, publications.js, benchmark.js
 ├── gallery/                    # source of truth for the web app's data
 │   ├── data/
-│   │   ├── publications.yml     # 263 papers (hand-curated)
+│   │   ├── publications.yml     # 273 papers (hand-curated)
 │   │   ├── lab.yml              # lab bio, anchor project, featured repos
 │   │   └── benchmark.yml        # controlled-comparison leaderboard
 │   └── build_site.py           # YAML → docs/data/*.js   (requires only PyYAML)
