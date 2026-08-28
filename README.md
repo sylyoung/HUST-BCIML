@@ -61,6 +61,7 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-08-28 (v1.6.11).** Data and asset URLs are stamped with the release version, so a returning browser no longer shows a cached, out-of-date paper count.
 - **2026-08-28 (v1.6.10).** Seventeen missing code links restored and forty-one unlisted papers added, taking the index to 314 papers, 98 with code.
 - **2026-08-28 (v1.6.9).** Publication index refreshed to 273 papers, with three preprints now published and every entry carrying a DOI.
 - **2026-08-19 (v1.6.8).** Lab logo in the web-app header and as the favicon.

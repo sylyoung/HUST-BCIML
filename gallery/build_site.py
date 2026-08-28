@@ -8,6 +8,7 @@ Reads : gallery/data/publications.yml   (papers, hand-seeded)
 Writes: docs/data/lab.js           window.LAB, window.SITE
         docs/data/publications.js  window.PUBLICATIONS
         docs/data/benchmark.js     window.BENCHMARK
+        docs/index.html            ?v=<version> stamps on the data/asset URLs
 
 Each output is a plain `window.X = <json>;` assignment. The data is inlined this
 way (rather than fetched) so docs/index.html opens directly as a local file
@@ -15,8 +16,10 @@ way (rather than fetched) so docs/index.html opens directly as a local file
 
 Run: python3 gallery/build_site.py      (from the repo root)
 """
+import io
 import json
 import os
+import re
 
 import yaml
 
@@ -24,10 +27,41 @@ HERE = os.path.dirname(os.path.abspath(__file__))   # .../gallery
 ROOT = os.path.dirname(HERE)                         # repo root
 DATA = os.path.join(HERE, "data")
 OUT = os.path.join(ROOT, "docs", "data")
+INDEX = os.path.join(ROOT, "docs", "index.html")
+INIT = os.path.join(ROOT, "src", "hustbciml", "__init__.py")
 
 # publication fields the web app actually displays (drop internal bookkeeping)
 KEEP = ("id", "title", "authors", "year", "venue", "doi",
         "topic", "paradigm", "code_url", "tldr", "in_press")
+
+
+# The page loads its data and assets by plain relative path, and GitHub Pages
+# serves them with `Cache-Control: max-age=600`. A browser that has visited the
+# site before therefore keeps showing the previous release's paper counts long
+# after a new one is deployed, which is exactly what happened after v1.6.9 and
+# v1.6.10. Stamping every reference with the package version gives each release
+# its own URL, so a returning visitor is guaranteed to fetch the new files.
+STAMPED = re.compile(r'((?:src|href)=")((?:data|assets)/[A-Za-z0-9_.-]+)'
+                     r'(?:\?v=[^"]*)?(")')
+
+
+def package_version():
+    text = io.open(INIT, encoding="utf-8").read()
+    match = re.search(r'^__version__ = "([^"]+)"', text, re.M)
+    if not match:
+        raise SystemExit("no __version__ in %s" % INIT)
+    return match.group(1)
+
+
+def stamp_index(version):
+    """Rewrite docs/index.html so every data/asset URL carries ?v=<version>."""
+    text = io.open(INDEX, encoding="utf-8").read()
+    stamped = STAMPED.sub(lambda m: "%s%s?v=%s%s"
+                          % (m.group(1), m.group(2), version, m.group(3)), text)
+    if stamped != text:
+        with io.open(INDEX, "w", encoding="utf-8") as f:
+            f.write(stamped)
+    return len(STAMPED.findall(text))
 
 
 def load(path):
@@ -323,7 +357,11 @@ def main():
           "ensembles=%d approach_chips=%d"
           % (len(papers), n_code, len(benchmark["tables"]), n_rows, site["n_methods"],
              site["n_lab_methods"], site["n_ensemble_methods"], site["n_approaches"]))
+    version = package_version()
+    n_urls = stamp_index(version)
+
     print("wrote docs/data/{lab.js,publications.js,benchmark.js}")
+    print("stamped %d docs/index.html URLs with ?v=%s" % (n_urls, version))
 
 
 if __name__ == "__main__":

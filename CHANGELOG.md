@@ -7,6 +7,20 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.11] - 2026-08-28
+
+### Fixed
+
+- The web app kept showing the previous release's paper counts to anyone who had
+  visited before. The page loads `data/lab.js`, `data/publications.js` and
+  `data/benchmark.js` by plain relative path, and GitHub Pages serves them with
+  `Cache-Control: max-age=600`, so a returning browser reused its stored copies
+  and reported 263 papers indexed while the deployed files held 314. Every data
+  and asset URL in `docs/index.html` now carries a `?v=<version>` stamp that
+  `gallery/build_site.py` rewrites from the package version, so each release has
+  its own URLs and a returning visitor always fetches the current files. The page
+  still opens directly from disk, since browsers ignore the query for `file://`.
+
 ## [1.6.10] - 2026-08-28
 
 ### Fixed
