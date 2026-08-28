@@ -1,3 +1,769 @@
+- id: Chen2023_FusedDeepFuzzyNeuralNetworkController
+  title: A Fused Deep Fuzzy Neural Network Controller and Its Application to Pneumatic Flexible Joint
+  authors: Cheng Chen et al.
+  year: 2023
+  venue: IEEE ASME Trans. Mechatronics
+  doi: 10.1109/TMECH.2023.3259985
+  kind: published
+  topic: Fuzzy Systems & Computing-with-Words
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Deep learning can learn features from large data but, being a fully deterministic model that must
+    be pretrained, it handles uncertain information poorly and is awkward to use in real-time control.
+    Introduces a knowledge-based fuzzy logic system into deep learning and proposes a fused deep fuzzy
+    neural network controller that derives its control signal from both a deep fuzzy neural network and
+    the knowledge-based fuzzy system, so that the knowledge component carries the control at the start
+    while the learned component takes over as it trains. The controller is demonstrated on a pneumatic
+    flexible joint.
+  source: summarized
+- id: Cao2020_AdaptiveProxyRobustControlIntegratedNonlinear
+  title: Adaptive Proxy-Based Robust Control Integrated With Nonlinear Disturbance Observer for Pneumatic
+    Muscle Actuators
+  authors: Yu Cao et al.
+  year: 2020
+  venue: IEEE ASME Trans. Mechatronics
+  doi: 10.1109/TMECH.2020.2997041
+  kind: published
+  topic: General ML & Optimization
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Robotic systems driven by pneumatic muscle actuators can meet unpredictable shocks that change
+    the desired trajectory abruptly and produce large tracking errors, which is dangerous for the physical
+    system. Proposes an adaptive proxy-based robust controller that produces a damped response and regulates
+    the actuator through a virtual proxy, integrated with a nonlinear disturbance observer to absorb system
+    uncertainty and disturbance. The closed-loop tracking states are proven globally uniformly ultimately
+    bounded by Lyapunov analysis, and experiments on a real actuator support the design.
+  source: summarized
+- id: Huang2021_ProxyControlIntelligentAssistiveWalkerIntentional
+  title: Proxy-Based Control of Intelligent Assistive Walker for Intentional Sit-to-Stand Transfer
+  authors: Jian Huang et al.
+  year: 2021
+  venue: IEEE ASME Trans. Mechatronics
+  doi: 10.1109/TMECH.2021.3074800
+  kind: published
+  topic: General ML & Optimization
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: 'Standing up from a seat is routine for healthy people but difficult for the elderly and for patients
+    with lower-limb weakness. Presents an intelligent assistive walker that helps the user complete the
+    transfer safely: an intention recognition method built on an optimized adaptive network-based fuzzy
+    inference system detects a voluntary sit-to-stand from thin-film force-sensing resistors, and a proxy-based
+    controller then generates the assistance force online from a virtual spring-damper model according
+    to the recognized intention.'
+  source: summarized
+- id: Wang2024_GraspingStateAnalysisSoftManipulatorFlexible
+  title: Grasping State Analysis of Soft Manipulator Based on Flexible Tactile Sensor and High-Dimensional
+    Fuzzy System
+  authors: Haoyuan Wang et al.
+  year: 2024
+  venue: IEEE ASME Trans. Mechatronics
+  doi: 10.1109/TMECH.2024.3445504
+  kind: published
+  topic: Fuzzy Systems & Computing-with-Words
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: 'Analyzing the grasping state of a soft manipulator is important but little studied. Designs a
+    flexible tactile sensor with fast response, good repeatability and customizable size and shape, builds
+    a soft manipulator around arrays of it, and defines four grasping states: inflation, shaking, stable
+    and slipping. A high-dimensional Takagi-Sugeno-Kang fuzzy system with switchable normalization is
+    proposed to classify them, and static and dynamic experimental scenarios are used to evaluate it.'
+  source: summarized
+- id: Zhang2018_DistributedHammersteinModelingCrossCouplingEffect
+  title: Distributed Hammerstein Modeling for Cross-Coupling Effect of Multiaxis Piezoelectric Micropositioning
+    Stages
+  authors: Hai-Tao Zhang et al.
+  year: 2018
+  venue: IEEE ASME Trans. Mechatronics
+  doi: 10.1109/TMECH.2018.2870864
+  kind: published
+  topic: General ML & Optimization
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Hysteresis modeling is difficult for piezoelectric actuated systems used in micro and nano scale
+    measurement and manufacturing, and the cross-coupling hysteresis of multiaxis micropositioning stages
+    has hardly been characterized. Proposes a distributed Hammerstein model, a static nonlinearity cascaded
+    with a dynamic linearity, to approximate the nonlinear spatial and temporal cross-coupling effect,
+    with a convergence analysis, and reports that it outperforms conventional piezoelectric models such
+    as the Preisach model.
+  source: summarized
+- id: Ren2020_DesignIntervalTypeFuzzyControllersActive
+  title: Design of Interval Type-2 Fuzzy Controllers for Active Magnetic Bearing Systems
+  authors: Gui-Ping Ren et al.
+  year: 2020
+  venue: IEEE ASME Trans. Mechatronics
+  doi: 10.1109/TMECH.2020.2978018
+  kind: published
+  topic: Fuzzy Systems & Computing-with-Words
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Proposes an active levitation control system for an active magnetic bearing rotor built on an
+    interval type-2 model-based fuzzy logic controller, which compensates for system uncertainty through
+    the design of the type-2 membership functions to levitate the rotor quickly and stably. The nonlinear
+    bearing dynamics are modeled as local linear systems around several operating points and stabilized
+    by parallel distributed compensation, with sufficient conditions for asymptotic stability of the closed
+    loop derived from linear matrix inequalities and Lyapunov theory, and input constraints handled in
+    the design.
+  source: summarized
+- id: Yan2022_IntelligentGaitAnalysisEvaluationSystemCane
+  title: Intelligent Gait Analysis and Evaluation System Based on Cane Robot
+  authors: Qingyang Yan et al.
+  year: 2022
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2022.3213823
+  kind: published
+  topic: Fuzzy Systems & Computing-with-Words
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Gait analysis supports diagnosis and rehabilitation, but current technologies need wearable devices
+    or high-resolution vision systems confined to a limited space. Proposes a mobile gait analysis and
+    walking-ability evaluation system built on a cane robot, with two laser range finders mounted to capture
+    leg motion. A high-dimensional Takagi-Sugeno-Kang fuzzy system, made suitable for high-dimensional
+    data by removing the saturation the softmax defuzzification causes, recognizes the walking states
+    from the motion data alone.
+  source: summarized
+- id: Wang2022_DataDrivenDiscoveryStochasticDifferentialEquations
+  title: Data-Driven Discovery of Stochastic Differential Equations
+  authors: Yasen Wang et al.
+  year: 2022
+  venue: Engineering
+  doi: 10.1016/J.ENG.2022.02.007
+  kind: published
+  topic: General ML & Optimization
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Stochastic differential equations describe processes perturbed by random noise, but identifying
+    the equations that govern a system is hard because the data are strongly stochastic and the dynamics
+    complex, and existing parametric approaches are limited by how much data they need. Presents a framework
+    that uses sparse Bayesian learning to search the space of candidate basis functions for a parsimonious
+    yet physically necessary representation, exploiting the analytical tractability of the resulting formulation.
+  source: summarized
+- id: Lu2025_DiscoveryRewardFunctionEmbodiedReinforcementLearning
+  title: Discovery of the reward function for embodied reinforcement learning agents
+  authors: Renzhi Lu et al.
+  year: 2025
+  venue: Nature Communications
+  doi: 10.1038/S41467-025-66009-Y
+  kind: published
+  topic: General ML & Optimization
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Reward maximization underlies both biological survival and the reinforcement learning that drives
+    intelligent decision-making in embodied agents, which makes the reward function the central design
+    choice. Because real tasks are complex and uncertain, designing an effective reward function by hand
+    is difficult and conventional methods fall short. This paper addresses the discovery of the reward
+    function for embodied reinforcement learning agents.
+  source: summarized
+- id: Wu2007_EnhancedKarnikMendelAlgorithmsIntervalType
+  title: Enhanced Karnik-Mendel Algorithms for Interval Type-2 Fuzzy Sets and Systems
+  authors: Dongrui Wu et al.
+  year: 2007
+  venue: NAFIPS
+  doi: 10.1109/NAFIPS.2007.383834
+  kind: published
+  topic: Fuzzy Systems & Computing-with-Words
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: The Karnik-Mendel algorithms are the iterative procedures used throughout interval type-2 fuzzy
+    logic. They converge monotonically and super-exponentially fast, yet still take two to six iterations.
+    This paper proposes methods to reduce their computational cost, and extensive simulations show the
+    enhanced algorithms save about two iterations on average, more than a 39% reduction in computation
+    time.
+  source: summarized
+- id: Wu2006_SimplifiedTypeFuzzyLogicControllerReal
+  title: A simplified type-2 fuzzy logic controller for real-time control
+  authors: Dongrui Wu et al.
+  year: 2006
+  venue: ISA Trans.
+  doi: 10.1016/S0019-0578(07)60228-6
+  kind: published
+  topic: Fuzzy Systems & Computing-with-Words
+  paradigm: []
+  code_url: null
+  code_source: null
+  tldr: ''
+  source: meta-only
+- id: Wu2004_SimplifiedArchitectureTypeFLSsApplicationNonlinear
+  title: A simplified architecture for type-2 FLSs and its application to nonlinear control
+  authors: Dongrui Wu et al.
+  year: 2004
+  venue: ICCIS
+  doi: 10.1109/ICCIS.2004.1460463
+  kind: published
+  topic: Fuzzy Systems & Computing-with-Words
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: A type-2 fuzzy logic system has at least one type-2 membership function in its rule base, so the
+    inference engine outputs a type-2 fuzzy set that must be type-reduced before defuzzification. Type
+    reduction is computationally intensive, especially with many membership functions and a large rule
+    base, which keeps type-2 systems out of some real-time applications. Proposes a simplified architecture
+    in which only one fuzzy set per input domain is type-2 and the rest are type-1, easing the computational
+    burden while preserving the advantages of a type-2 system over a traditional one.
+  source: summarized
+- id: Mendel2010_ComputingWordsHierarchicalDistributedDecisionMaking
+  title: Computing with Words for Hierarchical and Distributed Decision-Making
+  authors: Jerry M. Mendel et al.
+  year: 2010
+  venue: Atlantis Computational Intelligence Systems
+  doi: 10.2991/978-94-91216-29-9_9
+  kind: published
+  topic: Fuzzy Systems & Computing-with-Words
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Computing with words, in Zadeh's sense, computes over words and propositions drawn from natural
+    language. This chapter introduces a specific architecture for subjective decision-making, the perceptual
+    computer, and briefly describes its encoder, computing-with-words engine and decoder. Its focus is
+    how that architecture assists hierarchical and distributed decision-making, worked through a journal
+    publication judgment advisor that automates part of the paper review process and could relieve reviewers
+    and associate editors of some of their burden.
+  source: summarized
+- id: Joo2009_ForecastingPostFracturingResponseOilWells
+  title: Forecasting the Post-Fracturing Response of Oil Wells in a Tight Reservoir
+  authors: Jhiin Joo et al.
+  year: 2009
+  venue: SPE Western Regional Meeting
+  doi: 10.2118/121394-MS
+  kind: published
+  topic: Fuzzy Systems & Computing-with-Words
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Proposes a two-stage multi-system architecture that forecasts the post-fracturing response of
+    a tight oil reservoir from historical fracturing data. The first stage predicts the 180-day cumulative
+    liquid production directly and the second uses differential correction to predict the first stage's
+    error, with the final forecast combining the two. Five-fold cross-validation in each stage yields
+    five forecasters whose average is that stage's output, and each forecaster is composed of three independent
+    subsystems for location, completion and fracturing.
+  source: summarized
+- id: Song2017_PerformanceComparisonEfficientTypeReductionApproaches
+  title: Performance comparison of efficient type-reduction approaches for interval type-2 fuzzy logic
+    control
+  authors: Zhikang Song et al.
+  year: 2017
+  venue: CAC
+  doi: 10.1109/CAC.2017.8243021
+  kind: published
+  topic: Fuzzy Systems & Computing-with-Words
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Interval type-2 fuzzy logic controllers outperform type-1 controllers in many studies, but their
+    computational cost makes them hard to deploy, and although six type-reduction approaches had been
+    recommended for efficiency, which of them controls best was unknown. This paper optimizes interval
+    type-2 controllers using each of the six with genetic algorithms and compares their control performance
+    on water-level control of a coupled tank apparatus, finding no statistically significant difference
+    among them.
+  source: summarized
+- id: Wu2018_OrderedNovelWeightedAverages
+  title: Ordered Novel Weighted Averages
+  authors: Dongrui Wu et al.
+  year: 2018
+  venue: Studies in Fuzziness and Soft Computing
+  doi: 10.1007/978-3-319-72892-6_2
+  kind: published
+  topic: Fuzzy Systems & Computing-with-Words
+  paradigm: []
+  code_url: null
+  code_source: null
+  tldr: ''
+  source: meta-only
+- id: Liu2018_UnsupervisedEnsembleLearningClassImbalanceProblems
+  title: Unsupervised Ensemble Learning for Class Imbalance Problems
+  authors: Zihan Liu et al.
+  year: 2018
+  venue: CAC
+  doi: 10.1109/CAC.2018.8623590
+  kind: published
+  topic: General ML & Optimization
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Ensemble learning aggregates several weak learners into a strong one and generally improves generalization,
+    and a number of completely unsupervised ensembles have been proposed for binary classification. Most
+    of them assume the two classes are balanced, so their performance degrades under the significant class
+    imbalance that is common in practice. Proposes a spectral meta-learner for class imbalance that accounts
+    for it explicitly, and experiments on 12 UCI datasets from various domains show it significantly outperforming
+    the individual base learners.
+  source: summarized
+- id: Tan2018_RobotPathPlanningImprovedGeneticAlgorithm
+  title: Robot Path Planning Using an Improved Genetic Algorithm with Ordered Feasible Subpaths
+  authors: Xianfeng Tan et al.
+  year: 2018
+  venue: CAC
+  doi: 10.1109/CAC.2018.8623634
+  kind: published
+  topic: General ML & Optimization
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Proposes an improved genetic algorithm for robot path planning with three parts. Initialization
+    divides the free grids into sets along the main diagonal direction, finds all feasible subpaths in
+    each set and connects randomly chosen subpaths in order from start to end, so every initial path is
+    feasible. A new mutation operator keeps the generated paths feasible, and a simplification operator
+    shortens a path while preserving feasibility. Experiments report gains in both speed and path quality.
+  source: summarized
+- id: Chen2018_TSFuzzyLogicControlGeneticAlgorithm
+  title: T-S Fuzzy Logic Control with Genetic Algorithm Optimization for Pneumatic Muscle Actuator
+  authors: Cheng Chen et al.
+  year: 2018
+  venue: ICMIC
+  doi: 10.1109/ICMIC.2018.8529841
+  kind: published
+  topic: Fuzzy Systems & Computing-with-Words
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Building on a three-element model of the pneumatic muscle actuator, proposes Takagi-Sugeno fuzzy
+    logic control optimized by a genetic algorithm for trajectory tracking. Stability is established with
+    Lyapunov's direct method, and the state feedback gains are obtained by solving linear matrix inequalities.
+    Experiments show the controller reaches the desired performance, removing the chattering in trajectory
+    tracking, cutting the tracking error and improving control accuracy.
+  source: summarized
+- id: Du2018_PSOOptimizedFuzzyControlFourRotor
+  title: PSO-Optimized Fuzzy Control for Four-Rotor Unmanned Aerial Vehicle with Suspended Load
+  authors: Peili Du et al.
+  year: 2018
+  venue: CYBER
+  doi: 10.1109/CYBER.2018.8688255
+  kind: published
+  topic: Fuzzy Systems & Computing-with-Words
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Uses a four-rotor unmanned aerial vehicle to carry a suspended load and develops mathematical
+    models relating the vehicle's motion to the swing of the load in three-dimensional space. A fuzzy
+    controller optimized by particle swarm optimization controls both the vehicle's position and the load's
+    swing, and simulation and experiment show it holds position while suppressing the swing, confirming
+    that the vehicle can carry a hanging load and remain robust to external disturbance.
+  source: summarized
+- id: Jiang2017_SeizureClassificationEEGSignalsTransferLearning
+  title: Seizure Classification From EEG Signals Using Transfer Learning, Semi-Supervised Learning and
+    TSK Fuzzy System
+  authors: Yizhang Jiang et al.
+  year: 2017
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2017.2748388
+  kind: published
+  topic: Transfer Learning & Alignment
+  paradigm:
+  - Seizure
+  code_url: null
+  code_source: none
+  tldr: 'Recognizing epileptic seizures from offline EEG matters clinically, and machine learning is faster
+    and more consistent than manual labeling, but accuracy suffers because training and test data are
+    differently distributed and training data are scarce, and most models are black boxes. This paper
+    combines three remedies: transductive transfer learning reduces the distribution discrepancy, semi-supervised
+    learning exploits the unlabeled test data to make up for the shortage of training data, and a TSK
+    fuzzy system makes the model interpretable. Two learning algorithms are proposed to train the system,
+    and experiments show better performance than many state-of-the-art approaches.'
+  source: summarized
+- id: Tian2019_DeepMultiViewFeatureLearningEEG
+  title: Deep Multi-View Feature Learning for EEG-Based Epileptic Seizure Detection
+  authors: Xiaobin Tian et al.
+  year: 2019
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2019.2940485
+  kind: published
+  topic: Deep Architectures
+  paradigm:
+  - Seizure
+  code_url: null
+  code_source: none
+  tldr: Detecting epileptic seizures early depends on finding features in the EEG that identify them reliably.
+    Proposes a multi-view deep feature extraction method that first builds initial multi-view features
+    with the fast Fourier transform and wavelet packet decomposition, then learns deep features from them
+    with a convolutional network, which lowers the dimensionality and improves seizure identification.
+    A multi-view Takagi-Sugeno-Kang fuzzy system, an interpretable rule-based classifier, is then trained
+    on those features, and experiments report strong classification performance and generalization.
+  source: summarized
+- id: Meng2023_UserIdentityProtectionEEGBrainComputer
+  title: User Identity Protection in EEG-Based Brain-Computer Interfaces
+  authors: Lubin Meng et al.
+  year: 2023
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2023.3310883
+  kind: published
+  topic: Privacy-Preserving BCI
+  paradigm: []
+  code_url: https://github.com/lbinmeng/EEG_Privacy_Protection
+  code_source: github-search
+  tldr: 'Research on EEG-based BCIs concentrates on decoding accuracy, yet EEG also carries private information
+    such as user identity and emotion. This paper first exposes the problem: user identity is easy to
+    learn from EEG, so separate sessions from one user can be linked together and mined for more private
+    information. It then proposes two ways to turn EEG into identity-unlearnable data, removing the identity
+    information while keeping performance on the primary BCI task. Across seven EEG datasets from five
+    BCI paradigms the converted data cut user identification accuracy from 70.01% to at most 21.36%.'
+  source: summarized
+- id: Zhao2023_SourceFreeDomainAdaptationSFDAPrivacy
+  title: Source-Free Domain Adaptation (SFDA) for Privacy-Preserving Seizure Subtype Classification
+  authors: Changming Zhao et al.
+  year: 2023
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2023.3274563
+  kind: published
+  topic: Privacy-Preserving BCI
+  paradigm:
+  - Seizure
+  code_url: https://github.com/zhaochangming/TrBoosting
+  code_source: github-search
+  tldr: Source-free domain adaptation transfers from a pre-trained source model rather than the source
+    data, which protects the privacy of the source patients while reducing how much labeled calibration
+    data a new patient must provide. Introduces semi-supervised transfer boosting (SS-TrBoosting), a boosting-based
+    source-free approach for seizure subtype classification, and extends it to unsupervised transfer boosting
+    (U-TrBoosting) for the case where the new patient labels nothing. On three public seizure datasets
+    both outperformed several classical and state-of-the-art approaches in cross-dataset and cross-patient
+    seizure subtype classification.
+  source: summarized
+- id: Marathe2015_ImprovedNeuralSignalClassificationRapidSerial
+  title: Improved Neural Signal Classification in a Rapid Serial Visual Presentation Task Using Active
+    Learning
+  authors: Amar R. Marathe et al.
+  year: 2015
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2015.2502323
+  kind: published
+  topic: Active Learning
+  paradigm:
+  - P300
+  code_url: null
+  code_source: none
+  tldr: Most real-time BCIs need extensive individual calibration before use, and have to be recalibrated
+    as the neural signals change with user state, environment and task, so anything that shortens calibration
+    makes such systems markedly more usable. Active learning is an iterative semi-supervised technique
+    for settings where data are plentiful but labels are expensive. This paper applies it to a simulated
+    BCI for target identification under a rapid serial visual presentation paradigm, to minimize the training
+    samples needed to calibrate a neural classifier, and reports comparable overall accuracy from significantly
+    less labeled data, in some cases under 20%.
+  source: summarized
+- id: Wu2013_CollaborativeFilteringBrainComputerInteractionTransfer
+  title: Collaborative Filtering for Brain-Computer Interaction Using Transfer Learning and Active Class
+    Selection
+  authors: Dongrui Wu et al.
+  year: 2013
+  venue: PLoS ONE
+  doi: 10.1371/journal.pone.0056624
+  kind: published
+  topic: Transfer Learning & Alignment
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Brain-computer interaction and physiological computing are held back by the large individual differences
+    in neural and physiological responses, which is why many researchers train a separate recognition
+    algorithm per person. Reducing the individual training data required, or raising accuracy without
+    collecting more of it, is therefore the practical problem. This paper applies collaborative filtering,
+    which combines a subject's own training data with data from other similar subjects, built on transfer
+    learning, active class selection and a mean-squared-difference user-similarity heuristic.
+  source: summarized
+- id: An2023_AlgorithmContestMotorImageryBCIWorld
+  title: 'Algorithm contest of motor imagery BCI in the World Robot Contest 2022: A survey'
+  authors: Jiayu An et al.
+  year: 2023
+  venue: Brain Science Advances
+  doi: 10.26599/BSA.2023.9050011
+  kind: published
+  topic: Transfer Learning & Alignment
+  paradigm:
+  - MI
+  code_url: null
+  code_source: none
+  tldr: 'Fifteen teams reached the finals of the motor-imagery algorithm contest at the BCI Controlled
+    Robot Contest of the 2022 World Robot Contest. This survey introduces the motor-imagery paradigm and
+    the existing classification algorithms, describes the competition content and setting, and then walks
+    through the algorithms of the top five finalists step by step: channel selection, data length selection,
+    preprocessing, augmentation, classification network, and training and testing settings. It closes
+    by discussing what distinguishes each algorithm and how the results compare.'
+  source: summarized
+- id: Du2023_OverviewWinningApproaches2022WorldRobot
+  title: 'Overview of the winning approaches in 2022 World Robot Contest Championship: Asynchronous SSVEP'
+  authors: Zhenbang Du et al.
+  year: 2023
+  venue: Brain Science Advances
+  doi: 10.26599/BSA.2023.9050010
+  kind: published
+  topic: Transfer Learning & Alignment
+  paradigm:
+  - SSVEP
+  code_url: null
+  code_source: none
+  tldr: In an asynchronous SSVEP-based BCI the subject looks at the screen without a synchronization signal
+    from the system, so the algorithm has to decide whether the subject is being stimulated at all, which
+    makes accurate classification much harder. Several effective frameworks for this were proposed in
+    the SSVEP competition of the 2022 World Robot Contest Championship. This paper reviews the approaches
+    of the five finalist teams and compares them, showing how each builds a different asynchronous recognition
+    framework and uses different statistics to separate the intentional-control state from the non-control
+    state.
+  source: summarized
+- id: Wu2022_ReviewTrainingFreeEventRelatedPotential
+  title: Review of training-free event-related potential classification approaches in the World Robot
+    Contest 2021
+  authors: Huanyu Wu et al.
+  year: 2022
+  venue: Brain Science Advances
+  doi: 10.26599/BSA.2022.9050001
+  kind: published
+  topic: Transfer Learning & Alignment
+  paradigm:
+  - P300
+  code_url: null
+  code_source: none
+  tldr: Rapid serial visual presentation has become one of the most used event-related potential paradigms,
+    and the algorithms that need no subject-specific training are the ones that matter for deployable
+    systems. The ERP competition of the BCI Controlled Robot Contest at the 2021 World Robot Contest produced
+    several effective training-free frameworks. This paper discusses how much each contributes without
+    training and how to apply them in a practical system, concluding that appropriate preprocessing helps
+    greatly, that non-deep algorithms can be more stable than deep ones, and that ensembling makes the
+    model steadier.
+  source: summarized
+- id: Lu2025_ElectroencephalographyEnablesContinuousDecodingHandMotion
+  title: Electroencephalography Enables Continuous Decoding of Hand Motion Angles in Polar Coordinates
+  authors: Xiaoli Lu et al.
+  year: 2025
+  venue: Cyborg and Bionic Systems
+  doi: 10.34133/CBSYSTEMS.0469
+  kind: published
+  topic: Deep Architectures
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Hand movement is usually represented in Cartesian coordinates in EEG-based BCI work, although
+    polar coordinates describe circular motion more naturally by encoding the angle directly. This study
+    asks whether hand motion angles in polar coordinates can be decoded continuously from EEG, recording
+    participants during bimanual circular tracing at a fixed radius. Six deep models were evaluated, EEGNet,
+    DeepConvNet and ShallowConvNet plus variants with long short-term memory layers, and across eight
+    participants all six beat chance level, the best reaching a mean squared error of 1.012 rad-squared
+    and a mean absolute error of 0.627 rad.
+  source: summarized
+- id: Quan2023_EEGAffectiveComputing
+  title: EEG-based Affective Computing
+  authors: Xueliang Quan et al.
+  year: 2023
+  venue: Handbook of Human-Machine Systems
+  doi: 10.1002/9781119863663.CH33
+  kind: published
+  topic: General ML & Optimization
+  paradigm:
+  - Affect
+  code_url: null
+  code_source: none
+  tldr: 'Affective computing aims at systems that recognize, interpret, synthesize or simulate human affect,
+    and EEG is one of its important inputs. This handbook chapter summarizes recent progress in EEG-based
+    affective computing: the history, theories and workflow of the field and the popular public datasets,
+    then the features and machine learning algorithms in common use, with emphasis on transfer learning,
+    active learning and deep learning, and finally the open challenges and future research directions.'
+  source: summarized
+- id: Wang2020_NeuralDecodingActiveLearningIntracorticalBrain
+  title: Neural Decoding Based on Active Learning for Intracortical Brain-Machine Interfaces
+  authors: Weihua Wang et al.
+  year: 2020
+  venue: ICMA
+  doi: 10.1109/ICMA49215.2020.9233606
+  kind: published
+  topic: Active Learning
+  paradigm:
+  - iBCI
+  code_url: null
+  code_source: none
+  tldr: Labeling the many unlabeled samples of an intracortical brain-machine interface is slow and expensive.
+    Proposes three greedy sampling active learning algorithms, denoised greedy sampling on the inputs,
+    denoised greedy sampling on the outputs, and denoised improved greedy sampling, which use a one-class
+    support vector machine to reduce the influence of abnormal points in the raw data and so make decoding
+    more stable. On rhesus electrophysiological recordings the three achieved higher accuracy than query
+    by committee and uncertainty sampling.
+  source: summarized
+- id: Yang2022_AdhesiveHydrophobicBilayerHydrogelEnabledSkin
+  title: Adhesive and Hydrophobic Bilayer Hydrogel Enabled On-Skin Biosensors for High-Fidelity Classification
+    of Human Emotion
+  authors: Ganguang Yang et al.
+  year: 2022
+  venue: Advanced Functional Materials
+  doi: 10.1002/ADFM.202200457
+  kind: published
+  topic: General ML & Optimization
+  paradigm:
+  - Affect
+  code_url: null
+  code_source: none
+  tldr: Emotion recognition from EEG normally relies on many rigid electrodes, which are uncomfortable,
+    hard to wear for long and sensitive to interference, and the resulting distribution differences lower
+    classification accuracy. Proposes on-skin biosensors that use an adhesive and hydrophobic bilayer
+    hydrogel as the device-skin interface, combining catechol adhesion with electrostatic attraction for
+    strong adhesion and a rearranged hydrophobic layer for water repellence. The biosensor collects high-quality
+    electrophysiological signals even under vibration and sweating, which supports high-fidelity emotion
+    classification.
+  source: summarized
+- id: Wang2018_DeepLearningSleepStageClassification
+  title: Deep Learning for Sleep Stage Classification
+  authors: Yang Wang et al.
+  year: 2018
+  venue: CAC
+  doi: 10.1109/CAC.2018.8623637
+  kind: published
+  topic: Deep Architectures
+  paradigm:
+  - Sleep
+  code_url: null
+  code_source: none
+  tldr: Sleep staging matters for diagnosing sleep-related disease, but visual scoring is slow and depends
+    heavily on the scorer's experience. Proposes a compact convolutional network that uses a single EEG
+    channel and, unlike traditional approaches built on hand-engineered features, works end to end with
+    almost no prior knowledge or preprocessing. Experiments on the expanded Sleep-EDF database confirm
+    its effectiveness. The paper also addresses the class imbalance across sleep stages, introducing balanced
+    classification accuracy as a metric and showing that class-imbalance weights raise it substantially
+    at the cost of a small drop in overall accuracy.
+  source: summarized
+- id: Guo2019_DiscriminativeSparseGeneralizedCanonicalCorrelationAnalysis
+  title: Discriminative Sparse Generalized Canonical Correlation Analysis (DSGCCA)
+  authors: Chenfeng Guo et al.
+  year: 2019
+  venue: CAC
+  doi: 10.1109/CAC48633.2019.8997468
+  kind: published
+  topic: General ML & Optimization
+  paradigm: []
+  code_url: null
+  code_source: none
+  tldr: Canonical correlation analysis is a representative multi-view subspace learning approach, but
+    it handles only two views, produces dense features and, being unsupervised, ignores the labels available
+    in supervised learning. Proposes discriminative sparse generalized CCA, which combines generalized
+    CCA for more than two views with supervised discriminative sparse principal component analysis to
+    use the label information, so that small multi-view datasets with high feature dimensionality and
+    any number of views can be handled. On four classification datasets it outperformed several representative
+    CCA-based approaches.
+  source: summarized
+- id: An2025_SparseKnowledgeSharingSKSPrivacyPreserving
+  title: Sparse knowledge sharing (SKS) for privacy-preserving domain incremental seizure detection
+  authors: Jiayu An et al.
+  year: 2025
+  venue: Journal of Neural Engineering
+  doi: 10.1088/1741-2552/adb998
+  kind: published
+  topic: Privacy-Preserving BCI
+  paradigm:
+  - Seizure
+  code_url: https://github.com/JiayuAn0818/Sparse-Knowledge-Sharing
+  code_source: github-search
+  tldr: 'Distribution shift between patients makes seizure detection patient-specific, so a separate model
+    is customarily trained for each patient. Considers privacy-preserving domain incremental learning,
+    in which the model learns from one patient after another while seeing only the current patient''s
+    data and the previously trained models, and which therefore faces catastrophic forgetting, privacy
+    protection and distribution shift at once. Proposes sparse knowledge sharing (SKS): Euclidean alignment
+    first aligns the domains, adaptive pruning then allocates a subnetwork per domain so that domain-specific
+    parameters carry new knowledge while shared parameters preserve earlier knowledge, and supervised
+    contrastive learning sharpens the features. On two public seizure datasets SKS performed best in this
+    setting, rehearsal-free, balancing plasticity against stability.'
+  source: summarized
+- id: Bian2023_SmallDataLeastSquaresTransformationSd
+  title: Small Data Least-Squares Transformation (sd-LST) for Fast Calibration of SSVEP-Based BCIs
+  authors: Rui Bian et al.
+  year: 2023
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2022.3225878
+  kind: published
+  topic: Transfer Learning & Alignment
+  paradigm:
+  - SSVEP
+  code_url: https://github.com/BianRuiBR/sd-LST
+  code_source: github-search
+  tldr: Steady-state visual evoked potentials are among the most popular BCI paradigms for their high
+    information transfer rate and signal-to-noise ratio, and many calibration-free and calibration-based
+    approaches exist to improve them. This paper considers a quick-calibration scenario in which plenty
+    of data are available from multiple source subjects but the new subject supplies only a small number
+    of trials, from a subset of the stimulus frequencies, and proposes small data least-squares transformation
+    (sd-LST) for it. On three public SSVEP datasets sd-LST outperformed several classical and state-of-the-art
+    approaches with only about 10 calibration trials for a 40-target speller.
+  source: summarized
+- id: Du2023_MixtureExpertsEEGSeizureSubtypeClassification
+  title: Mixture of Experts for EEG-Based Seizure Subtype Classification
+  authors: Zhenbang Du et al.
+  year: 2023
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2023.3337802
+  kind: published
+  topic: Deep Architectures
+  paradigm:
+  - Seizure
+  code_url: https://github.com/ZhenbangDu/Seizure_MoE
+  code_source: github-search
+  tldr: 'EEG-based seizure subtype classification matters in epilepsy diagnosis and treatment but faces
+    two obstacles: certain seizure types are far less common than others, and without prior knowledge
+    a deep model needs a large number of labeled EEG samples. Proposes two Mixture of Experts models,
+    Seizure-MoE and Mix-MoE, of which Mix-MoE addresses both, using an imbalanced sampler for the severe
+    class imbalance and incorporating manual EEG features into the network as prior knowledge. On two
+    public datasets both models outperformed multiple existing approaches in cross-subject seizure subtype
+    classification, and the authors note the design extends to other EEG problems with severe class imbalance.'
+  source: summarized
+- id: Peng2022_TIEEEGNetTemporalInformationEnhancedEEGNet
+  title: 'TIE-EEGNet: Temporal Information Enhanced EEGNet for Seizure Subtype Classification'
+  authors: Ruimin Peng et al.
+  year: 2022
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
+  doi: 10.1109/TNSRE.2022.3204540
+  kind: published
+  topic: Deep Architectures
+  paradigm:
+  - Seizure
+  code_url: https://github.com/rmpeng/TIE-EEGNet
+  code_source: github-search
+  tldr: Manual seizure subtype classification is expensive and slow, while automatic classification usually
+    needs many labeled samples for training. Proposes TIE-EEGNet, a slim EEGNet-based network whose first
+    convolution layer is augmented by a temporal information enhancement module with sinusoidal encoding,
+    together with a training strategy that selects hyper-parameters automatically. On the public TUSZ
+    dataset and the authors' own CHSZ dataset of infants and children it outperformed several traditional
+    and deep models in cross-subject seizure subtype classification, and also performed best in a challenging
+    transfer-learning scenario. Both the code and the CHSZ dataset are public.
+  source: summarized
+- id: Wang2023_UnsupervisedDomainAdaptationCrossPatientSeizure
+  title: Unsupervised domain adaptation for cross-patient seizure classification
+  authors: Ziwei Wang et al.
+  year: 2023
+  venue: Journal of Neural Engineering
+  doi: 10.1088/1741-2552/ad0859
+  kind: published
+  topic: Transfer Learning & Alignment
+  paradigm:
+  - Seizure
+  code_url: https://github.com/wzwvv/TASA
+  code_source: github-search
+  tldr: 'EEG''s low signal-to-noise ratio, strong non-stationarity and large individual differences make
+    a seizure classification model built for one patient hard to reuse on another. Considers multi-source
+    unsupervised domain adaptation for cross-patient seizure classification, where several labeled source
+    patients are used to label a new patient''s trials, and proposes an approach in three parts: source
+    domain selection filters out dissimilar sources, global domain adaptation aligns the overall distributions
+    of the selected sources and the target, and target agent subdomain adaptation identifies the closest
+    source so that its labels can be used. On two public seizure datasets it outperformed 13 existing
+    approaches, which the authors present as saving clinicians considerable labeling time.'
+  source: summarized
+- id: Bian2022_OverviewWinningApproachesBCIControlledRobot
+  title: 'Overview of the winning approaches in BCI Controlled Robot Contest in World Robot Contest 2021:
+    Calibration-free SSVEP'
+  authors: Rui Bian et al.
+  year: 2022
+  venue: Brain Science Advances
+  doi: 10.26599/BSA.2022.9050002
+  kind: published
+  topic: Transfer Learning & Alignment
+  paradigm:
+  - SSVEP
+  code_url: https://github.com/BianRuiBR/WRC_SSVEP_calibration-free
+  code_source: github-search
+  tldr: The calibration-free scenario matters in SSVEP-based BCIs because it is what a subject meets the
+    first time they use the system. This paper introduces the algorithm frameworks used by the top five
+    teams in the calibration-free SSVEP competition of the BCI Controlled Robot Contest at the 2021 World
+    Robot Contest, whose effectiveness the five final subjects' results confirmed. It discusses how much
+    each approach contributes to system performance in the calibration-free scenario and gives suggestions
+    on using them in a real-world system.
+  source: summarized
 - id: Cui2026_SCORESubjectCoordinateRecoveryLabelFree
   title: 'SCORE: Subject Coordinate Recovery for Label-Free Cross-Subject EEG-to-Image Retrieval'
   authors: Zhenyao Cui et al.
@@ -179,7 +945,7 @@
   title: An Online Bimanual EEG-MI-BCI With Shared Control for Bilateral Robotic-Assisted Training
   authors: Mingming Zhang et al.
   year: 2026
-  venue: IEEE Trans. Neural Syst. Rehabil. Eng.
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
   doi: 10.1109/TNSRE.2026.3714990
   kind: published
   topic: General ML & Optimization
@@ -741,8 +1507,8 @@
   kind: published
   topic: General ML & Optimization
   paradigm: []
-  code_url: null
-  code_source: none
+  code_url: https://github.com/hustmx721/lingjiu_VD-RCA
+  code_source: github-search
   tldr: Deep-learning software vulnerability detection struggles to correlate code slices with scripts
     (causing false positives) and to precisely localize root causes. VLD-LP preprocesses C/C++ source
     code, extracts graph structures, and combines them with the script into prompts, then fine-tunes an
@@ -877,8 +1643,8 @@
   topic: Transfer Learning & Alignment
   paradigm:
   - P300
-  code_url: null
-  code_source: none
+  code_url: https://github.com/xqchen914/AFPM
+  code_source: github-search
   tldr: Cross-dataset EEG decoding is hampered by inconsistent channel layouts, non-stationary signal
     distributions, and limited use of neurophysiological priors. AFPM is a plug-and-play, calibration-free
     framework with two parts. The first, Spatial Alignment, selects task-relevant channels using brain-region
@@ -898,8 +1664,8 @@
   topic: Robustness & Security
   paradigm:
   - Speech
-  code_url: null
-  code_source: none
+  code_url: https://github.com/jxgogo/Retrain_Framework
+  code_source: github-search
   tldr: For motor-imagery EEG, traditional CSP-based pipelines are robust with small data but suboptimal,
     while deep networks need much more labeled data to avoid overfitting. This Science China Information
     Sciences letter proposes a CSP-based retraining framework that instantiates a neural network with
@@ -1546,8 +2312,8 @@
   kind: published
   topic: Foundation & Self-Supervised Models
   paradigm: []
-  code_url: null
-  code_source: none
+  code_url: https://github.com/JiayuAn0818/SSG-SFDA
+  code_source: github-search
   tldr: Addresses domain-incremental learning in a source-free, semi-supervised setting where only a pre-trained
     source model, a few labeled target samples, and many unlabeled target samples are available, and the
     model must perform well on all domains while protecting source-data privacy and avoiding catastrophic
@@ -2026,8 +2792,8 @@
   topic: Data Augmentation & Generation
   paradigm:
   - Drowsy
-  code_url: null
-  code_source: none
+  code_url: https://github.com/mingyr/eeg-dqn
+  code_source: github-search
   tldr: Frames EEG-based driver drowsiness estimation as a reinforcement-learning problem, analyzing an
     EEG dataset from a simulated endurance driving test. The authors adapt driving-test terminology to
     a Q-learning formulation and tailor a deep Q-network (DQN) to the characteristics of EEG data so that
@@ -2117,8 +2883,8 @@
   kind: published
   topic: Deep Architectures
   paradigm: []
-  code_url: null
-  code_source: none
+  code_url: https://github.com/ZhangXiao96/RethinkSpectralBias
+  code_source: github-search
   tldr: Re-examines the relationship among generalization, memorization, and the spectral bias of deep
     neural networks, challenging the assumed monotonicity of the learning bias (that DNNs learn simple
     low-to-high-frequency patterns). Under a deep double-descent setup, the authors show the high-frequency
@@ -2479,8 +3245,8 @@
   kind: published
   topic: Robustness & Security
   paradigm: []
-  code_url: null
-  code_source: none
+  code_url: https://github.com/ZhenhuaShi/SDSPCAAN
+  code_source: github-search
   tldr: Most linear dimensionality-reduction methods preserve either global structure (e.g., PCA, but
     outlier-sensitive) or local structure (e.g., locality preserving projections, but unsupervised with
     a fixed graph), not both. The paper proposes SDSPCAAN, which integrates neighborhood-free supervised
@@ -2613,8 +3379,8 @@
   kind: published
   topic: Robustness & Security
   paradigm: []
-  code_url: null
-  code_source: none
+  code_url: https://github.com/lbinmeng/NPP_Attack
+  code_source: github-search
   tldr: Exposes a security vulnerability of EEG-based BCIs to backdoor (poisoning) attacks. It proposes
     using a narrow period pulse (NPP) as the backdoor key injected into a small number of training samples.
     Crucially, unlike prior EEG attacks, the key does not need to be synchronized with the EEG trials,
@@ -2820,8 +3586,8 @@
   kind: published
   topic: Privacy-Preserving BCI
   paradigm: []
-  code_url: null
-  code_source: none
+  code_url: https://github.com/lbinmeng/BCI_regression_attack
+  code_source: github-search
   tldr: Studies adversarial target attacks for regression problems, which had been largely unexplored
     compared with classification attacks, in the context of EEG-based BCIs. It proposes two white-box
     target attack approaches that, assuming full knowledge of the regression model, craft small input
@@ -2992,8 +3758,8 @@
   topic: Deep Architectures
   paradigm:
   - iBCI
-  code_url: null
-  code_source: none
+  code_url: https://github.com/ZhenhuaShi/MvBLS
+  code_source: github-search
   tldr: Decodes non-human-primate oculomotor decisions from invasive cortical signals, exploiting that
     simultaneously recorded local field potentials (LFPs) and action potentials (spikes) carry complementary
     information and can be treated as two views. Extends the Broad Learning System (a wide, incrementally-grown
@@ -3237,8 +4003,8 @@
   topic: General ML & Optimization
   paradigm:
   - Affect
-  code_url: null
-  code_source: none
+  code_url: https://github.com/YuqiCui/OMGEmotionChallenge_WCG-WZ
+  code_source: github-search
   tldr: This short paper describes the authors' solution to the 2018 IEEE WCCI OMG One-Minute Gradual-Emotion
     challenge, which required estimating continuous arousal and valence from short videos. They build
     four base regression models from visual features (InceptionV3 features fed to an LSTM plus MLP) and
@@ -4679,8 +5445,8 @@
   kind: published
   topic: Transfer Learning & Alignment
   paradigm: []
-  code_url: null
-  code_source: null
+  code_url: https://github.com/xqchen914/EEGAdversarialBenchmark
+  code_source: github-search
   tldr: ''
   source: meta-only
 - id: Chen2025_The1stInternationalWorkshopDisentangledRepresentation
@@ -4758,8 +5524,8 @@
   kind: published
   topic: General ML & Optimization
   paradigm: []
-  code_url: null
-  code_source: null
+  code_url: https://github.com/zhaochangming/BoostForest
+  code_source: github-search
   tldr: ''
   source: meta-only
 - id: Wu2023_AffectiveBrainComputerInterfacesaBCIsTutorial
@@ -4786,38 +5552,37 @@
   topic: Transfer Learning & Alignment
   paradigm:
   - MI
-  code_url: null
-  code_source: null
-  tldr: >
-    Offline unsupervised cross-subject motor-imagery transfer that protects
-    source-subject privacy. It generates source models locally and encapsulates
-    them as APIs, builds a virtual intermediate domain to transfer knowledge to the
-    target, then performs feature adaptation. Source-free and lightweight (few
-    parameters, no access to source data or massive source models). On four MI
-    datasets it outperformed 13 approaches, including transfer methods that use the
-    source samples or model parameters directly.
+  code_url: https://github.com/chamwen/LSFT
+  code_source: github-search
+  tldr: 'Offline unsupervised cross-subject motor-imagery transfer that protects source-subject privacy.
+    It generates source models locally and encapsulates them as APIs, builds a virtual intermediate domain
+    to transfer knowledge to the target, then performs feature adaptation. Source-free and lightweight
+    (few parameters, no access to source data or massive source models). On four MI datasets it outperformed
+    13 approaches, including transfer methods that use the source samples or model parameters directly.
+
+    '
   source: summarized
 - id: Zhang2022_MultiSourceDecentralizedTransferPrivacyPreserving
   title: Multi-Source Decentralized Transfer for Privacy-Preserving BCIs
   authors: Wen Zhang et al.
   year: 2022
-  venue: IEEE Trans. Neural Syst. Rehabil. Eng.
+  venue: IEEE Transactions on Neural Systems and Rehabilitation Engineering
   doi: 10.1109/TNSRE.2022.3207494
   kind: published
   topic: Privacy-Preserving BCI
   paradigm:
   - MI
   - Affect
-  code_url: null
-  code_source: null
-  tldr: >
-    Decentralized privacy-preserving transfer: several source subjects whose data
-    and computations stay local, exposing only their pre-trained models' parameters
-    (gray-box) or predictions (black-box). Proposes offline unsupervised
-    multi-source decentralized transfer (MSDT), which builds one pre-trained model
-    per source subject and transfers to a new subject without accessing any source
-    data. On motor-imagery and affective BCI datasets MSDT improved classification
-    while, unlike the compared approaches, preserving privacy.
+  code_url: https://github.com/chamwen/MSDT
+  code_source: github-search
+  tldr: 'Decentralized privacy-preserving transfer: several source subjects whose data and computations
+    stay local, exposing only their pre-trained models'' parameters (gray-box) or predictions (black-box).
+    Proposes offline unsupervised multi-source decentralized transfer (MSDT), which builds one pre-trained
+    model per source subject and transfers to a new subject without accessing any source data. On motor-imagery
+    and affective BCI datasets MSDT improved classification while, unlike the compared approaches, preserving
+    privacy.
+
+    '
   source: summarized
 - id: Wu2023_ProgramChairMessage
   title: Program Chair Message
@@ -4855,8 +5620,8 @@
   kind: published
   topic: Transfer Learning & Alignment
   paradigm: []
-  code_url: null
-  code_source: null
+  code_url: https://github.com/sylyoung/MetaEEG
+  code_source: github-search
   tldr: ''
   source: meta-only
 - id: Wu2022_TransferLearningMotorImageryBrainComputer
@@ -4954,8 +5719,8 @@
   kind: published
   topic: Active Learning
   paradigm: []
-  code_url: null
-  code_source: null
+  code_url: https://github.com/drwuHUST/sAL
+  code_source: github-search
   tldr: ''
   source: meta-only
 - id: Wu2018_SpatialFilteringEEGRegressionProblemsBrain

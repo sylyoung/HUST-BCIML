@@ -58,6 +58,7 @@
 
 完整版本历史见 [`CHANGELOG.md`](CHANGELOG.md)。近期要点：
 
+- **2026-08-28（v1.6.10）** 补回 17 条缺失的代码链接，新增 41 篇此前未收录的论文，索引扩充到 314 篇，其中 98 篇有公开代码。
 - **2026-08-28（v1.6.9）** 论文索引更新至 273 篇，三篇预印本已正式发表，每条记录都补齐了 DOI。
 - **2026-08-19（v1.6.8）** 网页应用头部新增实验室标识，并用作浏览器页签图标。
 - **2026-08-06（v1.6.7）** 仓库只发布一个依赖文件，测量环境锁不再随仓库发布。
@@ -122,7 +123,7 @@
 
 **2. 论文到代码网页应用**，位于目录 [`docs/`](docs/)。
 
-一个静态网页应用，并列呈现基准排行榜和覆盖实验室 **273 篇论文**的可检索**论文到代码总览**，其中 73 篇有公开代码。它可以作为本地文件直接打开，也可以由 GitHub Pages 托管，**无需构建步骤**。
+一个静态网页应用，并列呈现基准排行榜和覆盖实验室 **314 篇论文**的可检索**论文到代码总览**，其中 98 篇有公开代码。它可以作为本地文件直接打开，也可以由 GitHub Pages 托管，**无需构建步骤**。
 
 ## 研究动机
 
@@ -279,7 +280,7 @@ python -m hustbciml.run --aligner EA --augmenter CSDA --backbone DBConformer \
 
 网页应用由人工整理的 YAML 经过单一脚本生成，不依赖任何框架。
 
-- **唯一权威数据源**，位于 [`gallery/data/`](gallery/data/)，包括 `publications.yml`（273 篇论文）、`lab.yml`（简介、核心项目、精选仓库）与 `benchmark.yml`（受控比较排行榜）。
+- **唯一权威数据源**，位于 [`gallery/data/`](gallery/data/)，包括 `publications.yml`（314 篇论文）、`lab.yml`（简介、核心项目、精选仓库）与 `benchmark.yml`（受控比较排行榜）。
 
 - **生成器**，即 [`gallery/build_site.py`](gallery/build_site.py)，把这些 YAML 文件编译为 `docs/data/*.js`，只需要 PyYAML。
 
@@ -312,7 +313,7 @@ HUST-BCIML/
 │   └── data/                   # generated: lab.js, publications.js, benchmark.js
 ├── gallery/                    # source of truth for the web app's data
 │   ├── data/
-│   │   ├── publications.yml     # 273 papers (hand-curated)
+│   │   ├── publications.yml     # 314 papers (hand-curated)
 │   │   ├── lab.yml              # lab bio, anchor project, featured repos
 │   │   └── benchmark.yml        # controlled-comparison leaderboard
 │   └── build_site.py           # YAML → docs/data/*.js   (requires only PyYAML)

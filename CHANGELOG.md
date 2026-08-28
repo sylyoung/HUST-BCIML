@@ -7,6 +7,52 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.10] - 2026-08-28
+
+### Fixed
+
+- Seventeen papers were shown as having no public code when their code exists. The
+  gallery's own accounts were swept repository by repository, and a repository was
+  only linked once its README or its source named the paper: `drwuHUST/sAL`,
+  `sylyoung/MetaEEG`, `xqchen914/AFPM`, `xqchen914/EEGAdversarialBenchmark`,
+  `chamwen/LSFT`, `chamwen/MSDT`, `hustmx721/lingjiu_VD-RCA`,
+  `JiayuAn0818/SSG-SFDA`, `zhaochangming/BoostForest`, `ZhenhuaShi/MvBLS`,
+  `ZhenhuaShi/SDSPCAAN`, `ZhangXiao96/RethinkSpectralBias`,
+  `lbinmeng/BCI_regression_attack`, `YuqiCui/OMGEmotionChallenge_WCG-WZ`,
+  `jxgogo/Retrain_Framework` (confirmed by the `csp_trainer` it imports),
+  `mingyr/eeg-dqn`, and `lbinmeng/NPP_Attack`. The last one had been renamed from
+  `EEG_poisoning_attack` after the narrow period pulse the paper poisons with,
+  which is why searching on the paper title alone had never found it. Papers with
+  public code: 73 → 98.
+
+### Added
+
+- Forty-one publications the index had never listed, taking it from 273 to 314
+  papers. Six surfaced through their own repositories: Seizure-MoE and TIE-EEGNet
+  (IEEE TNSRE), the cross-patient seizure domain-adaptation paper and SKS
+  (Journal of Neural Engineering), sd-LST (IEEE TNSRE) and the calibration-free
+  SSVEP contest overview (Brain Science Advances). The remaining thirty-five came
+  from reconciling the index against the complete publisher record: EEG and BCI
+  work including user identity protection, source-free seizure subtype
+  classification, RSVP active learning, deep multi-view seizure detection and the
+  World Robot Contest surveys, alongside the laboratory's control, fuzzy-system
+  and general machine-learning papers.
+- Every one of the forty-one was verified before being added rather than accepted
+  from an index: the publisher's own record names Dongrui Wu with a Huazhong,
+  USC, DataNova, GE Global Research or National University of Singapore
+  affiliation, and the co-authors are people who already appear on papers in this
+  index. Records that failed that test were left out, among them a misinformation
+  study and an ecological risk model by other authors of the same name, and
+  entries with no registered DOI, which the gallery cannot link.
+
+### Changed
+
+- The blind spot that hid all of this: the index was first built from one
+  bibliographic database's author page, which for this author is missing a large
+  part of the IEEE TNSRE and Journal of Neural Engineering record. The refresh
+  procedure now cross-checks the publisher record as well, and
+  `gallery/data/publications.yml` remains the single source of truth.
+
 ## [1.6.9] - 2026-08-28
 
 ### Added
