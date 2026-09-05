@@ -7,6 +7,29 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.13] - 2026-09-05
+
+### Fixed
+
+- The publication index counted two papers twice, once as an arXiv preprint and
+  again as the journal article the preprint became. Each arXiv record was checked
+  against Crossref and against its own current title, which is how the pair came
+  to light: arXiv 1908.00636 was still listed under its first title, "Optimize TSK
+  Fuzzy Systems for Big Data Classification Problems: Bag of Tricks", but the
+  authors have since renamed it and it carries the journal reference for *IEEE
+  Transactions on Fuzzy Systems* 28(12), which is already in the index; arXiv
+  1812.06303 was likewise still listed as "Multi-Tasking Evolutionary Algorithm
+  (MTEA) for Single-Objective Continuous Optimization" although it is now the
+  MTGA paper in the same journal. Both preprint entries even pointed at the same
+  code repository as their published counterparts. The two duplicates were folded
+  into the published entries, so the index is **312 papers, 97 with public code**
+  rather than 314 and 99. The other twenty-two preprints were checked the same way
+  and none of them has a published version.
+- *Empirical Studies on the Properties of Linear Regions in Deep Neural Networks*
+  was marked as a preprint although it is an ICLR 2020 conference paper. It is now
+  recorded as published; ICLR registers no DOI, so the arXiv DOI remains its only
+  identifier.
+
 ## [1.6.12] - 2026-08-28
 
 ### Fixed

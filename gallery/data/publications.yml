@@ -3206,7 +3206,7 @@
   year: 2020
   venue: ICLR
   doi: 10.48550/ARXIV.2001.01072
-  kind: preprint
+  kind: published
   topic: Deep Architectures
   paradigm: []
   code_url: null
@@ -3730,24 +3730,6 @@
     typical applications in pattern recognition, multi-modal retrieval and classification, and multi-view
     embedding.
   source: summarized
-- id: Cui2019_OptimizeTSKFuzzySystemsBigData
-  title: 'Optimize TSK Fuzzy Systems for Big Data Classification Problems: Bag of Tricks'
-  authors: Yuqi Cui et al.
-  year: 2019
-  venue: CoRR
-  doi: 10.48550/ARXIV.1908.00636
-  kind: preprint
-  topic: Fuzzy Systems & Computing-with-Words
-  paradigm: []
-  code_url: https://github.com/YuqiCui/TSK_BN_UR
-  code_source: paper
-  tldr: 'Improves training of TSK fuzzy classifiers on large and/or high-dimensional data, where evolutionary/GD/ANFIS
-    approaches struggle. Proposes a mini-batch gradient descent training algorithm integrating two techniques:
-    uniform regularization (UR), which forces the rules to have similar average contributions to the output
-    to improve generalization, and batch normalization (BN) extended from deep neural networks to TSK
-    classifiers to expedite convergence. Experiments on 12 UCI datasets show UR and BN are each effective
-    and their integration further improves classification performance.'
-  source: summarized
 - id: Shi2020_MultiViewBroadLearningSystemPrimate
   title: Multi-View Broad Learning System for Primate Oculomotor Decision Decoding
   authors: Zhenhua Shi et al.
@@ -4049,25 +4031,6 @@
     after which any standard feature extraction and classifier can be applied. On motor imagery and ERP
     classification, in both offline and simulated-online settings, EA outperforms a state-of-the-art Riemannian
     alignment method and no-alignment baselines.
-  source: summarized
-- id: Wu2018_MultiTaskingEvolutionaryAlgorithmMTEASingle
-  title: Multi-Tasking Evolutionary Algorithm (MTEA) for Single-Objective Continuous Optimization
-  authors: Dongrui Wu et al.
-  year: 2018
-  venue: CoRR
-  doi: 10.48550/ARXIV.1812.06303
-  kind: preprint
-  topic: Fuzzy Systems & Computing-with-Words
-  paradigm: []
-  code_url: https://github.com/drwuHUST/MTGA
-  code_source: github-search
-  tldr: Tackles evolutionary multi-tasking (multi-factorial optimization), i.e., solving several optimization
-    tasks simultaneously by sharing knowledge, which degrades when the tasks differ significantly. The
-    paper proposes the Multi-Tasking Genetic Algorithm (MTGA), which explicitly estimates and uses the
-    bias between tasks so that significantly different tasks can still help each other. On nine benchmarks
-    MTGA beat eight state-of-the-art single- and multi-task methods on average with lower cost than six
-    of them, and it enabled a new strategy for simultaneously optimizing type-1 and interval type-2 fuzzy
-    logic controllers for coupled-tank water-level control.
   source: summarized
 - id: Wu2017_ActiveSemiSupervisedTransferLearningASTL
   title: Active semi-supervised transfer learning (ASTL) for offline BCI calibration
