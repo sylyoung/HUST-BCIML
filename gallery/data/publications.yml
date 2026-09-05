@@ -4521,25 +4521,6 @@
     almost all of these methods are faster than the KM algorithms, and the paper concludes with a concrete
     recommendation to help practitioners choose a structure and type-reduction algorithm.'
   source: summarized
-- id: Wu2013_TwoDifferencesBetweenIntervalType2
-  title: 'Two Differences Between Interval Type-2 and Type-1 Fuzzy Logic Controllers: Adaptiveness and
-    Novelty'
-  authors: Dongrui Wu
-  year: 2013
-  venue: Advances in Type-2 Fuzzy Sets and Systems
-  doi: 10.1007/978-1-4614-6666-6_3
-  kind: published
-  topic: Fuzzy Systems & Computing-with-Words
-  paradigm: []
-  code_url: null
-  code_source: none
-  tldr: This Springer book chapter addresses why interval type-2 (IT2) fuzzy logic controllers handle
-    uncertainty better than their type-1 (T1) counterparts by identifying two fundamental differences.
-    Adaptiveness means the embedded T1 fuzzy sets used to compute the bounds of the type-reduced interval
-    change as the input changes. Novelty means the upper and lower membership functions of the same IT2
-    fuzzy set can be used simultaneously in computing each bound. Because T1 FLCs have neither property,
-    a T1 FLC cannot reproduce the more complex control surface of an IT2 FLC given the same rule base.
-  source: summarized
 - id: Lam2012_IEEECISSocialMediaHaveYou
   title: 'IEEE CIS Social Media: Have You Joined Our Online Community? [Society Briefs]'
   authors: Albert Y. S. Lam et al.
@@ -5353,19 +5334,6 @@
     better control using fewer fuzzy sets/rules, meaning a lower trade-off between modeling accuracy and
     interpretability.
   source: summarized
-- id: Song2026_CISPublicationSpotlightPublicationSpotlight
-  title: CIS Publication Spotlight [Publication Spotlight]
-  authors: Yongduan Song et al.
-  year: 2026
-  venue: IEEE Comput. Intell. Mag.
-  doi: 10.1109/MCI.2026.3664142
-  kind: published
-  topic: General ML & Optimization
-  paradigm: []
-  code_url: null
-  code_source: none
-  tldr: ''
-  source: meta-only
 - id: Kan2026_CMCRDCrossModalContrastiveRepresentationDistillation
   title: 'CMCRD: Cross-Modal Contrastive Representation Distillation for Emotion Recognition'
   authors: Siyuan Kan et al.
@@ -5736,19 +5704,6 @@
   topic: General ML & Optimization
   paradigm:
   - Affect
-  code_url: null
-  code_source: none
-  tldr: ''
-  source: meta-only
-- id: Wu2008_CorrectionsAggregationLinguisticWeightedAverageInterval
-  title: Corrections to "Aggregation Using the Linguistic Weighted Average and Interval Type-2 Fuzzy Sets"
-  authors: Dongrui Wu et al.
-  year: 2008
-  venue: IEEE Trans. Fuzzy Syst.
-  doi: 10.1109/TFUZZ.2008.2005941
-  kind: published
-  topic: Fuzzy Systems & Computing-with-Words
-  paradigm: []
   code_url: null
   code_source: none
   tldr: ''

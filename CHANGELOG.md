@@ -7,6 +7,21 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.14] - 2026-09-05
+
+### Changed
+
+- Three records that the publishers' databases carry but that are not papers were
+  removed from the publication index, under the rule that only official
+  publications and genuine preprints belong in it. They are the one-page
+  *Corrections to "Aggregation Using the Linguistic Weighted Average and Interval
+  Type-2 Fuzzy Sets"* notice, whose 2007 paper stays; the Springer chapter *Two
+  Differences Between Interval Type-2 and Type-1 Fuzzy Logic Controllers:
+  Adaptiveness and Novelty*, which restates the 2012 *IEEE Transactions on Fuzzy
+  Systems* paper that stays; and the last remaining "CIS Publication Spotlight"
+  editorial column. The index is now **309 papers, 97 with public code**. None of
+  the three had a code link, so that figure is unchanged.
+
 ## [1.6.13] - 2026-09-05
 
 ### Fixed
