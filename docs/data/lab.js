@@ -16,12 +16,6 @@ window.LAB = {
     "email": "lsyyoungll@gmail.com"
   },
   "repo_intro": "The lab's open-source home. It contains two components: a unified and reproducible EEG decoding benchmark, and a paper-to-code gallery that links each lab publication to its released code.",
-  "anchor": {
-    "name": "HUST-BCIML: unified EEG-decoding benchmark",
-    "owner": "sylyoung",
-    "url": "https://github.com/sylyoung/HUST-BCIML",
-    "blurb": "This repository. A self-contained framework that reimplements 59 pipeline approaches and 14 ensemble combiners on a single composable pipeline, covering data alignment, data augmentation, network backbones, transfer learning and ensemble aggregation. All of them are compared under one controlled protocol on three MOABB motor imagery EEG datasets. Every result on the leaderboard is a measured reproduction, recorded for each approach."
-  },
   "flagships": [
     {
       "pillar": "Transfer Learning",

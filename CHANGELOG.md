@@ -7,6 +7,24 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.15] - 2026-09-05
+
+### Changed
+
+- The Overview's landing area now carries the **View the benchmark** button directly
+  under the official-sites strip, so the one action the page asks for is visible
+  without scrolling. The strip itself is relabelled **Official lab sites**, which
+  says plainly what the three links are.
+
+### Removed
+
+- The **Anchor project** card. It sat below the approach list and restated, in a
+  longer form, what the repository intro at the top of the page already says, while
+  its two buttons duplicated links available elsewhere: the benchmark link has moved
+  into the landing area, and *Benchmark code* is already on the Benchmark page beside
+  *RESULTS.md*. The `anchor` block has been dropped from `gallery/data/lab.yml`
+  accordingly, along with its Chinese translation.
+
 ## [1.6.14] - 2026-09-05
 
 ### Changed

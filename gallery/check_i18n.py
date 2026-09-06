@@ -117,12 +117,11 @@ def content_strings():
         raw = open(LAB_JS, encoding="utf-8").read()
         lab = json.loads(raw[raw.index("{"):raw.index("\n};") + 2])
         # The Overview's own prose: the lab tagline and the repo intro under the
-        # heading, and the anchor-project card. Each is a tr() call in app.js and
-        # so needs a key exactly as a table blurb does. Flagship `blurb` fields
-        # are deliberately absent: those render in English by design.
+        # heading. Each is a tr() call in app.js and so needs a key exactly as a
+        # table blurb does. Flagship `blurb` fields are deliberately absent:
+        # those render in English by design.
         out.append(("lab tagline", lab.get("tagline")))
         out.append(("lab repo_intro", lab.get("repo_intro")))
-        out.append(("anchor blurb", (lab.get("anchor") or {}).get("blurb")))
         for f in lab.get("flagships") or []:
             out.append((f"flagship pillar {f.get('name')!r}", f.get("pillar")))
         for group in ("mounts", "channels", "links", "official"):

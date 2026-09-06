@@ -10,7 +10,7 @@ in `gallery/data/` into JavaScript data files in `docs/data/` by `build_site.py`
   Hand-curated. `topic` is one of the 9 research pillars; `paradigm` is a list of
   BCI paradigm tags (`MI`, `P300`, `SSVEP`, `Seizure`, `Affect`, `Drowsy`,
   `Speech`, `iBCI`, `Biometric`, `Sleep`).
-- **`data/lab.yml`** — lab bio, links, the anchor project, and the flagship repos
+- **`data/lab.yml`** — lab bio, links, and the flagship repos
   shown on the Overview page.
 - **`data/benchmark.yml`** — the controlled-comparison leaderboard, one block per
   stage axis. Accuracy/kappa are synced from `src/hustbciml/RESULTS.md`. Each row's

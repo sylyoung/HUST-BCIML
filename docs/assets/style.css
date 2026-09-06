@@ -85,6 +85,7 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 28px 20px 64px; }
 .hero .tagline { font-size: 17px; color: var(--muted); margin: 0 0 10px; max-width: 70ch; }
 .hero .who { font-size: 14.5px; margin-bottom: 14px; }
 .hero .who a { font-weight: 600; }
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0 4px; }
 .stats { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 8px; }
 .stat {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
@@ -98,10 +99,6 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 28px 20px 64px; }
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow);
 }
-.anchor { border-left: 3px solid var(--accent); }
-.anchor h3 { margin: 0 0 4px; font-size: 18px; }
-.anchor .blurb { color: var(--muted); margin: 6px 0 12px; }
-.anchor .actions { display: flex; gap: 10px; flex-wrap: wrap; }
 .btn {
   display: inline-block; padding: 7px 14px; border-radius: 8px; font-weight: 600; font-size: 13.5px;
   background: var(--accent); color: #fff; border: 1px solid transparent; cursor: pointer;

@@ -2,7 +2,7 @@
 """Generate the web-app data files from the source-of-truth YAML.
 
 Reads : gallery/data/publications.yml   (papers, hand-seeded)
-        gallery/data/lab.yml            (lab bio, anchor project, flagship repos)
+        gallery/data/lab.yml            (lab bio, flagship repos)
         gallery/data/benchmark.yml      (controlled-comparison leaderboard)
 
 Writes: docs/data/lab.js           window.LAB, window.SITE

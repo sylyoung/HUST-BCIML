@@ -61,6 +61,7 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-09-05 (v1.6.15).** The Overview leads with the benchmark button under the official lab sites; the Anchor project card, which repeated the intro above it, is gone.
 - **2026-09-05 (v1.6.14).** An erratum, a chapter that reprints a journal paper and an editorial column left the index, which now holds 309 papers.
 - **2026-09-05 (v1.6.13).** Two papers were counted twice, as a preprint and as the journal article it became; the index is now 312 papers, 97 with code.
 - **2026-08-28 (v1.6.12).** Every code link re-resolved and matched to its paper; one more paper gained a link and the code/no-code marks are now verified, not assumed.
@@ -405,7 +406,7 @@ The web app is generated from human-curated YAML by a single script with no fram
 dependency.
 
 - **Source of truth.** The files under [`gallery/data/`](gallery/data/):
-  `publications.yml` (the 309 papers), `lab.yml` (bio, anchor project, featured repos), and
+  `publications.yml` (the 309 papers), `lab.yml` (bio, featured repos), and
   `benchmark.yml` (the controlled-comparison leaderboard).
 
 - **Generator.** [`gallery/build_site.py`](gallery/build_site.py) compiles those YAML files
@@ -441,7 +442,7 @@ HUST-BCIML/
 ├── gallery/                    # source of truth for the web app's data
 │   ├── data/
 │   │   ├── publications.yml     # 309 papers (hand-curated)
-│   │   ├── lab.yml              # lab bio, anchor project, featured repos
+│   │   ├── lab.yml              # lab bio, featured repos
 │   │   └── benchmark.yml        # controlled-comparison leaderboard
 │   └── build_site.py           # YAML → docs/data/*.js   (requires only PyYAML)
 ├── pyproject.toml              # packaging + pytest configuration

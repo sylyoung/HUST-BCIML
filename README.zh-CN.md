@@ -58,6 +58,7 @@
 
 完整版本历史见 [`CHANGELOG.md`](CHANGELOG.md)。近期要点：
 
+- **2026-09-05（v1.6.15）** 总览页把查看基准测试的按钮提到实验室官方网站一栏下方，并移除了核心项目卡片，它重复了上方的仓库简介。
 - **2026-09-05（v1.6.14）** 一条勘误、一章转述已收录期刊论文的书籍章节，以及一篇编辑栏目退出索引，现为 309 篇。
 - **2026-09-05（v1.6.13）** 有两篇论文被重复计数：预印本和它后来正式发表的期刊版本各算了一次，现已合并，索引为 312 篇，其中 97 篇有公开代码。
 - **2026-08-28（v1.6.12）** 逐条重新验证了所有代码链接并与论文一一对应，新增一条链接，页面上「有代码／无代码」的标记从此是核对过的结果。
@@ -318,7 +319,7 @@ HUST-BCIML/
 ├── gallery/                    # source of truth for the web app's data
 │   ├── data/
 │   │   ├── publications.yml     # 309 papers (hand-curated)
-│   │   ├── lab.yml              # lab bio, anchor project, featured repos
+│   │   ├── lab.yml              # lab bio, featured repos
 │   │   └── benchmark.yml        # controlled-comparison leaderboard
 │   └── build_site.py           # YAML → docs/data/*.js   (requires only PyYAML)
 ├── pyproject.toml              # 打包与 pytest 配置

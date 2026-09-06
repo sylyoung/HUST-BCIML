@@ -158,7 +158,7 @@
   function officialLinks() {
     var L = LAB.links || {};
     var box = el("div", { class: "official" });
-    box.appendChild(el("span", { class: "official-label" }, tr("Official lab presence")));
+    box.appendChild(el("span", { class: "official-label" }, tr("Official lab sites")));
     var row = el("span", { class: "official-row" });
     if (L.lab_site) row.appendChild(el("a", { href: L.lab_site, target: "_blank", rel: "noopener" }, tr("Lab website")));
     if (L.pi_homepage) row.appendChild(el("a", { href: L.pi_homepage, target: "_blank", rel: "noopener" }, tr("Prof. Dongrui Wu")));
@@ -276,6 +276,13 @@
     hero.appendChild(who);
     if (LAB.repo_intro) hero.appendChild(el("p", { class: "repo-intro" }, tr(LAB.repo_intro)));
     hero.appendChild(officialLinks());
+    // The one call to action on the landing page, sitting directly under the
+    // official-sites strip. It used to live on an "Anchor project" card further
+    // down; the card restated the repo intro above it, so the button moved up
+    // here and the card went away.
+    var heroAct = el("div", { class: "hero-actions" });
+    heroAct.appendChild(el("a", { class: "btn", href: "#benchmark" }, tr("View the benchmark")));
+    hero.appendChild(heroAct);
     var stats = el("div", { class: "stats" });
     // Both counts come from build_site.py, computed over the SAME population.
     // They used to be computed separately — the "lab" figure here in JavaScript
@@ -310,20 +317,6 @@
       legend.appendChild(el("span", { class: "lgd lgd-ext" }, tr("external baseline")));
       o.appendChild(legend);
       o.appendChild(lm);
-    }
-
-    // code first: the anchor project + its benchmark
-    if (LAB.anchor) {
-      o.appendChild(el("div", { class: "section-title" }, tr("Anchor project")));
-      var a = LAB.anchor;
-      var card = el("div", { class: "card anchor" });
-      card.appendChild(el("h3", {}, a.name + (a.stars ? "  ·  " + a.stars + " " + tr("stars") : "")));
-      card.appendChild(el("div", { class: "blurb" }, tr(a.blurb || "")));
-      var act = el("div", { class: "actions" });
-      act.appendChild(el("a", { class: "btn", href: "#benchmark" }, tr("View the benchmark")));
-      act.appendChild(el("a", { class: "btn ghost", href: REPO_URL + "/tree/main/" + PKG, target: "_blank", rel: "noopener" }, tr("Benchmark code")));
-      card.appendChild(act);
-      o.appendChild(card);
     }
 
     // code: featured repositories, promoted above the paper-count table

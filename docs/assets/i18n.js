@@ -39,7 +39,7 @@
         "免责声明。库内的外部基线方法和实验室自研方法，均由本基准独立重新实现。所报告的结果，无论是基线复现还是实验室方法，都可能与原论文存在偏差，也可能存在错误。欢迎指正，可联系维护者。",
 
       /* ============ overview: official links, stats, section titles ============ */
-      "Official lab presence": "实验室官方渠道",
+      "Official lab sites": "实验室官方网站",
       "Prof. Dongrui Wu": "伍冬睿教授",
       /* proper nouns rendered from lab.js (LAB.full_name / LAB.institution /
          maintainer.name); English in English mode, Chinese here. */
@@ -60,7 +60,6 @@
         "基准测试所评测的全部方法，按各自所改变的解码流水线模块分组。集成聚合方法自成一组，因为它们融合的是其他各组所训练模型的预测结果。实验室自研方法，即伍冬睿教授课题组提出的方法，以高亮显示，与之对比的外部基线一并列出。",
       "lab-proposed": "实验室提出",
       "external baseline": "外部基线",
-      "Anchor project": "核心项目",
       "View the benchmark": "查看基准测试",
       "Benchmark code": "基准测试代码",
       "stars": "颗星",
@@ -202,9 +201,6 @@
       /* lab.repo_intro */
       "The lab's open-source home. It contains two components: a unified and reproducible EEG decoding benchmark, and a paper-to-code gallery that links each lab publication to its released code.":
         "实验室的开源主页，包含两部分内容，一是统一、可复现的脑电（EEG）解码基准，二是将实验室每篇论文链接至其开源代码的论文到代码总览。",
-      /* anchor.blurb */
-      "This repository. A self-contained framework that reimplements 59 pipeline approaches and 14 ensemble combiners on a single composable pipeline, covering data alignment, data augmentation, network backbones, transfer learning and ensemble aggregation. All of them are compared under one controlled protocol on three MOABB motor imagery EEG datasets. Every result on the leaderboard is a measured reproduction, recorded for each approach.":
-        "即本仓库。一个自包含的统一框架，在同一条可组合流水线上重新实现了 59 种流水线方法和 14 种集成聚合方法，涵盖数据对齐、数据增强、网络骨干、迁移学习和集成聚合。全部方法在三个 MOABB 运动想象 EEG 数据集上依据同一受控协议对比，排行榜上的每个结果均为实测复现，并逐方法记录在案。",
 
       /* ---- flagship repo `pillar` labels (controlled vocabulary) ----
          "Transfer Learning" and "Data Augmentation" reuse the benchmark-table
