@@ -188,6 +188,122 @@
     });
     return table;
   }
+  // ---------------- approach menu (Overview) ----------------
+  // An approach named on the Overview has three destinations a reader may want: the
+  // file that implements it, the paper it comes from, and the row that reports its
+  // accuracy in the leaderboard. The chip used to jump straight to the code, which
+  // silently picked one of the three; it now opens this menu and offers all three.
+  //
+  // One menu is on screen at a time. It is appended to <body> in page coordinates
+  // rather than inside the chip row, because the chips sit in a bordered card whose
+  // last row would clip a menu anchored within it, and the sticky header would cover
+  // one opened from the first row.
+  var openMenu = null;                        // { box, chip } while open, else null
+  function closeApproachMenu(refocus) {
+    if (!openMenu) return;
+    var chip = openMenu.chip;
+    if (openMenu.box.parentNode) openMenu.box.parentNode.removeChild(openMenu.box);
+    chip.setAttribute("aria-expanded", "false");
+    openMenu = null;
+    if (refocus) chip.focus();
+  }
+  document.addEventListener("click", function (e) {
+    if (openMenu && !openMenu.box.contains(e.target) && !openMenu.chip.contains(e.target)) {
+      closeApproachMenu(false);
+    }
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" || e.key === "Esc") closeApproachMenu(true);
+  });
+  // The menu holds the page coordinates it was given when it opened, so it travels
+  // with the page as it scrolls but not through a reflow. A resize can move the chip
+  // out from under it, and the honest response to that is to close.
+  window.addEventListener("resize", function () { closeApproachMenu(false); });
+
+  // One option in that menu. `href` leaves for an external page, `onclick` navigates
+  // inside the app, and an option given neither renders disabled with the reason in
+  // place of the destination: 20 of the 72 approaches have no DOI on record and one
+  // has no implementation file, so a menu that dropped the option instead would
+  // offer a different set of choices from one approach to the next, with nothing on
+  // screen to say why.
+  function menuItem(label, note, href, onclick) {
+    var url = href ? safeUrl(href) : null;
+    var node = url
+      ? el("a", { class: "am-item", role: "menuitem", href: url, target: "_blank", rel: "noopener" })
+      : onclick
+        ? el("button", { class: "am-item", role: "menuitem", type: "button", onclick: onclick })
+        : el("div", { class: "am-item is-off", role: "menuitem", "aria-disabled": "true" });
+    node.appendChild(el("span", { class: "am-label" }, label));
+    if (note) node.appendChild(el("span", { class: "am-note" }, note));
+    return node;
+  }
+  function openApproachMenu(chip, m) {
+    var reopening = !!(openMenu && openMenu.chip === chip);
+    closeApproachMenu(false);
+    if (reopening) return;                    // a second click on the same chip closes it
+    var box = el("div", { class: "approach-menu", role: "menu",
+      "aria-label": fmt(tr("Open {name}: code, paper, or result"), { name: m.name }) });
+    var head = el("div", { class: "am-head" });
+    head.appendChild(el("span", { class: "am-name" }, m.name));   // method name: an identifier, kept as-is
+    if (m.lab) head.appendChild(el("span", { class: "lab-badge" }, tr("lab")));
+    box.appendChild(head);
+    // The note under each label is the exact destination, and file paths, citations
+    // and DOIs are identifiers, so they stay in English as they do in the tables.
+    box.appendChild(menuItem(tr("Code"),
+      m.code || tr("no implementation file is recorded"),
+      m.code ? REPO_URL + "/blob/main/" + m.code : null, null));
+    box.appendChild(menuItem(tr("Paper"),
+      m.doi ? (m.ref || "doi:" + m.doi)
+        : (m.ref ? m.ref + " " + tr("(no DOI is recorded)") : tr("no paper is recorded")),
+      m.doi ? "https://doi.org/" + m.doi : null, null));
+    box.appendChild(menuItem(tr("Benchmark result"), tr(m.table), null, function () {
+      closeApproachMenu(false);
+      showBenchmarkRow(m.tableId, m.name);
+    }));
+    document.body.appendChild(box);           // measured, then placed: offsetWidth needs a layout
+    var r = chip.getBoundingClientRect();
+    var maxLeft = window.pageXOffset + document.documentElement.clientWidth - box.offsetWidth - 8;
+    box.style.left = Math.max(window.pageXOffset + 8,
+      Math.min(r.left + window.pageXOffset, maxLeft)) + "px";
+    box.style.top = (r.bottom + window.pageYOffset + 6) + "px";
+    chip.setAttribute("aria-expanded", "true");
+    openMenu = { box: box, chip: chip };
+    var first = box.querySelector(".am-item:not(.is-off)");
+    if (first) first.focus();
+  }
+  // Take the reader from an approach on the Overview to the row that reports its
+  // accuracy. The Benchmark view is built on first use, so activate() has to run
+  // before the row exists to be found.
+  function showBenchmarkRow(tableId, name) {
+    activate("benchmark");
+    if (location.hash.slice(1) !== "benchmark") history.pushState(null, "", "#benchmark");
+    var host = document.getElementById("benchmark"), box = null, row = null;
+    // Matched by reading the attribute in JavaScript rather than through an
+    // interpolated attribute selector: method names carry spaces, parentheses and
+    // hyphens, and one unescaped character in a selector string throws rather than
+    // simply missing. The table is located first, because a method measured in two
+    // tables should land in the one whose chip was clicked.
+    host.querySelectorAll(".bench-table").forEach(function (b) {
+      if (!box && b.getAttribute("data-table") === tableId) box = b;
+    });
+    (box || host).querySelectorAll("tr[data-method]").forEach(function (t) {
+      if (!row && t.getAttribute("data-method") === name) row = t;
+    });
+    if (!row) { window.scrollTo({ top: 0 }); return; }
+    document.querySelectorAll(".lb-row.located").forEach(function (t) { t.classList.remove("located"); });
+    // 80px clears the sticky header, which would otherwise sit over the row.
+    window.scrollTo({ top: Math.max(0, row.getBoundingClientRect().top + window.pageYOffset - 80),
+      behavior: "smooth" });
+    void row.offsetWidth;                     // restart the cue when the same row is asked for twice
+    row.classList.add("located");
+    row.addEventListener("animationend", function drop() {
+      row.classList.remove("located");
+      row.removeEventListener("animationend", drop);
+    });
+    row.setAttribute("tabindex", "-1");
+    row.focus({ preventScroll: true });
+  }
+
   // Every approach the benchmark measures, grouped by leaderboard table, for the
   // Overview. The lab's own methods (Prof. Wu's group) are highlighted; the
   // external baselines they are compared against are shown muted alongside.
@@ -226,10 +342,21 @@
       (t.groups || []).forEach(function (g) {
         (g.rows || []).forEach(function (r) {
           if (!r.name || r.name.toLowerCase() === "none" || r.isReference) return;
-          // remember the method's implementation path so the chip can link to its
-          // exact code file; the same method may recur across sub-categories.
-          if (byName[r.name]) { byName[r.name].count++; if (!byName[r.name].code && r.code) byName[r.name].code = r.code; }
-          else { byName[r.name] = { name: r.name, lab: !!r.lab, count: 1, code: r.code || null }; order.push(r.name); }
+          // remember every destination the chip's menu can offer: the implementation
+          // file, the paper, and the table whose row reports the accuracy. The same
+          // method may recur across sub-categories, and a later row may carry a field
+          // an earlier one left empty, so each is taken from the first row that has it.
+          var hit = byName[r.name];
+          if (hit) {
+            hit.count++;
+            if (!hit.code && r.code) hit.code = r.code;
+            if (!hit.doi && r.doi) hit.doi = r.doi;
+            if (!hit.ref && r.ref) hit.ref = r.ref;
+          } else {
+            byName[r.name] = { name: r.name, lab: !!r.lab, count: 1, code: r.code || null,
+              doi: r.doi || null, ref: r.ref || null, table: t.title, tableId: t.id };
+            order.push(r.name);
+          }
         });
       });
       if (!order.length) return;
@@ -243,14 +370,15 @@
       var chips = el("div", { class: "lab-chips" });
       labFirst.forEach(function (nm) {
         var m = byName[nm];
-        // link each approach name to its exact implementation file (its GitHub
-        // code page) rather than to the Benchmark tab.
-        var cls = "lab-chip " + (m.lab ? "is-lab" : "is-ext");
-        var chip = m.code
-          ? el("a", { class: cls, href: REPO_URL + "/blob/main/" + m.code,
-              target: "_blank", rel: "noopener", title: tr("Open ") + m.code })
-          : el("a", { class: cls, href: "#benchmark" });
+        // The chip opens the three-way menu above rather than linking straight to one
+        // of the three destinations. It is a <button>, not an <a>, because it now acts
+        // on the page instead of going somewhere.
+        var chip = el("button", { class: "lab-chip " + (m.lab ? "is-lab" : "is-ext"),
+          type: "button", "aria-haspopup": "true", "aria-expanded": "false",
+          title: fmt(tr("Open {name}: code, paper, or result"), { name: m.name }),
+          onclick: function (e) { e.stopPropagation(); openApproachMenu(chip, m); } });
         chip.appendChild(el("span", { class: "lm-name" }, m.name));
+        chip.appendChild(el("span", { class: "lm-caret", "aria-hidden": "true" }, "▾"));
         chips.appendChild(chip);
       });
       box.appendChild(chips);
@@ -311,7 +439,7 @@
       o.appendChild(el("div", { class: "section-title" },
         fmt(tr("Approaches in the benchmark ({n})"), { n: SITE.n_approaches || 0 })));
       o.appendChild(el("p", { class: "area-note" },
-        tr("Every approach evaluated in the benchmark, grouped by the stage of the decoding pipeline that it varies. The ensemble combiners form a group of their own, as they fuse the predictions of the models that the other groups train. The lab's own approaches, i.e., those proposed by Prof. Wu's group, are highlighted, and the external baselines they are compared with are listed alongside.")));
+        tr("Every approach evaluated in the benchmark, grouped by the stage of the decoding pipeline that it varies. The ensemble combiners form a group of their own, as they fuse the predictions of the models that the other groups train. The lab's own approaches, i.e., those proposed by Prof. Wu's group, are highlighted, and the external baselines they are compared with are listed alongside. Selecting an approach offers a choice of its code, its paper, and its measured row in the leaderboard.")));
       var legend = el("div", { class: "approach-legend" });
       legend.appendChild(el("span", { class: "lgd lgd-lab" }, tr("lab-proposed")));
       legend.appendChild(el("span", { class: "lgd lgd-ext" }, tr("external baseline")));
@@ -557,7 +685,9 @@
   // implementation and paper; then one accuracy/Δ cell per dataset.
   function methodRowMulti(r, datasets) {
     // method name / desc / ref are kept in English; only the "lab" badge translates.
-    var rowTr = el("tr", { class: "lb-row" + (r.lab ? " lab" : "") });
+    // data-method is what an approach chip on the Overview looks the row up by, so
+    // that "Benchmark result" lands on the row itself rather than the top of the tab.
+    var rowTr = el("tr", { class: "lb-row" + (r.lab ? " lab" : ""), "data-method": r.name });
     var name = el("td", {});
     var line1 = el("div", { class: "m-line" });
     line1.appendChild(el("span", { class: "m-name" }, r.name));
@@ -699,7 +829,9 @@
     B.appendChild(guide);
 
     (BENCH.tables || []).forEach(function (t) {
-      var box = el("div", { class: "bench-table" });
+      // data-table pairs with data-method on the rows: a method measured in two
+      // tables is found in the table whose chip the reader clicked.
+      var box = el("div", { class: "bench-table", "data-table": t.id });
       box.appendChild(el("h3", {}, tr(t.title)));
       if (t.blurb) box.appendChild(el("div", { class: "blurb" }, tr(t.blurb)));
       renderTableMulti(t, DS, box);

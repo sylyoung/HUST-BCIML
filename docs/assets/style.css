@@ -247,8 +247,12 @@ table.lb tr.lab { background: color-mix(in srgb, var(--accent-soft) 75%, transpa
 .lab-cat { display: flex; gap: 14px; align-items: baseline; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; box-shadow: var(--shadow); }
 .lab-cat-label { flex: 0 0 150px; font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--accent); font-weight: 700; }
 .lab-chips { flex: 1 1 auto; display: flex; flex-wrap: wrap; gap: 7px; }
-.lab-chip { display: inline-flex; align-items: baseline; gap: 6px; padding: 5px 11px; border-radius: 999px; background: var(--accent-soft); border: 1px solid var(--border); }
+/* a <button>, not a link: it opens the approach menu rather than going somewhere,
+   so it needs the font and cursor an anchor would have given it for free. */
+.lab-chip { display: inline-flex; align-items: baseline; gap: 6px; padding: 5px 11px; border-radius: 999px; background: var(--accent-soft); border: 1px solid var(--border); font: inherit; color: inherit; text-align: left; cursor: pointer; }
 .lab-chip:hover { text-decoration: none; filter: brightness(1.03); }
+.lab-chip[aria-expanded="true"] { outline: 2px solid var(--accent); outline-offset: 1px; }
+.lab-chip .lm-caret { font-size: 9px; color: var(--muted); }
 .lab-chip .lm-name { font-weight: 700; font-size: 13px; color: var(--text); }
 .lab-chip .lm-acc { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 /* lab-proposed approaches are highlighted (accent-soft fill + accent border,
@@ -262,6 +266,28 @@ table.lb tr.lab { background: color-mix(in srgb, var(--accent-soft) 75%, transpa
 .approach-legend .lgd { display: inline-flex; align-items: center; gap: 7px; }
 .approach-legend .lgd::before { content: ""; width: 12px; height: 12px; border-radius: 4px; border: 1px solid var(--border); background: var(--surface-2); }
 .approach-legend .lgd-lab::before { background: var(--accent-soft); border-color: var(--accent); }
+/* the menu one approach chip opens: code / paper / benchmark result. It is placed on
+   <body> in page coordinates by app.js, so it is never clipped by the chip card. */
+.approach-menu { position: absolute; z-index: 40; min-width: 236px; max-width: min(380px, calc(100vw - 16px)); padding: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 10px 30px rgba(15,23,42,.18); }
+.am-head { display: flex; align-items: center; gap: 7px; padding: 6px 10px 8px; margin-bottom: 4px; border-bottom: 1px solid var(--border); }
+.am-name { font-weight: 700; font-size: 13.5px; }
+.am-item { display: block; width: 100%; padding: 7px 10px; border: 0; border-radius: 8px; background: none; font: inherit; color: var(--text); text-align: left; text-decoration: none; cursor: pointer; }
+.am-item:hover, .am-item:focus-visible { background: var(--accent-soft); text-decoration: none; }
+.am-label { display: block; font-size: 13px; font-weight: 650; }
+.am-note { display: block; font-size: 11.5px; color: var(--muted); word-break: break-word; }
+/* an option the data cannot fill, e.g. an approach with no DOI on record: shown with
+   the reason rather than hidden, so every menu offers the same three choices. */
+.am-item.is-off { opacity: .55; cursor: default; }
+.am-item.is-off:hover { background: none; }
+/* the row an approach chip asked for, cued just long enough to find it. The tint is
+   a background-image over the cell, so the only two permanent row aesthetics, i.e.
+   lab-proposed and not, are left exactly as they are. */
+.lb-row.located > td { animation: located-fade 2.6s ease-out 1; }
+@keyframes located-fade {
+  0%, 45% { background-image: linear-gradient(var(--accent-soft), var(--accent-soft)); }
+  100% { background-image: linear-gradient(transparent, transparent); }
+}
+.lb-row:focus { outline: none; }
 
 @media (max-width: 620px) {
   .header-links { display: none; }

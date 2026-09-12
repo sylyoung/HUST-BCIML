@@ -61,6 +61,7 @@ A unified, reproducible **EEG-decoding benchmark** &nbsp;+&nbsp; a searchable **
 
 The full version history is in [`CHANGELOG.md`](CHANGELOG.md). Recent highlights:
 
+- **2026-09-12 (v1.6.16).** An approach name on the Overview now opens a choice of its code, its paper and its leaderboard row, instead of going straight to the code.
 - **2026-09-05 (v1.6.15).** The Overview leads with the benchmark button under the official lab sites; the Anchor project card, which repeated the intro above it, is gone.
 - **2026-09-05 (v1.6.14).** An erratum, a chapter that reprints a journal paper and an editorial column left the index, which now holds 309 papers.
 - **2026-09-05 (v1.6.13).** Two papers were counted twice, as a preprint and as the journal article it became; the index is now 312 papers, 97 with code.

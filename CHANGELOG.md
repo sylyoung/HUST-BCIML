@@ -7,6 +7,24 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.16] - 2026-09-12
+
+### Changed
+
+- Selecting an approach in the Overview's **Approaches in the benchmark** list no
+  longer goes straight to its source file. It now opens a small menu offering the
+  three places that approach exists in this repository: **Code**, the exact file that
+  implements it; **Paper**, the DOI of the work it reproduces; and **Benchmark
+  result**, the leaderboard row that reports its accuracy, which the Benchmark view
+  scrolls to and marks briefly on arrival. Going to the code was previously the only
+  one of the three the list offered, and it was the only one a reader could not reach
+  from anywhere else on the page.
+- An option the benchmark records nothing for is shown disabled, with the reason in
+  place of the destination, rather than being left out. Twenty of the 72 approaches
+  have no DOI on record, mostly conference papers, and one has no implementation file,
+  so a menu that hid those options would offer a different set of choices from one
+  approach to the next with nothing on screen to explain the difference.
+
 ## [1.6.15] - 2026-09-05
 
 ### Changed

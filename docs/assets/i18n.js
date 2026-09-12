@@ -56,10 +56,19 @@
       "papers indexed": "已收录论文",
       "research areas": "研究方向",
       "Approaches in the benchmark": "基准中的全部方法",
-      "Every approach evaluated in the benchmark, grouped by the stage of the decoding pipeline that it varies. The ensemble combiners form a group of their own, as they fuse the predictions of the models that the other groups train. The lab's own approaches, i.e., those proposed by Prof. Wu's group, are highlighted, and the external baselines they are compared with are listed alongside.":
-        "基准测试所评测的全部方法，按各自所改变的解码流水线模块分组。集成聚合方法自成一组，因为它们融合的是其他各组所训练模型的预测结果。实验室自研方法，即伍冬睿教授课题组提出的方法，以高亮显示，与之对比的外部基线一并列出。",
+      "Every approach evaluated in the benchmark, grouped by the stage of the decoding pipeline that it varies. The ensemble combiners form a group of their own, as they fuse the predictions of the models that the other groups train. The lab's own approaches, i.e., those proposed by Prof. Wu's group, are highlighted, and the external baselines they are compared with are listed alongside. Selecting an approach offers a choice of its code, its paper, and its measured row in the leaderboard.":
+        "基准测试所评测的全部方法，按各自所改变的解码流水线模块分组。集成聚合方法自成一组，因为它们融合的是其他各组所训练模型的预测结果。实验室自研方法，即伍冬睿教授课题组提出的方法，以高亮显示，与之对比的外部基线一并列出。点击任一方法名，可在它的代码、论文和排行榜中的测量结果之间选择。",
       "lab-proposed": "实验室提出",
       "external baseline": "外部基线",
+      /* the menu a method name opens on the Overview: its three destinations, and
+         the reason shown in place of one the benchmark has no record for */
+      "Open {name}: code, paper, or result": "打开 {name}：代码、论文或结果",
+      "Code": "代码",
+      "Paper": "论文",
+      "Benchmark result": "基准测试结果",
+      "no implementation file is recorded": "未记录实现文件",
+      "no paper is recorded": "未记录论文",
+      "(no DOI is recorded)": "（未记录 DOI）",
       "View the benchmark": "查看基准测试",
       "Benchmark code": "基准测试代码",
       "stars": "颗星",
