@@ -252,7 +252,6 @@ table.lb tr.lab { background: color-mix(in srgb, var(--accent-soft) 75%, transpa
 .lab-chip { display: inline-flex; align-items: baseline; gap: 6px; padding: 5px 11px; border-radius: 999px; background: var(--accent-soft); border: 1px solid var(--border); font: inherit; color: inherit; text-align: left; cursor: pointer; }
 .lab-chip:hover { text-decoration: none; filter: brightness(1.03); }
 .lab-chip[aria-expanded="true"] { outline: 2px solid var(--accent); outline-offset: 1px; }
-.lab-chip .lm-caret { font-size: 9px; color: var(--muted); }
 .lab-chip .lm-name { font-weight: 700; font-size: 13px; color: var(--text); }
 .lab-chip .lm-acc { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 /* lab-proposed approaches are highlighted (accent-soft fill + accent border,

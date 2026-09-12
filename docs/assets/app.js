@@ -378,7 +378,6 @@
           title: fmt(tr("Open {name}: code, paper, or result"), { name: m.name }),
           onclick: function (e) { e.stopPropagation(); openApproachMenu(chip, m); } });
         chip.appendChild(el("span", { class: "lm-name" }, m.name));
-        chip.appendChild(el("span", { class: "lm-caret", "aria-hidden": "true" }, "▾"));
         chips.appendChild(chip);
       });
       box.appendChild(chips);

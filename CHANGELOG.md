@@ -7,6 +7,16 @@ All notable changes to this project are recorded here. The format follows
 A short "What's new" digest also appears in [`README.md`](README.md) and
 [`README.zh-CN.md`](README.zh-CN.md); this file is the full history.
 
+## [1.6.17] - 2026-09-12
+
+### Changed
+
+- An approach name in the Overview's **Approaches in the benchmark** list is no longer
+  followed by a small triangular marker. The marker was meant to say that the name
+  opens a menu rather than going somewhere, but at the size it was drawn it read as a
+  stray dot after the method name. The name itself, its pointer cursor and the outline
+  it takes while its menu is open already carry that meaning.
+
 ## [1.6.16] - 2026-09-12
 
 ### Changed
